@@ -69,9 +69,9 @@ class hr_payroll_structure(osv.osv):
     }
 
     _constraints = [
-        (osv.osv._check_recursion, 'Error ! You cannot create a recursive Salary Structure.', ['parent_id']) 
+        (osv.osv._check_recursion, 'Error ! You cannot create a recursive Salary Structure.', ['parent_id'])
     ]
-        
+
     def copy(self, cr, uid, id, default=None, context=None):
         default = dict(default or {},
                        code=_("%s (copy)") % (self.browse(cr, uid, id, context=context).code))
@@ -254,7 +254,7 @@ class hr_payslip(osv.osv):
         for r in res:
             result[r[0]].append(r[1])
         return result
-    
+
     def _count_detail_payslip(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for details in self.browse(cr, uid, ids, context=context):
@@ -325,7 +325,7 @@ class hr_payslip(osv.osv):
             self.compute_sheet(cr, uid, [id_copy], context=context)
             self.signal_workflow(cr, uid, [id_copy], 'hr_verify_sheet')
             self.signal_workflow(cr, uid, [id_copy], 'process_sheet')
-            
+
         form_id = mod_obj.get_object_reference(cr, uid, 'hr_payroll', 'view_hr_payslip_form')
         form_res = form_id and form_id[1] or False
         tree_id = mod_obj.get_object_reference(cr, uid, 'hr_payroll', 'view_hr_payslip_tree')
@@ -778,6 +778,12 @@ class hr_salary_rule(osv.osv):
         'register_id':fields.many2one('hr.contribution.register', 'Contribution Register', help="Eventual third party involved in the salary payment of the employees."),
         'input_ids': fields.one2many('hr.rule.input', 'input_id', 'Inputs', copy=True),
         'note':fields.text('Description'),
+        'partner_aml': fields.selection([('none','None'),
+                                                ('employee', 'Use the Partner Employee'),
+                                                ('loan', 'Use the Partner Loan')],
+                                                'Partner to use',
+            help="If this field check with True, it will be create journal entries with partner from partner of employee."),
+        'partner_id': fields.many2one('res.partner', 'Partner'),
      }
     _defaults = {
         'amount_python_compute': '''
@@ -821,6 +827,7 @@ result = rules.NET > categories.NET * 0.10''',
         'amount_fix': 0.0,
         'amount_percentage': 0.0,
         'quantity': '1.0',
+        'partner_aml': 'employee',
      }
 
     @api.cr_uid_ids_context

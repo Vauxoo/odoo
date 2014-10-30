@@ -106,16 +106,25 @@ class hr_payslip(osv.osv):
                 amt = slip.credit_note and -line.total or line.total
                 if float_is_zero(amt, precision_digits=precision):
                     continue
-                partner_id = line.salary_rule_id.register_id.partner_id and line.salary_rule_id.register_id.partner_id.id or default_partner_id
+                partner_id = (line.salary_rule_id.partner_id and line.salary_rule_id.partner_id.id) or line.salary_rule_id.register_id.partner_id and line.salary_rule_id.register_id.partner_id.id
                 debit_account_id = line.salary_rule_id.account_debit.id
                 credit_account_id = line.salary_rule_id.account_credit.id
+
+                if line.salary_rule_id.partner_aml == 'none':
+                    partner_to_use = partner_id
+                elif line.salary_rule_id.partner_aml == 'employee':
+                    partner_to_use = default_partner_id
+                elif line.salary_rule_id.partner_aml == 'loan':
+                    partner_to_use = line.loan_line_id.hr_loan_id.partner_id.id
+                else:
+                    partner_to_use = False
 
                 if debit_account_id:
 
                     debit_line = (0, 0, {
                     'name': line.name,
                     'date': timenow,
-                    'partner_id': (line.salary_rule_id.register_id.partner_id or line.salary_rule_id.account_debit.type in ('receivable', 'payable')) and partner_id or False,
+                    'partner_id': partner_to_use,
                     'account_id': debit_account_id,
                     'journal_id': slip.journal_id.id,
                     'period_id': period_id,
@@ -133,7 +142,7 @@ class hr_payslip(osv.osv):
                     credit_line = (0, 0, {
                     'name': line.name,
                     'date': timenow,
-                    'partner_id': (line.salary_rule_id.register_id.partner_id or line.salary_rule_id.account_credit.type in ('receivable', 'payable')) and partner_id or False,
+                    'partner_id': partner_to_use,
                     'account_id': credit_account_id,
                     'journal_id': slip.journal_id.id,
                     'period_id': period_id,
