@@ -26,6 +26,30 @@ from openerp.osv import fields, osv
 from openerp.tools import float_compare, float_is_zero
 from openerp.tools.translate import _
 
+class hr_payslip_line(osv.osv):
+    '''
+    Payslip Line
+    '''
+    _inherit = 'hr.payslip.line'
+
+    def _get_partner_id(self, cr, uid, payslip_line, credit_account, context=None):
+        """
+        Get partner_id of slip line to use in account_move_line
+        """
+        # use partner of salary rule or fallback on employee's address
+        partner_id = payslip_line.salary_rule_id.register_id.partner_id.id or \
+            payslip_line.slip_id.employee_id.address_home_id.id
+        if credit_account:
+            if payslip_line.salary_rule_id.register_id.partner_id or \
+                    payslip_line.salary_rule_id.account_credit.type in ('receivable', 'payable'):
+                return partner_id
+        else:
+            if payslip_line.salary_rule_id.register_id.partner_id or \
+                    payslip_line.salary_rule_id.account_debit.type in ('receivable', 'payable'):
+                return partner_id
+        return False
+
+
 class hr_payslip(osv.osv):
     '''
     Pay Slip
@@ -80,6 +104,7 @@ class hr_payslip(osv.osv):
     def process_sheet(self, cr, uid, ids, context=None):
         move_pool = self.pool.get('account.move')
         period_pool = self.pool.get('account.period')
+        hr_payslip_line_pool = self.pool['hr.payslip.line']
         precision = self.pool.get('decimal.precision').precision_get(cr, uid, 'Payroll')
         timenow = time.strftime('%Y-%m-%d')
 
@@ -93,7 +118,6 @@ class hr_payslip(osv.osv):
             else:
                 period_id = slip.period_id.id
 
-            default_partner_id = slip.employee_id.address_home_id.id
             name = _('Payslip of %s') % (slip.employee_id.name)
             move = {
                 'narration': name,
@@ -106,7 +130,6 @@ class hr_payslip(osv.osv):
                 amt = slip.credit_note and -line.total or line.total
                 if float_is_zero(amt, precision_digits=precision):
                     continue
-                partner_id = line.salary_rule_id.register_id.partner_id and line.salary_rule_id.register_id.partner_id.id or default_partner_id
                 debit_account_id = line.salary_rule_id.account_debit.id
                 credit_account_id = line.salary_rule_id.account_credit.id
 
@@ -115,7 +138,7 @@ class hr_payslip(osv.osv):
                     debit_line = (0, 0, {
                     'name': line.name,
                     'date': timenow,
-                    'partner_id': (line.salary_rule_id.register_id.partner_id or line.salary_rule_id.account_debit.type in ('receivable', 'payable')) and partner_id or False,
+                    'partner_id': hr_payslip_line_pool._get_partner_id(cr, uid, line, credit_account=False, context=context),
                     'account_id': debit_account_id,
                     'journal_id': slip.journal_id.id,
                     'period_id': period_id,
@@ -133,7 +156,7 @@ class hr_payslip(osv.osv):
                     credit_line = (0, 0, {
                     'name': line.name,
                     'date': timenow,
-                    'partner_id': (line.salary_rule_id.register_id.partner_id or line.salary_rule_id.account_credit.type in ('receivable', 'payable')) and partner_id or False,
+                    'partner_id': hr_payslip_line_pool._get_partner_id(cr, uid, line, credit_account=True, context=context),
                     'account_id': credit_account_id,
                     'journal_id': slip.journal_id.id,
                     'period_id': period_id,
@@ -142,7 +165,7 @@ class hr_payslip(osv.osv):
                     'analytic_account_id': line.salary_rule_id.analytic_account_id and line.salary_rule_id.analytic_account_id.id or False,
                     'tax_code_id': line.salary_rule_id.account_tax_id and line.salary_rule_id.account_tax_id.id or False,
                     'tax_amount': line.salary_rule_id.account_tax_id and amt or 0.0,
-                })
+                    })
                     line_ids.append(credit_line)
                     credit_sum += credit_line[2]['credit'] - credit_line[2]['debit']
 
