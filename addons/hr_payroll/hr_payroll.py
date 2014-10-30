@@ -778,6 +778,12 @@ class hr_salary_rule(osv.osv):
         'register_id':fields.many2one('hr.contribution.register', 'Contribution Register', help="Eventual third party involved in the salary payment of the employees."),
         'input_ids': fields.one2many('hr.rule.input', 'input_id', 'Inputs', copy=True),
         'note':fields.text('Description'),
+        'partner_aml': fields.selection([('none','None'),
+                                                ('employee', 'Use the Partner Employee'),
+                                                ('loan', 'Use the Partner Loan')],
+                                                'Partner to use',
+            help="If this field check with True, it will be create journal entries with partner from partner of employee."),
+        'partner_id': fields.many2one('res.partner', 'Partner'),
      }
     _defaults = {
         'amount_python_compute': '''
@@ -821,6 +827,7 @@ result = rules.NET > categories.NET * 0.10''',
         'amount_fix': 0.0,
         'amount_percentage': 0.0,
         'quantity': '1.0',
+        'partner_aml': 'employee',
      }
 
     @api.cr_uid_ids_context

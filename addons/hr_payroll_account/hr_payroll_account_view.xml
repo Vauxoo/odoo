@@ -29,6 +29,8 @@
                             <field name="account_credit"/>
                             <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                             <field name="account_tax_id"/>
+                            <field name="partner_aml" widget="radio"/>
+                            <field name="partner_id" attrs="{'readonly':[('partner_aml','!=','none')]}"/>
                         </group>
                     </page>
                 </xpath>
