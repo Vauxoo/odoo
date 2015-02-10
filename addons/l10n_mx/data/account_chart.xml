@@ -1341,7 +1341,7 @@ Cuentas del plan
 
 <record id="cuenta1122001000" model="account.account.template">
 		<field name="code">1122001000</field>
-		<field name="reconcile" eval="False"/>
+		<field name="reconcile" eval="True"/>
         <field name="parent_id" ref="cuenta1122"/>
 		<field name="type">receivable</field>
 		<field name="user_type" ref="account_type_receivable"/>
@@ -2619,7 +2619,7 @@ Cuentas del plan
 
 <record id="cuenta5111001000" model="account.account.template">
 		<field name="code">5111001000</field>
-		<field name="reconcile" eval="False"/>
+		<field name="reconcile" eval="True"/>
         <field name="parent_id" ref="cuenta5111"/>
 		<field name="type">other</field>
 		<field name="user_type" ref="account_type_other"/>
