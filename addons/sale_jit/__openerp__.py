@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,18 +20,20 @@
 ##############################################################################
 
 
-from openerp.osv import osv
-
-class procurement_order(osv.osv):
-    _inherit = "procurement.order"
-
-    def create(self, cr, uid, vals, context=None):
-        procurement_id = super(procurement_order, self).create(cr, uid, vals, context=context)
-        context = context or {}
-
-        if not context.get("no_run_at_create", False):
-            self.run(cr, uid, [procurement_id], context=context)
-            self.check(cr, uid, [procurement_id], context=context)
-        return procurement_id
-
+{
+    'name': 'Just In Time Scheduling for Sale',
+    'version': '1.0',
+    'category': 'Base',
+    'description': """
+This module allows Just In Time computation for Sale.
+    """,
+    'author': 'OpenERP SA',
+    'website': '',
+    'depends': ['procurement_jit', 'sale'],
+    'data': [],
+    'demo': [],
+    'test': [],
+    'installable': True,
+    'auto_install': False,
+}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -19,19 +19,23 @@
 #
 ##############################################################################
 
-
 from openerp.osv import osv
 
-class procurement_order(osv.osv):
-    _inherit = "procurement.order"
+class sale_order(osv.osv):
+    _inherit = "sale.order"
 
-    def create(self, cr, uid, vals, context=None):
-        procurement_id = super(procurement_order, self).create(cr, uid, vals, context=context)
+    def action_ship_create(self, cr, uid, ids, context=None):
         context = context or {}
+        context['no_run_at_create'] = True
 
-        if not context.get("no_run_at_create", False):
-            self.run(cr, uid, [procurement_id], context=context)
-            self.check(cr, uid, [procurement_id], context=context)
-        return procurement_id
+        res = super(sale_order, self).action_ship_create(cr, uid, ids, context=context)
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        procurement_obj = self.pool.get('procurement.order')
+        order = self.browse(cr, uid, ids, context=context)[0]
+
+        proc_ids = procurement_obj.search(cr, uid, [('origin', 'ilike', order.name)], context=context)
+        while (proc_ids):
+            procurement_obj.run(cr, uid, proc_ids, context=context)
+            procurement_obj.check(cr, uid, proc_ids, context=context)
+            proc_ids = procurement_obj.search(cr, uid, [('origin', 'ilike', order.name), ('state', '=', 'confirmed')], context=context)
+        return res
