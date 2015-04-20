@@ -147,21 +147,6 @@ class sale_order(osv.osv):
                     move_obj.write(cr, uid, [x.id for x in picking.move_lines], {'invoice_state': 'invoiced'}, context=context)
         return res
 
-    def action_cancel(self, cr, uid, ids, context=None):
-        if context is None:
-            context = {}
-        sale_order_line_obj = self.pool.get('sale.order.line')
-        proc_obj = self.pool.get('procurement.order')
-        stock_obj = self.pool.get('stock.picking')
-        for sale in self.browse(cr, uid, ids, context=context):
-            for pick in sale.picking_ids:
-                if pick.state not in ('draft', 'cancel'):
-                    raise osv.except_osv(
-                        _('Cannot cancel sales order!'),
-                        _('You must first cancel all delivery order(s) attached to this sales order.'))
-            stock_obj.signal_workflow(cr, uid, [p.id for p in sale.picking_ids], 'button_cancel')
-        return super(sale_order, self).action_cancel(cr, uid, ids, context=context)
-
     def action_wait(self, cr, uid, ids, context=None):
         res = super(sale_order, self).action_wait(cr, uid, ids, context=context)
         for o in self.browse(cr, uid, ids):
@@ -299,6 +284,14 @@ class sale_order_line(osv.osv):
             res['value'].update({'product_packaging': False})
             return res
 
+        # set product uom in context to get virtual stock in current uom
+        if 'product_uom' in res.get('value', {}):
+            # use the uom changed by super call
+            context = dict(context, uom=res['value']['product_uom'])
+        elif uom:
+            # fallback on selected
+            context = dict(context, uom=uom)
+
         #update of result obtained in super function
         product_obj = product_obj.browse(cr, uid, product, context=context)
         res['value'].update({'product_tmpl_id': product_obj.product_tmpl_id.id, 'delay': (product_obj.sale_delay or 0.0)})
@@ -365,12 +358,12 @@ class stock_move(osv.osv):
             self.pool.get('sale.order.line').write(cr, uid, [sale_line.id], {
                 'invoice_lines': [(4, invoice_line_id)]
             }, context=context)
-            self.pool.get('sale.order').write(cr, uid, [sale_line.order_id.id], {
-                'invoice_ids': [(4, invoice_line_vals['invoice_id'])],
-            })
+            cr.execute('SELECT order_id FROM sale_order_invoice_rel WHERE order_id=%s AND invoice_id=%s' % (sale_line.order_id.id, invoice_line_vals['invoice_id']))
+            if not cr.fetchall():
+                cr.execute('INSERT INTO sale_order_invoice_rel (order_id, invoice_id) VALUES (%s, %s)' %(sale_line.order_id.id, invoice_line_vals['invoice_id']))
             sale_line_obj = self.pool.get('sale.order.line')
             invoice_line_obj = self.pool.get('account.invoice.line')
-            sale_line_ids = sale_line_obj.search(cr, uid, [('order_id', '=', move.procurement_id.sale_line_id.order_id.id), ('product_id.type', '=', 'service'), ('invoiced', '=', False)], context=context)
+            sale_line_ids = sale_line_obj.search(cr, uid, [('order_id', '=', move.procurement_id.sale_line_id.order_id.id), ('invoiced', '=', False), '|', ('product_id', '=', False), ('product_id.type', '=', 'service')], context=context)
             if sale_line_ids:
                 created_lines = sale_line_obj.invoice_line_create(cr, uid, sale_line_ids, context=context)
                 invoice_line_obj.write(cr, uid, created_lines, {'invoice_id': invoice_line_vals['invoice_id']}, context=context)
@@ -404,6 +397,14 @@ class stock_move(osv.osv):
             uos_coeff = move.product_uom_qty and move.product_uos_qty / move.product_uom_qty or 1.0
             res['price_unit'] = res['price_unit'] / uos_coeff
         return res
+
+    def _get_moves_taxes(self, cr, uid, moves, context=None):
+        is_extra_move, extra_move_tax = super(stock_move, self)._get_moves_taxes(cr, uid, moves, context=context)
+        for move in moves:
+            if move.procurement_id and move.procurement_id.sale_line_id:
+                is_extra_move[move.id] = False
+                extra_move_tax[move.picking_id, move.product_id] = [(6, 0, [x.id for x in move.procurement_id.sale_line_id.tax_id])]
+        return (is_extra_move, extra_move_tax)
 
 
 class stock_location_route(osv.osv):

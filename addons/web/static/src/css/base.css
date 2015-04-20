@@ -2375,6 +2375,10 @@
 .openerp .oe_form_field_many2one input {
   padding-right: 13px;
 }
+.openerp.ui-autocomplete {
+  top: 0;
+  left: 0;
+}
 .openerp.ui-autocomplete li.oe_m2o_dropdown_option a {
   font-style: italic;
   padding-left: 2em;
@@ -2788,6 +2792,9 @@
 .openerp .oe_list_content > tbody > tr > td.oe_list_field_boolean input {
   filter: alpha(opacity=50);
   opacity: 0.5;
+}
+.openerp .oe_list_content > tbody > tr > td.oe_list_field_boolean input:-moz-read-only {
+  opacity: 1;
 }
 .openerp .oe_list_content > tbody > tr:nth-child(odd) {
   background-color: #f0f0fa;

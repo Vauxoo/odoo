@@ -581,6 +581,7 @@ class sale_order(osv.osv):
             context = {}
         sale_order_line_obj = self.pool.get('sale.order.line')
         account_invoice_obj = self.pool.get('account.invoice')
+        procurement_obj = self.pool.get('procurement.order')
         for sale in self.browse(cr, uid, ids, context=context):
             for inv in sale.invoice_ids:
                 if inv.state not in ('draft', 'cancel'):
@@ -588,6 +589,7 @@ class sale_order(osv.osv):
                         _('Cannot cancel this sales order!'),
                         _('First cancel all invoices attached to this sales order.'))
                 inv.signal_workflow('invoice_cancel')
+            procurement_obj.cancel(cr, uid, sum([l.procurement_ids.ids for l in sale.order_line],[]))
             sale_order_line_obj.write(cr, uid, [l.id for l in  sale.order_line],
                     {'state': 'cancel'})
         self.write(cr, uid, ids, {'state': 'cancel'})
@@ -695,7 +697,7 @@ class sale_order(osv.osv):
 
         :return: True
         """
-        context = dict(context)
+        context = context or {}
         context['lang'] = self.pool['res.users'].browse(cr, uid, uid).lang
         procurement_obj = self.pool.get('procurement.order')
         sale_line_obj = self.pool.get('sale.order.line')
@@ -713,13 +715,16 @@ class sale_order(osv.osv):
                     procurement_obj.check(cr, uid, [x.id for x in line.procurement_ids if x.state not in ['cancel', 'done']])
                     line.refresh()
                     #run again procurement that are in exception in order to trigger another move
-                    proc_ids += [x.id for x in line.procurement_ids if x.state in ('exception', 'cancel')]
-                    procurement_obj.reset_to_confirmed(cr, uid, proc_ids, context=context)
+                    except_proc_ids = [x.id for x in line.procurement_ids if x.state in ('exception', 'cancel')]
+                    procurement_obj.reset_to_confirmed(cr, uid, except_proc_ids, context=context)
+                    proc_ids += except_proc_ids
                 elif sale_line_obj.need_procurement(cr, uid, [line.id], context=context):
                     if (line.state == 'done') or not line.product_id:
                         continue
                     vals = self._prepare_order_line_procurement(cr, uid, order, line, group_id=order.procurement_group_id.id, context=context)
-                    proc_id = procurement_obj.create(cr, uid, vals, context=context)
+                    ctx = context.copy()
+                    ctx['procurement_autorun_defer'] = True
+                    proc_id = procurement_obj.create(cr, uid, vals, context=ctx)
                     proc_ids.append(proc_id)
             #Confirm procurement order such that rules will be applied on it
             #note that the workflow normally ensure proc_ids isn't an empty list

@@ -194,6 +194,13 @@ class purchase_order(osv.osv):
         ('done', 'Done'),
         ('cancel', 'Cancelled')
     ]
+
+    READONLY_STATES = {
+        'confirmed': [('readonly', True)],
+        'approved': [('readonly', True)],
+        'done': [('readonly', True)]
+    }
+
     _track = {
         'state': {
             'purchase.mt_rfq_confirmed': lambda self, cr, uid, obj, ctx=None: obj.state == 'confirmed',
@@ -222,16 +229,16 @@ class purchase_order(osv.osv):
                                  copy=False),
         'date_approve':fields.date('Date Approved', readonly=1, select=True, copy=False,
                                    help="Date on which purchase order has been approved"),
-        'partner_id':fields.many2one('res.partner', 'Supplier', required=True, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]},
+        'partner_id':fields.many2one('res.partner', 'Supplier', required=True, states=READONLY_STATES,
             change_default=True, track_visibility='always'),
         'dest_address_id':fields.many2one('res.partner', 'Customer Address (Direct Delivery)',
-            states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]},
+            states=READONLY_STATES,
             help="Put an address if you want to deliver directly from the supplier to the customer. " \
                 "Otherwise, keep empty to deliver to your own company."
         ),
-        'location_id': fields.many2one('stock.location', 'Destination', required=True, domain=[('usage','<>','view')], states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]} ),
-        'pricelist_id':fields.many2one('product.pricelist', 'Pricelist', required=True, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="The pricelist sets the currency used for this purchase order. It also computes the supplier price for the selected products/quantities."),
-        'currency_id': fields.many2one('res.currency','Currency', readonly=True, required=True,states={'draft': [('readonly', False)],'sent': [('readonly', False)]}),
+        'location_id': fields.many2one('stock.location', 'Destination', required=True, domain=[('usage','<>','view')], states=READONLY_STATES),
+        'pricelist_id':fields.many2one('product.pricelist', 'Pricelist', required=True, states=READONLY_STATES, help="The pricelist sets the currency used for this purchase order. It also computes the supplier price for the selected products/quantities."),
+        'currency_id': fields.many2one('res.currency','Currency', required=True, states=READONLY_STATES),
         'state': fields.selection(STATE_SELECTION, 'Status', readonly=True,
                                   help="The status of the purchase order or the quotation request. "
                                        "A request for quotation is a purchase order in a 'Draft' status. "
@@ -477,6 +484,7 @@ class purchase_order(osv.osv):
             action['res_id'] = pick_ids and pick_ids[0] or False
         return action
 
+
     def wkf_approve_order(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'approved', 'date_approve': fields.date.context_today(self,cr,uid,context=context)})
         return True
@@ -535,6 +543,10 @@ class purchase_order(osv.osv):
         for po in self.browse(cr, uid, ids, context=context):
             if not po.order_line:
                 raise osv.except_osv(_('Error!'),_('You cannot confirm a purchase order without any purchase order line.'))
+            if po.invoice_method == 'picking' and not any([l.product_id and l.product_id.type in ('product', 'consu') for l in po.order_line]):
+                raise osv.except_osv(
+                    _('Error!'),
+                    _("You cannot confirm a purchase order with Invoice Control Method 'Based on incoming shipments' that doesn't contain any stockable item."))
             for line in po.order_line:
                 if line.state=='draft':
                     todo.append(line.id)        
@@ -830,7 +842,7 @@ class purchase_order(osv.osv):
             picking_vals = {
                 'picking_type_id': order.picking_type_id.id,
                 'partner_id': order.partner_id.id,
-                'date': max([l.date_planned for l in order.order_line]),
+                'date': order.date_order,
                 'origin': order.name
             }
             picking_id = self.pool.get('stock.picking').create(cr, uid, picking_vals, context=context)
@@ -1014,9 +1026,9 @@ class purchase_order_line(osv.osv):
             if line.state not in ['draft', 'cancel']:
                 raise osv.except_osv(_('Invalid Action!'), _('Cannot delete a purchase order line which is in state \'%s\'.') %(line.state,))
         procurement_obj = self.pool.get('procurement.order')
-        procurement_ids_to_cancel = procurement_obj.search(cr, uid, [('purchase_line_id', 'in', ids)], context=context)
-        if procurement_ids_to_cancel:
-            self.pool['procurement.order'].cancel(cr, uid, procurement_ids_to_cancel)
+        procurement_ids_to_except = procurement_obj.search(cr, uid, [('purchase_line_id', 'in', ids)], context=context)
+        if procurement_ids_to_except:
+            self.pool['procurement.order'].write(cr, uid, procurement_ids_to_except, {'state': 'exception'}, context=context)
         return super(purchase_order_line, self).unlink(cr, uid, ids, context=context)
 
     def onchange_product_uom(self, cr, uid, ids, pricelist_id, product_id, qty, uom_id,
