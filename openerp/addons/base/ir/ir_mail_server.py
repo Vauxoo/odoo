@@ -23,7 +23,7 @@ from email.MIMEText import MIMEText
 from email.MIMEBase import MIMEBase
 from email.MIMEMultipart import MIMEMultipart
 from email.Charset import Charset
-from email.Header import Header
+from email.Header import Header, decode_header
 from email.utils import formatdate, make_msgid, COMMASPACE, getaddresses, formataddr
 from email import Encoders
 import logging
@@ -119,7 +119,7 @@ def encode_header_param(param_text):
          else Charset('utf8').header_encode(param_text_utf8)
 
 # TODO master, remove me, no longer used internaly
-name_with_email_pattern = re.compile(r'("[^<@>]+")\s*<([^ ,<@]+@[^> ,]+)>')
+name_with_email_pattern = re.compile(r'("[^<@>]+"|[^<@>]+)\s*<([^ ,<@]+@[^> ,]+)>')
 address_pattern = re.compile(r'([^ ,<@]+@[^> ,]+)')
 
 def extract_rfc2822_addresses(text):
@@ -468,6 +468,11 @@ class ir_mail_server(osv.osv):
                          _("Please define at least one SMTP server, or provide the SMTP parameters explicitly."))
 
         try:
+            from_user_email = '%s <%s>' % (message['From'], smtp_user)
+            if len(decode_header(message["From"])) == 2:
+                (from_user, charset),(from_email, char) = decode_header(message["From"])
+                from_user_email = unicode(from_user, charset)+(from_email)
+            message.replace_header('From', '%s' % (from_user_email))
             message_id = message['Message-Id']
 
             # Add email in Maildir if smtp_server contains maildir.
