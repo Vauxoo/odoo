@@ -63,7 +63,7 @@ class SaleOrder(orm.Model):
         if not order:
             return False
         if all(line.product_id.type == "service" for line in order.website_order_line):
-            order.write({'carrier_id': None}, context=context)
+            order.write({'carrier_id': None})
             self.pool['sale.order']._delivery_unset(cr, SUPERUSER_ID, [order.id], context=context)
             return True
         else: 
@@ -81,11 +81,11 @@ class SaleOrder(orm.Model):
                     if grid_id:
                         carrier_id = delivery_id
                         break
-                order.write({'carrier_id': carrier_id}, context=context)
+                order.write({'carrier_id': carrier_id})
             if carrier_id:
-                order.delivery_set(context=context)
+                order.delivery_set()
             else:
-                order._delivery_unset(context=context)                    
+                order._delivery_unset()                    
 
         return bool(carrier_id)
 
@@ -122,4 +122,16 @@ class SaleOrder(orm.Model):
         delivery_ids = self._get_delivery_methods(cr, uid, order, context=context)
 
         values['deliveries'] = DeliveryCarrier.browse(cr, SUPERUSER_ID, delivery_ids, context=delivery_ctx)
+        return values
+
+    def _cart_update(self, cr, uid, ids, product_id=None, line_id=None, add_qty=0, set_qty=0, context=None, **kwargs):
+        """ Override to update carrier quotation if quantity changed """
+
+        values = super(SaleOrder, self)._cart_update(
+            cr, uid, ids, product_id, line_id, add_qty, set_qty, context, **kwargs)
+
+        if add_qty or set_qty is not None:
+            for sale_order in self.browse(cr, uid, ids, context=context):
+                self._check_carrier_quotation(cr, uid, sale_order, context=context)
+
         return values
