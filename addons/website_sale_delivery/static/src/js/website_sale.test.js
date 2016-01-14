@@ -2,7 +2,7 @@
     'use strict';
 
     openerp.Tour.register({
-        id:   'shop_test_test',
+        id:   'shop_buy_delivery',
         name: "Customize the page and search a product",
         path: '/shop',
         mode: 'test',
@@ -35,6 +35,10 @@
             {
                 title:     "step 5 add to chart from the full view for ipad",
                 element:   'form[action^="/shop/cart/update"] .btn',
+            },
+            {
+                title:     "click in modal on 'Proceed to checkout' button",
+                element:   '.modal a:contains("Proceed to checkout")',
             },
             {
                 title:     "step 6 go to checkout",
