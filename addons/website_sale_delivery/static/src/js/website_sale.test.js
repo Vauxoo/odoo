@@ -37,10 +37,6 @@
                 element:   'form[action^="/shop/cart/update"] .btn',
             },
             {
-                title:     "click in modal on 'Proceed to checkout' button",
-                element:   '.modal a:contains("Proceed to checkout")',
-            },
-            {
                 title:     "step 6 go to checkout",
                 element:   'a:contains("Process Checkout")',
             },
