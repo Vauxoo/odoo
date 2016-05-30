@@ -37,6 +37,8 @@ from openerp.tools.translate import _
 from openerp.tools import html2text
 import openerp.tools as tools
 
+import base64
+
 # ustr was originally from tools.misc.
 # it is moved to loglevels until we refactor tools.
 from openerp.loglevels import ustr
@@ -287,6 +289,34 @@ class ir_mail_server(osv.osv):
            :rtype: email.message.Message (usually MIMEMultipart)
            :return: the new RFC2822 email message
         """
+        ftemplate = '__image-%s__'
+        fcounter = 0
+        attachments = attachments or []
+
+        pattern = re.compile(r'"data:image/png;base64,[^"]*"')
+        pos = 0
+        new_body = ''
+        while True:
+            match = pattern.search(body, pos)
+            if not match:
+                break
+            s = match.start()
+            e = match.end()
+            data = body[s+len('"data:image/png;base64,'):e-1]
+            new_body += body[pos:s]
+
+            fname = ftemplate % fcounter
+            fcounter += 1
+            attachments.append( (fname, base64.b64decode(data)) )
+
+            new_body += '"cid:%s"' % fname
+            pos = e
+
+        new_body += body[pos:]
+        body = new_body
+
+
+
         email_from = email_from or tools.config.get('email_from')
         assert email_from, "You must either provide a sender address explicitly or configure "\
                            "a global sender address in the server configuration or with the "\
@@ -357,6 +387,7 @@ class ir_mail_server(osv.osv):
                 # so we fix it by using RFC2047 encoding for the filename instead.
                 part.set_param('name', filename_rfc2047)
                 part.add_header('Content-Disposition', 'attachment', filename=filename_rfc2047)
+                part.add_header('Content-ID', '<%s>' % filename_rfc2047) # NEW STUFF
 
                 part.set_payload(fcontent)
                 Encoders.encode_base64(part)
