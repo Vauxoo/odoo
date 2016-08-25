@@ -166,8 +166,8 @@
         <field name="amount">0</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta118"/>
-        <field name="refund_account_id" ref="cuenta118"/>
+        <field name="account_id" ref="cuenta118_01"/>
+        <field name="refund_account_id" ref="cuenta118_01"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_10')])]"/>
     </record>
 
@@ -178,8 +178,8 @@
         <field name="amount">11</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta118"/>
-        <field name="refund_account_id" ref="cuenta118"/>
+        <field name="account_id" ref="cuenta118_01"/>
+        <field name="refund_account_id" ref="cuenta118_01"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_11')])]"/>
     </record>
 
@@ -190,8 +190,8 @@
         <field name="amount">16</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta118"/>
-        <field name="refund_account_id" ref="cuenta118"/>
+        <field name="account_id" ref="cuenta118_01"/>
+        <field name="refund_account_id" ref="cuenta118_01"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_12')])]"/>
     </record>
   </data>

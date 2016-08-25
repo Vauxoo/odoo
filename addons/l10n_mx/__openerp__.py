@@ -33,6 +33,7 @@ With this module you will have:
     "depends": ["account", "base_vat"],
     "demo_xml": [],
     "data": [
+        "data/account_tag.xml",
         "data/account_chart.xml",
         "data/account_tax.xml",
         "data/account_chart_template.yml",

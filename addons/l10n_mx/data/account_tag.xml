@@ -1,0 +1,762 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data noupdate="1">
+
+        <record id='account_tag_0' model='account.account.tag'>
+            <field name='name'>Catálogo de cuentas electrónicas MX</field>
+            <field name='color'>1</field>
+            <field name='applicability'>accounts</field>
+        </record>
+        <record id='account_tag_100' model='account.account.tag'>
+            <field name='name'>100 Activo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_100_01' model='account.account.tag'>
+            <field name='name'>100.1 Activo a corto plazo</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_101' model='account.account.tag'>
+            <field name='name'>101 Caja</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_102' model='account.account.tag'>
+            <field name='name'>102 Bancos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_103' model='account.account.tag'>
+            <field name='name'>103 Inversiones</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_104' model='account.account.tag'>
+            <field name='name'>104 Otros instrumentos financieros</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_105' model='account.account.tag'>
+            <field name='name'>105 Clientes</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_106' model='account.account.tag'>
+            <field name='name'>106 Cuentas y documentos por cobrar a corto plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_107' model='account.account.tag'>
+            <field name='name'>107 Deudores diversos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_108' model='account.account.tag'>
+            <field name='name'>108 Estimación de cuentas incobrables</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_109' model='account.account.tag'>
+            <field name='name'>109 Pagos anticipados</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_110' model='account.account.tag'>
+            <field name='name'>110 Subsidio al empleo por aplicar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_111' model='account.account.tag'>
+            <field name='name'>111 Crédito al diesel por acreditar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_112' model='account.account.tag'>
+            <field name='name'>112 Otros estímulos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_113' model='account.account.tag'>
+            <field name='name'>113 Impuestos a favor</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_114' model='account.account.tag'>
+            <field name='name'>114 Pagos provisionales</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_115' model='account.account.tag'>
+            <field name='name'>115 Inventario</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_116' model='account.account.tag'>
+            <field name='name'>116 Estimación de inventarios obsoletos y de lento movimiento</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_117' model='account.account.tag'>
+            <field name='name'>117 Obras en proceso de inmuebles</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_118' model='account.account.tag'>
+            <field name='name'>118 Impuestos acreditables pagados</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_119' model='account.account.tag'>
+            <field name='name'>119 Impuestos acreditables por pagar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_120' model='account.account.tag'>
+            <field name='name'>120 Anticipo a proveedores</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_121' model='account.account.tag'>
+            <field name='name'>121 Otros activos a corto plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_100_02' model='account.account.tag'>
+            <field name='name'>100.02 Activo a largo plazo</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_151' model='account.account.tag'>
+            <field name='name'>151 Terrenos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_152' model='account.account.tag'>
+            <field name='name'>152 Edificios</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_153' model='account.account.tag'>
+            <field name='name'>153 Maquinaria y equipo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_154' model='account.account.tag'>
+            <field name='name'>154 Automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_155' model='account.account.tag'>
+            <field name='name'>155 Mobiliario y equipo de oficina</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_156' model='account.account.tag'>
+            <field name='name'>156 Equipo de cómputo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_157' model='account.account.tag'>
+            <field name='name'>157 Equipo de comunicación</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_158' model='account.account.tag'>
+            <field name='name'>158 Activos biológicos, vegetales y semovientes</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_159' model='account.account.tag'>
+            <field name='name'>159 Obras en proceso de activos fijos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_160' model='account.account.tag'>
+            <field name='name'>160 Otros activos fijos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_161' model='account.account.tag'>
+            <field name='name'>161 Ferrocarriles</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_162' model='account.account.tag'>
+            <field name='name'>162 Embarcaciones</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_163' model='account.account.tag'>
+            <field name='name'>163 Aviones</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_164' model='account.account.tag'>
+            <field name='name'>164 Troqueles, moldes, matrices y herramental</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_165' model='account.account.tag'>
+            <field name='name'>165 Equipo de comunicaciones telefónicas</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_166' model='account.account.tag'>
+            <field name='name'>166 Equipo de comunicación satelital</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_167' model='account.account.tag'>
+            <field name='name'>167 Equipo de adaptaciones para personas con capacidades diferentes</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_168' model='account.account.tag'>
+            <field name='name'>168 Maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_169' model='account.account.tag'>
+            <field name='name'>169 Otra maquinaria y equipo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_170' model='account.account.tag'>
+            <field name='name'>170 Adaptaciones y mejoras</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_171' model='account.account.tag'>
+            <field name='name'>171 Depreciación acumulada de activos fijos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_172' model='account.account.tag'>
+            <field name='name'>172 Pérdida por deterioro acumulado de activos fijos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_173' model='account.account.tag'>
+            <field name='name'>173 Gastos diferidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_174' model='account.account.tag'>
+            <field name='name'>174 Gastos pre operativos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_175' model='account.account.tag'>
+            <field name='name'>175 Regalías, asistencia técnica y otros gastos diferidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_176' model='account.account.tag'>
+            <field name='name'>176 Activos intangibles</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_177' model='account.account.tag'>
+            <field name='name'>177 Gastos de organización</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_178' model='account.account.tag'>
+            <field name='name'>178 Investigación y desarrollo de mercado</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_179' model='account.account.tag'>
+            <field name='name'>179 Marcas y patentes</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_180' model='account.account.tag'>
+            <field name='name'>180 Crédito mercantil</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_181' model='account.account.tag'>
+            <field name='name'>181 Gastos de instalación</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_182' model='account.account.tag'>
+            <field name='name'>182 Otros activos diferidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_183' model='account.account.tag'>
+            <field name='name'>183 Amortización acumulada de activos diferidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_184' model='account.account.tag'>
+            <field name='name'>184 Depósitos en garantía</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_185' model='account.account.tag'>
+            <field name='name'>185 Impuestos diferidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_186' model='account.account.tag'>
+            <field name='name'>186 Cuentas y documentos por cobrar a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_187' model='account.account.tag'>
+            <field name='name'>187 Participación de los trabajadores en las utilidades diferidas</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_188' model='account.account.tag'>
+            <field name='name'>188 Inversiones permanentes en acciones</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_189' model='account.account.tag'>
+            <field name='name'>189 Estimación por deterioro de inversiones permanentes en acciones</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_190' model='account.account.tag'>
+            <field name='name'>190 Otros instrumentos financieros</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_191' model='account.account.tag'>
+            <field name='name'>191 Otros activos a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_200' model='account.account.tag'>
+            <field name='name'>200 Pasivo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_200_01' model='account.account.tag'>
+            <field name='name'>200.01 Pasivo a corto plazo</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_201' model='account.account.tag'>
+            <field name='name'>201 Proveedores</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_202' model='account.account.tag'>
+            <field name='name'>202 Cuentas por pagar a corto plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_203' model='account.account.tag'>
+            <field name='name'>203 Cobros anticipados a corto plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_204' model='account.account.tag'>
+            <field name='name'>204 Instrumentos financieros a corto plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_205' model='account.account.tag'>
+            <field name='name'>205 Acreedores diversos a corto plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_206' model='account.account.tag'>
+            <field name='name'>206 Anticipo de cliente</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_207' model='account.account.tag'>
+            <field name='name'>207 Impuestos trasladados</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_208' model='account.account.tag'>
+            <field name='name'>208 Impuestos trasladados cobrados</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_209' model='account.account.tag'>
+            <field name='name'>209 Impuestos trasladados no cobrados</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_210' model='account.account.tag'>
+            <field name='name'>210 Provisión de sueldos y salarios por pagar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_211' model='account.account.tag'>
+            <field name='name'>211 Provisión de contribuciones de seguridad social por pagar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_212' model='account.account.tag'>
+            <field name='name'>212 Provisión de impuesto estatal sobre nómina por pagar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_213' model='account.account.tag'>
+            <field name='name'>213 Impuestos y derechos por pagar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_214' model='account.account.tag'>
+            <field name='name'>214 Dividendos por pagar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_215' model='account.account.tag'>
+            <field name='name'>215 PTU por pagar</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_216' model='account.account.tag'>
+            <field name='name'>216 Impuestos retenidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_217' model='account.account.tag'>
+            <field name='name'>217 Pagos realizados por cuenta de terceros</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_218' model='account.account.tag'>
+            <field name='name'>218 Otros pasivos a corto plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_200_02' model='account.account.tag'>
+            <field name='name'>200.02 Pasivo a largo plazo</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_251' model='account.account.tag'>
+            <field name='name'>251 Acreedores diversos a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_252' model='account.account.tag'>
+            <field name='name'>252 Cuentas por pagar a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_253' model='account.account.tag'>
+            <field name='name'>253 Cobros anticipados a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_254' model='account.account.tag'>
+            <field name='name'>254 Instrumentos financieros a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_255' model='account.account.tag'>
+            <field name='name'>255 Pasivos por beneficios a los empleados a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_256' model='account.account.tag'>
+            <field name='name'>256 Otros pasivos a largo plazo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_257' model='account.account.tag'>
+            <field name='name'>257 Participación de los trabajadores en las utilidades diferida</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_258' model='account.account.tag'>
+            <field name='name'>258 Obligaciones contraídas de fideicomisos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_259' model='account.account.tag'>
+            <field name='name'>259 Impuestos diferidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_260' model='account.account.tag'>
+            <field name='name'>260 Pasivos diferidos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_300' model='account.account.tag'>
+            <field name='name'>300 Capital contable</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_301' model='account.account.tag'>
+            <field name='name'>301 Capital social</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_302' model='account.account.tag'>
+            <field name='name'>302 Patrimonio</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_303' model='account.account.tag'>
+            <field name='name'>303 Reserva legal</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_304' model='account.account.tag'>
+            <field name='name'>304 Resultado de ejercicios anteriores</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_305' model='account.account.tag'>
+            <field name='name'>305 Resultado del ejercicio</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_306' model='account.account.tag'>
+            <field name='name'>306 Otras cuentas de capital</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_400' model='account.account.tag'>
+            <field name='name'>400 Ingresos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_401' model='account.account.tag'>
+            <field name='name'>401 Ingresos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_402' model='account.account.tag'>
+            <field name='name'>402 Devoluciones, descuentos o bonificaciones sobre ingresos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_403' model='account.account.tag'>
+            <field name='name'>403 Otros ingresos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_500' model='account.account.tag'>
+            <field name='name'>500 Costos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_501' model='account.account.tag'>
+            <field name='name'>501 Costo de venta y/o servicio</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_502' model='account.account.tag'>
+            <field name='name'>502 Compras</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_503' model='account.account.tag'>
+            <field name='name'>503 Devoluciones, descuentos o bonificaciones sobre compras</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_504' model='account.account.tag'>
+            <field name='name'>504 Otras cuentas de costos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_505' model='account.account.tag'>
+            <field name='name'>505 Costo de activo fijo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_600' model='account.account.tag'>
+            <field name='name'>600 Gastos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_601' model='account.account.tag'>
+            <field name='name'>601 Gastos generales</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_602' model='account.account.tag'>
+            <field name='name'>602 Gastos de venta</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_603' model='account.account.tag'>
+            <field name='name'>603 Gastos de administración</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_604' model='account.account.tag'>
+            <field name='name'>604 Gastos de fabricación</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_605' model='account.account.tag'>
+            <field name='name'>605 Mano de obra directa</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_606' model='account.account.tag'>
+            <field name='name'>606 Facilidades administrativas fiscales</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_607' model='account.account.tag'>
+            <field name='name'>607 Participación de los trabajadores en las utilidades</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_608' model='account.account.tag'>
+            <field name='name'>608 Participación en resultados de subsidiarias</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_609' model='account.account.tag'>
+            <field name='name'>609 Participación en resultados de asociadas</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_610' model='account.account.tag'>
+            <field name='name'>610 Participación de los trabajadores en las utilidades diferida</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_611' model='account.account.tag'>
+            <field name='name'>611 Impuesto Sobre la renta</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_612' model='account.account.tag'>
+            <field name='name'>612 Gastos no deducibles para CUFIN</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_613' model='account.account.tag'>
+            <field name='name'>613 Depreciación contable</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_614' model='account.account.tag'>
+            <field name='name'>614 Amortización contable</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_700' model='account.account.tag'>
+            <field name='name'>700 Resultado integral de financiamiento</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_701' model='account.account.tag'>
+            <field name='name'>701 Gastos financieros</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_702' model='account.account.tag'>
+            <field name='name'>702 Productos financieros</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_703' model='account.account.tag'>
+            <field name='name'>703 Otros gastos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_704' model='account.account.tag'>
+            <field name='name'>704 Otros productos</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_800' model='account.account.tag'>
+            <field name='name'>800 Cuentas de orden</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_801' model='account.account.tag'>
+            <field name='name'>801 UFIN del ejercicio</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_802' model='account.account.tag'>
+            <field name='name'>802 CUFIN del ejercicio</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_803' model='account.account.tag'>
+            <field name='name'>803 CUFIN de ejercicios anteriores</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_804' model='account.account.tag'>
+            <field name='name'>804 CUFINRE del ejercicio</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_805' model='account.account.tag'>
+            <field name='name'>805 CUFINRE de ejercicios anteriores</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_806' model='account.account.tag'>
+            <field name='name'>806 CUCA del ejercicio</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_807' model='account.account.tag'>
+            <field name='name'>807 CUCA de ejercicios anteriores</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_808' model='account.account.tag'>
+            <field name='name'>808 Ajuste anual por inflación acumulable</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_809' model='account.account.tag'>
+            <field name='name'>809 Ajuste anual por inflación deducible</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_810' model='account.account.tag'>
+            <field name='name'>810 Deducción de inversión</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_811' model='account.account.tag'>
+            <field name='name'>811 Utilidad o pérdida fiscal en venta y/o baja de activo fijo</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_812' model='account.account.tag'>
+            <field name='name'>812 Utilidad o pérdida fiscal en venta acciones o partes sociales</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_813' model='account.account.tag'>
+            <field name='name'>813 Pérdidas fiscales pendientes de amortizar actualizadas de ejercicios anteriores</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_814' model='account.account.tag'>
+            <field name='name'>814 Mercancías recibidas en consignación</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_815' model='account.account.tag'>
+            <field name='name'>815 Crédito fiscal de IVA e IEPS por la importación de mercancías para empresas certificadas</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_816' model='account.account.tag'>
+            <field name='name'>816 Crédito fiscal de IVA e IEPS por la importación de activos fijos para empresas certificadas</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+        <record id='account_tag_899' model='account.account.tag'>
+            <field name='name'>899 Otras cuentas de orden</field>
+            <field name='applicability'>accounts</field>
+            <field name='color'>1</field>
+        </record>
+
+    </data>
+</openerp>
