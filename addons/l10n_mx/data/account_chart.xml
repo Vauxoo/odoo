@@ -42,12 +42,6 @@ Cuentas del plan
 <!--
     Cuenta Template
 -->
-        <record id='cuenta100_01' model='account.account.template'>
-            <field name='name'>Activo a corto plazo</field>
-            <field name='code'>100.01</field>
-            <field name="user_type_id" ref="account_type_other"/>
-            <field name="tag_ids" eval="[(6,0,[ref('account_tag_100')])]"/>
-        </record>
         <record id='cuenta101_01' model='account.account.template'>
             <field name='name'>Caja y efectivo</field>
             <field name='code'>101.01</field>
@@ -1384,13 +1378,6 @@ Cuentas del plan
             <field name="chart_template_id" ref="vauxoo_mx_chart_template"/>
             <field name="user_type_id" ref="account_type_other"/>
             <field name="tag_ids" eval="[(6,0,[ref('account_tag_190')])]"/>
-        </record>
-        <record id='cuenta200_01' model='account.account.template'>
-            <field name='name'>Pasivo a corto plazo</field>
-            <field name='code'>200.01</field>
-            <field name="chart_template_id" ref="vauxoo_mx_chart_template"/>
-            <field name="user_type_id" ref="account_type_other"/>
-            <field name="tag_ids" eval="[(6,0,[ref('account_tag_200')])]"/>
         </record>
         <record id='cuenta201_01' model='account.account.template'>
             <field name='name'>Proveedores nacionales</field>

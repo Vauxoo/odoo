@@ -13,7 +13,7 @@
             <field name='color'>1</field>
         </record>
         <record id='account_tag_100_01' model='account.account.tag'>
-            <field name='name'>100.1 Activo a corto plazo</field>
+            <field name='name'>100.01 Activo a corto plazo</field>
             <field name='color'>1</field>
         </record>
         <record id='account_tag_101' model='account.account.tag'>

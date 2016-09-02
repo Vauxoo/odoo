@@ -6,10 +6,6 @@
         <field name="name">IVA(0%) VENTAS</field>
         <field name="applicability">taxes</field>
     </record>
-    <record id="tax_tag_02" model="account.account.tag">
-        <field name="name">IVA(11%) VENTAS</field>
-        <field name="applicability">taxes</field>
-    </record>
     <record id="tax_tag_03" model="account.account.tag">
         <field name="name">IVA(16%) VENTAS</field>
         <field name="applicability">taxes</field>
@@ -42,10 +38,6 @@
         <field name="name">IVA(0%) COMPRAS</field>
         <field name="applicability">taxes</field>
     </record>
-    <record id="tax_tag_11" model="account.account.tag">
-        <field name="name">IVA(11%) COMPRAS</field>
-        <field name="applicability">taxes</field>
-    </record>
     <record id="tax_tag_12" model="account.account.tag">
         <field name="name">IVA(16%) COMPRAS</field>
         <field name="applicability">taxes</field>
@@ -58,21 +50,11 @@
         <field name="amount">0</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">sale</field>
-        <field name="account_id" ref="cuenta208_01"/>
-        <field name="refund_account_id" ref="cuenta208_01"/>
+        <field name="account_id" ref="cuenta209_01"/>
+        <field name="refund_account_id" ref="cuenta209_01"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_01')])]"/>
-    </record>
-
-    <record id="tax11" model="account.tax.template">
-        <field name="chart_template_id" ref="vauxoo_mx_chart_template"/>
-        <field name="name">IVA(11%) VENTAS</field>
-        <field name="description">ITAX_110-IN</field>
-        <field name="amount">11</field>
-        <field name="amount_type">percent</field>
-        <field name="type_tax_use">sale</field>
-        <field name="account_id" ref="cuenta208_01"/>
-        <field name="refund_account_id" ref="cuenta208_01"/>
-        <field name="tag_ids" eval="[(6,0,[ref('tax_tag_02')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta208_01"/>
     </record>
 
     <record id="tax12" model="account.tax.template">
@@ -82,9 +64,11 @@
         <field name="amount">16</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">sale</field>
-        <field name="account_id" ref="cuenta208_01"/>
-        <field name="refund_account_id" ref="cuenta208_01"/>
+        <field name="account_id" ref="cuenta209_01"/>
+        <field name="refund_account_id" ref="cuenta209_01"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_03')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta208_01"/>
     </record>
 
     <record id="tax1" model="account.tax.template">
@@ -94,9 +78,11 @@
         <field name="amount">-4</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta216_12"/>
-        <field name="refund_account_id" ref="cuenta216_12"/>
+        <field name="account_id" ref="cuenta216_10"/>
+        <field name="refund_account_id" ref="cuenta216_10"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_04')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta216_10"/>
     </record>
 
     <record id="tax2" model="account.tax.template">
@@ -109,6 +95,8 @@
         <field name="account_id" ref="cuenta216_10"/>
         <field name="refund_account_id" ref="cuenta216_10"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_05')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta216_10"/>
     </record>
 
     <record id="tax3" model="account.tax.template">
@@ -121,6 +109,8 @@
         <field name="account_id" ref="cuenta216_03"/>
         <field name="refund_account_id" ref="cuenta216_03"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_06')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta216_03"/>
     </record>
 
     <record id="tax5" model="account.tax.template">
@@ -133,6 +123,8 @@
         <field name="account_id" ref="cuenta216_04"/>
         <field name="refund_account_id" ref="cuenta216_04"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_07')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta216_04"/>
     </record>
 
     <record id="tax7" model="account.tax.template">
@@ -142,9 +134,11 @@
         <field name="amount">-10.67</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta216_03"/>
-        <field name="refund_account_id" ref="cuenta216_03"/>
+        <field name="account_id" ref="cuenta216_10"/>
+        <field name="refund_account_id" ref="cuenta216_10"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_08')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta216_10"/>
     </record>
 
     <record id="tax8" model="account.tax.template">
@@ -157,6 +151,8 @@
         <field name="account_id" ref="cuenta216_10"/>
         <field name="refund_account_id" ref="cuenta216_10"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_09')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta216_10"/>
     </record>
 
     <record id="tax13" model="account.tax.template">
@@ -166,21 +162,11 @@
         <field name="amount">0</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta118_01"/>
-        <field name="refund_account_id" ref="cuenta118_01"/>
+        <field name="account_id" ref="cuenta119_01"/>
+        <field name="refund_account_id" ref="cuenta119_01"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_10')])]"/>
-    </record>
-
-    <record id="tax10" model="account.tax.template">
-        <field name="chart_template_id" ref="vauxoo_mx_chart_template"/>
-        <field name="name">IVA(11%) COMPRAS</field>
-        <field name="description">ITAX_110-OUT</field>
-        <field name="amount">11</field>
-        <field name="amount_type">percent</field>
-        <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta118_01"/>
-        <field name="refund_account_id" ref="cuenta118_01"/>
-        <field name="tag_ids" eval="[(6,0,[ref('tax_tag_11')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta118_01"/>
     </record>
 
     <record id="tax14" model="account.tax.template">
@@ -190,9 +176,11 @@
         <field name="amount">16</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">purchase</field>
-        <field name="account_id" ref="cuenta118_01"/>
-        <field name="refund_account_id" ref="cuenta118_01"/>
+        <field name="account_id" ref="cuenta119_01"/>
+        <field name="refund_account_id" ref="cuenta119_01"/>
         <field name="tag_ids" eval="[(6,0,[ref('tax_tag_12')])]"/>
+        <field name="use_cash_basis" eval="True"/>
+        <field name="cash_basis_account" ref="cuenta118_01"/>
     </record>
   </data>
 </openerp>
