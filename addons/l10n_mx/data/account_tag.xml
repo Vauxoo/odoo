@@ -4,12 +4,12 @@
 
             <record id='account_tag_100' model='account.account.tag'>
                 <field name='name'>100 Activo</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_100_01' model='account.account.tag'>
                 <field name='name'>100.01 Activo a corto plazo</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_101' model='account.account.tag'>
@@ -554,7 +554,7 @@
             </record>
             <record id='account_tag_100_02' model='account.account.tag'>
                 <field name='name'>100.02 Activo a largo plazo</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_151' model='account.account.tag'>
@@ -1249,12 +1249,12 @@
             </record>
             <record id='account_tag_200' model='account.account.tag'>
                 <field name='name'>200 Pasivo</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_200_01' model='account.account.tag'>
                 <field name='name'>200.01 Pasivo a corto plazo</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_201' model='account.account.tag'>
@@ -1789,7 +1789,7 @@
             </record>
             <record id='account_tag_200_02' model='account.account.tag'>
                 <field name='name'>200.02 Pasivo a largo plazo</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_251' model='account.account.tag'>
@@ -2094,7 +2094,7 @@
             </record>
             <record id='account_tag_300' model='account.account.tag'>
                 <field name='name'>300 Capital contable</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_301' model='account.account.tag'>
@@ -2214,7 +2214,7 @@
             </record>
             <record id='account_tag_400' model='account.account.tag'>
                 <field name='name'>400 Ingresos</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_401' model='account.account.tag'>
@@ -2469,7 +2469,7 @@
             </record>
             <record id='account_tag_500' model='account.account.tag'>
                 <field name='name'>500 Costos</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_501' model='account.account.tag'>
@@ -2699,7 +2699,7 @@
             </record>
             <record id='account_tag_600' model='account.account.tag'>
                 <field name='name'>600 Gastos</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_601' model='account.account.tag'>
@@ -4769,7 +4769,7 @@
             </record>
             <record id='account_tag_700' model='account.account.tag'>
                 <field name='name'>700 Resultado integral de financiamiento</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_701' model='account.account.tag'>
@@ -5119,7 +5119,7 @@
             </record>
             <record id='account_tag_800' model='account.account.tag'>
                 <field name='name'>800 Cuentas de orden</field>
-                <!-- <field name='color'></field> -->
+                <field name='color'>1</field>
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_801' model='account.account.tag'>
