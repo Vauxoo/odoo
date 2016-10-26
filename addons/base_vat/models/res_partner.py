@@ -48,7 +48,7 @@ _ref_vat = {
     'lu': 'LU12345613',
     'lv': 'LV41234567891',
     'mt': 'MT12345634',
-    'mx': 'MXABC123456T1B',
+    'mx': 'ABC123456T1B',
     'nl': 'NL123456782B90',
     'no': 'NO123456785',
     'pe': 'PER10254824220 or PED10254824220',
@@ -116,7 +116,7 @@ class ResPartner(models.Model):
                 vat = country_code + vat
         return vat
 
-    @api.constrains("vat")
+    @api.constrains("vat", "commercial_partner_country_id")
     def check_vat(self):
         if self.env.context.get('company_id'):
             company = self.env['res.company'].browse(self.env.context['company_id'])
@@ -133,9 +133,13 @@ class ResPartner(models.Model):
                 continue
             vat_country, vat_number = self._split_vat(partner.vat)
             if not check_func(vat_country, vat_number):
-                _logger.info("Importing VAT Number [%s] is not valid !" % vat_number)
-                msg = partner._construct_constraint_msg()
-                raise ValidationError(msg)
+                #if fails, check with country code from country
+                country_code = partner.commercial_partner_id.country_id.code
+                if country_code:
+                    if not check_func(country_code.lower(), partner.vat):
+                        _logger.info("Importing VAT Number [%s] is not valid !" % vat_number)
+                        msg = partner._construct_constraint_msg()
+                        raise ValidationError(msg)
 
     def _construct_constraint_msg(self):
         self.ensure_one()
