@@ -131,6 +131,7 @@ class ResPartner(models.Model):
         for partner in self:
             if not partner.vat:
                 continue
+            #check with country code as prefix of the TIN
             vat_country, vat_number = self._split_vat(partner.vat)
             if not check_func(vat_country, vat_number):
                 #if fails, check with country code from country
@@ -141,25 +142,12 @@ class ResPartner(models.Model):
                         msg = partner._construct_constraint_msg()
                         raise ValidationError(msg)
 
-    def _construct_constraint_msg(self):
+    def _construct_constraint_msg(self, country_code):
         self.ensure_one()
-
-        def default_vat_check(cn, vn):
-            # by default, a VAT number is valid if:
-            #  it starts with 2 letters
-            #  has more than 3 characters
-            return len(cn) == 2 and cn[0] in string.ascii_lowercase and cn[1] in string.ascii_lowercase
-
-        vat_country, vat_number = self._split_vat(self.vat)
         vat_no = "'CC##' (CC=Country Code, ##=VAT Number)"
-        if default_vat_check(vat_country, vat_number):
-            vat_no = _ref_vat[vat_country] if vat_country in _ref_vat else vat_no
-            if self.env.context.get('company_id'):
-                company = self.env['res.company'].browse(self.env.context['company_id'])
-            else:
-                company = self.env.user.company_id
-            if company.vat_check_vies:
-                return '\n' + _('The VAT number [%s] for partner [%s] either failed the VIES VAT validation check or did not respect the expected format %s.') % (self.vat, self.name, vat_no)
+        vat_no = _ref_vat.get(country_code) or vat_no
+        if self.env.user.company_id.vat_check_vies:
+            return '\n' + _('The VAT number [%s] for partner [%s] either failed the VIES VAT validation check or did not respect the expected format %s.') % (self.vat, self.name, vat_no)
         return '\n' + _('The VAT number [%s] for partner [%s] does not seem to be valid. \nNote: the expected format is %s') % (self.vat, self.name, vat_no)
 
     __check_vat_ch_re1 = re.compile(r'(MWST|TVA|IVA)[0-9]{6}$')
