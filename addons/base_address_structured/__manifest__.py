@@ -15,7 +15,8 @@ with the street name, the house number, and room number. This module also
 replace the city by a relation field.
         """,
     'data': [
-        'views/base_address_structured.xml'
+        'views/base_address_structured.xml',
+        'security/ir.model.access.csv',
     ],
     'depends': ['base'],
 }
