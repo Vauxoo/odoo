@@ -103,20 +103,7 @@ class ResPartner(models.Model):
             # country code or empty VAT number), so we fall back to the simple check.
             return self.simple_vat_check(country_code, vat_number)
 
-    @api.model
-    def fix_eu_vat_number(self, country_id, vat):
-        europe = self.env.ref('base.europe')
-        country = self.env["res.country"].browse(country_id)
-        if not europe:
-            europe = self.env["res.country.group"].search([('name', '=', 'Europe')], limit=1)
-        if europe and country and country.id in europe.country_ids.ids:
-            vat = re.sub('[^A-Za-z0-9]', '', vat).upper()
-            country_code = _eu_country_vat.get(country.code, country.code).upper()
-            if vat[:2] != country_code:
-                vat = country_code + vat
-        return vat
-
-    @api.constrains("vat", "commercial_partner_country_id")
+    @api.constrains('vat', 'commercial_partner_country_id')
     def check_vat(self):
         if self.env.context.get('company_id'):
             company = self.env['res.company'].browse(self.env.context['company_id'])
