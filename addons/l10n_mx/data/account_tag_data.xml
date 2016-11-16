@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
 
             <record id='account_tag_100' model='account.account.tag'>
                 <field name='name'>100 Activo</field>
@@ -3878,7 +3878,7 @@
                 <field name='applicability'>accounts</field>
             </record>
             <record id='account_tag_603_65' model='account.account.tag'>
-                <field name='name'>Regalías sujetas a otros porcentajes</field>
+                <field name='name'>603.65 Regalías sujetas a otros porcentajes</field>
                 <field name='color'>4</field>
                 <field name='applicability'>accounts</field>
             </record>
