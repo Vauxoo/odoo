@@ -89,3 +89,35 @@ class AccountChartTemplate(models.Model):
                     tax.cash_basis_account.id, False),
             })
         return accounts, taxes
+
+    @api.multi
+    def generate_account(
+            self, tax_template_ref, acc_template_ref, code_digits, company):
+        res = super(AccountChartTemplate, self).generate_account(
+            tax_template_ref, acc_template_ref, code_digits, company)
+        self.env['account.account'].browse(res.values()).assign_account_tag()
+        return res
+
+
+class WizardMultiChartsAccounts(models.TransientModel):
+    _inherit = 'wizard.multi.charts.accounts'
+
+    @api.multi
+    def execute(self):
+        """Overwrite the account code to Undistributed Profits/Losses and
+        write the tags in this account & in cash and bank"""
+        res = super(WizardMultiChartsAccounts, self).execute()
+        account_obj = self.env['account.account']
+        # Overwrite this account code because this is created by python code
+        # https://goo.gl/tiqfVm, and to get the chart template like the
+        # Mexican charts needs.
+        account = account_obj.search([
+            ('code', '=', '999999'), ('user_type_id', '=', self.env.ref(
+                "account.data_unaffected_earnings").id)])
+        account.write({'code': '811.01.01'})
+        account.assign_account_tag()
+        type_liquidity = self.env.ref("account.data_account_type_liquidity").id
+        account_obj.search([
+            ('code', 'in', ('102.01.02', '101.01.01')),
+            ('user_type_id', '=', type_liquidity)]).assign_account_tag()
+        return res

@@ -30,8 +30,14 @@ With this module you will have:
 
 .. SAT: http://www.sat.gob.mx/
     """,
-    "depends": ["account", "base_vat", "account_tax_cash_basis"],
+    "depends": [
+        "account",
+        "base_vat",
+        "account_tax_cash_basis",
+        "base_action_rule",
+    ],
     "data": [
+        "data/action_server_data.xml",
         "data/account_tag_data.xml",
         "data/l10n_mx_chart_data.xml",
         "data/account_tax_data.xml",
