@@ -2,7 +2,7 @@
 # Copyright 2016 Vauxoo (https://www.vauxoo.com) <info@vauxoo.com>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 
 class AccountTaxTemplate(models.Model):
@@ -96,6 +96,34 @@ class AccountChartTemplate(models.Model):
         res = super(AccountChartTemplate, self).generate_account(
             tax_template_ref, acc_template_ref, code_digits, company)
         self.env['account.account'].browse(res.values()).assign_account_tag()
+        return res
+
+    @api.model
+    def generate_journals(self, acc_template_ref, company, journals_dict=None):
+        res = super(AccountChartTemplate, self).generate_journals(
+            acc_template_ref, company, journals_dict=journals_dict)
+        journal_basis = self.env['account.journal'].search([
+            ('type', '=', 'general'),
+            ('code', '=', 'CBMX')], limit=1)
+        company.write({'tax_cash_basis_journal_id': journal_basis.id})
+        return res
+
+    @api.multi
+    def _prepare_all_journals(
+            self, acc_template_ref, company, journals_dict=None):
+        res = super(AccountChartTemplate, self)._prepare_all_journals(
+            acc_template_ref, company, journals_dict=journals_dict)
+        res.append({
+            'type': 'general',
+            'name': _('Effectively Paid'),
+            'code': 'CBMX',
+            'company_id': company.id,
+            'default_credit_account_id': acc_template_ref.get(
+                self.income_currency_exchange_account_id.id),
+            'default_debit_account_id': acc_template_ref.get(
+                self.expense_currency_exchange_account_id.id),
+            'show_on_dashboard': True,
+        })
         return res
 
 

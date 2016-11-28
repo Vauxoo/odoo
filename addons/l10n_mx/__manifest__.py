@@ -41,8 +41,6 @@ With this module you will have:
         "data/account_tag_data.xml",
         "data/l10n_mx_chart_data.xml",
         "data/account_tax_data.xml",
-        "data/l10n_mx_account_journa_data.xml",
-        "data/res_company_data.xml",
         "data/account_chart_template_data.yml",
     ],
 }
