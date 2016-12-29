@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 #    Coded by: Alejandro Negrin anegrin@vauxoo.com,
 #    Planified by: Alejandro Negrin, Humberto Arocha, Moises Lopez
@@ -8,7 +8,7 @@
 
 {
     "name": "Mexico - Accounting",
-    "version": "2.0",
+    "version": "9.0.1.0.0",
     "author": "Vauxoo",
     'category': 'Localization',
     "description": """
@@ -33,8 +33,7 @@ With this module you will have:
     "depends": ["account", "base_vat", "account_tax_cash_basis"],
     "demo_xml": [],
     "data": [
-        "data/account_journal.xml",
-        "data/res_company.xml",
+        "data/account_data.xml",
         "data/account_tag.xml",
         "data/account_chart.xml",
         "data/account_tax.xml",

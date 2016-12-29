@@ -1,50 +1,23 @@
+
 # coding: utf-8
 # Copyright 2016 Vauxoo (https://www.vauxoo.com) <info@vauxoo.com>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-from openerp import models, fields, api
+from openerp import models, fields, api, _
 
 
 class AccountTaxTemplate(models.Model):
-    _inherit = 'account.tax.template'
+    _inherit = "account.tax.template"
 
-    use_cash_basis = fields.Boolean(
-        help='Select this if the tax should use cash basis, which will '
-        'create an entry for this tax on a given account during '
-        'reconciliation')
-    cash_basis_account = fields.Many2one(
-        'account.account.template', string='Tax Received Account',
-        ondelete='restrict',
-        help='Account use when creating entry for tax cash basis')
+    tax_group_id = fields.Many2one('account.tax.group', string="Tax Group")
 
     def _get_tax_vals(self, company):
-        """ This method add in dictionnary of all the values for the tax that
-        will be created if will be assigned the cash basis account.
-        """
+        """Inherit to add the tax group in tax if is assigned"""
         self.ensure_one()
-        res = super(AccountTaxTemplate, self)._get_tax_vals(company)
-        res.update({
-            'use_cash_basis': self.use_cash_basis,
-        })
-        return res
-
-    @api.multi
-    def _generate_tax(self, company):
-        """ This method update the return that generate taxes from templates.
-            :param company: the company for which the taxes should be created
-                from templates in self
-            :returns: {
-                'tax_template_to_tax': mapping between tax template and the
-                    newly generated taxes corresponding,
-                'account_dict': dictionary containing a to-do list with all
-                    the accounts to assign on new taxes
-            }
-        """
-        res = super(AccountTaxTemplate, self)._generate_tax(company)
-        for tax in self:
-            res.get('account_dict', {}).get(tax.id, {}).update({
-                'cash_basis_account': tax.cash_basis_account.id})
-        return res
+        val = super(AccountTaxTemplate, self)._get_tax_vals(company)
+        if self.tax_group_id:
+            val['tax_group_id'] = self.tax_group_id.id
+        return val
 
 
 class AccountChartTemplate(models.Model):
@@ -54,38 +27,67 @@ class AccountChartTemplate(models.Model):
     def _load_template(
             self, company, code_digits=None, transfer_account_id=None,
             account_ref=None, taxes_ref=None):
-        """ Generate all the objects from the templates
-            :param company: company the wizard is running for
-            :param code_digits: number of digits the accounts code should have
-                in the COA
-            :param transfer_account_id: reference to the account template
-                that will be used as intermediary account for transfers between
-                2 liquidity accounts
-            :param acc_ref: Mapping between ids of account templates and real
-                accounts created from them
-            :param taxes_ref: Mapping between ids of tax templates and real
-                taxes created from them
-            :returns: tuple with a dictionary containing
-                * the mapping between the account template ids and the ids of
-                    the real accounts that have been generated
-                    from them, as first item,
-                * a similar dictionary for mapping the tax templates and taxes,
-                    as second item,
-            :rtype: tuple(dict, dict, dict)
-            inherited to write the cash_basis_account in the created taxes
+        """
+        Set the 'use_cash_basis' and 'cash_basis_account' fields on account.account. This hack is needed due to the fact
+        that the tax template does not have the fields 'use_cash_basis' and 'cash_basis_account'.
+        This hunk should be removed in master, as the account_tax_cash_basis module has been merged already in account
+        module
         """
         self.ensure_one()
         accounts, taxes = super(AccountChartTemplate, self)._load_template(
             company, code_digits=code_digits,
             transfer_account_id=transfer_account_id, account_ref=account_ref,
             taxes_ref=taxes_ref)
-        if account_ref is None:
-            account_ref = {}
+        if not self == self.env.ref('l10n_mx.mx_coa'):
+            return accounts, taxes
         account_tax_obj = self.env['account.tax']
+        account_obj = self.env['account.account']
+        taxes_acc = {
+            'IVA': account_obj.search([('code', '=', '208.01.01')]),
+            'ITAXR_04-OUT': account_obj.search([('code', '=', '216.10.20')]),
+            'ITAXR_10-OUT': account_obj.search([('code', '=', '216.10.20')]),
+            'ITAX_1067-OUT': account_obj.search([('code', '=', '216.10.20')]),
+            'ITAX_167-OUT': account_obj.search([('code', '=', '216.10.20')]),
+            'ITAX_010-OUT': account_obj.search([('code', '=', '208.01.01')]),
+            'ITAX_160-OUT': account_obj.search([('code', '=', '208.01.01')])}
 
         for tax in self.tax_template_ids:
+            if tax.description not in taxes_acc:
+                continue
             account_tax_obj.browse(taxes.get(tax.id)).write({
-                'cash_basis_account': account_ref.get(
-                    tax.cash_basis_account.id, False),
+                'use_cash_basis': True,
+                'cash_basis_account': taxes_acc.get(tax.description).id,
             })
         return accounts, taxes
+
+    @api.model
+    def generate_journals(self, acc_template_ref, company, journals_dict=None):
+        """Set the tax_cash_basis_journal_id on the company"""
+        res = super(AccountChartTemplate, self).generate_journals(
+            acc_template_ref, company, journals_dict=journals_dict)
+        if not self == self.env.ref('l10n_mx.mx_coa'):
+            return res
+        journal_basis = self.env['account.journal'].search([
+            ('type', '=', 'general'),
+            ('code', '=', 'CBMX')], limit=1)
+        company.write({'tax_cash_basis_journal_id': journal_basis.id})
+        return res
+
+    @api.multi
+    def _prepare_all_journals(self, acc_template_ref, company, journals_dict=None):
+        """Create the tax_cash_basis_journal_id"""
+        res = super(AccountChartTemplate, self)._prepare_all_journals(
+            acc_template_ref, company, journals_dict=journals_dict)
+        if not self == self.env.ref('l10n_mx.mx_coa'):
+            return res
+        account = self.env['account.account'].search([('code', '=', '118.01.01')])
+        res.append({
+            'type': 'general',
+            'name': _('Effectively Paid'),
+            'code': 'CBMX',
+            'company_id': company.id,
+            'default_credit_account_id': account.id,
+            'default_debit_account_id': account.id,
+            'show_on_dashboard': True,
+        })
+        return res
