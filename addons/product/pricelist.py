@@ -306,7 +306,7 @@ class product_pricelist(osv.osv):
                                 ptype_src, pricelist.currency_id.id,
                                 price_tmp, round=False,
                                 context=context)
-                        if price == 0 and self.env['ir.config_parameter'].get_param('price_rule_zero_continue'):
+                        if price == 0 and self.pool.get('ir.config_parameter').get_param(cr, uid, 'price_rule_zero_continue'):
                             continue
                 elif rule.base == -2:
                     seller = False
