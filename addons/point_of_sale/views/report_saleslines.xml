@@ -30,7 +30,7 @@
                                 <th><strong>Tax</strong></th>
                                 <th class="text-right"><strong>Quantity</strong></th>
                                 <th class="text-right"><strong>Unit Price</strong></th>
-                                <th class="text-right" groups="sale.group_discount_per_so_line"><strong>Disc. (%)</strong></th>
+                                <th class="text-right" groups="account.group_discount_per_so_line"><strong>Disc. (%)</strong></th>
                                 <th class="text-right"><strong>Price</strong></th>
                             </tr>
                         </thead>
@@ -52,7 +52,7 @@
                                 <td class="text-right">
                                     <span t-field="l.price_unit"/>
                                 </td>
-                                <td class="text-right" groups="sale.group_discount_per_so_line">
+                                <td class="text-right" groups="account.group_discount_per_so_line">
                                     <span t-field="l.discount"/>
                                 </td>
                                 <td class="text-right">
