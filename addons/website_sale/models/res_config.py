@@ -33,6 +33,7 @@ class WebsiteConfigSettings(models.TransientModel):
         (0, 'One image per product'),
         (1, 'Several images per product')
         ], string='Multi Images', implied_group='website_sale.group_website_multi_image', group='base.group_portal,base.group_user,base.group_public')
+    group_discount_per_so_line = fields.Boolean(string="Discounted Prices", implied_group='account.group_discount_per_so_line')
     module_website_sale_options = fields.Selection([
         (0, 'One-step "add to cart"'),
         (1, 'Suggest optional products when adding to cart (e.g. for a computer: warranty, software, etc.)')

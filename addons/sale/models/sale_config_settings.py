@@ -39,7 +39,7 @@ class SaleConfiguration(models.TransientModel):
         (0, 'No discount on sales order lines, global discount only'),
         (1, 'Allow discounts on sales order lines')
         ], "Discount",
-        implied_group='sale.group_discount_per_so_line')
+        implied_group='account.group_discount_per_so_line')
     group_display_incoterm = fields.Selection([
         (0, 'No incoterm on reports'),
         (1, 'Show incoterms on sales orders and invoices')

@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header/button[@name='action_confirm'][1]" position="after">
-                <button name="open_quotation" type="object" 
+                <button name="open_quotation" type="object"
                     class="o_open_quotation" string="Preview"
                     attrs="{'invisible': [('template_id', '=', False)]}"/>
             </xpath>
@@ -22,7 +22,7 @@
                                 <field name="quantity"/>
                                 <field name="uom_id" groups="product.group_uom"/>
                                 <field name="price_unit"/>
-                                <field name="discount" groups="sale.group_discount_per_so_line"/>
+                                <field name="discount" groups="account.group_discount_per_so_line"/>
                                 <button name="button_add_to_order" class="oe_link" icon="fa-shopping-cart" string="Add to order lines" type="object"/>
                                 <field name="website_description" invisible="1"/>
                         </tree>
