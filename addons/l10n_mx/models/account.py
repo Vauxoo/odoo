@@ -24,6 +24,24 @@ class AccountJournal(models.Model):
                 })
         return res
 
+    @api.model
+    def _get_sequence_prefix_mx(self, code, refund=False):
+        prefix = code.upper()
+        if refund:
+            prefix = 'R' + prefix
+        return prefix
+
+    @api.model
+    def _create_sequence(self, vals, refund=False):
+        seq = super(AccountJournal, self)._create_sequence(vals, refund)
+        # TODO: Create PR to split the original method _create_sequence
+        #       to get values and avoid a overwrite record here
+        if seq.company_id.country_id.id == self.env.ref('base.mx').id:
+            seq.use_date_range = False
+            seq.prefix = self._get_sequence_prefix_mx(vals['code'], refund)
+        return seq
+
+
 class AccountAccount(models.Model):
     _inherit = 'account.account'
 
