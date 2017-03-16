@@ -102,7 +102,7 @@ class MrpProductProduce(models.TransientModel):
     def check_finished_move_lots(self):
         lots = self.env['stock.move.lots']
         produce_move = self.production_id.move_finished_ids.filtered(lambda x: x.product_id == self.product_id and x.state not in ('done', 'cancel'))
-        if produce_move.product_id.tracking != 'none':
+        if produce_move and produce_move.product_id.tracking != 'none':
             if not self.lot_id:
                 raise UserError(_('You need to provide a lot for the finished product'))
             existing_move_lot = produce_move.move_lot_ids.filtered(lambda x: x.lot_id == self.lot_id)
@@ -125,8 +125,8 @@ class MrpProductProduce(models.TransientModel):
                         #Possibly the entire move is selected
                         remaining_qty = movelots.quantity - movelots.quantity_done
                         if remaining_qty > 0:
-                            new_move_lot = movelots.copy()
-                            new_move_lot.write({'quantity':movelots.quantity_done, 'lot_produced_id': self.lot_id.id})
+                            default = {'quantity': movelots.quantity_done, 'lot_produced_id': self.lot_id.id}
+                            new_move_lot = movelots.copy(default=default)
                             movelots.write({'quantity': remaining_qty, 'quantity_done': 0})
                         else:
                             movelots.write({'lot_produced_id': self.lot_id.id})
