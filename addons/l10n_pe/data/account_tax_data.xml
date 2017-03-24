@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Account Tax Group -->
+    <record id="tax_group_igv" model="account.tax.group">
+        <field name="name">IGV</field>
+    </record>
+
+    <record id="tax_group_isc" model="account.tax.group">
+        <field name="name">ISC</field>
+    </record>
+
+    <record id="tax_group_otros" model="account.tax.group">
+        <field name="name">OTROS</field>
+    </record>
+
+    <!-- Account Tags -->
+    <record id="tax_tag_sale_0" model="account.account.tag">
+        <field name="name">Exonerado 0% Venta</field>
+        <field name="applicability">taxes</field>
+    </record>
+
     <record id="tax_tag_sale_18" model="account.account.tag">
         <field name="name">IGV 18% Venta</field>
         <field name="applicability">taxes</field>
@@ -15,6 +34,7 @@
         <field name="applicability">taxes</field>
     </record>
 
+    <!-- Account Taxes -->
     <record id="ITAX_18" model="account.tax.template">
       <field name="chart_template_id" ref="pe_chart_template"/>
       <field name="name">IGV 18% Venta</field>
@@ -24,7 +44,18 @@
       <field name="type_tax_use">sale</field>
       <field name="account_id" ref="401110"/>
       <field name="refund_account_id" ref="401110"/>
+      <field name="tax_group_id" ref="tax_group_igv"/>
       <field name="tag_ids" eval="[(6,0,[ref('tax_tag_sale_18')])]"/>
+    </record>
+
+    <record id="ITAX_0" model="account.tax.template">
+      <field name="chart_template_id" ref="pe_chart_template"/>
+      <field name="name">Exonerado 0% Venta</field>
+      <field name="description">Exonerado 0% Venta</field>
+      <field name="amount">0</field>
+      <field name="amount_type">percent</field>
+      <field name="type_tax_use">sale</field>
+      <field name="tag_ids" eval="[(6,0,[ref('tax_tag_sale_0')])]"/>
     </record>
 
     <record id="OTAX_18" model="account.tax.template">
