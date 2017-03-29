@@ -4,6 +4,8 @@
         <record id="enable_accounting_features" model="account.config.settings">
             <field name="group_multi_currency" eval="True"/>
             <field name="use_anglo_saxon" eval="True"/>
+            <field name="default_sale_tax_id" ref="ITAX_18"/>
+            <field name="default_purchase_tax_id" ref="OTAX_18"/>
         </record>
         <function model="account.config.settings" name="execute"
             eval="[[ref('enable_accounting_features')]]"/>
