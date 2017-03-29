@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="enable_accounting_features" model="account.config.settings">
+            <field name="group_multi_currency" eval="True"/>
+            <field name="use_anglo_saxon" eval="True"/>
+        </record>
+        <function model="account.config.settings" name="execute"
+            eval="[[ref('enable_accounting_features')]]"/>
+    </data>
+</odoo>
