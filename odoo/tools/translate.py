@@ -661,11 +661,9 @@ def trans_export(lang, modules, buffer, format, cr):
                 row.setdefault('comments', set()).update(comments)
 
             for src, row in sorted(grouped_rows.items()):
-                if not lang:
+                if not lang or not row.get('translation'):
                     # translation template, so no translation value
                     row['translation'] = ''
-                elif not row.get('translation'):
-                    row['translation'] = src
                 writer.write(row['modules'], row['tnrs'], src, row['translation'], row['comments'])
 
         elif format == 'tgz':
@@ -905,7 +903,7 @@ def trans_generate(lang, modules, cr):
             constraints = getattr(cls, '_local_' + cons_type, [])
             for constraint in constraints:
                 push_constraint_msg(module, term_type, model._name, constraint[msg_pos])
-            
+
     cr.execute(query_models, query_param)
 
     for (_, model, module) in cr.fetchall():
