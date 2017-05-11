@@ -164,6 +164,9 @@ class EscposDriver(Thread):
                 elif task == 'xml_receipt':
                     if timestamp >= time.time() - 1 * 60 * 60:
                         printer.receipt(data)
+                elif task == 'xml_check':
+                    if timestamp >= time.time() - 1 * 60 * 60:
+                        printer.check(data)
                 elif task == 'cashbox':
                     if timestamp >= time.time() - 12:
                         self.open_cashbox(printer)
@@ -376,3 +379,26 @@ class EscposProxy(hw_proxy.Proxy):
         _logger.info('ESC/POS: PRINT XML RECEIPT') 
         driver.push_task('xml_receipt',receipt)
 
+<<<<<<< HEAD
+=======
+    @http.route('/hw_proxy/print_xml_check', type='json', auth='none', cors='*')
+    def print_xml_check(self, check):
+        _logger.info('ESC/POS: PRINT XML CHECK')
+        driver.push_task('xml_check',check)
+
+    @http.route('/hw_proxy/escpos/add_supported_device', type='http', auth='none', cors='*')
+    def add_supported_device(self, device_string):
+        _logger.info('ESC/POS: ADDED NEW DEVICE:'+device_string) 
+        driver.add_supported_device(device_string)
+        return "The device:\n"+device_string+"\n has been added to the list of supported devices.<br/><a href='/hw_proxy/status'>Ok</a>"
+
+    @http.route('/hw_proxy/escpos/reset_supported_devices', type='http', auth='none', cors='*')
+    def reset_supported_devices(self):
+        try:
+            os.remove('escpos_devices.pickle')
+        except Exception as e:
+            pass
+        return 'The list of supported devices has been reset to factory defaults.<br/><a href="/hw_proxy/status">Ok</a>'
+
+    
+>>>>>>> b04cad3a9c5860435887cd231f20d167bbd90509
