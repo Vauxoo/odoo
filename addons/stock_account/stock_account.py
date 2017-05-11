@@ -20,9 +20,11 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
+from openerp.tools import float_compare, float_round
 from openerp.tools.translate import _
 from openerp import SUPERUSER_ID, api
 import logging
+from openerp.tools import float_round
 _logger = logging.getLogger(__name__)
 
 
@@ -152,9 +154,33 @@ class stock_quant(osv.osv):
                 self._create_account_move_line(cr, uid, quants, move, acc_valuation, acc_dest, journal_id, context=ctx)
 
     def _quant_create(self, cr, uid, qty, move, lot_id=False, owner_id=False, src_package_id=False, dest_package_id=False, force_location_from=False, force_location_to=False, context=None):
+        quant_obj = self.pool.get('stock.quant')
         quant = super(stock_quant, self)._quant_create(cr, uid, qty, move, lot_id=lot_id, owner_id=owner_id, src_package_id=src_package_id, dest_package_id=dest_package_id, force_location_from=force_location_from, force_location_to=force_location_to, context=context)
         if move.product_id.valuation == 'real_time':
             self._account_entry_move(cr, uid, [quant], move, context)
+
+            # If the precision required for the variable quant cost is larger than the accounting
+            # precision, inconsistencies between the stock valuation and the accounting entries
+            # may arise.
+            # For example, a box of 13 units is bought 15.00. If the products leave the
+            # stock one unit at a time, the amount related to the cost will correspond to
+            # round(15/13, 2)*13 = 14.95. To avoid this case, we split the quant in 12 + 1, then
+            # record the difference on the new quant.
+            # We need to make sure to able to extract at least one unit of the product. There is
+            # an arbitrary minimum quantity set to 2.0 from which we consider we can extract a
+            # unit and adapt the cost.
+            curr_rounding = move.company_id.currency_id.rounding
+            cost_rounded = float_round(quant.cost, precision_rounding=curr_rounding)
+            cost_correct = cost_rounded
+            if float_compare(quant.product_id.uom_id.rounding, 1.0, precision_digits=1) == 0\
+                    and float_compare(quant.qty * quant.cost, quant.qty * cost_rounded, precision_rounding=curr_rounding) != 0\
+                    and float_compare(quant.qty, 2.0, precision_rounding=quant.product_id.uom_id.rounding) >= 0:
+                qty = quant.qty
+                cost = quant.cost
+                quant_correct = quant_obj._quant_split(cr, uid, quant, quant.qty - 1.0, context=context)
+                cost_correct += (qty * cost) - (qty * cost_rounded)
+                quant_obj.write(cr, SUPERUSER_ID, [quant.id], {'cost': cost_rounded}, context=context)
+                quant_obj.write(cr, SUPERUSER_ID, [quant_correct.id], {'cost': cost_correct}, context=context)
         return quant
 
     def move_quants_write(self, cr, uid, quants, move, location_dest_id, dest_package_id, context=None):
@@ -196,17 +222,17 @@ class stock_quant(osv.osv):
         """
         if context is None:
             context = {}
-        currency_obj = self.pool.get('res.currency')
         if context.get('force_valuation_amount'):
             valuation_amount = context.get('force_valuation_amount')
         else:
             if move.product_id.cost_method == 'average':
-                valuation_amount = cost if move.location_id.usage != 'internal' and move.location_dest_id.usage == 'internal' else move.product_id.standard_price
+                valuation_amount = cost if move.location_id.usage == 'supplier' and move.location_dest_id.usage == 'internal' else move.product_id.standard_price
             else:
                 valuation_amount = cost if move.product_id.cost_method == 'real' else move.product_id.standard_price
         #the standard_price of the product may be in another decimal precision, or not compatible with the coinage of
         #the company currency... so we need to use round() before creating the accounting entries.
-        valuation_amount = currency_obj.round(cr, uid, move.company_id.currency_id, valuation_amount * qty)
+        prec = self.pool.get('decimal.precision').precision_get(cr, uid, 'Account')
+        valuation_amount = float_round(valuation_amount * qty, precision_digits=prec)
         partner_id = (move.picking_id.partner_id and self.pool.get('res.partner')._find_accounting_partner(move.picking_id.partner_id).id) or False
         debit_line_vals = {
                     'name': move.name,
@@ -214,7 +240,7 @@ class stock_quant(osv.osv):
                     'quantity': qty,
                     'product_uom_id': move.product_id.uom_id.id,
                     'ref': move.picking_id and move.picking_id.name or False,
-                    'date': move.date,
+                    'date': fields.date.context_today(self, cr, uid, context=context),
                     'partner_id': partner_id,
                     'debit': valuation_amount > 0 and valuation_amount or 0,
                     'credit': valuation_amount < 0 and -valuation_amount or 0,
@@ -226,7 +252,7 @@ class stock_quant(osv.osv):
                     'quantity': qty,
                     'product_uom_id': move.product_id.uom_id.id,
                     'ref': move.picking_id and move.picking_id.name or False,
-                    'date': move.date,
+                    'date': fields.date.context_today(self, cr, uid, context=context),
                     'partner_id': partner_id,
                     'credit': valuation_amount > 0 and valuation_amount or 0,
                     'debit': valuation_amount < 0 and -valuation_amount or 0,

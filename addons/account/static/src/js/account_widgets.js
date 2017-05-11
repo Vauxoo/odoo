@@ -93,7 +93,7 @@ openerp.account = function (instance) {
                         relation: "account.tax",
                         string: _t("Tax"),
                         type: "many2one",
-                        domain: [['type_tax_use','in',['purchase', 'all']], ['parent_id', '=', false]],
+                        domain: [['parent_id', '=', false]],
                     },
                 },
                 amount: {
@@ -184,7 +184,7 @@ openerp.account = function (instance) {
                     self.monetaryIsZero = _.partial(instance.web.float_is_zero, _, digits);
                 })
             );
-    
+
             // Get statement lines
             deferred_promises.push(self.model_bank_statement_line
                 .query(['id'])

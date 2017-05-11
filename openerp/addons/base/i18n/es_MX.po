@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-19 06:31+0000\n"
-"PO-Revision-Date: 2016-01-20 17:13+0000\n"
+"PO-Revision-Date: 2016-12-12 07:36+0000\n"
 "Last-Translator: Martin Trigaux\n"
 "Language-Team: Spanish (Mexico) (http://www.transifex.com/odoo/odoo-8/language/es_MX/)\n"
 "MIME-Version: 1.0\n"
@@ -44,7 +44,7 @@ msgid ""
 "- Bill Splitting: Allows you to split an order into different orders\n"
 "- Kitchen Order Printing: allows you to print orders updates to kitchen or bar printers\n"
 "\n"
-msgstr ""
+msgstr "\nEste módulo añade varias características de restaurantes para el punto de venta:\n- Impresion de Facturas: Permite imprimir un recibo antes de que pague la orden\n-División de cuentas: Permite dividir un orden en diferentes ordenes.\n-Impresión de Ordenes de Cocina: Permite imprimir las órdenes de cambios a impresoras de cocina o barra\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_pos_discount
@@ -56,7 +56,7 @@ msgid ""
 "This module allows the cashier to quickly give a percentage\n"
 "sale discount to a customer.\n"
 "\n"
-msgstr ""
+msgstr "\nEste módulo permite al cajero  dar rápidamente un porcentaje de\ndescuento de la venta a un cliente.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_hu
@@ -73,7 +73,7 @@ msgid ""
 " - Hungarian Bank information\n"
 " \n"
 " "
-msgstr ""
+msgstr "\nModulo base para la localización de Hungría\n\nEste módulo consta: \n\n- Catálogo de cunetas generico de Hungría\n- Impuesto de Hungría\n- Información del Banco de Hungría"
 
 #. module: base
 #: model:ir.module.module,description:base.module_crm_claim
@@ -117,7 +117,7 @@ msgid ""
 "\n"
 "\n"
 "This addon is already installed on your system"
-msgstr ""
+msgstr "\nEste complemento ya está instalado en su sistema "
 
 #. module: base
 #: code:addons/model.py:146
@@ -126,7 +126,7 @@ msgid ""
 "\n"
 "\n"
 "[object with reference: %s - %s]"
-msgstr ""
+msgstr "\n\n[objeto con referencia: %s - %s]"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_be_invoice_bba
@@ -344,7 +344,7 @@ msgid ""
 "Allow users to sign up and reset their password\n"
 "===============================================\n"
 "    "
-msgstr ""
+msgstr "\nPermitir a los usuarios suscribirse y restablecer su contraseña\n======================================================"
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_cancel
@@ -387,7 +387,7 @@ msgid ""
 "\n"
 "Ask questions, get answers, no distractions\n"
 "        "
-msgstr ""
+msgstr "\nHaga preguntas, obtenga respuestas, sin distrcciones"
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_test
@@ -4455,7 +4455,7 @@ msgstr "Contabilidad"
 #. module: base
 #: model:ir.module.category,name:base.module_category_accounting_and_finance
 msgid "Accounting & Finance"
-msgstr ""
+msgstr "Contabilidad y finanzas"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_test
@@ -4862,7 +4862,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_analytic
 msgid "Analytic Accounting"
-msgstr ""
+msgstr "Contabilidad Analítica"
 
 #. module: base
 #: selection:workflow.activity,join_mode:0
@@ -5246,7 +5246,7 @@ msgstr ""
 #. module: base
 #: view:res.partner.bank:base.view_partner_bank_form
 msgid "Bank account"
-msgstr ""
+msgstr "Cuenta de Banco"
 
 #. module: base
 #: view:res.partner.bank:base.view_partner_bank_search
@@ -5808,7 +5808,7 @@ msgstr ""
 #. module: base
 #: help:res.partner,customer:0
 msgid "Check this box if this contact is a customer."
-msgstr ""
+msgstr "Marque esta casilla si este contacto es un cliente."
 
 #. module: base
 #: help:res.partner,supplier:0
@@ -6047,12 +6047,12 @@ msgstr "Comentario"
 #. module: base
 #: view:ir.translation:base.view_translation_form
 msgid "Comments"
-msgstr ""
+msgstr "Comentarios"
 
 #. module: base
 #: field:res.partner,commercial_partner_id:0
 msgid "Commercial Entity"
-msgstr ""
+msgstr "Entidad Comercial"
 
 #. module: base
 #: view:res.bank:base.view_res_bank_form
@@ -6438,7 +6438,7 @@ msgstr ""
 #: view:res.country.group:base.view_country_group_form
 #: view:res.country.group:base.view_country_group_tree
 msgid "Country Group"
-msgstr ""
+msgstr "Grupo de País"
 
 #. module: base
 #: field:res.country,country_group_ids:0
@@ -6723,7 +6723,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_res_currency_rate
 msgid "Currency Rate"
-msgstr ""
+msgstr "Taza de Cambio"
 
 #. module: base
 #: help:res.currency,symbol:0
@@ -6754,7 +6754,7 @@ msgstr ""
 #: view:ir.model:base.view_model_search
 #: view:ir.model.fields:base.view_model_fields_search
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
 #. module: base
 #: selection:ir.model.fields,state:0
@@ -6998,7 +6998,7 @@ msgstr ""
 #. module: base
 #: selection:ir.values,key:0 selection:res.partner,type:0
 msgid "Default"
-msgstr ""
+msgstr "Por defecto"
 
 #. module: base
 #: field:multi_company.default,company_dest_id:0
@@ -7612,7 +7612,7 @@ msgstr ""
 #. module: base
 #: view:res.lang:base.res_lang_form
 msgid "Examples"
-msgstr ""
+msgstr "Ejemplos"
 
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
@@ -9369,12 +9369,12 @@ msgstr ""
 #. module: base
 #: model:ir.ui.menu,name:base.menu_invoiced
 msgid "Invoicing"
-msgstr ""
+msgstr "Facturación"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_account_voucher
 msgid "Invoicing & Payments"
-msgstr ""
+msgstr "Facturación & Pagos"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_journal
@@ -9789,7 +9789,7 @@ msgstr ""
 #: view:ir.actions.todo:base.config_wizard_step_view_form
 #: view:ir.actions.todo:base.ir_actions_todo_tree
 msgid "Launch"
-msgstr ""
+msgstr "Lanzar"
 
 #. module: base
 #: selection:ir.actions.todo,type:0
@@ -9891,7 +9891,7 @@ msgstr ""
 #. module: base
 #: view:ir.logging:base.ir_logging_search_view field:ir.logging,level:0
 msgid "Level"
-msgstr ""
+msgstr "Nivel"
 
 #. module: base
 #: model:res.country,name:base.lr
@@ -10020,7 +10020,7 @@ msgstr "Iniciar sesión"
 #. module: base
 #: field:res.company,logo:0
 msgid "Logo"
-msgstr ""
+msgstr "Logo"
 
 #. module: base
 #: field:res.company,logo_web:0
@@ -10876,7 +10876,7 @@ msgstr ""
 #: selection:ir.actions.act_url,target:0
 #: selection:ir.actions.act_window,target:0
 msgid "New Window"
-msgstr ""
+msgstr "Nueva ventana"
 
 #. module: base
 #: model:res.country,name:base.nz
@@ -11229,7 +11229,7 @@ msgstr ""
 #: code:addons/base/res/res_config.py:541
 #, python-format
 msgid "Only administrators can change the settings"
-msgstr ""
+msgstr "Unicamente administradores puede hacer cambio de ajustes"
 
 #. module: base
 #: code:addons/base/ir/ir_attachment.py:80
@@ -11528,7 +11528,7 @@ msgstr "Categoría padre"
 #. module: base
 #: field:res.company,parent_id:0
 msgid "Parent Company"
-msgstr ""
+msgstr "Compañía padre"
 
 #. module: base
 #: field:ir.ui.menu,parent_left:0
@@ -12002,7 +12002,7 @@ msgstr "Abastecimientos"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_product_email_template
 msgid "Product Email Template"
-msgstr ""
+msgstr "Platilla de correo electrónico del producto"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_product_extended
@@ -12133,7 +12133,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.menu,name:base.next_id_73
 msgid "Purchase"
-msgstr ""
+msgstr "Compra"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_purchase_analytic_plans
@@ -12476,7 +12476,7 @@ msgstr ""
 #: view:ir.actions.report.xml:base.act_report_xml_search_view
 #: field:ir.actions.report.xml,report_type:0
 msgid "Report Type"
-msgstr ""
+msgstr "Tipo de Reporte"
 
 #. module: base
 #: view:ir.actions.report.xml:base.act_report_xml_search_view
@@ -12497,7 +12497,7 @@ msgstr ""
 #: model:ir.module.category,name:base.module_category_reporting
 #: model:ir.ui.menu,name:base.menu_reporting
 msgid "Reporting"
-msgstr ""
+msgstr "Reportes"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.ir_action_report_xml
@@ -13843,7 +13843,7 @@ msgstr ""
 #. module: base
 #: view:res.partner:base.view_res_partner_filter
 msgid "Tag"
-msgstr ""
+msgstr "Etiqueta"
 
 #. module: base
 #: field:res.partner,category_id:0
@@ -14638,7 +14638,7 @@ msgstr "Traducción en Progreso"
 #: view:ir.translation:base.view_translation_tree
 #: model:ir.ui.menu,name:base.menu_translation
 msgid "Translations"
-msgstr ""
+msgstr "Traducciones"
 
 #. module: base
 #: selection:ir.actions.act_window,view_type:0
