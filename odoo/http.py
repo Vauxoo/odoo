@@ -290,7 +290,7 @@ class WebRequest(object):
     def _handle_exception(self, exception):
         """Called within an except block to allow converting exceptions
            to abitrary responses. Anything returned (except None) will
-           be used as response.""" 
+           be used as response."""
         self._failed = exception # prevent tx commit
         if not isinstance(exception, NO_POSTMORTEM) \
                 and not isinstance(exception, werkzeug.exceptions.HTTPException):
@@ -573,7 +573,7 @@ class JsonRequest(WebRequest):
         self.jsonp = jsonp
         request = None
         request_id = args.get('id')
-        
+
         if jsonp and self.httprequest.method == 'POST':
             # jsonp 2 steps step1 POST: save call
             def handler():
@@ -1025,6 +1025,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
                     to authenticate the user.
         """
 
+        old_uid = request.uid
         if uid is None:
             wsgienv = request.httprequest.environ
             env = dict(
@@ -1039,7 +1040,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         self.uid = uid
         self.login = login
         self.password = password
-        request.uid = uid
+        request.uid = uid or old_uid
         request.disable_db = False
 
         if uid: self.get_context()
