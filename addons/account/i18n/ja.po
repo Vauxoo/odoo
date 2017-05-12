@@ -455,6 +455,16 @@ msgstr "<span>(*) 自分が現在ログインしている会社の設定</span>"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
+msgid "<span>invoice</span>"
+msgstr ""
+
+#. module: account
+#: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
+msgid "<span>refund</span>"
+msgstr ""
+
+#. module: account
+#: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
 msgid "<span>Duplicate</span>"
 msgstr "<span>重複</span>"
 
@@ -1361,7 +1371,7 @@ msgstr "勘定科目マッピング"
 #: model:ir.actions.act_window,name:account.account_tag_action
 #: model:ir.ui.menu,name:account.account_tag_menu
 msgid "Accounts Tags"
-msgstr ""
+msgstr "勘定タグ"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
@@ -1647,13 +1657,13 @@ msgstr "時間数"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_analytic_line_analytic_amount_currency
 msgid "Amount Currency"
-msgstr ""
+msgstr "通貨金額"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_residual
 #: model:ir.ui.view,arch_db:account.invoice_tree
 msgid "Amount Due"
-msgstr "支払額"
+msgstr "未払額"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_residual_company_signed
@@ -8119,7 +8129,7 @@ msgstr "最小のテキスト"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_report_general_ledger_sortby
 msgid "Sort by"
-msgstr "並べ替え順"
+msgstr "ソート順"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_line_origin
@@ -8807,7 +8817,7 @@ msgstr "この請求書に使われる取引先勘定"
 msgid ""
 "The partner has at least one unreconciled debit and credit since last time "
 "the invoices & payments matching was performed."
-msgstr "前回の請求書と支払いの照合が実行されて以来、取引先には少なくとも1つの未調整の借方と貸方があります。　"
+msgstr "前回の請求書と支払の照合が実行されて以来、取引先には少なくとも1つの未調整の借方と貸方があります。　"
 
 #. module: account
 #: code:addons/account/models/account_move.py:853
@@ -10288,13 +10298,6 @@ msgstr ""
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:298
-#, python-format
-msgid "all"
-msgstr ""
-
-#. module: account
-#. openerp-web
 #: code:addons/account/static/src/xml/account_payment.xml:17
 #, python-format
 msgid "assign to invoice"
@@ -10318,13 +10321,6 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "create a journal entry"
-msgstr ""
-
-#. module: account
-#. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:295
-#, python-format
-msgid "customers"
 msgstr ""
 
 #. module: account
@@ -10363,13 +10359,6 @@ msgstr ""
 #: model:ir.ui.view,arch_db:account.tax_adjustments_wizard
 msgid "or"
 msgstr "または"
-
-#. module: account
-#. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:297
-#, python-format
-msgid "others"
-msgstr ""
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.invoice_supplier_form
@@ -10457,13 +10446,6 @@ msgstr "会社ロゴを設定"
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "setup your bank accounts."
 msgstr "あなたの銀行口座を設定します"
-
-#. module: account
-#. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:296
-#, python-format
-msgid "suppliers"
-msgstr "仕入先"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner

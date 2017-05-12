@@ -314,7 +314,7 @@ class AccountInvoice(models.Model):
         default=lambda self: self.env.user)
     fiscal_position_id = fields.Many2one('account.fiscal.position', string='Fiscal Position', oldname='fiscal_position',
         readonly=True, states={'draft': [('readonly', False)]})
-    commercial_partner_id = fields.Many2one('res.partner', string='Commercial Entity',
+    commercial_partner_id = fields.Many2one('res.partner', string='Commercial Entity', compute_sudo=True,
         related='partner_id.commercial_partner_id', store=True, readonly=True,
         help="The commercial entity that will be used on Journal Entries for this invoice")
 
@@ -483,9 +483,9 @@ class AccountInvoice(models.Model):
             else:
                 account_id = pay_account.id
                 payment_term_id = p.property_supplier_payment_term_id.id
-            addr = self.partner_id.address_get(['delivery'])
-            fiscal_position = self.env['account.fiscal.position'].get_fiscal_position(self.partner_id.id, delivery_id=addr['delivery'])
 
+            delivery_partner_id = self.get_delivery_partner_id()
+            fiscal_position = self.env['account.fiscal.position'].get_fiscal_position(self.partner_id.id, delivery_id=delivery_partner_id)
 
             # If partner has no warning, check its company
             if p.invoice_warn == 'no-message' and p.parent_id:
@@ -513,6 +513,10 @@ class AccountInvoice(models.Model):
             return {'domain': {'partner_bank_id': [('id', 'in', bank_ids.ids)]}}
         return {}
 
+    @api.multi
+    def get_delivery_partner_id(self):
+        self.ensure_one()
+        return self.partner_id.address_get(['delivery'])['delivery']
 
     @api.onchange('journal_id')
     def _onchange_journal_id(self):
@@ -1024,7 +1028,7 @@ class AccountInvoice(models.Model):
 
         values['invoice_line_ids'] = self._refund_cleanup_lines(invoice.invoice_line_ids)
 
-        tax_lines = filter(lambda l: l.manual, invoice.tax_line_ids)
+        tax_lines = invoice.tax_line_ids
         values['tax_line_ids'] = self._refund_cleanup_lines(tax_lines)
 
         if journal_id:
@@ -1073,6 +1077,8 @@ class AccountInvoice(models.Model):
             :param date: payment date, defaults to fields.Date.context_today(self)
             :param writeoff_acc: account in which to create a writeoff if pay_amount < self.residual, so that the invoice is fully paid
         """
+        if isinstance( pay_journal, ( int, long ) ):
+            pay_journal = self.env['account.journal'].browse([pay_journal])
         assert len(self) == 1, "Can only pay one invoice at a time."
         payment_type = self.type in ('out_invoice', 'in_refund') and 'inbound' or 'outbound'
         if payment_type == 'inbound':
@@ -1102,6 +1108,8 @@ class AccountInvoice(models.Model):
             'writeoff_account_id': writeoff_acc and writeoff_acc.id or False,
         })
         payment.post()
+
+        return True
 
     @api.multi
     def _track_subtype(self, init_values):
@@ -1203,11 +1211,11 @@ class AccountInvoiceLine(models.Model):
         string='Analytic Account')
     analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
     company_id = fields.Many2one('res.company', string='Company',
-        related='invoice_id.company_id', store=True, readonly=True)
+        related='invoice_id.company_id', store=True, readonly=True, related_sudo=False)
     partner_id = fields.Many2one('res.partner', string='Partner',
-        related='invoice_id.partner_id', store=True, readonly=True)
-    currency_id = fields.Many2one('res.currency', related='invoice_id.currency_id', store=True)
-    company_currency_id = fields.Many2one('res.currency', related='invoice_id.company_currency_id', readonly=True)
+        related='invoice_id.partner_id', store=True, readonly=True, related_sudo=False)
+    currency_id = fields.Many2one('res.currency', related='invoice_id.currency_id', store=True, related_sudo=False)
+    company_currency_id = fields.Many2one('res.currency', related='invoice_id.company_currency_id', readonly=True, related_sudo=False)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):

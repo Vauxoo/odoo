@@ -5,7 +5,7 @@
 # Translators:
 # krnkris <krnkris@freemail.hu>, 2016
 # Martin Trigaux <mat@odoo.com>, 2016
-# Oregional <geza.nagy@oregional.hu>, 2016
+# gezza <geza.nagy@oregional.hu>, 2016
 # Kovács Tibor <kovika@gmail.com>, 2016
 msgid ""
 msgstr ""
@@ -1363,6 +1363,8 @@ msgid ""
 "Close opportunity if: \"pre-sales days * $500\" < \"expected revenue\" * "
 "probability"
 msgstr ""
+"Lehetőség lezárása, ha: \"értékesítés előtt eltelt napok * $500\" < "
+"\"várható bevétel\" * valószínűség"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_date_closed
@@ -1431,7 +1433,7 @@ msgstr "Gratulálok, elvégezte!"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor7
 msgid "Consulting"
-msgstr ""
+msgstr "Tanácsadó"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1554,7 +1556,7 @@ msgstr "Beszállítók létrhozása"
 #: code:addons/crm/static/src/js/web_planner_crm.js:31
 #, python-format
 msgid "Create a Proof of Concept with consultants"
-msgstr ""
+msgstr "Tanácsadói kipróbálás létrehozás"
 
 #. module: crm
 #: selection:crm.lead2opportunity.partner,action:0
@@ -1774,7 +1776,7 @@ msgstr "Törlés"
 #: code:addons/crm/static/src/js/web_planner_crm.js:28
 #, python-format
 msgid "Demonstration"
-msgstr ""
+msgstr "Bemutatás"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1812,7 +1814,7 @@ msgstr ""
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor5
 msgid "Design"
-msgstr ""
+msgstr "Terv"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -2090,7 +2092,7 @@ msgstr ""
 #: code:addons/crm/static/src/js/web_planner_crm.js:32
 #, python-format
 msgid "Final Proposal sent"
-msgstr ""
+msgstr "Végső javaslat kiküldve"
 
 #. module: crm
 #: selection:base.partner.merge.automatic.wizard,state:0
@@ -2159,7 +2161,7 @@ msgstr "Ettől %s : %s"
 #: code:addons/crm/static/src/js/web_planner_crm.js:31
 #, python-format
 msgid "GAP analysis with customer"
-msgstr ""
+msgstr "GAP elemzés vevővel"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -2404,14 +2406,14 @@ msgstr "Bejövő email-ek"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor4
 msgid "Information"
-msgstr ""
+msgstr "Információ"
 
 #. module: crm
 #. openerp-web
 #: code:addons/crm/static/src/js/web_planner_crm.js:23
 #, python-format
 msgid "Initial Contact"
-msgstr ""
+msgstr "Elsődleges kapcsolat"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_sale_config_settings_module_crm_voip
@@ -2520,7 +2522,7 @@ msgstr "Utoljára frissítve "
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_users_calendar_last_notif_ack
 msgid "Last notification marked as read from base Calendar"
-msgstr ""
+msgstr "Utolsó értesítés olvasottnak jelölve az alap naptárban"
 
 #. module: crm
 #: code:addons/crm/models/crm_lead.py:841
@@ -2832,6 +2834,8 @@ msgstr ""
 #, python-format
 msgid "Meeting with a demo. Set Fields: expected revenue, closing date"
 msgstr ""
+"Bemutatóval egybekötött találkozó. Beállított témák: Várható bevétel, záró "
+"dátum"
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.act_crm_opportunity_calendar_event_new
@@ -3041,7 +3045,7 @@ msgstr "Név"
 #: code:addons/crm/static/src/js/web_planner_crm.js:28
 #, python-format
 msgid "Needs assessment"
-msgstr ""
+msgstr "Felmérőteszt szükséges"
 
 #. module: crm
 #. openerp-web
@@ -3049,7 +3053,7 @@ msgstr ""
 #: code:addons/crm/static/src/js/web_planner_crm.js:34
 #, python-format
 msgid "Negotiation"
-msgstr ""
+msgstr "Tárgyalás"
 
 #. module: crm
 #. openerp-web
@@ -3071,7 +3075,7 @@ msgstr "Új lehetőség"
 #: code:addons/crm/static/src/js/web_planner_crm.js:17
 #, python-format
 msgid "New propspect assigned to the right salesperson"
-msgstr ""
+msgstr "Új javaslat hozzárendelése a megfelelő értékesítőhöz"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_date_action_next
@@ -3424,7 +3428,7 @@ msgstr "Lehetőségek"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor8
 msgid "Other"
-msgstr ""
+msgstr "Egyéb"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
@@ -3446,14 +3450,14 @@ msgstr "Tulajdonos"
 #: code:addons/crm/static/src/js/web_planner_crm.js:28
 #, python-format
 msgid "POC Sold"
-msgstr ""
+msgstr "POC értékesítve"
 
 #. module: crm
 #. openerp-web
 #: code:addons/crm/static/src/js/web_planner_crm.js:32
 #, python-format
 msgid "POC demonstration to the customer"
-msgstr ""
+msgstr "POC bemutatva vásárló részére"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_parent_id
@@ -3534,7 +3538,7 @@ msgstr "Telefon"
 #: code:addons/crm/static/src/js/web_planner_crm.js:24
 #, python-format
 msgid "Phone call with following questions: ..."
-msgstr ""
+msgstr "Telefonhívás a következő kérdésekkel: ..."
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -3668,14 +3672,14 @@ msgstr "Valószínű Tényleges árbevétel"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor1
 msgid "Product"
-msgstr ""
+msgstr "Termék"
 
 #. module: crm
 #. openerp-web
 #: code:addons/crm/static/src/js/web_planner_crm.js:23
 #, python-format
 msgid "Product Demonstration"
-msgstr ""
+msgstr "Termék bemutatás"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -3720,28 +3724,28 @@ msgstr "Minősített"
 #: code:addons/crm/static/src/js/web_planner_crm.js:15
 #, python-format
 msgid "Qualified Sponsor"
-msgstr ""
+msgstr "Minősített támogató"
 
 #. module: crm
 #. openerp-web
 #: code:addons/crm/static/src/js/web_planner_crm.js:26
 #, python-format
 msgid "Quotation sent"
-msgstr ""
+msgstr "Árajánlat elküldve"
 
 #. module: crm
 #. openerp-web
 #: code:addons/crm/static/src/js/web_planner_crm.js:20
 #, python-format
 msgid "Quotation sent to customer"
-msgstr ""
+msgstr "Árajánlat elküldve vásárlórészére"
 
 #. module: crm
 #. openerp-web
 #: code:addons/crm/static/src/js/web_planner_crm.js:21
 #, python-format
 msgid "Quotation signed by the customer"
-msgstr ""
+msgstr "Árajánlat aláírva a vásárló részéről"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_priority
@@ -3996,7 +4000,7 @@ msgstr "Sorszám"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor3
 msgid "Services"
-msgstr ""
+msgstr "Szolgáltatások"
 
 #. module: crm
 #. openerp-web
@@ -4005,6 +4009,7 @@ msgstr ""
 #, python-format
 msgid "Set fields: Expected Revenue, Expected Closing Date, Next Action"
 msgstr ""
+"Beállított témák: Várható bevétel, Várható záró dátum, Következő művelet"
 
 #. module: crm
 #: model:ir.actions.server,name:crm.action_set_team_sales_department
@@ -4090,7 +4095,7 @@ msgstr "Diák"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor2
 msgid "Software"
-msgstr ""
+msgstr "Szoftver"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -4280,14 +4285,14 @@ msgstr ""
 #: code:addons/crm/static/src/js/web_planner_crm.js:15
 #, python-format
 msgid "Territory"
-msgstr ""
+msgstr "Terület"
 
 #. module: crm
 #. openerp-web
 #: code:addons/crm/static/src/js/web_planner_crm.js:20
 #, python-format
 msgid "The customer came back to you to discuss your quotation"
-msgstr ""
+msgstr "A vásárló visszajött megbeszélésre az árajánlattal kapcsolatban"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team_alias_id
@@ -4540,7 +4545,7 @@ msgstr "Nyomonkövetés"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor6
 msgid "Training"
-msgstr ""
+msgstr "Képzés"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report_lead_type
@@ -4902,6 +4907,7 @@ msgid ""
 "You are in discussion with the decision maker and HE agreed on his pain "
 "points"
 msgstr ""
+"Megbeszélésen van a döntéshozóval  és egyetért a sérelmezett pontokkal"
 
 #. module: crm
 #: code:addons/crm/wizard/base_partner_merge.py:306

@@ -27,6 +27,8 @@ class PosSession(models.Model):
                 if order.state not in ('paid'):
                     raise UserError(_("You cannot confirm all orders of this session, because they have not the 'paid' status"))
                 order.action_pos_order_done()
+            orders = session.order_ids.filtered(lambda order: order.state in ['invoiced', 'done'])
+            orders.sudo()._reconcile_payments()
 
     config_id = fields.Many2one(
         'pos.config', string='Point of Sale',
@@ -126,12 +128,20 @@ class PosSession(models.Model):
     @api.constrains('user_id', 'state')
     def _check_unicity(self):
         # open if there is no session in 'opening_control', 'opened', 'closing_control' for one user
-        if self.search_count([('state', 'not in', ('closed', 'closing_control')), ('user_id', '=', self.user_id.id)]) > 1:
+        if self.search_count([
+                ('state', 'not in', ('closed', 'closing_control')),
+                ('user_id', '=', self.user_id.id),
+                ('name', 'not like', 'RESCUE FOR'),
+            ]) > 1:
             raise ValidationError(_("You cannot create two active sessions with the same responsible!"))
 
     @api.constrains('config_id')
     def _check_pos_config(self):
-        if self.search_count([('state', '!=', 'closed'), ('config_id', '=', self.config_id.id)]) > 1:
+        if self.search_count([
+                ('state', '!=', 'closed'),
+                ('config_id', '=', self.config_id.id),
+                ('name', 'not like', 'RESCUE FOR'),
+            ]) > 1:
             raise ValidationError(_("You cannot create two active sessions related to the same point of sale!"))
 
     @api.model

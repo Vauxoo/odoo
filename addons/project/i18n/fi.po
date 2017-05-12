@@ -13,7 +13,7 @@
 # Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2016
 # Veikko Väätäjä <veikko.vaataja@gmail.com>, 2016
 # Svante Suominen <svante.suominen@web-veistamo.fi>, 2016
-# Timo Koukkari <timo.koukkari@seamk.fi>, 2016
+# Timo Koukkari <ti.ko@netikka.fi>, 2016
 # Sanna Edelman <direct@generare.com>, 2016
 # Pekko Tuomisto <pekko.tuomisto@web-veistamo.fi>, 2016
 # Melina Mantyla <melina.mantyla@web-veistamo.fi>, 2016
@@ -554,6 +554,8 @@ msgid ""
 "<strong>An internal activity</strong> that should be done within a defined "
 "period of time."
 msgstr ""
+"<strong>Sisäinen aktiviteetti</strong>, joka pitäisi suorittaa määrätyssä "
+"ajanjaksossa."
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
@@ -747,7 +749,7 @@ msgstr ""
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
 msgid "<strong>Recommended actions:</strong>"
-msgstr ""
+msgstr "<strong>Ehdotetut toimenpiteet:</strong>"
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
@@ -1961,7 +1963,7 @@ msgstr ""
 #: code:addons/project/models/project.py:567
 #, python-format
 msgid "I take it"
-msgstr ""
+msgstr "Ota itselle"
 
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_config_settings_id
@@ -2141,7 +2143,7 @@ msgstr ""
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
 msgid "Issues"
-msgstr "Issues"
+msgstr "Tapaukset"
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
@@ -2414,7 +2416,7 @@ msgstr "Uusi"
 #: code:addons/project/models/project.py:571
 #, python-format
 msgid "New Task"
-msgstr ""
+msgstr "Uusi tehtävä"
 
 #. module: project
 #. openerp-web
@@ -2426,7 +2428,7 @@ msgstr ""
 #. module: project
 #: selection:project.config.settings,module_rating_project:0
 msgid "No customer rating"
-msgstr ""
+msgstr "Ei asiakasarvioita"
 
 #. module: project
 #: selection:project.task,priority:0
@@ -2443,7 +2445,7 @@ msgstr "Normal"
 #: model:project.task,legend_blocked:project.project_task_9
 #: model:project.task.type,legend_blocked:project.project_stage_0
 msgid "Not validated"
-msgstr ""
+msgstr "Ei vahvistettu"
 
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_task_notes
@@ -2536,7 +2538,7 @@ msgstr ""
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
 msgid "Organize meetings"
-msgstr ""
+msgstr "Järjestä kokouksia"
 
 #. module: project
 #: model:ir.actions.act_window,help:project.open_view_project_all_config
@@ -3090,7 +3092,7 @@ msgstr "Tunnisteet"
 #. module: project
 #: model:ir.model,name:project.model_project_tags
 msgid "Tags of project's tasks, issues..."
-msgstr "Projektin tehtävien, asioiden, jne. tunnisteet."
+msgstr "Projektin tehtävien ja tapausten tunnisteet."
 
 #. module: project
 #: model:ir.model,name:project.model_project_task

@@ -8,13 +8,14 @@
 # artxcenter <artxcenter@gmail.com>, 2016
 # Full Name <endrit.veseli@inveen.com>, 2016
 # Arion Kosturi <arionkosturi@gmail.com>, 2016
+# Amarildo Golloshi <golloshiamarildo@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-14 10:20+0000\n"
 "PO-Revision-Date: 2017-02-14 10:20+0000\n"
-"Last-Translator: Arion Kosturi <arionkosturi@gmail.com>, 2016\n"
+"Last-Translator: Amarildo Golloshi <golloshiamarildo@gmail.com>, 2017\n"
 "Language-Team: Albanian (https://www.transifex.com/odoo/teams/41243/sq/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -461,6 +462,16 @@ msgstr "<span>Tek</span>"
 msgid ""
 "<span>(*) This configuration is related to the company you're logged "
 "into.</span>"
+msgstr ""
+
+#. module: account
+#: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
+msgid "<span>invoice</span>"
+msgstr ""
+
+#. module: account
+#: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
+msgid "<span>refund</span>"
 msgstr ""
 
 #. module: account
@@ -1707,7 +1718,7 @@ msgstr "Vlera"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_analytic_line_analytic_amount_currency
 msgid "Amount Currency"
-msgstr ""
+msgstr "Monedha e vlerës"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_residual
@@ -6701,7 +6712,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:account.report_overdue_document
 #: model:mail.message.subtype,name:account.mt_invoice_paid
 msgid "Paid"
-msgstr ""
+msgstr "Paguar"
 
 #. module: account
 #: code:addons/account/models/account_payment.py:283
@@ -10344,13 +10355,6 @@ msgstr ""
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:298
-#, python-format
-msgid "all"
-msgstr ""
-
-#. module: account
-#. openerp-web
 #: code:addons/account/static/src/xml/account_payment.xml:17
 #, python-format
 msgid "assign to invoice"
@@ -10374,13 +10378,6 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "create a journal entry"
-msgstr ""
-
-#. module: account
-#. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:295
-#, python-format
-msgid "customers"
 msgstr ""
 
 #. module: account
@@ -10418,13 +10415,6 @@ msgstr ""
 #: model:ir.ui.view,arch_db:account.account_common_report_view
 #: model:ir.ui.view,arch_db:account.tax_adjustments_wizard
 msgid "or"
-msgstr ""
-
-#. module: account
-#. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:297
-#, python-format
-msgid "others"
 msgstr ""
 
 #. module: account
@@ -10512,13 +10502,6 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "setup your bank accounts."
-msgstr ""
-
-#. module: account
-#. openerp-web
-#: code:addons/account/static/src/xml/account_reconciliation.xml:296
-#, python-format
-msgid "suppliers"
 msgstr ""
 
 #. module: account

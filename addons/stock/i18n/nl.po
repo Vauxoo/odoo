@@ -5236,7 +5236,7 @@ msgstr "Aantal te late pickings"
 #: model:ir.ui.view,arch_db:stock.view_move_search
 #: model:ir.ui.view,arch_db:stock.view_picking_internal_search
 msgid "Ready"
-msgstr "Klaar"
+msgstr "Gereed"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move_product_qty
@@ -7465,7 +7465,7 @@ msgid ""
 "may deactivate this product."
 msgstr ""
 "Het is niet mogelijk de maateenheid van een product te wijzigen welke al is "
-"gebruikt in een voorraad mutatie. Indien u de maateenheid wilt veranderen, "
+"gebruikt in een voorraad mutatie. Indien u de maateenheid wilt wijzigen, "
 "kunt u dit product de-activeren."
 
 #. module: stock

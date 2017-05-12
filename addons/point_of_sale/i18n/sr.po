@@ -1,22 +1,23 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * point_of_sale
-#
+# 
 # Translators:
+# Martin Trigaux <mat@odoo.com>, 2017
+# Slobodan Simić <slsimic@gmail.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-22 13:48+0000\n"
-"PO-Revision-Date: 2016-01-27 10:50+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Serbian (http://www.transifex.com/odoo/odoo-9/language/sr/)\n"
-"Language: sr\n"
+"POT-Creation-Date: 2017-02-13 09:53+0000\n"
+"PO-Revision-Date: 2017-02-13 09:53+0000\n"
+"Last-Translator: Slobodan Simić <slsimic@gmail.com>, 2017\n"
+"Language-Team: Serbian (https://www.transifex.com/odoo/teams/41243/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: sr\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_order.py:679
@@ -73,8 +74,8 @@ msgstr ""
 #, python-format
 msgid ""
 "<p>Click to start the point of sale interface. It <b>runs on tablets</b>, "
-"laptops, or industrial hardware.</p><p>Once the session launched, the system "
-"continues to run without an internet connection.</p>"
+"laptops, or industrial hardware.</p><p>Once the session launched, the system"
+" continues to run without an internet connection.</p>"
 msgstr ""
 
 #. module: point_of_sale
@@ -219,10 +220,8 @@ msgstr ""
 #: model:ir.actions.act_window,help:point_of_sale.action_pos_session
 msgid ""
 "A session is a period of time, usually one day, during which\n"
-"                you sell through the point of sale. The user has to check "
-"the\n"
-"                currencies in your cash registers at the beginning and the "
-"end\n"
+"                you sell through the point of sale. The user has to check the\n"
+"                currencies in your cash registers at the beginning and the end\n"
 "                of each session."
 msgstr ""
 
@@ -278,7 +277,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_active
 msgid "Active"
-msgstr "Aktivan"
+msgstr "Активно"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_account_journal_journal_user
@@ -303,7 +302,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:470
 #, python-format
 msgid "Address"
-msgstr "Adresa"
+msgstr "Адреса"
 
 #. module: point_of_sale
 #: model:ir.actions.act_window,name:point_of_sale.action_pos_all_sales_lines
@@ -440,7 +439,7 @@ msgstr "red Izvestaja Banke"
 #: code:addons/point_of_sale/static/src/xml/pos.xml:411
 #, python-format
 msgid "Barcode"
-msgstr "Bar-Kod"
+msgstr "Бар-код"
 
 #. module: point_of_sale
 #: model:ir.ui.menu,name:point_of_sale.menu_pos_barcode_nomenclature_all
@@ -639,15 +638,15 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_account_journal_journal_user
 msgid ""
-"Check this box if this journal define a payment method that can be used in a "
-"point of sale."
+"Check this box if this journal define a payment method that can be used in a"
+" point of sale."
 msgstr ""
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_pos_config_group_by
 msgid ""
-"Check this if you want to group the Journal Items by Product while closing a "
-"Session"
+"Check this if you want to group the Journal Items by Product while closing a"
+" Session"
 msgstr ""
 
 #. module: point_of_sale
@@ -853,6 +852,11 @@ msgid "Current Session"
 msgstr ""
 
 #. module: point_of_sale
+#: model:ir.model.fields,field_description:point_of_sale.field_pos_config_current_session_state
+msgid "Current session state"
+msgstr ""
+
+#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/js/screens.js:1764
 #: code:addons/point_of_sale/static/src/xml/pos.xml:124
@@ -901,6 +905,11 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_account_bank_statement_account_id
 msgid "Default Debit Account"
+msgstr "Osnovni dugovni konto"
+
+#. module: point_of_sale
+#: model:ir.model.fields,field_description:point_of_sale.field_pos_config_default_fiscal_position_id
+msgid "Default Fiscal Position"
 msgstr ""
 
 #. module: point_of_sale
@@ -1046,8 +1055,7 @@ msgstr ""
 #: model:ir.actions.act_window,help:point_of_sale.product_product_action
 msgid ""
 "Do not forget to set the price and the point of sale category\n"
-"                in which it should appear. If a product has no point of "
-"sale\n"
+"                in which it should appear. If a product has no point of sale\n"
 "                category, you can not sell it through the point of sale\n"
 "                interface."
 msgstr ""
@@ -1145,7 +1153,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_details_wizard_end_date
 msgid "End date"
-msgstr ""
+msgstr "Krajnji datum"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_session_form
@@ -1346,8 +1354,7 @@ msgstr ""
 #: model:ir.actions.act_window,help:point_of_sale.product_pos_category_action
 msgid ""
 "If you put a photo on the category, the layout of the\n"
-"                touchscreen interface will automatically. We suggest not to "
-"put\n"
+"                touchscreen interface will automatically. We suggest not to put\n"
 "                a photo on categories for small (1024x768) screens."
 msgstr ""
 
@@ -1455,7 +1462,7 @@ msgstr ""
 #: model:ir.model,name:point_of_sale.model_account_journal
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order_journal_id
 msgid "Journal"
-msgstr "Dnevnik"
+msgstr "Извештај"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_account_move
@@ -1976,6 +1983,12 @@ msgid "Orders Analysis"
 msgstr ""
 
 #. module: point_of_sale
+#: code:addons/point_of_sale/models/pos_config.py:212
+#, python-format
+msgid "POS Order %s"
+msgstr ""
+
+#. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_order_line_form
 msgid "POS Order line"
 msgstr "Linija POS zahteva"
@@ -1998,6 +2011,12 @@ msgstr "Linije POS ZAhteva"
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_partner_property_form
 msgid "POS Sales"
+msgstr ""
+
+#. module: point_of_sale
+#: code:addons/point_of_sale/models/pos_config.py:223
+#, python-format
+msgid "POS order line %s"
 msgstr ""
 
 #. module: point_of_sale
@@ -2086,10 +2105,8 @@ msgstr ""
 #: model:ir.actions.act_window,help:point_of_sale.action_account_journal_form
 msgid ""
 "Payment methods are defined by accounting journals having the\n"
-"                field <i>PoS Payment Method</i> checked. In order to be "
-"useable\n"
-"                from the touchscreen interface, you must set the payment "
-"method\n"
+"                field <i>PoS Payment Method</i> checked. In order to be useable\n"
+"                from the touchscreen interface, you must set the payment method\n"
 "                on the <i>Point of Sale</i> configuration."
 msgstr ""
 
@@ -2203,7 +2220,6 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.actions.act_window,name:point_of_sale.action_pos_config_kanban
 #: model:ir.actions.act_window,name:point_of_sale.action_pos_config_pos
-#: model:ir.model,name:point_of_sale.model_pos_order
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_config_id
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_session_config_id
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order_config_id
@@ -2252,6 +2268,7 @@ msgid "Point of Sale Name"
 msgstr ""
 
 #. module: point_of_sale
+#: model:ir.model,name:point_of_sale.model_pos_order
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_order_search
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
 msgid "Point of Sale Orders"
@@ -2368,7 +2385,7 @@ msgstr "Cenovnik"
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_details_wizard
 msgid "Print"
-msgstr ""
+msgstr "Štampaj"
 
 #. module: point_of_sale
 #. openerp-web
@@ -2803,8 +2820,8 @@ msgstr ""
 #: model:ir.model.fields,help:point_of_sale.field_pos_category_image_small
 msgid ""
 "Small-sized image of the category. It is automatically resized as a 64x64px "
-"image, with aspect ratio preserved. Use this field anywhere a small image is "
-"required."
+"image, with aspect ratio preserved. Use this field anywhere a small image is"
+" required."
 msgstr ""
 
 #. module: point_of_sale
@@ -2827,7 +2844,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_details_wizard_start_date
 msgid "Start date"
-msgstr ""
+msgstr "Datum početka"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_session_cash_register_balance_start
@@ -2949,7 +2966,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/js/screens.js:2007
 #, python-format
 msgid "Tax"
-msgstr "Porez"
+msgstr "Порез"
 
 #. module: point_of_sale
 #. openerp-web
@@ -3155,7 +3172,8 @@ msgstr ""
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_session.py:243
 #, python-format
-msgid "The type of the journal for your payment method should be bank or cash "
+msgid ""
+"The type of the journal for your payment method should be bank or cash "
 msgstr ""
 
 #. module: point_of_sale
@@ -3177,11 +3195,9 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/js/screens.js:1891
 #, python-format
 msgid ""
-"There is no cash payment method available in this point of sale to handle "
-"the change.\n"
+"There is no cash payment method available in this point of sale to handle the change.\n"
 "\n"
-" Please pay the exact amount or add a cash payment method in the point of "
-"sale configuration"
+" Please pay the exact amount or add a cash payment method in the point of sale configuration"
 msgstr ""
 
 #. module: point_of_sale
@@ -3194,8 +3210,8 @@ msgstr ""
 #: code:addons/point_of_sale/models/pos_order.py:644
 #, python-format
 msgid ""
-"There is no receivable account defined to make payment for the partner: \"%s"
-"\" (id:%d)."
+"There is no receivable account defined to make payment for the partner: "
+"\"%s\" (id:%d)."
 msgstr ""
 
 #. module: point_of_sale
@@ -3222,8 +3238,8 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_account_journal_amount_authorized_diff
 msgid ""
-"This field depicts the maximum difference allowed between the ending balance "
-"and the theoretical cash when closing a session, for non-POS managers. If "
+"This field depicts the maximum difference allowed between the ending balance"
+" and the theoretical cash when closing a session, for non-POS managers. If "
 "this maximum is reached, the user will have an error message at the closing "
 "of his session saying that he needs to contact his manager."
 msgstr ""
@@ -3253,8 +3269,8 @@ msgstr ""
 #: code:addons/point_of_sale/models/pos_order.py:454
 #, python-format
 msgid ""
-"This invoice has been created from the point of sale session: <a href=# data-"
-"oe-model=pos.order data-oe-id=%d>%s</a>"
+"This invoice has been created from the point of sale session: <a href=# "
+"data-oe-model=pos.order data-oe-id=%d>%s</a>"
 msgstr ""
 
 #. module: point_of_sale
@@ -3266,8 +3282,7 @@ msgid ""
 "\n"
 "- Bill Splitting: Allows you to split an order into different orders \n"
 "\n"
-"- Kitchen Order Printing: allows you to print orders updates to kitchen or "
-"bar printers"
+"- Kitchen Order Printing: allows you to print orders updates to kitchen or bar printers"
 msgstr ""
 
 #. module: point_of_sale
@@ -3285,8 +3300,8 @@ msgstr ""
 #, python-format
 msgid ""
 "This operation will permanently destroy all unpaid orders from all sessions "
-"that have been put in the local storage. You will lose all the data and exit "
-"the point of sale. This operation cannot be undone."
+"that have been put in the local storage. You will lose all the data and exit"
+" the point of sale. This operation cannot be undone."
 msgstr ""
 
 #. module: point_of_sale
@@ -3606,11 +3621,11 @@ msgstr ""
 #, python-format
 msgid ""
 "You have to define which payment method must be available in the point of "
-"sale by reusing existing bank and cash through \"Accounting / "
-"Configuration / Journals / Journals\". Select a journal and check the field "
-"\"PoS Payment Method\" from the \"Point of Sale\" tab. You can also create "
-"new payment methods directly from menu \"PoS Backend / Configuration / "
-"Payment Methods\"."
+"sale by reusing existing bank and cash through \"Accounting / Configuration "
+"/ Journals / Journals\". Select a journal and check the field \"PoS Payment "
+"Method\" from the \"Point of Sale\" tab. You can also create new payment "
+"methods directly from menu \"PoS Backend / Configuration / Payment "
+"Methods\"."
 msgstr ""
 
 #. module: point_of_sale
@@ -3779,6 +3794,11 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1172
 #, python-format
 msgid "paid orders"
+msgstr ""
+
+#. module: point_of_sale
+#: model:ir.ui.view,arch_db:point_of_sale.view_pos_session_form
+msgid "payment method."
 msgstr ""
 
 #. module: point_of_sale

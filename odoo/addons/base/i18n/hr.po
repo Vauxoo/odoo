@@ -5555,8 +5555,8 @@ msgstr "Nije moguće duplicirati postavke"
 #. module: base
 #: code:addons/base/ir/ir_model.py:549
 #, python-format
-msgid "Cannot rename field to %s, because that field already exists!"
-msgstr "Ne možete preimenovati polje u %s, jer polje već postoji!"
+msgid "Cannot rename/delete fields that are still present in views:"
+msgstr ""
 
 #. module: base
 #: code:addons/base/res/res_lang.py:219
@@ -7566,7 +7566,7 @@ msgstr "Zaposlenik"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_contract
 msgid "Employee Contracts"
-msgstr "Kontakti zaposlenika"
+msgstr "Ugovori zaposlenika"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr
@@ -8021,6 +8021,19 @@ msgid "Field `%(field_name)s` does not exist"
 msgstr "Polje `%(field_name)s` ne postoji"
 
 #. module: base
+#: code:addons/base/ir/ir_model.py:298
+#, python-format
+msgid ""
+"Field names can only contain characters, digits and underscores (up to 63)."
+msgstr ""
+
+#. module: base
+#: code:addons/base/ir/ir_model.py:307
+#, python-format
+msgid "Field names must be unique per model."
+msgstr ""
+
+#. module: base
 #: model:ir.actions.act_window,name:base.action_model_fields
 #: model:ir.model,name:base.model_ir_model_fields
 #: model:ir.model.fields,field_description:base.field_ir_model_field_id
@@ -8133,6 +8146,8 @@ msgid ""
 "Final placeholder expression, to be copy-pasted in the desired template "
 "field."
 msgstr ""
+"Konačni rezervirani izraz koji se treba kopirati i zalijepiti u željeno "
+"polje predloška."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_accountant
@@ -9749,7 +9764,7 @@ msgstr "Izrael"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_rating_project_issue
 msgid "Issue Rating"
-msgstr ""
+msgstr "Ocjenjivanje problema"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_issue
@@ -10251,7 +10266,7 @@ msgstr "Launchpad"
 #. module: base
 #: model:ir.module.category,name:base.module_category_lead_automation
 msgid "Lead Automation"
-msgstr ""
+msgstr "Automatizacija potencijala"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_crm_project_issue
@@ -14664,7 +14679,7 @@ msgstr "Tečaj valute u odnosu na valutu sa tečajem 1."
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_attachment_res_id
 msgid "The record id this is attached to."
-msgstr ""
+msgstr "Id ovog zapisa pridružen je"
 
 #. module: base
 #: code:addons/models.py:2952 code:addons/models.py:3168
@@ -16036,6 +16051,8 @@ msgid ""
 "When a relationship field is selected as first field, this field lets you "
 "select the target field within the destination document model (sub-model)."
 msgstr ""
+"Kada je odnosno polje odabrano kao prvo polje, ovo Vam polje omogućava "
+"odabir ciljanog polja unutar odredišnog modela dokumenta (pod-model)."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_server_sub_object
@@ -16043,6 +16060,8 @@ msgid ""
 "When a relationship field is selected as first field, this field shows the "
 "document model the relationship goes to."
 msgstr ""
+"Kada je vezno polje odabrano kao prvo polje, ovo polje prikazuje model "
+"dokumenta prema kojem ide veza."
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_workflow_diagram

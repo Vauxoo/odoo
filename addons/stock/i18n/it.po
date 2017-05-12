@@ -1038,7 +1038,7 @@ msgstr "Per lotti"
 #. module: stock
 #: selection:product.template,tracking:0
 msgid "By Unique Serial Number"
-msgstr ""
+msgstr "Per numero seriale unico"
 
 #. module: stock
 #: code:addons/stock/models/stock_move.py:397
@@ -1931,7 +1931,7 @@ msgstr "Ubicazione di Destinazione"
 #: model:ir.model.fields,field_description:stock.field_stock_picking_location_dest_id
 #: model:ir.ui.view,arch_db:stock.view_stock_quant_form
 msgid "Destination Location Zone"
-msgstr ""
+msgstr "Zona di destinazione"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_procurement_order_move_dest_id
@@ -2125,7 +2125,7 @@ msgstr "Modello excel"
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.product_template_search_form_view_stock
 msgid "Exhausted Stock"
-msgstr ""
+msgstr "Stock Esaurito"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move_date_expected
@@ -2865,7 +2865,7 @@ msgstr "Inventari"
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_inventory_filter
 msgid "Inventories Month"
-msgstr ""
+msgstr "Mese Inventari"
 
 #. module: stock
 #: model:ir.actions.act_window,name:stock.stock_picking_type_action
@@ -3739,7 +3739,7 @@ msgstr ""
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.product_template_search_form_view_stock
 msgid "Negative Stock"
-msgstr ""
+msgstr "Stock Negativo"
 
 #. module: stock
 #: code:addons/stock/models/stock_scrap.py:19
@@ -3787,7 +3787,7 @@ msgstr ""
 #. module: stock
 #: selection:product.template,tracking:0
 msgid "No Tracking"
-msgstr ""
+msgstr "Nessuna tracciatura"
 
 #. module: stock
 #: selection:stock.config.settings,group_stock_adv_location:0
@@ -4350,7 +4350,7 @@ msgstr ""
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_inventory_filter
 msgid "Physical Inventories by Month"
-msgstr ""
+msgstr "Inventari Fisici per Mese"
 
 #. module: stock
 #: model:stock.location,name:stock.stock_location_locations
@@ -4887,7 +4887,7 @@ msgstr "Quantità in possesso"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move_reserved_availability
 msgid "Quantity Reserved"
-msgstr ""
+msgstr "Quantità Riservata"
 
 #. module: stock
 #: code:addons/stock/wizard/stock_change_product_qty.py:78
@@ -5327,7 +5327,7 @@ msgstr "Regole"
 #: model:ir.actions.act_window,name:stock.action_procurement_compute
 #: model:ir.ui.menu,name:stock.menu_procurement_compute
 msgid "Run Reordering Rules"
-msgstr ""
+msgstr "Esegui regole di riordino"
 
 #. module: stock
 #: model:ir.ui.menu,name:stock.menu_stock_proc_schedulers

@@ -1086,7 +1086,7 @@ msgstr "Postalamalar"
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_maintenance_request
 msgid "Maintenance Requests"
-msgstr ""
+msgstr "Bakım Talepleri"
 
 #. module: mass_mailing
 #: model:res.groups,name:mass_mailing.group_mass_mailing_campaign
@@ -1533,7 +1533,7 @@ msgstr "Örnek Posta Gönder"
 #. module: mass_mailing
 #: model:mail.mass_mailing.stage,name:mass_mailing.campaign_stage_1
 msgid "Schedule"
-msgstr "Ajanda"
+msgstr "Planla"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mail_mass_mailing_schedule_date

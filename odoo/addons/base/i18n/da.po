@@ -12,13 +12,14 @@
 # Jesper Carstensen <jc@danodoo.dk>, 2016
 # Jesper Carstensen <info@danodoo.dk>, 2016
 # Pernille Kristensen <pernillekristensen1994@gmail.com>, 2016
+# Visti Kristensen <visti@vkdata.dk>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-27 11:58+0000\n"
 "PO-Revision-Date: 2017-01-27 11:58+0000\n"
-"Last-Translator: Pernille Kristensen <pernillekristensen1994@gmail.com>, 2016\n"
+"Last-Translator: Visti Kristensen <visti@vkdata.dk>, 2017\n"
 "Language-Team: Danish (https://www.transifex.com/odoo/teams/41243/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4122,7 +4123,7 @@ msgstr "Aktioner"
 #. module: base
 #: model:ir.ui.view,arch_db:base.action_view_company_form_link_2_currencies
 msgid "Activate"
-msgstr ""
+msgstr "Aktivér"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_cron_active
@@ -5234,7 +5235,7 @@ msgstr ""
 #. module: base
 #: code:addons/base/ir/ir_model.py:549
 #, python-format
-msgid "Cannot rename field to %s, because that field already exists!"
+msgid "Cannot rename/delete fields that are still present in views:"
 msgstr ""
 
 #. module: base
@@ -6556,7 +6557,7 @@ msgstr "Database"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_anonymization
 msgid "Database Anonymization"
-msgstr ""
+msgstr "Database anonymisering"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment_db_datas
@@ -6855,7 +6856,7 @@ msgstr "Diagram"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_lang_direction
 msgid "Direction"
-msgstr ""
+msgstr "Retning"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodulereference
@@ -7039,7 +7040,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_forum_doc
 msgid "Documentation"
-msgstr ""
+msgstr "Dokumentation"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_documentation_examples
@@ -7651,6 +7652,19 @@ msgstr "Felttype"
 #: code:addons/base/ir/ir_ui_view.py:895
 #, python-format
 msgid "Field `%(field_name)s` does not exist"
+msgstr ""
+
+#. module: base
+#: code:addons/base/ir/ir_model.py:298
+#, python-format
+msgid ""
+"Field names can only contain characters, digits and underscores (up to 63)."
+msgstr ""
+
+#. module: base
+#: code:addons/base/ir/ir_model.py:307
+#, python-format
+msgid "Field names must be unique per model."
 msgstr ""
 
 #. module: base
@@ -10825,7 +10839,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_change_password_user_new_passwd
 msgid "New Password"
-msgstr ""
+msgstr "Ny adgangskode"
 
 #. module: base
 #: selection:ir.actions.act_url,target:0
@@ -11568,7 +11582,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_logging_path
 #: model:ir.model.fields,field_description:base.field_res_font_path
 msgid "Path"
-msgstr ""
+msgstr "Sti"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_payment_acquirer
@@ -12254,7 +12268,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_subscription
 msgid "Recurring Documents"
-msgstr ""
+msgstr "Gentagne dokumenter"
 
 #. module: base
 #: code:addons/base/module/module.py:322
@@ -12510,7 +12524,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment_res_name
 msgid "Resource Name"
-msgstr ""
+msgstr "Navn på ressourse"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_wkf_instance_res_type
@@ -13588,7 +13602,7 @@ msgstr ""
 #: model:ir.module.category,name:base.module_category_survey
 #: model:ir.module.module,shortdesc:base.module_survey
 msgid "Survey"
-msgstr ""
+msgstr "Undersøgelse"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_survey_crm
@@ -13598,7 +13612,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_hr_recruitment_survey
 msgid "Surveys"
-msgstr ""
+msgstr "Undersøgelser"
 
 #. module: base
 #: model:res.country,name:base.sj
@@ -14488,7 +14502,7 @@ msgstr "Touchscreen-grænseflade for butikker"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_tour
 msgid "Tours"
-msgstr ""
+msgstr "Ture"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_event

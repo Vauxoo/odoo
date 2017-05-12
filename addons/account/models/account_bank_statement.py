@@ -265,12 +265,12 @@ class AccountBankStatement(models.Model):
         """ Changes statement state to Running."""
         for statement in self:
             if not statement.name:
-                context = {'ir_sequence_date', statement.date}
+                context = {'ir_sequence_date': statement.date}
                 if statement.journal_id.sequence_id:
-                    st_number = statement.journal_id.sequence_id.with_context(context).next_by_id()
+                    st_number = statement.journal_id.sequence_id.with_context(**context).next_by_id()
                 else:
                     SequenceObj = self.env['ir.sequence']
-                    st_number = SequenceObj.with_context(context).next_by_code('account.bank.statement')
+                    st_number = SequenceObj.with_context(**context).next_by_code('account.bank.statement')
                 statement.name = st_number
             statement.state = 'open'
 
@@ -568,7 +568,7 @@ class AccountBankStatementLine(models.Model):
         domain_reconciliation = ['&', '&', ('statement_id', '=', False), ('account_id', 'in', reconciliation_aml_accounts), ('payment_id','<>', False)]
 
         # Black lines = unreconciled & (not linked to a payment or open balance created by statement
-        domain_matching = ['&', ('reconciled', '=', False), '|', ('payment_id','=',False), ('statement_id', '<>', False)]
+        domain_matching = [('reconciled', '=', False)]
         if self.partner_id.id or overlook_partner:
             domain_matching = expression.AND([domain_matching, [('account_id.internal_type', 'in', ['payable', 'receivable'])]])
         else:

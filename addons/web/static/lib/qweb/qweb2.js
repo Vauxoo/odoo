@@ -129,12 +129,15 @@ var QWeb2 = {
                 }
                 return r.join('');
             } else {
+                // avoid XMLSerializer with text node for IE
+                if (node.nodeType == 3) {
+                    return node.data;
+                }
                 if (typeof XMLSerializer !== 'undefined') {
                     return (new XMLSerializer()).serializeToString(node);
                 } else {
                     switch(node.nodeType) {
                     case 1: return node.outerHTML;
-                    case 3: return node.data;
                     case 4: return '<![CDATA[' + node.data + ']]>';
                     case 8: return '<!-- ' + node.data + '-->';
                     }
@@ -327,7 +330,8 @@ QWeb2.Engine = (function() {
                         if (self.tools.trim(text_node.nodeValue)) {
                             return self.tools.exception("Error: text is not allowed between branching directives");
                         }
-                        text_node.remove();
+                        // IE <= 11.0 doesn't support ChildNode.remove
+                        text_node.parentNode.removeChild(text_node);
                     }
                 } else {
                     return self.tools.exception("Error: t-elif and t-else directives must be preceded by a t-if or t-elif directive");

@@ -29,19 +29,21 @@
 # Ana Juaristi <ajuaristio@gmail.com>, 2016
 # Ivan Nieto <ivan.n.s@tuta.io>, 2016
 # Alejandro Die Sanchis <marketing@domatix.com>, 2016
-# Luis Martínez Ontalba <luismaront@gmail.com>, 2016
-# José Antonio Cuello <yopli2000@gmail.com>, 2016
+# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2016
+# José Antonio Cuello <inactive+Yopli2k@transifex.com>, 2016
 # Kiko <kiko@comunitea.com>, 2016
 # Soluntec <abraham@soluntec.es>, 2017
 # Mariano Rodríguez <mahrodriguez@gmail.com>, 2017
 # Cristian Salamea <ovnicraft@gmail.com>, 2017
+# Gelo Joga Landoo <gj@landoo.es>, 2017
+# David Arnold <blaggacao@users.noreply.github.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-27 11:58+0000\n"
 "PO-Revision-Date: 2017-01-27 11:58+0000\n"
-"Last-Translator: Cristian Salamea <ovnicraft@gmail.com>, 2017\n"
+"Last-Translator: David Arnold <blaggacao@users.noreply.github.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1016,6 +1018,24 @@ msgid ""
 "* Includes an extensible generic email composition assistant, that can turn into a mass-mailing assistant and is capable of interpreting simple *placeholder expressions* that will be replaced with dynamic data when each email is actually sent.\n"
 "    "
 msgstr ""
+"\n"
+"Red social orientada a empresas\n"
+"===============================\n"
+"El módulo de redes sociales provee una capa de abstracción de la red social unificada que permitir a las aplicaciones mostrar un completo\n"
+"historial de comunicación en los documentos con un sistema de correo electrónico totalmente integrado y un sistema de gestión de mensajes.\n"
+"\n"
+"Permite a los usuarios leer y enviar mensajes como si fueran correos electrónicos. También provee de hilos de mensajes y mecanismos de suscripción que permite seguir documentos y estar constantemente actualizado sobre las últimas noticias.\n"
+"\n"
+"Funcionalidades principales\n"
+"------------------------------------\n"
+"* Historial de comunicaciones limpio y renovado para cualquier documento de Odoo que pueda servir como un tema de conversación\n"
+"* Mecanismo de suscripción actualizado con los nuevos mensajes para los documentos de interés\n"
+"* Hilos de mensajes unificados para ver los mensajes recientes y la actividad de los documentos seguidos\n"
+"* Comunicación de los usuarios a través de esos hilos\n"
+"* Diseño de conversación por hilos sobre los documentos\n"
+"* Se basa en el servidor de correo saliente global - un sistema de gestión de correo electrónico integrado - permitiendo enviar correos con un motor de procesamiento configurable basado en un planificador. \n"
+"* Incluye un asistente de composición de correo electrónico genérico que puede convertirse en un asistente de envío de correo masivo y es capaz de interpretar expresiones simples, que serán reemplazadas con datos dinámicos cuando cada correo se envíe.\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_ve
@@ -1084,6 +1104,18 @@ msgid ""
 "please go to http://translations.launchpad.net/openerp-costa-rica.\n"
 "    "
 msgstr ""
+"\n"
+"Plan de cuentas para Costa Rica.\n"
+"=================================\n"
+"\n"
+"Incluye:\n"
+"---------\n"
+"    * account.account.template\n"
+"    * account.tax.template\n"
+"    * account.chart.template\n"
+"\n"
+"Todo está en inglés con traducción a español. Más traducciones son bienvenidas, por favor vayan a http://translations.launchpad.net/openerp-costa-rica.\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_cl
@@ -1223,6 +1255,33 @@ msgid ""
 " https://www.rrif.hr/dok/preuzimanje/rrif-rp2012.rar\n"
 "\n"
 msgstr ""
+"\n"
+"Localización croata\n"
+"===================\n"
+"\n"
+"Autor: Goran Kliska, Slobodni programi d.o.o., Zagreb\n"
+"http://www.slobodni-programi.hr\n"
+"\n"
+"Contribuciones:\n"
+"Tomislav Bošnjaković, Storm Computers: tipovi konta\n"
+"Ivan Vađić, Slobodni programi: tipovi konta\n"
+"\n"
+"Descripción:\n"
+"\n"
+"Plan de cuentas croata (RRIF ver.2012)\n"
+"\n"
+"RRIF-ov računski plan za poduzetnike za 2012.\n"
+"Vrste konta\n"
+"Kontni plan prema RRIF-u, dorađen u smislu kraćenja naziva i dodavanja analitika\n"
+"Porezne grupe prema poreznoj prijavi\n"
+"Porezi PDV obrasca\n"
+"Ostali porezi \n"
+"Osnovne fiskalne pozicije\n"
+"\n"
+"Izvori podataka:\n"
+"http://www.rrif.hr/dok/preuzimanje/rrif-rp2011.rar\n"
+"http://www.rrif.hr/dok/preuzimanje/rrif-rp2012.rar\n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_portal
@@ -1486,6 +1545,8 @@ msgid ""
 "=====================================================\n"
 "        "
 msgstr ""
+"\n"
+"Activar parámetros UTM en enlaces"
 
 #. module: base
 #: model:ir.module.module,description:base.module_auth_crypt
@@ -1560,6 +1621,16 @@ msgid ""
 "Belgian cash register. It allows the communication on with a certified Fiscal\n"
 "Data Module but will not modify the behaviour of the Point of Sale.\n"
 msgstr ""
+"\n"
+"Controlador de hardware del módulo de datos fiscales\n"
+"===================================================\n"
+"\n"
+"Este módulo permite a un cliente de punto de venta comunicarse con un\n"
+"\"Belgian Fiscal Data Module\".\n"
+"\n"
+"Este módulo ** no ** convierte un módulo Odoo TPV en un \"certified\n"
+"Belgian cash register\".  Permite la comunicación con un \" Belgian Fiscal Data Module\"\n"
+"pero no modificará el comportamiento del TPV.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_fr_hr_payroll
@@ -1948,6 +2019,22 @@ msgid ""
 "This module also uses analytic accounting and is compatible with the invoice on timesheet module so that you are able to automatically re-invoice your customers' expenses if your work by project.\n"
 "    "
 msgstr ""
+"\n"
+"Gestionar gastos por empleado \n"
+"=============================\n"
+"\n"
+"Esta aplicación le permite gestionar los gastos diarios de sus empleados. Le permite acceder a las notas de gastos concediéndole permisos para validarlas o rechazarlas. Una vez validada se crea la factura para el empleado.\n"
+"Los empleados pueden introducir sus propios gastos que se registrarán automáticamente en la contabilidad una vez validados por los responsables.\n"
+"\n"
+"El flujo completo:\n"
+"----------------------\n"
+"* Gasto en borrador\n"
+"* Confirmación y envío de la hoja por el empleado\n"
+"* Validación por su responsable\n"
+"* Validación por el contable y creación de asiento contable\n"
+"\n"
+"Este módulo también utiliza la contabilidad analítica y es compatible con el módulo de facturación de partes de empleado por lo que es posible facturar los gastos a sus clientes si está trabajando por proyecto.\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_purchase
@@ -2020,6 +2107,21 @@ msgid ""
 "\n"
 "A synchronization with an internal agenda (Meetings of the CRM module) is also possible in order to automatically create a meeting when a leave request is accepted by setting up a type of meeting in Leave Type.\n"
 msgstr ""
+"\n"
+"Gestiona ausencias y solicitudes de asignación\n"
+"====================================\n"
+"\n"
+"Esta aplicación controla la planificación de vacaciones de su compañía. Permite a los empleados solicitar vacaciones. Luego, los responsables pueden revisar las solicitudes de vacaciones y aprobarlas o rechazarlas. De esta manera usted puede controlar en conjunto la planificación de las vacaciones para una compañía o departamento.\n"
+"\n"
+"Puede configurar distintos tipos de ausencias (enfermedad, vacaciones, días compensatorios, ...) y distribuirlas para un empleado o departamento rápidamente usando las solicitudes de asignación. Un empleado puede también hacer una petición para más días creando una nueva asignación. Esto incrementará el total de días disponibles para ese tipo de ausencia (si la petición es aceptada).\n"
+"\n"
+"Puede seguir las ausencias de diferentes maneras con los siguientes informes: \n"
+"\n"
+"* Resumen de ausencias\n"
+"* Ausencias por departamento\n"
+"* Análisis de ausencias\n"
+"\n"
+"También es posible la sincronización con la agenda interna (Reuniones del módulo de CRM) de cara a crear automáticamente una reunión cuando se acepta una solicitud de vacaciones, configurando un tipo reunión como tipo de ausencia.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_stock
@@ -2180,6 +2282,21 @@ msgid ""
 ".. SAT: http://www.sat.gob.mx/\n"
 "    "
 msgstr ""
+"\n"
+"Configuración mínima de contabilidad para México.\n"
+"============================================\n"
+"\n"
+"Este plan de cuentas es una propuesta mínima para usar la características de contabilidad de OpenERP.\n"
+"\n"
+"No pretende ser toda la localización para México, sólo los datos mínimos para empezar de 0 en la localización mexicana.\n"
+"\n"
+"Este módulo y sus contenidos es actualizado frecuentemente por el equipo de openerp-mexico.\n"
+"\n"
+"Con este módulo tendrá:\n"
+"\n"
+" - Plan de cuentas mínimo comprobado en entornos en producción.\n"
+" - Plan de impuestos mínimo, para cumplir con los requisitos del SAT (http://www.sat.gob.mx/).\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_analytic
@@ -2246,6 +2363,15 @@ msgid ""
 "    - sets up New Zealand taxes.\n"
 "    "
 msgstr ""
+"\n"
+"Módulo de contabilidad para Nueva Zelanda\n"
+"==========================================\n"
+"\n"
+"Plan de cuentas básico y localización australiana.\n"
+"\n"
+"También:\n"
+"- activa una serie de monedas regionales.\n"
+"- establece los impuestos australianos."
 
 #. module: base
 #: model:ir.module.module,description:base.module_base_import
@@ -2481,6 +2607,15 @@ msgid ""
 "\n"
 "        "
 msgstr ""
+"\n"
+"Tablero Odoo\n"
+"=============\n"
+"* Acceso rápido a aplicaciones instaladas\n"
+"* Creación rápida de usuarios\n"
+"* Acceso desde un mismo sitio a todos los planificadores\n"
+"* Acceso rápido al `App Store` y al `Theme Store`\n"
+"\n"
+"        "
 
 #. module: base
 #: model:ir.module.module,description:base.module_website_event_track
@@ -2741,6 +2876,27 @@ msgid ""
 "* Refund previous sales\n"
 "    "
 msgstr ""
+"\n"
+"Proceso de venta rápido y sencillo\n"
+"================================\n"
+"\n"
+"Este módulo permite gestionar las ventas de su tienda fácilmente con un interfaz táctil totalmente basado en web.\n"
+"Es compatible con todos los tablets PC y con el iPad, ofreciendo múltiples métodos de pago.\n"
+"\n"
+"La selección del producto se puede hacer de varias formas: \n"
+"\n"
+"* Usando un lector de código de barras\n"
+"* Examinando categorías de productos o vía búsqueda de texto.\n"
+"\n"
+"Características principales\n"
+"----------------------------------\n"
+"* Introducción rápida de la venta\n"
+"* Escoja un método de pago (la forma rápida) o divida el pago entre varios métodos de pago\n"
+"* Calculo del importe a devolver\n"
+"* Cree y confirme el listado de compra automáticamente\n"
+"* Permite al usuario crear una factura automáticamente\n"
+"* Reembolsa ventas previas\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_timesheet_sheet
@@ -2861,6 +3017,16 @@ msgid ""
 " * Channel Subscription\n"
 " * Supported document types : PDF, images, YouTube videos and Google Drive documents)\n"
 msgstr ""
+"\n"
+"Comparte y publica vídeos, presentaciones y documentos\n"
+"======================================================\n"
+"\n"
+" * Aplicación web\n"
+" * Gestión del canal\n"
+" * Filtros y etiquetas\n"
+" * Estadísticas de presentación\n"
+" * Suscripción al canal\n"
+" * Formatos soportados : PDF, imágenes, vídeos de YouTube y documentos de Google Drive\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_sg
@@ -3451,6 +3617,12 @@ msgid ""
 "Install some generic chart of accounts.\n"
 "    "
 msgstr ""
+"\n"
+"Este es el módulo base para gestionar el plan contable genérico de Odoo.\n"
+"=====================================================================\n"
+"\n"
+"Instalar un plan contable genérico.\n"
+" "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_uk
@@ -3758,6 +3930,26 @@ msgid ""
 "- Definition of barcode aliases that allow to identify the same product with different barcodes\n"
 "- Support for encodings EAN-13, EAN-8 and UPC-A\n"
 msgstr ""
+"\n"
+"Este módulo añade soporte para escaneo y análisis de códigos de barras.\n"
+"\n"
+"Escaneo\n"
+"-----------\n"
+"Utilice un escáner USB (que imita entradas de teclado) para trabajar con códigos de barras en Odoo.\n"
+"El escáner debe estar configurado para no utilizar prefijo y usar retorno de carro o tabulador como sufijo.\n"
+"El retardo entre cada entrada de caracteres debe ser menor o igual a 50 milisegundos.\n"
+"La mayoría de los escáneres de código de barras funcionarán sin necesidad de configuración.\n"
+"Sin embargo, asegúrese de que el escáner utiliza la misma disposición de teclado que el dispositivo al que está conectado.\n"
+"O bien configurando el teclado del dispositivo en QWERTY de EE. UU. (Valor predeterminado para la mayoría de los lectores)\n"
+"O bien cambiando la configuración del teclado del escáner (consulte el manual).\n"
+"\n"
+"Análisis\n"
+"----------\n"
+"Los códigos de barras se interpretan utilizando las reglas definidas por una nomenclatura.\n"
+"Proporciona las siguientes características:\n"
+"- Patrones para identificar códigos de barras que contienen un valor numérico (por ejemplo, peso, precio)\n"
+"- Definición de alias de código de barras que permiten identificar el mismo producto con diferentes códigos de barras\n"
+"- Soporte para codificaciones EAN-13, EAN-8 y UPC-A\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_sale_margin
@@ -4117,6 +4309,12 @@ msgid ""
 "with a single statement.\n"
 "    "
 msgstr ""
+"\n"
+"Este módulo instala la base para las cuentas bancarias IBAN (International Bank Account Number) y comprueba su validez.\n"
+"==================================================================================================================\n"
+"\n"
+"Incluye la posibilidad de extraer correctamente las cuentas locales representadas por una cuenta IBAN con un sólo extracto.\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_association
@@ -4145,6 +4343,10 @@ msgid ""
 "The check settings are located in the accounting journals configuration page.\n"
 "    "
 msgstr ""
+"\n"
+"Este módulo ofrece las funcionalidades básicas para pagar mediante cheque impreso.\n"
+"Debe ser utilizado como una dependencia para módulos que aportan formatos específicos de cheques para un país determinado.\n"
+"La configuración de cheques se encuentra en la página de configuración de diarios contables."
 
 #. module: base
 #: model:ir.module.module,description:base.module_purchase_mrp
@@ -4273,6 +4475,15 @@ msgid ""
 "still unreserve a picking.\n"
 "    "
 msgstr ""
+"\n"
+"Este módulo reservará automáticamente los productos del stock cuando se confirme un pedido de venta\n"
+"==================================================================================================\n"
+"Cuando se confirme un pedido de venta o cuando se le añada más cantidad de producto, las cantidades se reservarán si están disponibles.\n"
+"\n"
+"En su configuración mas sencilla esta sería una forma fácil de trabajar: lo primero que entra, lo primero que sale. Sin embargo, cuando no está instalado, puede reservar manualmente o ejecutar los planificadores que harán que el sistema\n"
+"tenga en cuenta la fecha esperada y la prioridad.\n"
+"\n"
+"Si esta reserva automática reservase demasiado, todavía puede eliminar la reserva de un albarán."
 
 #. module: base
 #: model:ir.module.module,description:base.module_web_kanban_gauge
@@ -4371,6 +4582,14 @@ msgid ""
 "      bilgileriniz, ilgili para birimi gibi bilgiler isteyecek.\n"
 "    "
 msgstr ""
+"\n"
+"Türkiye için Tek düzen hesap planı şablonu Odoo Modülü.\n"
+"==========================================================\n"
+"\n"
+"Bu modül kurulduktan sonra, Muhasebe yapılandırma sihirbazı çalışır\n"
+"    * Sihirbaz sizden hesap planı şablonu, planın kurulacağı şirket, banka hesap\n"
+"      bilgileriniz, ilgili para birimi gibi bilgiler isteyecek.\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_ae
@@ -4468,7 +4687,7 @@ msgid ""
 "* Analysis graph for costs\n"
 msgstr ""
 "\n"
-"Vehículos, leasing, seguros, costes\n"
+"Vehículos, alquiler, seguros, costes\n"
 "===================================\n"
 "Con este módulo, Odoo le ayuda a gestionar todos sus vehículos, el contrato asociado a dichos vehículos y sus servicios, registro de combustible, costes y otras muchas características necesarias para la gestión de su flota de vehículo(s).\n"
 "\n"
@@ -6123,7 +6342,7 @@ msgstr "Instalación automática"
 #: code:addons/base/module/module.py:650
 #, python-format
 msgid "Automatic install of downloaded Apps is currently disabled."
-msgstr ""
+msgstr "Instalación automática de Apps descargadas esta desactivada."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_translation_state
@@ -6616,8 +6835,9 @@ msgstr "¡No se puede duplicar la configuración!"
 #. module: base
 #: code:addons/base/ir/ir_model.py:549
 #, python-format
-msgid "Cannot rename field to %s, because that field already exists!"
-msgstr "¡No se puede renombrar el campo a %s, porque ese campo ya existe!"
+msgid "Cannot rename/delete fields that are still present in views:"
+msgstr ""
+"No puede renombrar/borrar campos que todavía están presente en vistas:"
 
 #. module: base
 #: code:addons/base/res/res_lang.py:219
@@ -9078,6 +9298,46 @@ msgid ""
 "* Alexis de Lattre <alexis.delattre@akretion.com>\n"
 "\n"
 msgstr ""
+"Fichier d'Échange Informatisé (FEC) pour la France\n"
+"==================================================\n"
+"\n"
+"Ce module permet de générer le fichier FEC tel que définit par `l'arrêté du 29\n"
+"Juillet 2013 <http://legifrance.gouv.fr/eli/arrete/2013/7/29/BUDE1315492A/jo/texte>`\n"
+"portant modification des dispositions de l'article A. 47 A-1 du\n"
+"livre des procédures fiscales.\n"
+"\n"
+"Cet arrêté prévoit l'obligation pour les sociétés ayant une comptabilité\n"
+"informatisée de pouvoir fournir à l'administration fiscale un fichier\n"
+"regroupant l'ensemble des écritures comptables de l'exercice. Le format de ce\n"
+"fichier, appelé *FEC*, est définit dans l'arrêté.\n"
+"\n"
+"Le détail du format du FEC est spécifié dans le bulletin officiel des finances publiques `BOI-CF-IOR-60-40-20-20131213 <http://bofip.impots.gouv.fr/bofip/ext/pdf/createPdfWithAnnexePermalien/BOI-CF-IOR-60-40-20-20131213.pdf?doc=9028-PGP&identifiant=BOI-CF-IOR-60-40-20-20131213>` du 13 Décembre 2013. Ce module implémente le fichier\n"
+"FEC au format texte et non au format XML, car le format texte sera facilement\n"
+"lisible et vérifiable par le comptable en utilisant un tableur.\n"
+"\n"
+"La structure du fichier FEC généré par ce module a été vérifiée avec le logiciel\n"
+"*Test Compta Demat* version 1_00_05 disponible sur\n"
+"`le site de la direction générale des finances publiques <http://www.economie.gouv.fr/dgfip/outil-test-des-fichiers-des-ecritures-comptables-fec>`\n"
+"en utilisant une base de donnée Odoo réelle.\n"
+"\n"
+"Configuration\n"
+"=============\n"
+"\n"
+"Aucune configuration n'est nécessaire.\n"
+"\n"
+"Utilisation\n"
+"===========\n"
+"\n"
+"Pour générer le *FEC*, allez dans le menu *Accounting > Reporting > French Statements > FEC* qui va démarrer l'assistant de génération du FEC.\n"
+"\n"
+"Credits\n"
+"=======\n"
+"\n"
+"Contributors\n"
+"------------\n"
+"\n"
+"* Alexis de Lattre <alexis.delattre@akretion.com>\n"
+"\n"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_act_server_model_object_field
@@ -9142,6 +9402,21 @@ msgstr "Tipo de campo"
 #, python-format
 msgid "Field `%(field_name)s` does not exist"
 msgstr "El campo `%(field_name)s` no existe"
+
+#. module: base
+#: code:addons/base/ir/ir_model.py:298
+#, python-format
+msgid ""
+"Field names can only contain characters, digits and underscores (up to 63)."
+msgstr ""
+"Nombres de campos solo pueden contener caracteres, dígitos y subrayado "
+"(hasta 63)."
+
+#. module: base
+#: code:addons/base/ir/ir_model.py:307
+#, python-format
+msgid "Field names must be unique per model."
+msgstr "Nombres de campos deben ser únicos por modelo."
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_model_fields
@@ -16265,6 +16540,8 @@ msgstr "A actualizar"
 msgid ""
 "To enable it, make sure this directory exists and is writable on the server:"
 msgstr ""
+"Para activarlo, asegúrese de que la carpeta existe y tiene permisos para "
+"escribir."
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.ir_actions_todo_tree

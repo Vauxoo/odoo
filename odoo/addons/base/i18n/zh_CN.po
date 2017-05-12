@@ -8,13 +8,22 @@
 # Yuan Xulei <hi@yxl.name>, 2016
 # 卓忆科技 <zhanghao@jointd.com>, 2016
 # Bo Cao <cao.poobo@hotmail.com>, 2017
+# Gary Wei <Gary.wei@elico-corp.com>, 2017
+# xiaobin wu <bd5dml@gmail.com>, 2017
+# Eddie Lim <bhweelim@yahoo.com>, 2017
+# Talway <9010446@qq.com>, 2017
+# waveyeung <waveyeung@qq.com>, 2017
+# 菜小蛇 <lttlsnk@gmail.com>, 2017
+# fausthuang <faust_huang@hotmail.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# 老肖 <xfx@oscg.com.hk>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-27 11:58+0000\n"
 "PO-Revision-Date: 2017-01-27 11:58+0000\n"
-"Last-Translator: Bo Cao <cao.poobo@hotmail.com>, 2017\n"
+"Last-Translator: 老肖 <xfx@oscg.com.hk>, 2017\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -133,12 +142,12 @@ msgstr ""
 "---------\n"
 "\n"
 "* 日本公司会计科目表和税务模板。\n"
-"* 本模板大概不会覆盖到一个公司所有必须的科目。基于模板，你需要自行增加/删除/修改科目。\n"
+"* 本模板大概不会设置到一个公司所有必须的科目。基于模板，您需要自行增加/删除/修改科目。\n"
 "\n"
 "备注:\n"
 "-----\n"
 "\n"
-"* 财政状况 '内税' 和 '外税'，用来处理POS实施中可能会碰到的一些问题。 [1] 正常情况下你不会用到这些。\n"
+"* 财政状况 '内税' 和 '外税'，用来处理POS实施中可能会碰到的一些问题。 [1] 正常情况下您不会用到这些。\n"
 "\n"
 "[1] 访问 https://github.com/odoo/odoo/pull/6470 查看更多细节。"
 
@@ -314,24 +323,23 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"stock_calendar 模块处理 最小库存规则 (=订购点 / 再订购规则) 考虑了采购日历和送货日历两种模式。\n"
+"stock_calendar模块以不同的方式处理最小库存规则（=订货点/订货规则）, 考虑采购日历和交付日历的可能性。\n"
 "\n"
-"通常情况下，调度检查所有订购点并基于当前库存和未来库存调拨（已经确定的出入库）产生补货。对于生鲜产品的公司来说，这可能有问题，因为如果你提前两个星期预订产品，但产品明天到达，产品不能在两个星期内保鲜。\n"
+"通常，调度程序将通过所有的订货点，并创建补货，补货的数量考虑当前库存和所有未来库存移动。对于生鲜产品的公司，这是一个问题，因为，如果你订购产品的是超过2周才需要的，而现在他们明天就到达，那么这些产品在两周内不会再新鲜。\n"
 "\n"
-"为了解决这个问题，我们增加了送货日历到订购点上。未来库存调拨 (也反应了当前的需求)只会考虑那些日历上第二次送货前的那些。\n"
-"因此如果我每星期周四周五送货，我在周一订货，可以在周二收到，所有的需求直到周五。\n"
+"为了解决这个问题，我们向订货点添加了交货日历。未来库存移动（它们代表需求）将被考虑, 将限于根据日历的第二次交货之前的库存移动。因此，如果我每周星期二和星期五交货，当我在星期一订购，将在星期二交付礼拜五之前所有需求。\n"
 "\n"
-"然而此方案并不完美。因为采购需求可能会变化，如果你只需要在补货前一天创建采购订单。 (除非你已经采购的足够多)。为此，我们增加了一个采购日历，订购点会基于采购日历上的采购日期计算。 (最后一次执行日期会检查这次是否需要触发)\n"
+"然而，这不够好，因为您只想在交货日期之前创建采购订单，因为未来的需求可能会改变。 （否则你可能已经订购太多了）为此，我们添加了采购日历，并且只有当调度程序在采购日历指定的时间内运行时，才会触发。（最后一个执行日期还将检查它是否在这段时间内还没有被触发）\n"
 "\n"
-"然而, 有时我们需要重复下单: 假设我们周五需要订购两次: 一个给周一的采购订单和一个给周二的采购订单。我们就需要同时下两张采购订单。\n"
-"为了解决这个问题, 我们在发货日期上和采购日期上增加了一个需求组，\n"
-"我们会检查对应的送货日期. 在相应的需求单上, 我们可以要求传递需求使得可以周一一张、周二一张。\n"
+"然而，有时我们有双重订单：假设我们需要在星期五订购两次：星期一的采购订单，和星期二的采购订单。然后我们同时需要有两个订单。\n"
+"为了处理这一点，我们在日历行放置补货组，对于采购日历行，我们需要做，我们将检查相应的交货行。\n"
 "\n"
-"普通订购点, 采购订单上的日期是基于产品/公司的交期计算的。\n"
-"这个并不对应日历上的日期计算方法，所以采购/送货日期是基于日历上设置。\n"
+"在补货组，我们可以告诉传播它自己到采购，这样才可以有一个订单是星期一，一个订单是星期二。\n"
 "\n"
-"我们使用的日历基于每周，它可以设置一个开始日期，结束日期，例如周二送货。\n"
-"也可以在不送货的日期上设置例外情况。"
+"对于正常的订货点，采购订单上的日期是基于产品/公司的系统延迟，\n"
+"这与日历所做的不一致，因此，购买/交付日期也将根据日历设置。\n"
+"\n"
+"我们使用的日历是每周一次。但是，有可能有开始日期和结束日期。例如：周二交货。也可以在没有的时候放置例外。"
 
 #. module: base
 #: model:ir.module.module,description:base.module_maintenance
@@ -458,11 +466,11 @@ msgid ""
 "It assigns manager and user access rights to the Administrator for the accounting application and only user rights to the Demo user.\n"
 msgstr ""
 "\n"
-"会计访问权限 \n"
+"会计访问权\n"
 "======================== \n"
-"它让管理员拥有所有会计功能的访问权限，如分类账项目（journal items）和会计科目（chart of accounts）等。\n"
+"它让管理员拥有所有会计功能的访问权利，如分类账项目（journal items）和会计科目（chart of accounts）等。\n"
 " \n"
-"它让管理员（Administrator）拥有会计应用模块的管理者权限及用户权限，而演示用户（Demo user）仅拥有用户的权限。\n"
+"它让管理员（Administrator）拥有会计应用模块的管理者权限及用户权利，而演示用户（Demo user）仅拥有用户的权利。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_be_hr_payroll_account
@@ -506,7 +514,7 @@ msgstr ""
 "\n"
 "你可以在销售单上添加如下额外的日期:\n"
 "------------------------------------------------------------\n"
-"    * 申请日期(在分拣单上将用作预计日期)\n"
+"    * 申请日期(在拣货单上将用作预计日期)\n"
 "    * 创建日期\n"
 "    * 有效日期\n"
 
@@ -583,7 +591,7 @@ msgid ""
 "The wizard to launch the report has several options to help you get the data you need.\n"
 msgstr ""
 "\n"
-"在产品上添加一个报告菜单，用于按发票计算销售、采购、毛利和其他有趣的指标。\n"
+"在产品上添加一个报告菜单，基于发票计算销售、采购、毛利，以及其他有趣的指标。\n"
 "=============================================================================================================================\n"
 "\n"
 "此向导加载的报表有若干选项用来帮助你获取你需要的数据。\n"
@@ -1558,24 +1566,23 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"\\n\n"
-"法国薪资规则.\\n\n"
-"=====================\\n\n"
-"\\n\n"
-"    - 法国本地化人事薪资配置\\n\n"
-"    - 法国薪资单主要贡献计算规则,分骨干和非骨干\\n\n"
-"    - 新薪资单报告\\n\n"
-"\\n\n"
-"待办事项:\\n\n"
-"-----\\n\n"
-"    - 在补贴扣缴方面和年假模块集成\\n\n"
-"    - 在薪资单创建自动匹配科目方面和人事薪资科目集成\\n\n"
-"      \\n\n"
-"    - 继续与捐款模块集成. 现在只实施主要贡献管理功能\\n\n"
-"      \\n\n"
-"    - 在Webbit下修改报表\\n\n"
-"    - 在 payslip.line with appears_in_payslip = False 时显示薪资单交互界面，而不是薪资单报表\\n\n"
-"      \\n\n"
+"French Payroll Rules.\n"
+"=====================\n"
+"\n"
+"    - Configuration of hr_payroll for French localization\n"
+"    - All main contributions rules for French payslip, for 'cadre' and 'non-cadre'\n"
+"    - New payslip report\n"
+"\n"
+"TODO:\n"
+"-----\n"
+"    - Integration with holidays module for deduction and allowance\n"
+"    - Integration with hr_payroll_account for the automatic account_move_line\n"
+"      creation from the payslip\n"
+"    - Continue to integrate the contribution. Only the main contribution are\n"
+"      currently implemented\n"
+"    - Remake the report under webkit\n"
+"    - The payslip.line with appears_in_payslip = False should appears in the\n"
+"      payslip interface, but not in the payslip report\n"
 "    "
 
 #. module: base
@@ -1642,8 +1649,8 @@ msgstr ""
 "================================================== \n"
 "\n"
 "    * 费用编制\n"
-"    * 支付编制\n"
-"    * 公司供款管理\n"
+"    * 付款编制\n"
+"    * 公司缴纳管理\n"
 "    "
 
 #. module: base
@@ -1785,7 +1792,20 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"印度工资表薪资规则. ============================ - 印度本地化人事薪资配置 - 印度薪资单所有供款规则. * 新薪资单报表 * 雇员合同 * 允许配置基本工资 /总额/净工资 * 雇员薪资单 * 津贴 / 扣缴 * 与休假管理集成 * 医疗补助， 差旅津贴， 育儿津贴 ... - 薪资通知单 - 按人头年薪和按雇员年薪报告\n"
+"Indian Payroll Salary Rules.\n"
+"============================\n"
+"\n"
+"    -Configuration of hr_payroll for India localization\n"
+"    -All main contributions rules for India payslip.\n"
+"    * New payslip report\n"
+"    * Employee Contracts\n"
+"    * Allow to configure Basic / Gross / Net Salary\n"
+"    * Employee PaySlip\n"
+"    * Allowance / Deduction\n"
+"    * Integrated with Holiday Management\n"
+"    * Medical Allowance, Travel Allowance, Child Allowance, ...\n"
+"    - Payroll Advice and Report\n"
+"    - Yearly Salary by Head and Yearly Salary by Employee Report\n"
 "    "
 
 #. module: base
@@ -1882,7 +1902,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"管理直销订单===============这个模块增加了一个预设直销分拣类型当采购路线允许配置直销产品和订单。直销被用来当产品直接从代理发往客户(直接发送)不经过销售商的仓库。在这种情况下没有内部传输文件是必须的。\n"
+"管理直销订单===============这个模块增加了一个预设直销拣货类型当采购路线允许配置直销产品和订单。直销被用来当产品直接从代理发往客户(直接发送)不经过销售商的仓库。在这种情况下没有内部传输文件是必须的。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_expense
@@ -2379,7 +2399,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"Odoo Web 编辑部件\n"
+"Odoo Web编辑器挂件\n"
 "==========================\n"
 
 #. module: base
@@ -2672,7 +2692,7 @@ msgid ""
 msgstr ""
 "\n"
 "产品扩展。这个模块增加：\n"
-"  * 使用产品变型表单上的一个按钮，从产品的物料清单计算标准价格，基于BOM里面的材料以及工作中心。 必要时，它会创建相应的会计分录。\n"
+"  * 使用产品变体表单上的一个按钮，从产品的物料清单计算标准价格，基于BOM里面的材料以及工作中心。 必要时，它会创建相应的会计分录。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_website_crm_partner_assign
@@ -4182,8 +4202,7 @@ msgstr ""
 "先来的，先服务。 并且, 当未安装时\n"
 "您可以手动保留或在考虑预期日期和优先级的情况下运行计划。\n"
 "\n"
-"如果此自动预留会预留太多，您可以\n"
-"只保留一个分拣。"
+"如果此自动预留会预留太多，您可以只保留一个拣货。"
 
 #. module: base
 #: model:ir.module.module,description:base.module_web_kanban_gauge
@@ -4417,7 +4436,7 @@ msgstr ""
 "关键特征\n"
 "------------ \n"
 "*库存计价（定期或自动）\n"
-"*从分拣开票\n"
+"*从拣货开票\n"
 "\n"
 "仓库管理仪表板/报告包括：\n"
 "------------------------------------------------------ \n"
@@ -4512,7 +4531,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%A - Full weekday name."
-msgstr "%A - 工作日全称。"
+msgstr "%A - 星期几全称。"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -4547,7 +4566,7 @@ msgstr "%Y - 4位数的年份。\""
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%a - Abbreviated weekday name."
-msgstr "%a - 工作日名称缩写。"
+msgstr "%a - 星期几缩写。"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -4943,7 +4962,7 @@ msgid ""
 "to see. Whether they can have a read, write, create and delete access right "
 "can be managed from here."
 msgstr ""
-"用户组用于把一系列功能分配给用户，使其能够访问特定的模块和功能。可以新建或修改现有的用户组，这样就可以自定义该组用户的菜单，或者对某个对象的插删改查权限。"
+"用户组用于把一系列功能分配给用户，使其能够访问特定的模块和功能。可以新建或修改现有的用户组，这样就可以自定义该组用户的菜单，或者对某个对象的增删改查权利。"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_hw_posbox_homepage
@@ -5005,7 +5024,7 @@ msgstr "具有仿真方法的模块"
 #: code:addons/base/ir/ir_qweb/fields.py:377
 #, python-format
 msgid "A unit must be provided to duration widgets"
-msgstr "对期间挂件必须提供一个单位"
+msgstr "必须提供一个单位给时长挂件"
 
 #. module: base
 #: selection:res.company,rml_paper_format:0
@@ -5074,7 +5093,7 @@ msgstr "访问菜单"
 #: model:ir.ui.view,arch_db:base.view_view_form
 #: model:res.groups,name:base.group_erp_manager
 msgid "Access Rights"
-msgstr "访问权限"
+msgstr "访问权"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_groups_form
@@ -6133,7 +6152,7 @@ msgstr "Belgium - Payroll with Accounting"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_be_invoice_bba
 msgid "Belgium - Structured Communication"
-msgstr "比利时 - 结构化 沟通"
+msgstr "比利时 - 结构化通信接口"
 
 #. module: base
 #: model:res.country,name:base.bz
@@ -6194,7 +6213,7 @@ msgstr "布尔值"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_theme_bootswatch
 msgid "Bootswatch Theme"
-msgstr "Bootswatch Theme"
+msgstr "Bootswatch 主题"
 
 #. module: base
 #: model:res.country,name:base.ba
@@ -6399,8 +6418,8 @@ msgstr "不能复制配置信息！"
 #. module: base
 #: code:addons/base/ir/ir_model.py:549
 #, python-format
-msgid "Cannot rename field to %s, because that field already exists!"
-msgstr "不能重命名字段为 %s，因为已经存在同名字段!"
+msgid "Cannot rename/delete fields that are still present in views:"
+msgstr ""
 
 #. module: base
 #: code:addons/base/res/res_lang.py:219
@@ -8687,7 +8706,7 @@ msgstr "额外的"
 #: model:ir.module.category,name:base.module_category_usability
 #: model:ir.ui.view,arch_db:base.user_groups_view
 msgid "Extra Rights"
-msgstr "额外的权限"
+msgstr "额外的权利"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_extra_tools
@@ -8883,6 +8902,19 @@ msgstr "字段类型"
 #, python-format
 msgid "Field `%(field_name)s` does not exist"
 msgstr "字段`%(field_name)s`不存在"
+
+#. module: base
+#: code:addons/base/ir/ir_model.py:298
+#, python-format
+msgid ""
+"Field names can only contain characters, digits and underscores (up to 63)."
+msgstr ""
+
+#. module: base
+#: code:addons/base/ir/ir_model.py:307
+#, python-format
+msgid "Field names must be unique per model."
+msgstr ""
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_model_fields
@@ -9271,7 +9303,7 @@ msgstr "甘特图"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_kanban_gauge
 msgid "Gauge Widget for Kanban"
-msgstr "看板视图的计量工具"
+msgstr "看板的测量挂件"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_form
@@ -9352,7 +9384,7 @@ msgid ""
 "global rules, but any additional group rule will add more permissions"
 msgstr ""
 "全局规则 "
-"(没有指定组)是强制的，不能被旁路。群组规则授予额外的权限，但是约束在全局规则的范围内。第一个群组规则进一步限制了全局规则，但是任何附加组规则将增加更多权限"
+"(没有指定组)是强制的，不能被旁路。群组规则授予额外的许可，但是约束在全局规则的范围内。第一个群组规则进一步限制了全局规则，但是任何附加组规则将增加更多权限"
 
 #. module: base
 #: model:ir.module.module,description:base.module_website_mail
@@ -9455,7 +9487,7 @@ msgstr "必填群组 "
 #. module: base
 #: model:ir.model.fields,help:base.field_res_groups_share
 msgid "Group created to set access rights for sharing data with some users."
-msgstr "为设置一些用户的共享数据访问权限所建立的用户群组"
+msgstr "为设置一些用户的共享数据访问权所建立的用户群组"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_country_group_form
@@ -10182,7 +10214,7 @@ msgstr "无效"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_users_search
 msgid "Inactive Users"
-msgstr "未激活的用户"
+msgstr "无效用户"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_wkf_activity_in_transitions
@@ -10654,7 +10686,7 @@ msgstr "工作岗位"
 #. module: base
 #: model:ir.module.module,summary:base.module_hr
 msgid "Jobs, Departments, Employees Details"
-msgstr "职位，部门，员工信息"
+msgstr "工作，部门，员工详情"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_hr_recruitment
@@ -11467,12 +11499,12 @@ msgstr "多对多 关系"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_product_margin
 msgid "Margins by Products"
-msgstr "利润 按产品"
+msgstr "毛利，按产品"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_margin
 msgid "Margins in Sales Orders"
-msgstr "销售订单利润"
+msgstr "销售订单的毛利"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_marketing
@@ -11901,17 +11933,17 @@ msgstr "黑山共和国"
 #. module: base
 #: model:ir.ui.view,arch_db:base.ir_logging_search_view
 msgid "Month"
-msgstr "月份"
+msgstr "月"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.sequence_view
 msgid "Month: %(month)s"
-msgstr "月份：%(month)s"
+msgstr "月：%(month)s"
 
 #. module: base
 #: selection:ir.cron,interval_type:0
 msgid "Months"
-msgstr "月份"
+msgstr "月"
 
 #. module: base
 #: model:res.country,name:base.ms
@@ -12563,7 +12595,7 @@ msgstr "其他"
 #: model:ir.module.category,name:base.module_category_extra
 #: model:ir.ui.view,arch_db:base.user_groups_view
 msgid "Other Extra Rights"
-msgstr "其它额外权限"
+msgstr "其它额外权利"
 
 #. module: base
 #: selection:ir.module.module,license:0
@@ -13076,7 +13108,7 @@ msgid ""
 "Portal members have specific access rights (such as record rules and restricted menus).\n"
 "                They usually do not belong to the usual Odoo groups."
 msgstr ""
-"门户成员有特定的访问权限 (如记录规则和限制菜单)。\n"
+"门户成员有特定的访问权(如记录规则和限制菜单)。\n"
 "他们通常不属于普通的Odoo群组。"
 
 #. module: base
@@ -13262,7 +13294,7 @@ msgstr "公开"
 msgid ""
 "Public users have specific access rights (such as record rules and restricted menus).\n"
 "                They usually do not belong to the usual Odoo groups."
-msgstr "公众用户有特定的访问权限 (如记录规则和限制菜单)。 他们通常不属于通常的Odoo群组"
+msgstr "公众用户有特定的访问权(如记录规则和限制菜单)。 他们通常不属于通常的Odoo组"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_membership
@@ -13433,12 +13465,12 @@ msgstr "比率"
 #: model:ir.model.fields,field_description:base.field_ir_model_access_perm_read
 #: model:ir.ui.view,arch_db:base.ir_access_view_search
 msgid "Read Access"
-msgstr "读取访问"
+msgstr "读访问"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_search
 msgid "Read Access Right"
-msgstr "读取访问权限"
+msgstr "读访问权限"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields_readonly
@@ -16990,12 +17022,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_model_access_perm_write
 #: model:ir.ui.view,arch_db:base.ir_access_view_search
 msgid "Write Access"
-msgstr "写入访问"
+msgstr "写访问"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_search
 msgid "Write Access Right"
-msgstr "写入访问 权限"
+msgstr "写访问权限"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_server_code
@@ -17153,7 +17185,7 @@ msgstr "不能删除用户的默认语言！"
 #: code:addons/base/ir/ir_values.py:412
 #, python-format
 msgid "You do not have the permission to perform this operation!!!"
-msgstr "你没有权限执行这个操作!!!"
+msgstr "你没有许可执行这个操作!!!"
 
 #. module: base
 #: model:ir.actions.act_window,help:base.open_module_tree
@@ -17187,7 +17219,7 @@ msgstr "你试图升级的模块 %s 依赖模块： %s. 但该模块在你的系
 msgid ""
 "You will be able to define additional access rights by editing the newly "
 "created user under the Settings / Users menu."
-msgstr "通过编辑在设置/用户菜单下的新建用户，你将能够定义额外的进入权限。"
+msgstr "通过编辑在设置/用户菜单下的新建用户，你将能够定义额外的访问权。"
 
 #. module: base
 #: code:addons/base/ir/ir_mail_server.py:206
@@ -17782,7 +17814,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_access_rights
 msgid "test of access rights and rules"
-msgstr "访问权限和规则的测试 "
+msgstr "访问权和访问规则的测试 "
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_read_group

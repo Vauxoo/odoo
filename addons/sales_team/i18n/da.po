@@ -332,7 +332,7 @@ msgstr "Møder"
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_salesteams_view_kanban
 msgid "More <i class=\"fa fa-caret-down\"/>"
-msgstr ""
+msgstr "Mere <i class=\"fa fa-caret-down\"/>"
 
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_view_form
@@ -606,7 +606,7 @@ msgstr ""
 #: code:addons/sales_team/static/src/js/sales_team_dashboard.js:83
 #, python-format
 msgid "Wrong value entered!"
-msgstr ""
+msgstr "Forkert værdi indtastet"
 
 #. module: sales_team
 #. openerp-web

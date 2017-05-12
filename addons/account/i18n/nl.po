@@ -583,6 +583,16 @@ msgstr ""
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
+msgid "<span>invoice</span>"
+msgstr "<span>factuur</span>"
+
+#. module: account
+#: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
+msgid "<span>refund</span>"
+msgstr "<span>credit factuur</span>"
+
+#. module: account
+#: model:ir.ui.view,arch_db:account.account_invoice_report_duplicate
 msgid "<span>Duplicate</span>"
 msgstr "<span>Kopie factuur</span>"
 
@@ -614,7 +624,7 @@ msgstr "<span>handelingen</span>"
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "<span>Reconciliation</span>"
-msgstr "<span>Afpunting</span>"
+msgstr "<span>Afletteren</span>"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -769,7 +779,7 @@ msgstr "<strong>Aanbetaling ticketten</strong>"
 #. module: account
 #: model:ir.ui.view,arch_db:account.report_invoice_document
 msgid "<strong>Description:</strong>"
-msgstr "<strong>Omschrijving:</strong>"
+msgstr "<strong>Referentie:</strong>"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.report_trialbalance
@@ -1106,7 +1116,7 @@ msgstr ""
 #: code:addons/account/models/account_move.py:731
 #, python-format
 msgid "A reconciliation must involve at least 2 move lines."
-msgstr "Een afpunting moet minstens 2 mutatieregels hebben."
+msgstr "Een aflettering moet minstens 2 mutatieregels hebben."
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:867
@@ -5200,7 +5210,7 @@ msgstr "Inclusief eerste balans"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_tax_analytic
 msgid "Include in Analytic Cost"
-msgstr "In kostenplaatsen inbegrijpen"
+msgstr "Opnemen in kostenplaatsen"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_tax_price_include
@@ -5865,7 +5875,7 @@ msgstr "Open houden"
 #: model:ir.ui.view,arch_db:account.report_journal
 #, python-format
 msgid "Label"
-msgstr "Label"
+msgstr "Omschrijving"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_tax_description
@@ -6938,7 +6948,7 @@ msgstr "Open betaling"
 #: code:addons/account/static/src/js/account_reconciliation_widgets.js:2060
 #, python-format
 msgid "Open balance"
-msgstr "Openbalans"
+msgstr "Open balans"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_cashbox_line_number
@@ -7550,7 +7560,7 @@ msgstr "Plus vaste activa"
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_form
 msgid "Plus Net Profit"
-msgstr "Plus netto winst"
+msgstr "Plus nettowinst"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_form
@@ -10723,7 +10733,7 @@ msgid ""
 "You cannot change the value of the reconciliation on this account as it "
 "already has some moves"
 msgstr ""
-"U kunt de waarde van deze aflettering op dit grootboek niet veranderen "
+"U kunt de waarde van deze aflettering op dit grootboek niet wijzigen "
 "aangezien reeds boekingen zijn gemaakt"
 
 #. module: account

@@ -947,7 +947,7 @@ msgstr "セールスマネージャは主に次の2つのレポートを使用�
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_base_partner_merge_automatic_wizard_exclude_contact
 msgid "A user associated to the contact"
-msgstr "連絡先に関連付けたユーザー"
+msgstr "連絡先に関連付けたユーザ"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1427,7 +1427,7 @@ msgstr "カラーインデクス"
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Community &amp; Enterprise users:"
-msgstr "コミュニティとエンタープライズユーザー："
+msgstr "コミュニティとエンタープライズユーザ："
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report_company_id
@@ -1474,7 +1474,7 @@ msgstr "よくできました！"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor7
 msgid "Consulting"
-msgstr ""
+msgstr "コンサルティング"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1850,7 +1850,7 @@ msgstr "このサブタイプのために投稿したメッセージに追加さ
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor5
 msgid "Design"
-msgstr ""
+msgstr "デザイン"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -2077,7 +2077,7 @@ msgstr "終了期限月"
 msgid ""
 "Explanation text to help users using the star and priority mechanism on "
 "stages or issues that are in this stage."
-msgstr "この段階にあるステージや課題で、スターと優先順位の仕組みを使用した、ユーザーを支援するテキスト。"
+msgstr "この段階にあるステージや課題で、スターと優先順位の仕組みを使用した、ユーザを支援するテキスト。"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
@@ -2400,7 +2400,7 @@ msgstr "受信Eメール"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor4
 msgid "Information"
-msgstr ""
+msgstr "情報"
 
 #. module: crm
 #. openerp-web
@@ -2516,7 +2516,7 @@ msgstr "最終更新日"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_users_calendar_last_notif_ack
 msgid "Last notification marked as read from base Calendar"
-msgstr ""
+msgstr "既読とマークされた最後のカレンダ通知"
 
 #. module: crm
 #: code:addons/crm/models/crm_lead.py:841
@@ -3027,7 +3027,7 @@ msgstr ""
 #: code:addons/crm/static/src/js/web_planner_crm.js:34
 #, python-format
 msgid "Negotiation"
-msgstr ""
+msgstr "交渉"
 
 #. module: crm
 #. openerp-web
@@ -3239,7 +3239,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Online users: we do it for you!"
-msgstr "オンラインユーザー：私たちはあなたのためにそれを行います！"
+msgstr "オンラインユーザ: 私たちはあなたのためにそれを行います！"
 
 #. module: crm
 #: code:addons/crm/wizard/base_partner_merge.py:323
@@ -3384,7 +3384,7 @@ msgstr "オプション"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor8
 msgid "Other"
-msgstr ""
+msgstr "その他"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
@@ -3615,7 +3615,7 @@ msgstr "予想売上高"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor1
 msgid "Product"
-msgstr ""
+msgstr "製品"
 
 #. module: crm
 #. openerp-web
@@ -3674,7 +3674,7 @@ msgstr ""
 #: code:addons/crm/static/src/js/web_planner_crm.js:26
 #, python-format
 msgid "Quotation sent"
-msgstr ""
+msgstr "見積送信"
 
 #. module: crm
 #. openerp-web
@@ -3749,7 +3749,7 @@ msgstr "関連項目"
 #. module: crm
 #: model:ir.actions.server,name:crm.action_email_reminder_lead
 msgid "Reminder to User"
-msgstr "ユーザーにリマインドする"
+msgstr "ユーザにリマインドする"
 
 #. module: crm
 #: model:ir.actions.server,subject:crm.action_email_reminder_lead
@@ -3934,7 +3934,7 @@ msgstr "付番"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor3
 msgid "Services"
-msgstr ""
+msgstr "サービス"
 
 #. module: crm
 #. openerp-web
@@ -4021,7 +4021,7 @@ msgstr "スライド"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor2
 msgid "Software"
-msgstr ""
+msgstr "ソフトウェア"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -4440,7 +4440,7 @@ msgstr "追跡"
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor6
 msgid "Training"
-msgstr ""
+msgstr "トレーニング"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report_lead_type
