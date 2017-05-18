@@ -210,8 +210,8 @@
                                                 <field name="qty_invoiced" invisible="not context.get('show_sale')"/>
                                             </div>
                                             <field name="price_unit"/>
-                                            <label for="discount" groups="sale.group_discount_per_so_line"/>
-                                            <div name="discount" groups="sale.group_discount_per_so_line">
+                                            <label for="discount" groups="account.group_discount_per_so_line"/>
+                                            <div name="discount" groups="account.group_discount_per_so_line">
                                                 <field name="discount" class="oe_inline"/> %%
                                             </div>
                                         </group>
@@ -256,7 +256,7 @@
                                         attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
                                     <field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
                                         attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
-                                    <field name="discount" groups="sale.group_discount_per_so_line"/>
+                                    <field name="discount" groups="account.group_discount_per_so_line"/>
                                     <field name="price_subtotal" widget="monetary"/>
                                     <field name="qty_delivered_updateable" invisible="1"/>
                                     <field name="procurement_ids" invisible="1"/>

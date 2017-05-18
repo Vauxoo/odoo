@@ -58,7 +58,7 @@ class sale_order_line(osv.osv):
         res = super(sale_order_line, self).product_id_change()
         for line in self:
             context_partner = dict(self.env.context, partner_id=line.order_id.partner_id.id)
-            if line.product_id and line.order_id.pricelist_id and self.env.user.has_group('sale.group_discount_per_so_line'):
+            if line.product_id and line.order_id.pricelist_id and self.env.user.has_group('account.group_discount_per_so_line'):
                 pricelist_context = dict(context_partner, uom=line.product_uom.id, date=line.order_id.date_order)
                 list_price = line.order_id.pricelist_id.with_context(pricelist_context).price_rule_get(line.product_id.id, line.product_uom_qty or 1.0, line.order_id.partner_id)
 
@@ -87,7 +87,7 @@ class sale_order_line(osv.osv):
         if not self.product_uom:
             self.price_unit = 0.0
             return
-        if self.order_id.pricelist_id and self.order_id.partner_id and self.env.user.has_group('sale.group_discount_per_so_line'):
+        if self.order_id.pricelist_id and self.order_id.partner_id and self.env.user.has_group('account.group_discount_per_so_line'):
             context_partner = dict(self.env.context, partner_id=self.order_id.partner_id.id)
             pricelist_context = dict(context_partner, uom=self.product_uom.id, date=self.order_id.date_order)
             list_price = self.order_id.pricelist_id.with_context(pricelist_context).price_rule_get(self.product_id.id, self.product_uom_qty or 1.0, self.order_id.partner_id)
