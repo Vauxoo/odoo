@@ -22,7 +22,6 @@ pydot==1.2.3
 pyparsing==2.1.10
 pyPdf==1.13
 pyserial==3.1.1
-git+https://github.com/Infinite-Code/PyChart.git
 python-dateutil==2.5.3
 python-ldap==2.4.27
 python-openid==2.2.5
