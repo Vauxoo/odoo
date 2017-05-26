@@ -96,6 +96,7 @@ class ResPartner(models.Model):
             # country code or empty VAT number), so we fall back to the simple check.
             return self.simple_vat_check(country_code, vat_number)
 
+
     @api.constrains('vat', 'commercial_partner_country_id')
     def check_vat(self):
         if self.env.user.company_id.vat_check_vies:
@@ -119,6 +120,7 @@ class ResPartner(models.Model):
 
     def _construct_constraint_msg(self, country_code):
         self.ensure_one()
+        
         vat_no = "'CC##' (CC=Country Code, ##=VAT Number)"
         vat_no = _ref_vat.get(country_code) or vat_no
         if self.env.user.company_id.vat_check_vies:
