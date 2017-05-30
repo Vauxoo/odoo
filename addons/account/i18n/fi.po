@@ -13,15 +13,15 @@
 # Pekko Tuomisto <pekko.tuomisto@web-veistamo.fi>, 2016
 # salmemik <salmemik@gmail.com>, 2016
 # Svante Suominen <svante.suominen@web-veistamo.fi>, 2016
-# Timo Koukkari <timo.koukkari@seamk.fi>, 2015
+# Timo Koukkari <ti.ko@netikka.fi>, 2015
 # Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo 9.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-09-22 13:16+0000\n"
-"PO-Revision-Date: 2016-12-12 18:36+0000\n"
-"Last-Translator: Atte Isopuro <atte.isopuro@web-veistamo.fi>\n"
+"PO-Revision-Date: 2017-03-29 08:40+0000\n"
+"Last-Translator: Martin Trigaux\n"
 "Language-Team: Finnish (http://www.transifex.com/odoo/odoo-9/language/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -719,7 +719,7 @@ msgstr "<strong>Yhteensä</strong>"
 msgid ""
 "<strong>Validate the bill</strong><br/> after encoding the products and "
 "taxes."
-msgstr ""
+msgstr "<strong>Vahvista lasku</strong><br/> tuotteen ja verojen määrittelyn jälkeen."
 
 #. module: account
 #: model:ir.actions.act_window,help:account.action_view_bank_statement_tree
@@ -729,7 +729,7 @@ msgid ""
 "                payments on a daily basis. You can enter the coins that are in\n"
 "                your cash box, and then post entries when money comes in or\n"
 "                goes out of the cash box."
-msgstr ""
+msgstr "Kassa mahdollistaa käteiskirjauksien hallinnan käteiskirjanpidossa. Tämä ominaisuus antaa helpon tavan seurata päivittäin käteismaksuja. Voit syöttää kolikot jotka ovat kassassa syöttää tapahtumat kun rahaa tulee sisään tai menee ulos kassasta.  "
 
 #. module: account
 #: code:addons/account/models/account_invoice.py:1206
@@ -930,7 +930,7 @@ msgstr "Tiliin kohdistus"
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_move_reversal
 msgid "Account Move Reversal"
-msgstr ""
+msgstr "Tilisiirron kumoaminen"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_accounts_wizard_acc_name
@@ -1020,7 +1020,7 @@ msgstr "Tilimalli"
 #: model:ir.model.fields,field_description:account.field_account_chart_template_property_stock_valuation_account_id
 #: model:ir.model.fields,field_description:account.field_res_company_property_stock_valuation_account_id
 msgid "Account Template for Stock Valuation"
-msgstr ""
+msgstr "Tilipohja varaston arvon määrittämiseksi"
 
 #. module: account
 #: model:ir.actions.act_window,name:account.action_account_template_form
@@ -1082,7 +1082,7 @@ msgstr "Tilin vientirivin kohdistaminen (alaskirjaus)"
 #. module: account
 #: model:ir.model,name:account.model_account_move_reversal
 msgid "Account move reversal"
-msgstr ""
+msgstr "Tilisiirron kumoaminen"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position_account_account_src_id
@@ -1101,7 +1101,7 @@ msgstr "Tili tunniste"
 msgid ""
 "Account that will be set on invoice tax lines for invoices. Leave empty to "
 "use the expense account."
-msgstr ""
+msgstr "Tili joka asetetaan laskun veroriveille. Jätä tyhjäksi käyttääksesi kulutiliä."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_tax_refund_account_id
@@ -1109,7 +1109,7 @@ msgstr ""
 msgid ""
 "Account that will be set on invoice tax lines for refunds. Leave empty to "
 "use the expense account."
-msgstr ""
+msgstr "Tili joka asetetaan laskun veroriveille hyviktyksiä varten. "
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position_account_account_dest_id
@@ -1158,7 +1158,7 @@ msgstr "Laskutuksen Dashboard"
 #: model:ir.model.fields,field_description:account.field_account_invoice_date
 #: model:ir.model.fields,field_description:account.field_account_invoice_refund_date
 msgid "Accounting Date"
-msgstr ""
+msgstr "Kirjauspäivä"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_move_line_form
@@ -3400,7 +3400,7 @@ msgstr "Näytä debet/kredit-sarakkeet"
 #: model:ir.model.fields,field_description:account.field_validate_account_move_display_name
 #: model:ir.model.fields,field_description:account.field_wizard_multi_charts_accounts_display_name
 msgid "Display Name"
-msgstr "Näytä nimi"
+msgstr "Näyttönimi"
 
 #. module: account
 #: selection:account.financial.report,display_detail:0
@@ -3699,7 +3699,7 @@ msgid ""
 "Exchange rates can be automatically updated once a day from <strong>Yahoo "
 "Finance</strong> or the <strong>European Central Bank</strong>. You can "
 "activate this feature in the bottom of the"
-msgstr ""
+msgstr "Vaihtokurssit voidaan päivittää automaattisesti <strong>Yahoo Finance</strong>- tai <strong>Euroopan Keskuspankin</strong> -palvelusta. Voit aktivoida tämän toiminnon ala"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_company_expects_chart_of_accounts
@@ -4430,7 +4430,7 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "In Odoo,"
-msgstr ""
+msgstr "Odoossa"
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:400
@@ -5963,7 +5963,7 @@ msgstr "Avoin"
 #: code:addons/account/static/src/xml/account_payment.xml:82
 #, python-format
 msgid "Open Payment"
-msgstr ""
+msgstr "Avoin maksu"
 
 #. module: account
 #: model:ir.actions.client,name:account.action_client_account_menu
@@ -5982,12 +5982,12 @@ msgstr "Avoin saldo"
 #. module: account
 #: model:ir.model.fields,help:account.field_account_cashbox_line_number
 msgid "Opening Unit Numbers"
-msgstr ""
+msgstr "Avataan kassakoneen numerot"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_operation_template_form
 msgid "Operation Templates"
-msgstr ""
+msgstr "Toimintomallit"
 
 #. module: account
 #: code:addons/account/wizard/account_reconcile.py:66
@@ -6015,7 +6015,7 @@ msgstr ""
 #: model:ir.model.fields,help:account.field_account_tax_tag_ids
 #: model:ir.model.fields,help:account.field_account_tax_template_tag_ids
 msgid "Optional tags you may want to assign for custom reporting"
-msgstr ""
+msgstr "Vapaaehtoiset avainsanat, joita voit lisätä kustomoituun raporttiin"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment_term_line_option
@@ -6503,7 +6503,7 @@ msgstr ""
 #. module: account
 #: model:ir.model,name:account.model_web_planner
 msgid "Planner"
-msgstr ""
+msgstr "Suunnittelija"
 
 #. module: account
 #: code:addons/account/wizard/pos_box.py:27
@@ -6568,12 +6568,12 @@ msgstr "Kirjaa"
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "Post All Entries"
-msgstr ""
+msgstr "Merkitse kaikki kirjaukset"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_payment_invoice_form
 msgid "Post Difference In"
-msgstr ""
+msgstr "Kirjaa erot:"
 
 #. module: account
 #: model:ir.actions.act_window,name:account.action_validate_account_move
@@ -7068,12 +7068,12 @@ msgstr ""
 #. module: account
 #: model:ir.model.fields,help:account.field_account_invoice_residual_company_signed
 msgid "Remaining amount due in the currency of the company."
-msgstr ""
+msgstr "Jäljelläoleva erääntynyt summa yrityksen valuutassa."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_invoice_residual_signed
 msgid "Remaining amount due in the currency of the invoice."
-msgstr ""
+msgstr "Jäjelläoleva eräntynyt summa laskun valuutassa."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_invoice_residual
@@ -7405,7 +7405,7 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "Set the default Sales and Purchase taxes"
-msgstr ""
+msgstr "Aseta oletus myynnin ja ostojen veroista"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_chart_template_visible
@@ -7504,7 +7504,7 @@ msgstr "Alkupäivä"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_balance_start
 msgid "Starting Balance"
-msgstr ""
+msgstr "Alkusaldo"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_cashbox_start_id
@@ -8189,6 +8189,14 @@ msgstr ""
 #, python-format
 msgid "The sequence of journal %s is deactivated."
 msgstr "Päiväkirjan %s järjestys ei ole käytössä."
+
+#. module: account
+#: code:addons/account/models/company.py:91
+#, python-format
+msgid ""
+"There are still unposted entries in the period you want to lock. You should "
+"either post or delete them."
+msgstr ""
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:170
