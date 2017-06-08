@@ -13,6 +13,10 @@
         <field name="name">OTROS</field>
     </record>
 
+    <record id="tax_group_perception" model="account.tax.group">
+        <field name="name">PERCEPTION</field>
+    </record>
+
     <!-- Account Tags -->
     <record id="tax_tag_sale_0" model="account.account.tag">
         <field name="name">Exonerado 0% Venta</field>
@@ -21,6 +25,11 @@
 
     <record id="tax_tag_sale_18" model="account.account.tag">
         <field name="name">IGV 18% Venta</field>
+        <field name="applicability">taxes</field>
+    </record>
+
+    <record id="tax_tag_sale_02" model="account.account.tag">
+        <field name="name">Percepción IGV 2%</field>
         <field name="applicability">taxes</field>
     </record>
 
@@ -42,6 +51,7 @@
       <field name="amount">18</field>
       <field name="amount_type">percent</field>
       <field name="type_tax_use">sale</field>
+      <field name="include_base_amount">True</field>
       <field name="account_id" ref="401110"/>
       <field name="refund_account_id" ref="401110"/>
       <field name="tax_group_id" ref="tax_group_igv"/>
@@ -56,6 +66,20 @@
       <field name="amount_type">percent</field>
       <field name="type_tax_use">sale</field>
       <field name="tag_ids" eval="[(6,0,[ref('tax_tag_sale_0')])]"/>
+    </record>
+
+    <record id="ITAX_02" model="account.tax.template">
+      <field name="chart_template_id" ref="pe_chart_template"/>
+      <field name="name">Percepción IGV 2% Venta</field>
+      <field name="description">Percepción IGV 2% Venta</field>
+      <field name="amount">2</field>
+      <field name="amount_type">percent</field>
+      <field name="sequence">100</field>
+      <field name="type_tax_use">sale</field>
+      <field name="tax_group_id" ref="tax_group_perception"/>
+      <field name="account_id" ref="401110"/>
+      <field name="refund_account_id" ref="401110"/>
+      <field name="tag_ids" eval="[(6,0,[ref('tax_tag_sale_02')])]"/>
     </record>
 
     <record id="OTAX_18" model="account.tax.template">
