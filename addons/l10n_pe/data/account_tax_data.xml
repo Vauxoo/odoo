@@ -17,6 +17,10 @@
         <field name="name">PERCEPTION</field>
     </record>
 
+    <record id="tax_group_detraction" model="account.tax.group">
+        <field name="name">DETRACTION</field>
+    </record>
+
     <!-- Account Tags -->
     <record id="tax_tag_sale_0" model="account.account.tag">
         <field name="name">Exonerado 0% Venta</field>
