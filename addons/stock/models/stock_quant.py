@@ -143,10 +143,10 @@ class Quant(models.Model):
         reserved_availability = move.reserved_availability
         # split quants if needed
         for quant, qty in quants:
-            if qty <= 0.0 or (quant and quant.qty <= 0.0):
-                raise UserError(_('You can not reserve a negative quantity or a negative quant.'))
             if not quant:
                 continue
+            if qty <= 0.0 or (quant and quant.qty <= 0.0):
+                raise UserError(_('You can not reserve a negative quantity or a negative quant.'))
             quant._quant_split(qty)
             quants_to_reserve_sudo |= quant
             reserved_availability += quant.qty
