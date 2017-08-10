@@ -48,9 +48,11 @@ class AccountAccount(models.Model):
     def _onchange_code(self):
         if self.company_id.country_id.id == self.env.ref('base.mx').id and self.code:
             tags = self.mx_search_tags(self.code)
-            self.tag_ids = self.tag_ids.filtered(
-                lambda r: r.color != 4) | tags
-
+            origin = self.env['account.account.tag']
+            for tag in self.tag_ids:
+                if tag.name[:2].isdigit():
+                    origin = self.tag_ids.search([('name', '=', tag.name)])
+            self.tag_ids = self.tag_ids - origin | tags
 
 class AccountAccountTag(models.Model):
     _inherit = 'account.account.tag'
