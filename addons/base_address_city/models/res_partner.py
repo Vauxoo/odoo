@@ -3,7 +3,7 @@
 
 from lxml import etree
 
-from odoo import api, models, fields
+from odoo import api, models, fields, SUPERUSER_ID
 
 class Partner(models.Model):
     _inherit = 'res.partner'
@@ -20,7 +20,10 @@ class Partner(models.Model):
     @api.model
     def _fields_view_get_address(self, arch):
         arch = super(Partner, self)._fields_view_get_address(arch)
-        if not self._context.get('no_address_format'):
+        # if contry_id has address_view_id then not overwrite view
+        company_id = self.env['res.users'].browse(SUPERUSER_ID).company_id
+        if (not self._context.get('no_address_format') or
+                company_id.country_id.address_view_id):
             return arch
         # render the partner address accordingly to address_view_id
         doc = etree.fromstring(arch)
