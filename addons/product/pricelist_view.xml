@@ -128,7 +128,7 @@
             <field name="model">product.pricelist</field>
             <field name="arch" type="xml">
                 <search string="Products Price Search">
-                    <field name="name" string="Products Price"/>
+                    <field name="name" string="Products Price List Name"/>
                     <field name="type"/>
                     <field name="active" />
                     <field name="currency_id" groups="base.group_multi_currency"/>

@@ -2405,8 +2405,8 @@ msgstr "Elementos de las tarifas de productos"
 
 #. module: product
 #: view:product.pricelist:product.product_pricelist_view_search
-msgid "Products Price"
-msgstr "Precio de los productos"
+msgid "Products Price List Name"
+msgstr "Nombre de tarifa de productos"
 
 #. module: product
 #: view:product.pricelist:product.product_pricelist_view
