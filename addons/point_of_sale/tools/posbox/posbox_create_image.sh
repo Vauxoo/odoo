@@ -83,6 +83,10 @@ sleep 5
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=734794
 sleep 2
 
+# kpartx needs sleep after add/remove partitions
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=734794
+sleep 2
+
 # resize filesystem
 e2fsck -f "${LOOP_MAPPER_PATH}" # resize2fs requires clean fs
 resize2fs "${LOOP_MAPPER_PATH}"
