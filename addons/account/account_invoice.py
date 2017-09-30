@@ -806,7 +806,8 @@ class account_invoice(models.Model):
             if inv.move_id:
                 continue
 
-            ctx = dict(self._context, lang=inv.partner_id.lang)
+            ctx = dict(self._context, lang=inv.partner_id.lang,
+                       novalidate=True)
 
             company_currency = inv.company_id.currency_id
             if not inv.date_invoice:
