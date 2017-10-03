@@ -40,3 +40,12 @@ class AccountChartTemplate(models.Model):
             'show_on_dashboard': True,
         })
         return res
+
+    def _get_account_vals(self, company, account_template, code_acc, tax_template_ref):
+        """ Add group_id value in dictionary to set this value when creating
+            accounts from templates
+        """
+        val = super(AccountChartTemplate, self)._get_account_vals(
+            company, account_template, code_acc, tax_template_ref)
+        val.update({'group_id': account_template.group_id.id})
+        return val
