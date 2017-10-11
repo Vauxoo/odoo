@@ -98,7 +98,11 @@ class ResPartner(models.Model):
 
     @api.constrains('vat', 'commercial_partner_country_id')
     def check_vat(self):
-        if self.env.user.company_id.vat_check_vies:
+        if self.env.context.get('company_id'):
+            company = self.env['res.company'].browse(self.env.context['company_id'])
+        else:
+            company = self.env.user.company_id
+        if company.vat_check_vies:
             # force full VIES online check
             check_func = self.vies_vat_check
         else:

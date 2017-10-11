@@ -13,13 +13,14 @@
 # Bo Cao <cao.poobo@hotmail.com>, 2017
 # 老窦 北京 <2662059195@qq.com>, 2017
 # waveyeung <waveyeung@qq.com>, 2017
+# Maie <m@maie.name>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-07-18 14:21+0000\n"
 "PO-Revision-Date: 2017-07-18 14:21+0000\n"
-"Last-Translator: waveyeung <waveyeung@qq.com>, 2017\n"
+"Last-Translator: Maie <m@maie.name>, 2017\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,7 +53,7 @@ msgid ""
 "                                <strong>Payment Status:</strong>"
 msgstr ""
 "<br/>\n"
-"<strong>付费状态:</strong>"
+"<strong>付款状态:</strong>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -99,6 +100,8 @@ msgid ""
 "<i class=\"fa fa-shopping-cart\"/>\n"
 "                    My cart"
 msgstr ""
+"<i class=\"fa fa-shopping-cart\"/>\n"
+"                    我的购物车"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.terms
@@ -110,7 +113,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart_lines
 msgid "<small><i class=\"fa fa-trash-o\"/> Remove</small>"
-msgstr ""
+msgstr "<small><i class=\"fa fa-trash-o\"/> 移除</small>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.extra_info
@@ -611,7 +614,7 @@ msgstr "<STRONG>价值主张：</STRONG>什么是这款产品的最终利益，�
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "<strong>Variants</strong> like size or color"
-msgstr ""
+msgstr "<strong>变体</strong> 例如尺寸或颜色"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.terms
@@ -1734,12 +1737,12 @@ msgstr "付款"
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_sale_order_payment_acquirer_id
 msgid "Payment Acquirer"
-msgstr "付款方式"
+msgstr "收单"
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_ecommerce_payment_acquirers
 msgid "Payment Acquirers"
-msgstr "付款方式"
+msgstr "收单"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.report_shop_saleorder_document
