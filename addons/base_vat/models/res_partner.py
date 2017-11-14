@@ -116,7 +116,7 @@ class ResPartner(models.Model):
                 vat = country_code + vat
         return vat
 
-    @api.constrains("vat")
+    @api.constrains("vat", "commercial_partner_country_id")
     def check_vat(self):
         if self.env.context.get('company_id'):
             company = self.env['res.company'].browse(self.env.context['company_id'])
@@ -131,20 +131,27 @@ class ResPartner(models.Model):
         for partner in self:
             if not partner.vat:
                 continue
-            #check with country code as prefix of the TIN
             vat_country, vat_number = self._split_vat(partner.vat)
             if not check_func(vat_country, vat_number):
                 #if fails, check with country code from country
                 country_code = partner.commercial_partner_id.country_id.code
                 if country_code:
                     if not check_func(country_code.lower(), partner.vat):
-                        msg = self._construct_constraint_msg(country_code.lower())
+                        _logger.info("Importing VAT Number [%s] is not valid !" % vat_number)
+                        msg = partner._construct_constraint_msg()
                         raise ValidationError(msg)
 
-    def _construct_constraint_msg(self, country_code):
+    def _construct_constraint_msg(self):
         self.ensure_one()
+
+        def default_vat_check(cn, vn):
+            # by default, a VAT number is valid if:
+            #  it starts with 2 letters
+            #  has more than 3 characters
+            return len(cn) == 2 and cn[0] in string.ascii_lowercase and cn[1] in string.ascii_lowercase
+
+        vat_country, vat_number = self._split_vat(self.vat)
         vat_no = "'CC##' (CC=Country Code, ##=VAT Number)"
-<<<<<<< HEAD
         if default_vat_check(vat_country, vat_number):
             vat_no = _ref_vat[vat_country] if vat_country in _ref_vat else vat_no
             if self.env.context.get('company_id'):
@@ -153,11 +160,6 @@ class ResPartner(models.Model):
                 company = self.env.user.company_id
             if company.vat_check_vies:
                 return '\n' + _('The VAT number [%s] for partner [%s] either failed the VIES VAT validation check or did not respect the expected format %s.') % (self.vat, self.name, vat_no)
-=======
-        vat_no = _ref_vat.get(country_code) or vat_no
-        if self.env.user.company_id.vat_check_vies:
-            return '\n' + _('The VAT number [%s] for partner [%s] either failed the VIES VAT validation check or did not respect the expected format %s.') % (self.vat, self.name, vat_no)
->>>>>>> 6de55387054... [IMP] base_vat: allow to re-use the 'vat' field of res.partner for localized TIN number algorithm without forcing to prefix that number with the country code (which is weird for people).
         return '\n' + _('The VAT number [%s] for partner [%s] does not seem to be valid. \nNote: the expected format is %s') % (self.vat, self.name, vat_no)
 
     __check_vat_ch_re1 = re.compile(r'(MWST|TVA|IVA)[0-9]{6}$')
