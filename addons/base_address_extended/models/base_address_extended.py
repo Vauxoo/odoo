@@ -138,3 +138,9 @@ class Partner(models.Model):
             # /!\ Note that a write(vals) would cause a recursion since it would bypass the cache
             for k, v in vals.items():
                 partner[k] = v
+
+    @api.model
+    def _address_fields(self):
+        address_fields = super(Partner, self)._address_fields()
+        address_fields += ['street_name', 'street_number', 'street_number2']
+        return address_fields
