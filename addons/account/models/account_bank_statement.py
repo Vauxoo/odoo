@@ -570,11 +570,13 @@ class AccountBankStatementLine(models.Model):
 
         # Black lines = unreconciled & (not linked to a payment or open balance created by statement
         domain_matching = [('reconciled', '=', False)]
-        if self.partner_id.id or overlook_partner:
-            domain_matching = expression.AND([domain_matching, [('account_id.internal_type', 'in', ['payable', 'receivable'])]])
-        else:
-            # TODO : find out what use case this permits (match a check payment, registered on a journal whose account type is other instead of liquidity)
-            domain_matching = expression.AND([domain_matching, [('account_id.reconcile', '=', True)]])
+        if len(set(reconciliation_aml_accounts)) == 1:
+            if not self.journal_id.default_credit_account_id.internal_type == 'liquidity':
+                if self.partner_id.id or overlook_partner:
+                    domain_matching = expression.AND([domain_matching, [('account_id.internal_type', 'in', ['payable', 'receivable'])]])
+                else:
+                    # TODO : find out what use case this permits (match a check payment, registered on a journal whose account type is other instead of liquidity)
+                    domain_matching = expression.AND([domain_matching, [('account_id.reconcile', '=', True)]])
 
         # Let's add what applies to both
         domain = expression.OR([domain_reconciliation, domain_matching])
