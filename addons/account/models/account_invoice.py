@@ -1314,8 +1314,7 @@ class AccountInvoiceLine(models.Model):
                 self.price_unit = 0.0
             domain['uom_id'] = []
         else:
-            # Use the purchase uom by default
-            self.uom_id = self.product_id.uom_po_id
+            self.uom_id = self.product_id.uom_id
 
             if part.lang:
                 product = self.product_id.with_context(lang=part.lang)
