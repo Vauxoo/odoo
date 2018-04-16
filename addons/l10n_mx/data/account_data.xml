@@ -24,6 +24,9 @@
         <record id="tax_group_ietu" model="account.tax.group">
             <field name="name">IETU</field>
         </record>
+        <record id="tax_group_iva_no_acreditable" model="account.tax.group">
+            <field name="name">IVA NO ACREDITABLE</field>
+        </record>
 
     </data>
 </odoo>
