@@ -880,7 +880,7 @@ var ActionManager = Widget.extend({
     },
     ir_actions_act_window_close: function (action, options) {
         if (!this.dialog) {
-            options.on_close();
+            result = options.on_close();
         }
         this.dialog_stop();
         // Display rainbowman on appropriate actions
@@ -888,7 +888,7 @@ var ActionManager = Widget.extend({
             this.trigger_up('show_effect', action.effect);
         }
 
-        return $.when();
+        return $.when(result);
     },
     ir_actions_server: function (action, options) {
         var self = this;
