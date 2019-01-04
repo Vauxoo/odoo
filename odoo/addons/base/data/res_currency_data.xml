@@ -1545,6 +1545,11 @@
             <field name="currency_unit_label">Quetzal</field>
             <field name="currency_subunit_label">Centavo</field>
         </record>
+	
+	<record id="rate_precision" model="decimal.precision">
+            <field name="name">Rate Precision</field>
+            <field name="digits">6</field>
+        </record>
 
     </data>
 </odoo>
