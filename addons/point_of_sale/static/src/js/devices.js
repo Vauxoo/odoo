@@ -188,15 +188,11 @@ var ProxyDevice  = core.Class.extend(core.mixins.PropertiesMixin,{
             // try harder when we remember a good proxy url
             found_url = this.try_hard_to_connect(localStorage.hw_proxy_url, options)
                 .then(null,function(){
-                    if (window.location.protocol != 'https:'){
-                        return self.find_proxy(options);
-                    }
+                    return self.find_proxy(options);
                 });
         }else{
             // just find something quick
-            if (window.location.protocol != 'https:'){
-                found_url = this.find_proxy(options);
-            }
+            found_url = this.find_proxy(options);
         }
 
         success = found_url.then(function(url){
@@ -248,17 +244,16 @@ var ProxyDevice  = core.Class.extend(core.mixins.PropertiesMixin,{
     // try several time to connect to a known proxy url
     try_hard_to_connect: function(url,options){
         options   = options || {};
-        var protocol = window.location.protocol;
-        var port = ( !options.port && protocol == "https:") ? ':443' : ':' + (options.port || '8069');
+        var port  = ':' + (options.port || '8069');
 
         this.set_connection_status('connecting');
 
         if(url.indexOf('//') < 0){
-            url = protocol + '//' + url;
+            url = 'http://'+url;
         }
 
         if(url.indexOf(':',5) < 0){
-            url = url + port;
+            url = url+port;
         }
 
         // try real hard to connect to url, with a 1sec timeout and up to 'retries' retries
@@ -274,11 +269,11 @@ var ProxyDevice  = core.Class.extend(core.mixins.PropertiesMixin,{
             .done(function(){
                 done.resolve(url);
             })
-            .fail(function(resp){
+            .fail(function(){
                 if(retries > 0){
                     try_real_hard_to_connect(url,retries-1,done);
                 }else{
-                    done.reject(resp.statusText, url);
+                    done.reject();
                 }
             });
             return done;
