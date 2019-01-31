@@ -210,11 +210,12 @@ class account_abstract_payment(models.AbstractModel):
     def _onchange_currency(self):
         self.amount = abs(self._compute_payment_amount())
 
-        # Set by default the first liquidity journal having this currency if exists.
-        journal = self.env['account.journal'].search(
-            [('type', 'in', ('bank', 'cash')), ('currency_id', '=', self.currency_id.id)], limit=1)
-        if journal:
-            return {'value': {'journal_id': journal.id}}
+        if not self.journal_id:
+            # Set by default the first liquidity journal having this currency if exists.
+            journal = self.env['account.journal'].search(
+                [('type', 'in', ('bank', 'cash')), ('currency_id', '=', self.currency_id.id)], limit=1)
+            if journal:
+                return {'value': {'journal_id': journal.id}}
 
     @api.multi
     def _compute_payment_amount(self, invoices=None, currency=None):
