@@ -1497,7 +1497,6 @@ class AccountPartialReconcile(models.Model):
         self.ensure_one()
         move_date = self.debit_move_id.date
         newly_created_move = self.env['account.move']
-        to_reconcile_moves = []
         with self.env.norecompute():
             for move in (self.debit_move_id.move_id, self.credit_move_id.move_id):
                 #move_date is the max of the 2 reconciled items
@@ -1551,7 +1550,7 @@ class AccountPartialReconcile(models.Model):
                             if line.account_id.reconcile:
                                 #setting the account to allow reconciliation will help to fix rounding errors
                                 to_clear_aml |= line
-                                to_reconcile_moves.append(to_clear_aml)
+                                to_clear_aml.reconcile()
 
                         if any([tax.tax_exigibility == 'on_payment' for tax in line.tax_ids]):
                             if not newly_created_move:
@@ -1583,8 +1582,6 @@ class AccountPartialReconcile(models.Model):
                                     'partner_id': line.partner_id.id,
                                 })
         self.recompute()
-        for items in to_reconcile_moves:
-            items.reconcile()
         if newly_created_move:
             if move_date > (self.company_id.period_lock_date or date.min) and newly_created_move.date != move_date:
                 # The move date should be the maximum date between payment and invoice (in case
