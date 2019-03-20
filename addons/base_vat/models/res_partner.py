@@ -66,7 +66,7 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     def _split_vat(self, vat):
-        vat_country, vat_number = vat[:2].lower(), vat[2:].replace(' ', '')
+        vat_country, vat_number = vat[:2].lower(), vat[2:]
         return vat_country, vat_number
 
     @api.model
