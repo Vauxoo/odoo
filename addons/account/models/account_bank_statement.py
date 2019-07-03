@@ -625,6 +625,7 @@ class AccountBankStatementLine(models.Model):
             Note: it only looks for move lines in the same currency as the statement line.
         """
         self.ensure_one()
+        return self.env['account.move.line']
         if not excluded_ids:
             excluded_ids = []
         amount = self.amount_currency or self.amount

@@ -902,7 +902,11 @@ class DataSet(http.Controller):
                 'records': []
             }
         if limit and len(records) == limit:
-            length = Model.search_count(domain)
+            request.cr.execute("""SELECT reltuples::bigint
+                       FROM pg_catalog.pg_class
+                       WHERE relname = %s""", (Model._table,))
+            # length = Model.search_count(domain)
+            length = request.cr.fetchone()[0]
         else:
             length = len(records) + (offset or 0)
         return {
