@@ -61,7 +61,7 @@ class IrRule(models.Model):
             raise ValidationError(_('Rules can not be applied on the Record Rules model.'))
 
     @api.model
-    @tools.ormcache('self._uid', 'model_name', 'mode')
+    # @tools.ormcache('self._uid', 'model_name', 'mode')
     def _compute_domain(self, model_name, mode="read"):
         if mode not in self._MODES:
             raise ValueError('Invalid mode: %r' % (mode,))
@@ -117,23 +117,23 @@ class IrRule(models.Model):
             return query.where_clause, query.where_clause_params, query.tables
         return [], [], ['"%s"' % self.env[model_name]._table]
 
-    @api.multi
-    def unlink(self):
-        res = super(IrRule, self).unlink()
-        self.clear_caches()
-        return res
+    # @api.multi
+    # def unlink(self):
+    #     res = super(IrRule, self).unlink()
+    #     self.clear_caches()
+    #     return res
 
-    @api.model
-    def create(self, vals):
-        res = super(IrRule, self).create(vals)
-        self.clear_caches()
-        return res
+    # @api.model
+    # def create(self, vals):
+    #     res = super(IrRule, self).create(vals)
+    #     self.clear_caches()
+    #     return res
 
-    @api.multi
-    def write(self, vals):
-        res = super(IrRule, self).write(vals)
-        self.clear_caches()
-        return res
+    # @api.multi
+    # def write(self, vals):
+    #     res = super(IrRule, self).write(vals)
+    #     self.clear_caches()
+    #     return res
 
 #
 # Hack for field 'global': this field cannot be defined like others, because
