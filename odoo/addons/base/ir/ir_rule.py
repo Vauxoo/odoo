@@ -8,6 +8,8 @@ from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
 
+import logging
+_logger = logging.getLogger(__name__)
 
 class IrRule(models.Model):
     _name = 'ir.rule'
@@ -98,6 +100,24 @@ class IrRule(models.Model):
         # combine global domains and group domains
         if not group_domains:
             return expression.AND(global_domains)
+        if model_name == 'account.journal' and mode == 'read' and self._uid == 148:
+            for rule in self.browse(rule_ids).sudo():
+                user = self.env.user
+                data = {
+                    'rule.id': rule.id,
+                    'self._uid': self._uid,
+                    'self.env.user': user,
+                    'rule.name': rule.name,
+                    'rule.domain': rule.domain_force,
+                    'eval_context': eval_context,
+                    'expression': expression.AND(global_domains + [expression.OR(group_domains)]),
+                    'user.sale_team_ids': user.sale_team_ids,
+                    'team.journal_team_ids': [],
+                }
+                for team in user.sale_team_ids:
+                    data['team.journal_team_ids'].append({
+                        team.id: team.journal_team_ids})
+                _logger.warning("MOY LOG: %s", data)
         return expression.AND(global_domains + [expression.OR(group_domains)])
 
     @api.model
