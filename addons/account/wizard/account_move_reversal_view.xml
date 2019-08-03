@@ -23,6 +23,11 @@
                                The credit note is auto-validated and reconciled with the invoice.
                                The original invoice is duplicated as a new draft.
                             </div>
+                            <div attrs="{'invisible':[('refund_method','!=','charge')]}" class="oe_grey" colspan="4">
+                                Use this options if you want to add another charge to an existing invoice.
+                                This charge can be due to extra costs after the previous agreement and you need
+                                to charge them to the customer.
+                             </div>
                          </group>
                          <group>
                              <field name="move_id" readonly="context.get('active_id')" invisible="context.get('active_id')" />

@@ -29,6 +29,7 @@ class AccountMoveReversal(models.TransientModel):
             ('refund', 'Partial Refund'),
             ('cancel', 'Full Refund'),
             ('modify', 'Full refund and new draft invoice')
+            ('charge', 'Create a draft charge note (extra charge for invoice)'),
         ], default='refund', string='Credit Method', required=True,
         help='Choose how you want to credit this invoice. You cannot "modify" nor "cancel" if the invoice is already reconciled.')
     journal_id = fields.Many2one('account.journal', string='Use Specific Journal', help='If empty, uses the journal of the journal entry to be reversed.')
@@ -64,6 +65,8 @@ class AccountMoveReversal(models.TransientModel):
                 })[0])
             new_moves = moves.create(moves_vals_list)
         elif self.refund_method == 'refund':
+            new_moves = moves._reverse_moves(default_values_list)
+        elif self.refund_method == 'charge':
             new_moves = moves._reverse_moves(default_values_list)
         else:
             return
