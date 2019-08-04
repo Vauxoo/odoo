@@ -6,7 +6,7 @@ class TestProductRefundAccounts(TransactionCase):
 
     def setUp(self):
         super(TestProductRefundAccounts, self).setUp()
-        self.invoice = self.env['account.invoice'].create({
+        self.invoice = self.env['account.move'].create({
             'partner_id': self.env.ref('base.res_partner_12').id,
             'journal_id': self.env['account.journal'].search([
                 ('code', '=', 'INV'),
@@ -56,19 +56,19 @@ class TestProductRefundAccounts(TransactionCase):
         self.invoice.write({
             'type': 'out_refund',
         })
-        line = self.env['account.invoice.line'].new({
+        line = self.env['account.move.line'].new({
             'invoice_id': self.invoice.id,
             'product_id': self.product_w_account.id,
         })
         line._onchange_product_id()
         self.assertEquals(line.account_id, self.expense_account)
-        line = self.env['account.invoice.line'].new({
+        line = self.env['account.move.line'].new({
             'invoice_id': self.invoice.id,
             'product_id': self.product_w_category.id,
         })
         line._onchange_product_id()
         self.assertEquals(line.account_id, self.expense_account)
-        line = self.env['account.invoice.line'].new({
+        line = self.env['account.move.line'].new({
             'invoice_id': self.invoice.id,
             'product_id': self.product_default.id,
         })
@@ -79,19 +79,19 @@ class TestProductRefundAccounts(TransactionCase):
         self.invoice.write({
             'type': 'in_refund',
         })
-        line = self.env['account.invoice.line'].new({
+        line = self.env['account.move.line'].new({
             'invoice_id': self.invoice.id,
             'product_id': self.product_w_account.id,
         })
         line._onchange_product_id()
         self.assertEquals(line.account_id, self.income_account)
-        line = self.env['account.invoice.line'].new({
+        line = self.env['account.move.line'].new({
             'invoice_id': self.invoice.id,
             'product_id': self.product_w_category.id,
         })
         line._onchange_product_id()
         self.assertEquals(line.account_id, self.income_account)
-        line = self.env['account.invoice.line'].new({
+        line = self.env['account.move.line'].new({
             'invoice_id': self.invoice.id,
             'product_id': self.product_default.id,
         })
