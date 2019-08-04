@@ -30,7 +30,6 @@ class ProductTemplate(models.Model):
         help="Used as default value on the vendor refunds lines. "
              "Leave empty to use the account from the product category.")
 
-    @api.multi
     def _get_product_accounts(self):
         accounts = super(ProductTemplate, self)._get_product_accounts()
         accounts.update({

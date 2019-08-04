@@ -4,7 +4,6 @@ from odoo import models, api
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    @api.v8
     def get_invoice_line_account(self, type, product, fpos, company):
         if type not in ('out_refund', 'in_refund'):
             return super(AccountMoveLine, self).get_invoice_line_account(
@@ -20,9 +19,7 @@ class AccountMoveLine(models.Model):
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    @api.multi
-    @api.returns('self')
-    def refund(self, date=None, date=None, description=None,
+    def refund(self, date=None, description=None,
                journal_id=None):
         """Use refund accounts when the credit note is created from the invoice
         """
