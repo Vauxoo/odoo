@@ -17,7 +17,5 @@ class AccountMoveReversal(models.TransientModel):
                 x.product_id.property_account_expense_refund_id or
                 x.product_id.categ_id.property_account_expense_refund_id)))
         for line in lines:
-            line.account_id = line.get_invoice_line_account(
-                line.move_id.type, line.product_id,
-                line.move_id.fiscal_position_id, line.company_id)
+            line.account_id = line._get_computed_account()
         return res
