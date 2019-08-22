@@ -46,7 +46,7 @@
         <field name="name">18%</field>
         <field name="description">IGV</field>
         <field name="l10n_pe_edi_tax_code">1000</field>
-        <field name="l10n_pe_edi_unece_category">S</field>
+        <field name="l10n_pe_edi_unece_category">VAT</field>
         <field name="amount">18.0</field>
         <field name="type_tax_use">sale</field>
         <field name="sequence">1</field>
@@ -83,7 +83,7 @@
         <field name="name">18% (Included in price)</field>
         <field name="description">IGV</field>
         <field name="l10n_pe_edi_tax_code">1000</field>
-        <field name="l10n_pe_edi_unece_category">S</field>
+        <field name="l10n_pe_edi_unece_category">VAT</field>
         <field name="amount">18.0</field>
         <field name="type_tax_use">sale</field>
         <field name="sequence">1</field>
@@ -121,7 +121,7 @@
         <field name="name">0% Exonerated</field>
         <field name="description">EXO</field>
         <field name="l10n_pe_edi_tax_code">9997</field>
-        <field name="l10n_pe_edi_unece_category">E</field>
+        <field name="l10n_pe_edi_unece_category">VAT</field>
         <field name="amount">0.0</field>
         <field name="type_tax_use">sale</field>
         <field name="sequence">1</field>
