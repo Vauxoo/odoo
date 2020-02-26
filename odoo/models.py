@@ -4289,7 +4289,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     resolve_o2m_commands_to_record_dicts = resolve_2many_commands
 
     @api.model
-    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None, **read_kwargs):
         """
         Performs a ``search()`` followed by a ``read()``.
 
@@ -4298,6 +4298,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         :param offset: Number of records to skip, see ``offset`` parameter in ``search()``. Defaults to 0.
         :param limit: Maximum number of records to return, see ``limit`` parameter in ``search()``. Defaults to no limit.
         :param order: Columns to sort result, see ``order`` parameter in ``search()``. Defaults to no sort.
+        :param read_kwargs: All read keywords arguments used to call read(..., **read_kwargs) method
+            E.g. you can use search_read(..., load='') in order to avoid computing name_get 
         :return: List of dictionaries containing the asked fields.
         :rtype: List of dictionaries.
 
@@ -4319,7 +4321,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             del context['active_test']
             records = records.with_context(context)
 
-        result = records.read(fields)
+        result = records.read(fields, **read_kwargs)
         if len(result) <= 1:
             return result
 
