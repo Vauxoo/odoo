@@ -211,25 +211,16 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 line_amount = line.company_id.currency_id._convert(line.balance, user_currency, user_company, date_from)
                 if user_currency.is_zero(line_amount):
                     continue
-                for partial_line in line.matched_debit_ids:
-                    if partial_line.max_date <= date_from:
+                for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
+                    if partial_line.currency_id and partial_line.currency_id != user_currency:
+                        line_amount += partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
+                    else:
                         line_amount += partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
-                for partial_line in line.matched_credit_ids:
-                    if partial_line.max_date <= date_from:
+                for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
+                    if partial_line.currency_id and partial_line.currency_id != user_currency:
+                        line_amount -= partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
+                    else:
                         line_amount -= partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
-                # all_matched_ids = line.matched_debit_ids | line.matched_credit_ids
-                # fx_matched_ids = line.matched_debit_ids.filtered(lambda x: x.full_reconcile_id.exchange_move_id == x.debit_move_id.move_id)
-                # fx_matched_ids |= line.matched_credit_ids.filtered(lambda x: x.full_reconcile_id.exchange_move_id == x.credit_move_id.move_id)
-                # overdue_matched_debit_ids = line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from)
-                # overdue_matched_credit_ids = line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from)
-                # overdue_matched_ids = overdue_matched_debit_ids | overdue_matched_credit_ids
-                # if fx_matched_ids and overdue_matched_ids == (all_matched_ids - fx_matched_ids):
-                #     overdue_matched_debit_ids |= fx_matched_ids - line.matched_credit_ids
-                #     overdue_matched_credit_ids |= fx_matched_ids - line.matched_debit_ids
-                # for partial_line in overdue_matched_debit_ids:
-                #     line_amount += partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
-                # for partial_line in overdue_matched_credit_ids:
-                #     line_amount -= partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
 
                 if not self.env.user.company_id.currency_id.is_zero(line_amount):
                     partners_amount[partner_id] += line_amount
@@ -265,11 +256,15 @@ class ReportAgedPartnerBalance(models.AbstractModel):
             line_amount = line.company_id.currency_id._convert(line.balance, user_currency, user_company, date_from)
             if user_currency.is_zero(line_amount):
                 continue
-            for partial_line in line.matched_debit_ids:
-                if partial_line.max_date <= date_from:
+            for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
+                if partial_line.currency_id and partial_line.currency_id != user_currency:
+                    line_amount += partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
+                else:
                     line_amount += partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
-            for partial_line in line.matched_credit_ids:
-                if partial_line.max_date <= date_from:
+            for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
+                if partial_line.currency_id and partial_line.currency_id != user_currency:
+                    line_amount -= partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
+                else:
                     line_amount -= partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
             if not self.env.user.company_id.currency_id.is_zero(line_amount):
                 undue_amounts[partner_id] += line_amount
