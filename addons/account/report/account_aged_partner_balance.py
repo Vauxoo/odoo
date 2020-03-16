@@ -82,72 +82,52 @@ class ReportAgedPartnerBalance(models.AbstractModel):
         if target_move == 'posted':
             move_state = ['posted']
         arg_list = (tuple(move_state), tuple(account_type), date_from, date_from,)
-        new_arg_list = (tuple(move_state), tuple(account_type),)
-        more_arg_list = (tuple(move_state), tuple(account_type), date_from,)
+        kwargs = {
+            'states': tuple(move_state),
+            'date_from': date_from,
+            'company_ids': tuple(company_ids),
+            'types': tuple(account_type),
+        }
         if ctx.get('partner_ids'):
-            partner_clause = 'AND (l.partner_id IN %s)'
-            arg_list += (tuple(ctx['partner_ids'].ids),)
-            new_arg_list += (tuple(ctx['partner_ids'].ids),)
-            more_arg_list += (tuple(ctx['partner_ids'].ids),)
+            partner_clause = 'AND (l.partner_id IN %(partner_ids)s)'
+            kwargs['partner_ids'] = tuple(ctx['partner_ids'].ids)
         if ctx.get('partner_categories'):
-            partner_clause += 'AND (l.partner_id IN %s)'
+            partner_clause = 'AND (l.partner_id IN %(partner_ids)s)'
             partner_ids = self.env['res.partner'].search([('category_id', 'in', ctx['partner_categories'].ids)]).ids
-            arg_list += (tuple(partner_ids or [0]),)
-            new_arg_list += (tuple(partner_ids or [0]),)
-            more_arg_list += (tuple(partner_ids or [0]),)
-        arg_list += (date_from, tuple(company_ids))
-        new_arg_list += (date_from, tuple(company_ids))
-        more_arg_list += (date_from, tuple(company_ids))
+            kwargs['partner_ids'] = tuple(partner_ids or [0])
+        kwargs['partner_clause'] = partner_clause
 
         query = '''
             SELECT DISTINCT l.partner_id
-            FROM account_move_line AS l left join res_partner on l.partner_id = res_partner.id,
-            account_account,
-            account_move am
-            WHERE (l.account_id = account_account.id)
-                AND (l.move_id = am.id)
-                AND (am.state IN %s)
-                AND (account_account.internal_type IN %s)
+            FROM account_move_line AS l
+            INNER JOIN account_account AS aa ON aa.id = l.account_id
+            INNER JOIN account_move AS am ON am.id = l.move_id
+            WHERE
+                (am.state IN %%(states)s)
+                AND (aa.internal_type IN %%(types)s)
                 AND l.reconciled IS FALSE
-                    ''' + partner_clause + '''
-                AND (l.date <= %s)
-                AND l.company_id IN %s'''
-        cr.execute(query, new_arg_list)
+                AND (l.date <= %%(date_from)s)
+                AND l.company_id IN %%(company_ids)s
+                %(partner_clause)s
+            UNION
+            SELECT DISTINCT l.partner_id
+            FROM account_move_line AS l
+            INNER JOIN account_partial_reconcile AS apr ON (
+                apr.credit_move_id = l.id OR apr.debit_move_id = l.id)
+            INNER JOIN account_account AS aa ON aa.id = l.account_id
+            INNER JOIN account_move AS am ON am.id = l.move_id
+            WHERE
+                (am.state IN %%(states)s)
+                AND (aa.internal_type IN %%(types)s)
+                AND apr.max_date > %%(date_from)s
+                AND (l.date <= %%(date_from)s)
+                AND l.company_id IN %%(company_ids)s
+                %(partner_clause)s
+                '''
+        cr.execute(query % kwargs, kwargs)
         partners = cr.fetchall()
-
-        query = '''
-            SELECT DISTINCT l.partner_id
-            FROM account_move_line AS l
-            LEFT JOIN res_partner on l.partner_id = res_partner.id
-            INNER JOIN account_partial_reconcile AS apr ON apr.credit_move_id = l.id
-            INNER JOIN account_account AS aa ON aa.id = l.account_id
-            INNER JOIN account_move AS am ON am.id = l.move_id
-            WHERE
-                (am.state IN %s)
-                AND (aa.internal_type IN %s)
-                AND apr.max_date > %s
-                    ''' + partner_clause + '''
-                AND (l.date <= %s)
-                AND l.company_id IN %s'''
-        cr.execute(query, more_arg_list)
-        partners += cr.fetchall()
-
-        query = '''
-            SELECT DISTINCT l.partner_id
-            FROM account_move_line AS l
-            LEFT JOIN res_partner on l.partner_id = res_partner.id
-            INNER JOIN account_partial_reconcile AS apr ON apr.debit_move_id = l.id
-            INNER JOIN account_account AS aa ON aa.id = l.account_id
-            INNER JOIN account_move AS am ON am.id = l.move_id
-            WHERE
-                (am.state IN %s)
-                AND (aa.internal_type IN %s)
-                AND apr.max_date > %s
-                    ''' + partner_clause + '''
-                AND (l.date <= %s)
-                AND l.company_id IN %s'''
-        cr.execute(query, more_arg_list)
-        partners += cr.fetchall()
+        if False in partners:
+            some_var = True
 
         query = '''
             SELECT id AS partner_id, UPPER(name)
@@ -155,8 +135,11 @@ class ReportAgedPartnerBalance(models.AbstractModel):
             WHERE id IN %s
             ORDER BY UPPER(name)
         '''
-        cr.execute(query, (tuple(set(partners) or [0]),))
+        cr.execute(query, (tuple(partners or [0]),))
         partners = cr.dictfetchall()
+
+        if some_var:
+            partners += [{'partner_id': 0, 'UPPER': ''}]
         # partners = [x for x in partners if x['partner_id'] == 1874]
         # put a total of 0
         for i in range(7):
