@@ -54,7 +54,6 @@ class ReportAgedPartnerBalance(models.AbstractModel):
         # 61 - 90  : 2018-12-09 - 2018-11-10
         # 91 - 120 : 2018-11-09 - 2018-10-11
         # +120     : 2018-10-10
-        print(10 * 'entró al _get_partner_move_lines')
         ctx = self._context
         periods = {}
         date_from = fields.Date.from_string(date_from)
@@ -100,7 +99,6 @@ class ReportAgedPartnerBalance(models.AbstractModel):
         new_arg_list += (date_from, tuple(company_ids))
         more_arg_list += (date_from, tuple(company_ids))
 
-        # __import__('pdb').set_trace()
         query = '''
             SELECT DISTINCT l.partner_id
             FROM account_move_line AS l left join res_partner on l.partner_id = res_partner.id,
@@ -114,7 +112,6 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                     ''' + partner_clause + '''
                 AND (l.date <= %s)
                 AND l.company_id IN %s'''
-        # __import__('pdb').set_trace()
         cr.execute(query, new_arg_list)
         partners = cr.fetchall()
 
@@ -160,17 +157,16 @@ class ReportAgedPartnerBalance(models.AbstractModel):
         '''
         cr.execute(query, (tuple(set(partners) or [0]),))
         partners = cr.dictfetchall()
-
-        # __import__('pdb').set_trace()
-        partners = [x for x in partners if x['partner_id'] == 1874]
-        # __import__('pdb').set_trace()
+        # partners = [x for x in partners if x['partner_id'] == 1874]
         # put a total of 0
         for i in range(7):
             total.append(0)
 
         # Build a string like (1,2,3) for easy use in SQL query
-        partner_ids = [partner['partner_id'] for partner in partners if partner['partner_id'] and partner['partner_id'] == 1874]
-        lines = dict((partner['partner_id'] or False, []) for partner in partners if partner['partner_id'] == 1874)
+        partner_ids = [partner['partner_id'] for partner in partners if partner['partner_id']]
+        lines = dict((partner['partner_id'] or False, []) for partner in partners)
+        # partner_ids = [partner['partner_id'] for partner in partners if partner['partner_id'] and partner['partner_id'] == 1874]
+        # lines = dict((partner['partner_id'] or False, []) for partner in partners if partner['partner_id'] == 1874)
         if not partner_ids:
             return [], [], {}
 
@@ -205,14 +201,10 @@ class ReportAgedPartnerBalance(models.AbstractModel):
             cr.execute(query, args_list)
             partners_amount = {}
             aml_ids = cr.fetchall()
-            print (5 * ' algo está aquí')
             # include_ids = [3829474, 3829472, 3829461, 3314156, 3314151, 3314114, 3314008, 3313909, 3313880, 3313826, 3313692, 3313671, 3313639, 3313544, 3313465, 3313450, 3313382, 3313359, 3307357, 3307191, 2577669, 2542495, 2542459, 2542455, 2534489]
             # aml_ids = aml_ids and [x[0] for x in aml_ids if x[0] in include_ids] or []
             aml_ids = aml_ids and [x[0] for x in aml_ids] or []
-            print (5 * ' algo despues de aquí')
             for line in self.env['account.move.line'].browse(aml_ids).with_context(prefetch_fields=False):
-                # __import__('pdb').set_trace()
-
                 partner_id = line.partner_id.id or False
                 if partner_id not in partners_amount:
                     partners_amount[partner_id] = 0.0
@@ -261,15 +253,12 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 AND (l.date <= %s)
                 AND l.company_id IN %s
                 ORDER BY COALESCE(l.date_maturity, l.date)'''
-        # __import__('pdb').set_trace()
         cr.execute(query, (tuple(move_state), tuple(account_type), date_from, tuple(partner_ids), date_from, tuple(company_ids)))
         aml_ids = cr.fetchall()
         # include_ids = [3829474, 3829472, 3829461, 3314156, 3314151, 3314114, 3314008, 3313909, 3313880, 3313826, 3313692, 3313671, 3313639, 3313544, 3313465, 3313450, 3313382, 3313359, 3307357, 3307191, 2577669, 2542495, 2542459, 2542455, 2534489]
         aml_ids = aml_ids and [x[0] for x in aml_ids] or []
         # aml_ids = aml_ids and [x[0] for x in aml_ids if x[0] in include_ids] or []
-        # __import__('pdb').set_trace()
         for line in self.env['account.move.line'].browse(aml_ids):
-            print(80 * "/")
             partner_id = line.partner_id.id or False
             if partner_id not in undue_amounts:
                 undue_amounts[partner_id] = 0.0
@@ -292,7 +281,6 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 })
 
         for partner in partners:
-            print(80 * "$")
             if partner['partner_id'] is None:
                 partner['partner_id'] = False
             at_least_one_amount = False
@@ -328,11 +316,9 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 values['name'] = _('Unknown Partner')
                 values['trust'] = False
 
-            # __import__('pdb').set_trace()
             if at_least_one_amount or (self._context.get('include_nullified_amount') and lines[partner['partner_id']]):
                 res.append(values)
 
-        print (10 * 'Fin del ciclo')
         return res, total, lines
 
     @api.model
