@@ -194,16 +194,32 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 line_amount = line.company_id.currency_id._convert(line.balance, user_currency, user_company, date_from)
                 if user_currency.is_zero(line_amount):
                     continue
-                for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
-                    if partial_line.currency_id and partial_line.currency_id != user_currency:
-                        line_amount += partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
-                    else:
+                if not line.currency_id:
+                    for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
                         line_amount += partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
-                for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
-                    if partial_line.currency_id and partial_line.currency_id != user_currency:
-                        line_amount -= partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
-                    else:
+                    for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
                         line_amount -= partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
+                else:
+                    line_amount_currency = line.amount_currency
+                    for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
+                        line_amount += partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
+                        if partial_line.currency_id and partial_line.currency_id == line.currency_id:
+                            line_amount_currency += partial_line.amount_currency
+                        elif partial_line.currency_id and partial_line.currency_id != line.currency_id:
+                            line_amount_currency += partial_line.currency_id._convert(partial_line.amount_currency, line.currency_id, line.company_id, partial_line.max_date)
+                        else:
+                            line_amount_currency += partial_line.company_id.currency_id._convert(partial_line.amount, line.currency_id, line.company_id, partial_line.max_date)
+                    for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
+                        line_amount -= partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
+                        if partial_line.currency_id and partial_line.currency_id == line.currency_id:
+                            line_amount_currency -= line.amount_currency
+                        elif partial_line.currency_id and partial_line.currency_id != line.currency_id:
+                            line_amount_currency -= partial_line.currency_id._convert(partial_line.amount_currency, line.currency_id, line.company_id, partial_line.max_date)
+                        else:
+                            line_amount_currency -= partial_line.company_id.currency_id._convert(partial_line.amount, line.currency_id, line.company_id, partial_line.max_date)
+                    if self.env.user.company_id.currency_id.is_zero(line_amount_currency):
+                        line_amount = 0
+                    # line_amount = line.currency_id._convert(line_amount_currency, user_currency, user_company, date_from)
 
                 if not self.env.user.company_id.currency_id.is_zero(line_amount):
                     partners_amount[partner_id] += line_amount
@@ -239,16 +255,33 @@ class ReportAgedPartnerBalance(models.AbstractModel):
             line_amount = line.company_id.currency_id._convert(line.balance, user_currency, user_company, date_from)
             if user_currency.is_zero(line_amount):
                 continue
-            for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
-                if partial_line.currency_id and partial_line.currency_id != user_currency:
-                    line_amount += partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
-                else:
+            if not line.currency_id:
+                for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
                     line_amount += partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
-            for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
-                if partial_line.currency_id and partial_line.currency_id != user_currency:
-                    line_amount -= partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
-                else:
+                for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
                     line_amount -= partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
+            else:
+                line_amount_currency = line.amount_currency
+                for partial_line in line.matched_debit_ids.filtered(lambda x: x.max_date <= date_from):
+                    line_amount += partial_line.currency_id._convert(partial_line.amount_currency, user_currency, user_company, date_from)
+                    if partial_line.currency_id and partial_line.currency_id == line.currency_id:
+                        line_amount_currency += partial_line.amount_currency
+                    elif partial_line.currency_id and partial_line.currency_id != line.currency_id:
+                        line_amount_currency += partial_line.currency_id._convert(partial_line.amount_currency, line.currency_id, line.company_id, partial_line.max_date)
+                    else:
+                        line_amount_currency += partial_line.company_id.currency_id._convert(partial_line.amount, line.currency_id, line.company_id, partial_line.max_date)
+                for partial_line in line.matched_credit_ids.filtered(lambda x: x.max_date <= date_from):
+                    line_amount -= partial_line.company_id.currency_id._convert(partial_line.amount, user_currency, user_company, date_from)
+                    if partial_line.currency_id and partial_line.currency_id == line.currency_id:
+                        line_amount_currency -= line.amount_currency
+                    elif partial_line.currency_id and partial_line.currency_id != line.currency_id:
+                        line_amount_currency -= partial_line.currency_id._convert(partial_line.amount_currency, line.currency_id, line.company_id, partial_line.max_date)
+                    else:
+                        line_amount_currency -= partial_line.company_id.currency_id._convert(partial_line.amount, line.currency_id, line.company_id, partial_line.max_date)
+                if self.env.user.company_id.currency_id.is_zero(line_amount_currency):
+                    line_amount = 0
+                # line_amount = line.currency_id._convert(line_amount_currency, user_currency, user_company, date_from)
+
             if not self.env.user.company_id.currency_id.is_zero(line_amount):
                 undue_amounts[partner_id] += line_amount
                 lines.setdefault(partner_id, [])
