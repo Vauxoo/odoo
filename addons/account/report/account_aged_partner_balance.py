@@ -126,6 +126,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 '''
         cr.execute(query % kwargs, kwargs)
         partners = cr.fetchall()
+        some_var = False
         if False in partners:
             some_var = True
 
