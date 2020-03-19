@@ -140,7 +140,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
         partners = cr.dictfetchall()
 
         if some_var:
-            partners += [{'partner_id': 0, 'UPPER': ''}]
+            partners += [{'partner_id': None, 'upper': None}]
         # partners = [x for x in partners if x['partner_id'] == 1874]
         # put a total of 0
         for i in range(7):
