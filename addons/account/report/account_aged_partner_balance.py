@@ -98,8 +98,9 @@ class ReportAgedPartnerBalance(models.AbstractModel):
         kwargs['partner_clause'] = partner_clause
 
         query = '''
-            SELECT DISTINCT l.partner_id
+            SELECT DISTINCT l.partner_id, UPPER(rp.name) as name
             FROM account_move_line AS l
+            LEFT JOIN res_partner AS rp ON l.partner_id = rp.id
             INNER JOIN account_account AS aa ON aa.id = l.account_id
             INNER JOIN account_move AS am ON am.id = l.move_id
             WHERE
@@ -110,8 +111,9 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 AND l.company_id IN %%(company_ids)s
                 %(partner_clause)s
             UNION
-            SELECT DISTINCT l.partner_id
+            SELECT DISTINCT l.partner_id, UPPER(rp.name) as name
             FROM account_move_line AS l
+            LEFT JOIN res_partner AS rp ON l.partner_id = rp.id
             INNER JOIN account_partial_reconcile AS apr ON (
                 apr.credit_move_id = l.id OR apr.debit_move_id = l.id)
             INNER JOIN account_account AS aa ON aa.id = l.account_id
@@ -123,24 +125,10 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 AND (l.date <= %%(date_from)s)
                 AND l.company_id IN %%(company_ids)s
                 %(partner_clause)s
-                '''
+            ORDER BY name'''
         cr.execute(query % kwargs, kwargs)
-        partners = cr.fetchall()
-        some_var = False
-        if False in partners:
-            some_var = True
-
-        query = '''
-            SELECT id AS partner_id, UPPER(name)
-            FROM res_partner
-            WHERE id IN %s
-            ORDER BY UPPER(name)
-        '''
-        cr.execute(query, (tuple(partners or [0]),))
         partners = cr.dictfetchall()
 
-        if some_var:
-            partners += [{'partner_id': None, 'upper': None}]
         # partners = [x for x in partners if x['partner_id'] == 1874]
         # put a total of 0
         for i in range(7):
