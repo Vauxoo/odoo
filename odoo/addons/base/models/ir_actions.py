@@ -14,6 +14,7 @@ from collections import defaultdict
 import datetime
 import logging
 import time
+import pdb
 
 from pytz import timezone
 
@@ -511,6 +512,8 @@ class IrActionsServer(models.Model):
         if self._context.get('onchange_self'):
             record = self._context['onchange_self']
         eval_context.update({
+            'pdb': pdb,
+            'print': print,
             # orm
             'env': self.env,
             'model': model,
