@@ -277,6 +277,18 @@ class Website(models.Model):
     def guess_mimetype(self):
         return _guess_mimetype()
 
+    @tools.ormcache('self.id')
+    def _get_cached_values(self):
+        self.ensure_one()
+        return {
+            'user_id': self.user_id.id,
+            'company_id': self.company_id.id,
+            'default_lang_id': self.default_lang_id.id,
+        }
+
+    def _get_cached(self, field):
+        return self._get_cached_values()[field]
+
     def get_unique_path(self, page_url):
         """ Given an url, return that url suffixed by counter if it already exists
             :param page_url : the url to be checked for uniqueness
