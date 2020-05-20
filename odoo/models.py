@@ -4338,15 +4338,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         query = """SELECT id FROM "%s" WHERE id IN %%s""" % self._table
         self._cr.execute(query, [tuple(ids)])
         ids = [r[0] for r in self._cr.fetchall()]
-        existing = self.browse(ids + new_ids)
-        if len(existing) < len(self):
-            # mark missing records in cache with a failed value
-            exc = MissingError(
-                _("Record does not exist or has been deleted.")
-                + '\n\n({} {}, {} {})'.format(_('Records:'), (self - existing).ids[:6], _('User:'), self._uid)
-            )
-            self.env.cache.set_failed(self - existing, self._fields.values(), exc)
-        return existing
+        return self.browse(ids + new_ids)
 
     @api.multi
     def _check_recursion(self, parent=None):
