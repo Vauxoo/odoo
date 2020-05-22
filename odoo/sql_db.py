@@ -13,6 +13,7 @@ from functools import wraps
 import itertools
 import logging
 import time
+import traceback
 import uuid
 
 import psycopg2
@@ -225,7 +226,9 @@ class Cursor(object):
             res = self._obj.execute(query, params)
         except Exception as e:
             if self._default_log_exceptions if log_exceptions is None else log_exceptions:
-                _logger.error("bad query: %s\nERROR: %s", ustr(self._obj.query or query), e)
+                tcbk = traceback.extract_stack()
+                tcbk_str = "Traceback (most recent call last):\n%s" % "\n,".join(map(lambda a: repr(a), tcbk))
+                _logger.error("bad query: %s\nERROR: %s\n%s", ustr(self._obj.query or query), e, tcbk_str)
             raise
 
         # simple query count is always computed
