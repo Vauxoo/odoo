@@ -10,6 +10,7 @@ the ORM does, in fact.
 
 from contextlib import contextmanager
 from functools import wraps
+import hashlib
 import itertools
 import logging
 import time
@@ -22,6 +23,7 @@ import psycopg2.extensions
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT, ISOLATION_LEVEL_READ_COMMITTED, ISOLATION_LEVEL_REPEATABLE_READ
 from psycopg2.pool import PoolError
 from werkzeug import urls
+from .loglevels import ustr
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
@@ -227,8 +229,18 @@ class Cursor(object):
         except Exception as e:
             if self._default_log_exceptions if log_exceptions is None else log_exceptions:
                 tcbk = traceback.extract_stack()
+                # TODO: Check if we can use a format extract_stack
                 tcbk_str = "Traceback (most recent call last):\n%s" % "\n,".join(map(lambda a: repr(a), tcbk))
-                _logger.error("bad query: %s\nERROR: %s\n%s", ustr(self._obj.query or query), e, tcbk_str)
+                tcbk_hash = hashlib.md5(ustr(tcbk_str.lower()).encode('UTF-8')).hexdigest()
+                query_hash = hashlib.md5(ustr((query or '')).lower().encode('UTF-8')).hexdigest()
+                query_tcbk_logger_name = "%s.%s.%s" % (__name__, tcbk_hash, query_hash)
+                _logger_query_tcbk = logging.getLogger(query_tcbk_logger_name)
+                sentry_tags = {
+                    'traceback_hash': tcbk_hash,
+                    'query_hash': query_hash,
+                }
+                _logger_query_tcbk.error("bad query: %s\nERROR: %s\n%s", ustr(self._obj.query or query), e,
+                                         tcbk_str, extra={'tags': sentry_tags})
             raise
 
         # simple query count is always computed
