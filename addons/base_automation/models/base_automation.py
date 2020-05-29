@@ -203,6 +203,8 @@ class BaseAutomation(models.Model):
             def create(self, vals, **kw):
                 # retrieve the action rules to possibly execute
                 actions = self.env['base.automation']._get_actions(self, ['on_create', 'on_create_or_write'])
+                if not actions:
+                    return create.origin(self, vals, **kw)
                 # call original method
                 record = create.origin(self.with_env(actions.env), vals, **kw)
                 # check postconditions, and execute actions on the records that satisfy them
@@ -222,6 +224,8 @@ class BaseAutomation(models.Model):
             def _write(self, vals, **kw):
                 # retrieve the action rules to possibly execute
                 actions = self.env['base.automation']._get_actions(self, ['on_write', 'on_create_or_write'])
+                if not (actions and self):
+                    return _write.origin(self, vals, **kw)
                 records = self.with_env(actions.env)
                 # check preconditions on records
                 pre = {action: action._filter_pre(records) for action in actions}
