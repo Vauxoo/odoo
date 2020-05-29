@@ -257,10 +257,6 @@ class Users(models.Model):
     name = fields.Char(related='partner_id.name', inherited=True, readonly=False)
     email = fields.Char(related='partner_id.email', inherited=True, readonly=False)
 
-    _sql_constraints = [
-        ('login_key', 'UNIQUE (login)',  'You can not have two users with the same login !')
-    ]
-
     def init(self):
         cr = self.env.cr
 
