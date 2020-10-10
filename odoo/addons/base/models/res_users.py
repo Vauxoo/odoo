@@ -259,10 +259,6 @@ class Users(models.Model):
     groups_count = fields.Integer('# Groups', help='Number of groups that apply to the current user',
                                   compute='_compute_accesses_count', compute_sudo=True)
 
-    _sql_constraints = [
-        ('login_key', 'UNIQUE (login)',  'You can not have two users with the same login !')
-    ]
-
     def init(self):
         cr = self.env.cr
 
