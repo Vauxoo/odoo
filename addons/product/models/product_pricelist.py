@@ -153,7 +153,9 @@ class Pricelist(models.Model):
             'AND (item.pricelist_id = %s) '
             'AND (item.date_start IS NULL OR item.date_start<=%s) '
             'AND (item.date_end IS NULL OR item.date_end>=%s)'
-            'ORDER BY item.applied_on, item.min_quantity desc, categ.complete_name desc, item.id desc',
+            'AND (item.active = TRUE)'
+            'ORDER BY item.applied_on, item.min_quantity desc, item.sequence asc, categ.complete_name desc, '
+            'item.id desc',
             (prod_tmpl_ids, prod_ids, categ_ids, self.id, date, date))
         # NOTE: if you change `order by` on that query, make sure it matches
         # _order from model to avoid inconstencies and undeterministic issues.
@@ -180,7 +182,7 @@ class Pricelist(models.Model):
 
             # if Public user try to access standard price from website sale, need to call price_compute.
             # TDE SURPRISE: product can actually be a template
-            price = product.price_compute('list_price')[product.id]
+            price = 0.0
 
             price_uom = self.env['uom.uom'].browse([qty_uom_id])
             for rule in items:
@@ -208,8 +210,11 @@ class Pricelist(models.Model):
                         continue
 
                 if rule.base == 'pricelist' and rule.base_pricelist_id:
-                    price_tmp = rule.base_pricelist_id._compute_price_rule([(product, qty, partner)], date, uom_id)[product.id][0]  # TDE: 0 = price, 1 = rule
+                    price_tmp = rule.base_pricelist_id.with_context(other_pricelist=True)._compute_price_rule(
+                        [(product, qty, partner)])[product.id][0]  # TDE: 0 = price, 1 = rule
                     price = rule.base_pricelist_id.currency_id._convert(price_tmp, self.currency_id, self.env.user.company_id, date, round=False)
+                    if not price:
+                        continue
                 else:
                     # if base option is public price take sale price else cost price of product
                     # price_compute returns the price in the context UoM, i.e. qty_uom_id
@@ -226,6 +231,11 @@ class Pricelist(models.Model):
                 else:
                     cur = product.currency_id
                 price = cur._convert(price, self.currency_id, self.env.user.company_id, date, round=False)
+
+            if (not price and not self.env.context.get('other_pricelist')
+               and not (suitable_rule and suitable_rule.compute_price == 'percentage'
+                        and suitable_rule.percent_price != 100)):
+                price = product.price_compute('list_price')[product.id]
 
             results[product.id] = (price, suitable_rule and suitable_rule.id or False)
 
@@ -364,11 +374,15 @@ class ResCountryGroup(models.Model):
 class PricelistItem(models.Model):
     _name = "product.pricelist.item"
     _description = "Pricelist Item"
-    _order = "applied_on, min_quantity desc, categ_id desc, id desc"
+    _order = "applied_on, min_quantity desc, sequence asc, categ_id desc, id desc"
     # NOTE: if you change _order on this model, make sure it matches the SQL
     # query built in _compute_price_rule() above in this file to avoid
     # inconstencies and undeterministic issues.
 
+    active = fields.Boolean(
+        default=True,
+        help="Lines in Archived status will not apply on the Purchase/Sale.")
+    sequence = fields.Integer(default=5)
     product_tmpl_id = fields.Many2one(
         'product.template', 'Product Template', ondelete='cascade',
         help="Specify a template if this rule only applies to one product template. Keep empty otherwise.")
