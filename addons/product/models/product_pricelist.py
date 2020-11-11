@@ -553,10 +553,12 @@ class PricelistItem(models.Model):
                 return False
 
         if self.base == 'pricelist' and self.base_pricelist_id:
-            price_tmp = self.base_pricelist_id._compute_price_rule(
+            price_tmp = self.base_pricelist_id.with_context(other_pricelist=True)._compute_price_rule(
                 [(product, qty, partner)], date, uom_id)[product.id][0]  # TDE: 0 = price, 1 = rule
             price = self.base_pricelist_id.currency_id._convert(
                 price_tmp, self.pricelist_id.currency_id, self.env.user.company_id, date, round=False)
+            if not price:
+                return False
         else:
             # if base option is public price take sale price else cost price of product
             # price_compute returns the price in the context UoM, i.e. qty_uom_id
