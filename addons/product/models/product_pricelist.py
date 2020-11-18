@@ -185,6 +185,7 @@ class Pricelist(models.Model):
             price = 0.0
 
             price_uom = self.env['uom.uom'].browse([qty_uom_id])
+            new_rule_id = False
             for rule in items:
                 if rule.min_quantity and qty_in_product_uom < rule.min_quantity:
                     continue
@@ -210,9 +211,17 @@ class Pricelist(models.Model):
                         continue
 
                 if rule.base == 'pricelist' and rule.base_pricelist_id:
-                    price_tmp = rule.base_pricelist_id.with_context(other_pricelist=True)._compute_price_rule(
-                        [(product, qty, partner)])[product.id][0]  # TDE: 0 = price, 1 = rule
+                    info_rule = rule.base_pricelist_id.with_context(other_pricelist=True)._compute_price_rule(
+                        [(product, qty, partner)])  # TDE: 0 = price, 1 = rule
+                    price_tmp = info_rule[product.id][0]
                     price = rule.base_pricelist_id.currency_id._convert(price_tmp, self.currency_id, self.env.user.company_id, date, round=False)
+
+                    # If there is a rule with the key 'rule_%i' (%i == product's id) set on the info_rule we are going
+                    # to set the variable new_rule_id, if there is already a 'rule_%i' we are going to put the same
+                    # value but if there is no value for that key we are going to use the item on the values of
+                    # info_rule[product_id]
+                    info_rule_new = info_rule.get('rule_%i' % product.id)
+                    new_rule_id = (info_rule_new and info_rule_new[0]) and info_rule_new[0] or info_rule[product.id][1]
                     if not price:
                         continue
                 else:
@@ -238,6 +247,17 @@ class Pricelist(models.Model):
                 price = product.price_compute('list_price')[product.id]
 
             results[product.id] = (price, suitable_rule and suitable_rule.id or False)
+
+            # Creating a new key 'rule_%i' (%i == product.id) to send the rule that give us the rule where we obtain
+            # the price.
+            # For example: If we have a priceslit "A" with an item (item_1) that have the price set (supplierinfo or
+            # fixed), and we have a pricelist "B" with the pricelist "A" set as item (item_2), the suitable rule here
+            # will be "item_2" but we want to know the exact rule that it gave us the price which was the "item_1"
+            # So in this new key, we are returning as tuple the rule "item_1" but if we don't have this example
+            # and we only have the pricelist "A" we are returning the suitable rule which in this case will be the
+            # "item_1"
+            rule = new_rule_id or (suitable_rule and suitable_rule.id or False)
+            results['rule_%i' % product.id] = (rule, 0)
 
         return results
 
