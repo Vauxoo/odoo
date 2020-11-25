@@ -339,7 +339,7 @@ class QWeb(object):
 
         # return the wrapped function
 
-        def _compiled_fn(self, append, values):
+        def _compiled_fn(self, append, values, attemp=0):
             log = {'last_path_node': None}
             new = self.default_values()
             new.update(values)
@@ -347,6 +347,15 @@ class QWeb(object):
                 return compiled(self, append, new, options, log)
             except (QWebException, TransactionRollbackError) as e:
                 raise e
+            except IndexError as ie:
+                if attemp <= 3:
+                    # TODO: Seudo-fix vx#12275
+                    # I don't know why just the first time is reproducing that error
+                    # This ugly-patch is fixing it for now
+                    # but it is not the final solution
+                    # but we need go production right now!
+                    attemp += 1
+                    _compiled_fn(self, append, values, attemp=attemp)
             except Exception as e:
                 path = log['last_path_node']
                 element, document = self.get_template(template, options)
