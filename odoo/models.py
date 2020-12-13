@@ -30,6 +30,9 @@ import itertools
 import io
 import logging
 import operator
+import os
+import threading
+import sys
 import pytz
 import re
 import traceback
@@ -72,6 +75,13 @@ regex_pg_name = re.compile(r'^[a-z_][a-z0-9_$]*$', re.I)
 regex_field_agg = re.compile(r'(\w+)(?::(\w+)(?:\((\w+)\))?)?')
 
 AUTOINIT_RECALCULATE_STORED_FIELDS = 1000
+
+ad_paths = []
+for ad in tools.config['addons_path'].split(',') + sys.path:
+    ad = os.path.normcase(os.path.abspath(tools.ustr(ad.strip())))
+    if ad and ad not in ad_paths:
+        ad_paths.append(ad)
+
 
 def check_object_name(name):
     """ Check if the given name is a valid model name.
@@ -1735,9 +1745,16 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         ``tools.ormcache`` or ``tools.ormcache_multi``.
         """
         cls.pool._clear_cache()
-        tcbk = traceback.extract_stack()
-        tcbk_str = '\n'.join(repr(v).replace('<FrameSummary file ', '', 1) for v in tcbk)
-        _logger_clear_caches.info("%s cleared cache from:\n%s", cls._name, tcbk_str)
+        if (getattr(threading.currentThread(), 'testing', False) or
+            cls.pool.in_test_mode() or config.get('test_enable')):
+            return
+        tcbks = traceback.extract_stack(limit=10)[:-1]
+        tcbk_str = ''
+        for path, line, method, sentence in tcbks:
+            tcbk_str += "\n%s:%s (%s)" % (path, line, method)
+        for ad_path in ad_paths:
+            tcbk_str = tcbk_str.replace(ad_path + '/', '')
+        _logger_clear_caches.info("%s cleared cache from:%s", cls._name, tcbk_str)
 
     @api.model
     def _read_group_fill_results(self, domain, groupby, remaining_groupbys,
