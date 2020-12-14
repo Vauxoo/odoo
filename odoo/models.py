@@ -68,6 +68,8 @@ _logger = logging.getLogger(__name__)
 _schema = logging.getLogger(__name__ + '.schema')
 _unlink = logging.getLogger(__name__ + '.unlink')
 _logger_clear_caches = logging.getLogger(__name__ + '.clear_caches')
+IS_CI = (os.environ.get('CI_SERVER') == 'yes' or os.environ.get('CI') == 'true'
+         or os.environ.get('TRAVIS') == 'true' or os.environ.get('RUNBOT') == '1')
 
 regex_order = re.compile('^(\s*([a-z0-9:_]+|"[a-z0-9:_]+")(\s+(desc|asc))?\s*(,|$))+(?<!,)$', re.I)
 regex_object_name = re.compile(r'^[a-z0-9_.]+$')
@@ -1746,7 +1748,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         """
         cls.pool._clear_cache()
         if (getattr(threading.currentThread(), 'testing', False) or
-            cls.pool.in_test_mode() or config.get('test_enable')):
+            cls.pool.in_test_mode() or config.get('test_enable') or IS_CI):
             return
         tcbks = traceback.extract_stack(limit=10)[:-1]
         tcbk_str = ''
