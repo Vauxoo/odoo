@@ -137,6 +137,8 @@ def application(environ, start_response):
     #        support the standardised Forwarded header once werkzeug supports
     #        it
     if config['proxy_mode'] and 'HTTP_X_FORWARDED_HOST' in environ:
+        werkzeug.serving.WSGIRequestHandler.address_string = (
+            lambda self: self.headers.get('x-real-ip', self.client_address[0]))
         return ProxyFix(application_unproxied)(environ, start_response)
     else:
         return application_unproxied(environ, start_response)
