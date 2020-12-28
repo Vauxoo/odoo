@@ -33,14 +33,15 @@ class ProductTemplate(models.Model):
     def _get_default_uom_id(self):
         return self.env["uom.uom"].search([], limit=1, order='id').id
 
-    name = fields.Char('Name', index=True, required=True, translate=True)
+    name = fields.Char('Name', index=True, required=True, 
+        translate=True, translation_storage='json')
     sequence = fields.Integer('Sequence', default=1, help='Gives the sequence order when displaying a product list')
     description = fields.Text(
-        'Description', translate=True)
+        'Description', translate=True, translation_storage='json')
     description_purchase = fields.Text(
-        'Purchase Description', translate=True)
+        'Purchase Description', translate=True, translation_storage='json')
     description_sale = fields.Text(
-        'Sale Description', translate=True,
+        'Sale Description', translate=True, translation_storage='json',
         help="A description of the Product that you want to communicate to your customers. "
              "This description will be copied to every Sales Order, Delivery Order and Customer Invoice/Credit Note")
     type = fields.Selection([

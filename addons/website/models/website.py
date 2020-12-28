@@ -841,9 +841,9 @@ class SeoMetadata(models.AbstractModel):
     _description = 'SEO metadata'
 
     is_seo_optimized = fields.Boolean("SEO optimized", compute='_compute_is_seo_optimized')
-    website_meta_title = fields.Char("Website meta title", translate=True)
-    website_meta_description = fields.Text("Website meta description", translate=True)
-    website_meta_keywords = fields.Char("Website meta keywords", translate=True)
+    website_meta_title = fields.Char("Website meta title", translate=True, translation_storage='json')
+    website_meta_description = fields.Text("Website meta description", translate=True, translation_storage='json')
+    website_meta_keywords = fields.Char("Website meta keywords", translate=True, translation_storage='json')
     website_meta_og_img = fields.Char("Website opengraph image")
 
     @api.multi
@@ -1207,7 +1207,7 @@ class Menu(models.Model):
         menu = self.search([], limit=1, order="sequence DESC")
         return menu.sequence or 0
 
-    name = fields.Char('Menu', required=True, translate=True)
+    name = fields.Char('Menu', required=True, translate=True, translation_storage='json')
     url = fields.Char('Url', default='')
     page_id = fields.Many2one('website.page', 'Related Page', ondelete='cascade')
     new_window = fields.Boolean('New Window')

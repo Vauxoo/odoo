@@ -22,8 +22,10 @@ except ImportError:
 
 import psycopg2
 
+from psycopg2.extensions import AsIs
+
 from .sql_db import LazyCursor
-from .tools import float_repr, float_round, frozendict, html_sanitize, human_size, pg_varchar,\
+from .tools import config, float_repr, float_round, frozendict, html_sanitize, human_size, pg_varchar,\
     ustr, OrderedSet, pycompat, sql, date_utils
 from .tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
 from .tools import DEFAULT_SERVER_DATETIME_FORMAT as DATETIME_FORMAT
@@ -304,6 +306,9 @@ class Field(MetaField('DummyField', (object,), {})):
     type = None                         # type of the field (string)
     relational = False                  # whether the field is a relational one
     translate = False                   # whether the field is translated
+    translation_storage = None          # possible values: None, json
+                                        # None: Translations are stored into ir.translation model
+                                        # json: Translations are stored into current model as jsonb column
 
     column_type = None                  # database column type (ident, spec)
     column_format = '%s'                # placeholder for value in queries
@@ -1399,6 +1404,9 @@ class _String(Field):
     _slots = {
         'translate': False,             # whether the field is translated
         'prefetch': None,
+        'translation_storage': None     # possible values: None, json
+                                        # None: Translations are stored into ir.translation model
+                                        # json: Translations are stored into current model as jsonb column
     }
 
     def __init__(self, string=Default, **kwargs):
@@ -1414,6 +1422,89 @@ class _String(Field):
             self.prefetch = not callable(self.translate)
 
     _related_translate = property(attrgetter('translate'))
+
+    def update_db_column(self, model, column):
+        super().update_db_column(model, column)
+        if self.translate and self.translation_storage == "json":
+            if not column or not sql.column_exists(model._cr, model._table, self.translation_column):
+                # the jsonb translation column does not exist, create it
+                sql.create_column(model._cr, model._table, self.translation_column, "jsonb", self.string + " translations")
+                self.update_translation_column(model, column)
+
+    def update_translation_column(self, model, column):
+        if not sql.column_exists(model._cr, model._table, self.translation_column):
+            return
+        cr = model._cr
+        # initialize default lang
+        default_lang = (config.get('load_language') or 'en_US').split(',')[0]
+        _logger.info("Init default translations for %s field '%s' in %s", model._name, self.name, default_lang)
+        cr.execute("""
+            UPDATE
+                %s
+            SET %s = jsonb_set(%s, '{\"%s\"}', to_jsonb(%s))
+        """, (
+            AsIs(model._table),
+            AsIs(self.translation_column),
+            AsIs(self.translation_column),
+            AsIs(default_lang),
+            AsIs(self.name),
+        ))
+        # add translations
+        query = """SELECT DISTINCT lang FROM ir_translation
+                    WHERE name = %s AND ir_translation.type = 'model'"""
+        cr.execute(query, ("%s,%s" % (model._name, self.name),))
+        for lang in cr.fetchall():
+            lang = lang[0]
+            _logger.info("Sync translations for %s field '%s' in %s", model._name, self.name, lang)
+            cr.execute(
+                """
+                UPDATE
+                    %s
+                SET %s = jsonb_set(%s, '{\"%s\"}', to_jsonb(value))
+                FROM ir_translation
+                WHERE
+                    res_id = %s.id
+                    and ir_translation.type = 'model'
+                    and lang = %s
+                    and ir_translation.name = '%s,%s'
+                    and value <> ''
+                    and value is not null
+                """, (AsIs(model._table),
+                      AsIs(self.translation_column),
+                      AsIs(self.translation_column),
+                      AsIs(lang),
+                      AsIs(model._table),
+                      lang,
+                      AsIs(model._name),
+                      AsIs(self.name)
+                      )
+            )
+
+    @property
+    def translation_column(self):
+        return "%s_translations" % self.name
+
+    def _update_translation_index(self, model):
+        if self.translation_storage != "json":
+            return
+        langs = model.env['res.lang'].get_installed()
+        for code, _ in langs:
+            indexname = '%s_%s_%s_index' % (
+            model._table, self.translation_column, code)
+            if self.index:
+                try:
+                    with model._cr.savepoint():
+                        sql.create_json_translation_index(
+                            model._cr, indexname, model._table,
+                            self.translation_column, code)
+                except psycopg2.OperationalError:
+                    _schema.error("Unable to add index for %s", self)
+            else:
+                sql.drop_index(model._cr, indexname, model._table)
+
+    def update_db_index(self, model, column):
+        self._update_translation_index(model)
+        super().update_db_index(model, column)
 
     def _description_translate(self, env):
         return bool(self.translate)
@@ -1473,7 +1564,7 @@ class Char(_String):
         translation of terms.
     """
     type = 'char'
-    column_cast_from = ('text',)
+    column_cast_from = ('text')
     _slots = {
         'size': None,                   # maximum size of values (deprecated)
         'trim': True,                   # whether value is trimmed (only by web client)

@@ -109,7 +109,7 @@ class ProductPublicCategory(models.Model):
     _description = "Website Product Category"
     _order = "sequence, name"
 
-    name = fields.Char(required=True, translate=True)
+    name = fields.Char(required=True, translate=True, translation_storage='json')
     parent_id = fields.Many2one('product.public.category', string='Parent Category', index=True)
     child_id = fields.One2many('product.public.category', 'parent_id', string='Children Categories')
     sequence = fields.Integer(help="Gives the sequence order when displaying a list of product categories.")

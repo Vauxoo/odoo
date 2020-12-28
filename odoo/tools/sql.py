@@ -198,6 +198,14 @@ def create_index(cr, indexname, tablename, expressions):
     cr.execute('CREATE INDEX "{}" ON "{}" ({})'.format(indexname, tablename, args))
     _schema.debug("Table %r: created index %r (%s)", tablename, indexname, args)
 
+def create_json_translation_index(cr, indexname, tablename, colname, lang):
+    """ Create the given index unless it exists. """
+    if index_exists(cr, indexname):
+        return
+    cr.execute('CREATE EXTENSION IF NOT EXISTS pg_trgm')
+    cr.execute('CREATE INDEX "{}" ON "{}" using GIN( ({}->>\'{}\') gin_trgm_ops)'.format(indexname, tablename, colname, lang))
+    _schema.debug("Table %r: created index %r (%s->>'%s')", tablename, indexname, colname, lang)
+
 def create_unique_index(cr, indexname, tablename, expressions):
     """ Create the given index unless it exists. """
     if index_exists(cr, indexname):

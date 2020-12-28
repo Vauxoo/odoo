@@ -67,7 +67,7 @@ class PaymentAcquirer(models.Model):
     def _get_default_view_template_id(self):
         return self.env.ref('payment.default_acquirer_button', raise_if_not_found=False)
 
-    name = fields.Char('Name', required=True, translate=True)
+    name = fields.Char('Name', required=True, translate=True, translation_storage='json')
     description = fields.Html('Description')
     sequence = fields.Integer('Sequence', default=10, help="Determine the display order")
     provider = fields.Selection(

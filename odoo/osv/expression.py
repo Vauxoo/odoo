@@ -640,6 +640,17 @@ def create_substitution_leaf(leaf, new_elements, new_model=None, internal=False)
     return new_leaf
 
 
+class TranslationExtendedLeaf(ExtendedLeaf):
+    def __init__(self, leaf, model, join_context=None, internal=False):
+        super().__init__(leaf, model, join_context=join_context, internal=internal)
+
+
+def create_json_translation_leaf(leaf, new_elements=None):
+    new_join_context = [tuple(context) for context in leaf.join_context]
+    new_leaf = TranslationExtendedLeaf(new_elements or leaf.leaf, leaf.model, join_context=new_join_context)
+    return new_leaf
+
+
 class expression(object):
     """ Parse a domain expression
         Use a real polish notation
@@ -1114,44 +1125,53 @@ class expression(object):
 
 
                 elif field.translate is True and right:
-                    need_wildcard = operator in ('like', 'ilike', 'not like', 'not ilike')
-                    sql_operator = {'=like': 'like', '=ilike': 'ilike'}.get(operator, operator)
-                    if need_wildcard:
-                        right = '%%%s%%' % right
+                    if field.translation_storage == "json":
+                        push_result(create_substitution_leaf(leaf, OR_OPERATOR))
+                        # search into translation values first
+                        push_result(create_json_translation_leaf(leaf))
+                        # fallback on the non translated value if  ot value
+                        push_result(create_substitution_leaf(leaf, AND_OPERATOR))
+                        push_result(create_json_translation_leaf(leaf, (leaf.leaf[0], '=', False)))
+                        push_result(leaf)
+                    else:
+                        need_wildcard = operator in ('like', 'ilike', 'not like', 'not ilike')
+                        sql_operator = {'=like': 'like', '=ilike': 'ilike'}.get(operator, operator)
+                        if need_wildcard:
+                            right = '%%%s%%' % right
 
-                    inselect_operator = 'inselect'
-                    if sql_operator in NEGATIVE_TERM_OPERATORS:
-                        # negate operator (fix lp:1071710)
-                        sql_operator = sql_operator[4:] if sql_operator[:3] == 'not' else '='
-                        inselect_operator = 'not inselect'
+                        inselect_operator = 'inselect'
+                        if sql_operator in NEGATIVE_TERM_OPERATORS:
+                            # negate operator (fix lp:1071710)
+                            sql_operator = sql_operator[4:] if sql_operator[:3] == 'not' else '='
+                            inselect_operator = 'not inselect'
 
-                    unaccent = self._unaccent if sql_operator.endswith('like') else lambda x: x
+                        unaccent = self._unaccent if sql_operator.endswith('like') else lambda x: x
 
-                    instr = unaccent('%s')
+                        instr = unaccent('%s')
 
-                    if sql_operator == 'in':
-                        right = tuple(right)
+                        if sql_operator == 'in':
+                            right = tuple(right)
 
-                    subselect = """WITH temp_irt_current (id, name) as (
-                            SELECT ct.id, coalesce(it.value,ct.{quote_left})
-                            FROM {current_table} ct
-                            LEFT JOIN ir_translation it ON (it.name = %s and
-                                        it.lang = %s and
-                                        it.type = %s and
-                                        it.res_id = ct.id and
-                                        it.value != '')
-                            )
-                            SELECT id FROM temp_irt_current WHERE {name} {operator} {right} order by name
-                            """.format(current_table=model._table, quote_left=_quote(left), name=unaccent('name'),
-                                       operator=sql_operator, right=instr)
+                        subselect = """WITH temp_irt_current (id, name) as (
+                                SELECT ct.id, coalesce(it.value,ct.{quote_left})
+                                FROM {current_table} ct
+                                LEFT JOIN ir_translation it ON (it.name = %s and
+                                            it.lang = %s and
+                                            it.type = %s and
+                                            it.res_id = ct.id and
+                                            it.value != '')
+                                )
+                                SELECT id FROM temp_irt_current WHERE {name} {operator} {right} order by name
+                                """.format(current_table=model._table, quote_left=_quote(left), name=unaccent('name'),
+                                        operator=sql_operator, right=instr)
 
-                    params = (
-                        model._name + ',' + left,
-                        model.env.lang or 'en_US',
-                        'model',
-                        right,
-                    )
-                    push(create_substitution_leaf(leaf, ('id', inselect_operator, (subselect, params)), model, internal=True))
+                        params = (
+                            model._name + ',' + left,
+                            model.env.lang or 'en_US',
+                            'model',
+                            right,
+                        )
+                        push(create_substitution_leaf(leaf, ('id', inselect_operator, (subselect, params)), model, internal=True))
 
                 else:
                     push_result(leaf)
@@ -1179,6 +1199,12 @@ class expression(object):
         assert not isinstance(right, BaseModel), \
             "Invalid value %r in domain term %r" % (right, leaf)
 
+        field = left in model._fields and model._fields[left]
+        if leaf not in (TRUE_LEAF, FALSE_LEAF):
+            quoted_left = _quote(left)
+            if isinstance(eleaf, TranslationExtendedLeaf):
+                quoted_left = "%s->>'%s'" % (_quote(field.translation_column), model.env.lang or 'en_US')
+
         table_alias = '"%s"' % (eleaf.generate_alias())
 
         if leaf == TRUE_LEAF:
@@ -1190,11 +1216,11 @@ class expression(object):
             params = []
 
         elif operator == 'inselect':
-            query = '(%s."%s" in (%s))' % (table_alias, left, right[0])
+            query = '(%s.%s in (%s))' % (table_alias, quoted_left, right[0])
             params = right[1]
 
         elif operator == 'not inselect':
-            query = '(%s."%s" not in (%s))' % (table_alias, left, right[0])
+            query = '(%s.%s not in (%s))' % (table_alias, quoted_left, right[0])
             params = right[1]
 
         elif operator in ['in', 'not in']:
@@ -1203,12 +1229,12 @@ class expression(object):
             if isinstance(right, bool):
                 _logger.warning("The domain term '%s' should use the '=' or '!=' operator." % (leaf,))
                 if (operator == 'in' and right) or (operator == 'not in' and not right):
-                    query = '(%s."%s" IS NOT NULL)' % (table_alias, left)
+                    query = '(%s.%s IS NOT NULL)' % (table_alias, quoted_left)
                 else:
-                    query = '(%s."%s" IS NULL)' % (table_alias, left)
+                    query = '(%s.%s IS NULL)' % (table_alias, quoted_left)
                 params = []
             elif isinstance(right, (list, tuple)):
-                if model._fields[left].type == "boolean":
+                if field.type == "boolean":
                     params = [it for it in (True, False) if it in right]
                     check_null = False in right
                 else:
@@ -1218,34 +1244,33 @@ class expression(object):
                     if left == 'id':
                         instr = ','.join(['%s'] * len(params))
                     else:
-                        field = model._fields[left]
                         instr = ','.join([field.column_format] * len(params))
                         params = [field.convert_to_column(p, model, validate=False) for p in params]
-                    query = '(%s."%s" %s (%s))' % (table_alias, left, operator, instr)
+                    query = '(%s.%s %s (%s))' % (table_alias, quoted_left, operator, instr)
                 else:
                     # The case for (left, 'in', []) or (left, 'not in', []).
                     query = 'FALSE' if operator == 'in' else 'TRUE'
                 if (operator == 'in' and check_null) or (operator == 'not in' and not check_null):
-                    query = '(%s OR %s."%s" IS NULL)' % (query, table_alias, left)
+                    query = '(%s OR %s.%s IS NULL)' % (query, table_alias, quoted_left)
                 elif operator == 'not in' and check_null:
-                    query = '(%s AND %s."%s" IS NOT NULL)' % (query, table_alias, left)  # needed only for TRUE.
+                    query = '(%s AND %s.%s IS NOT NULL)' % (query, table_alias, quoted_left)  # needed only for TRUE.
             else:  # Must not happen
                 raise ValueError("Invalid domain term %r" % (leaf,))
 
-        elif left in model and model._fields[left].type == "boolean" and ((operator == '=' and right is False) or (operator == '!=' and right is True)):
-            query = '(%s."%s" IS NULL or %s."%s" = false )' % (table_alias, left, table_alias, left)
+        elif field and field.type == "boolean" and ((operator == '=' and right is False) or (operator == '!=' and right is True)):
+            query = '(%s.%s IS NULL or %s.%s = false )' % (table_alias, quoted_left, table_alias, quoted_left)
             params = []
 
         elif (right is False or right is None) and (operator == '='):
-            query = '%s."%s" IS NULL ' % (table_alias, left)
+            query = '%s.%s IS NULL ' % (table_alias, quoted_left)
             params = []
 
-        elif left in model and model._fields[left].type == "boolean" and ((operator == '!=' and right is False) or (operator == '==' and right is True)):
-            query = '(%s."%s" IS NOT NULL and %s."%s" != false)' % (table_alias, left, table_alias, left)
+        elif field and field.type == "boolean" and ((operator == '!=' and right is False) or (operator == '==' and right is True)):
+            query = '(%s.%s IS NOT NULL and %s.%s != false)' % (table_alias, quoted_left, table_alias, quoted_left)
             params = []
 
         elif (right is False or right is None) and (operator == '!='):
-            query = '%s."%s" IS NOT NULL' % (table_alias, left)
+            query = '%s.%s IS NOT NULL' % (table_alias, quoted_left)
             params = []
 
         elif operator == '=?':
@@ -1265,18 +1290,17 @@ class expression(object):
 
             if left not in model:
                 raise ValueError("Invalid field %r in domain term %r" % (left, leaf))
-            format = '%s' if need_wildcard else model._fields[left].column_format
+            format = '%s' if need_wildcard else field.column_format
             unaccent = self._unaccent if sql_operator.endswith('like') else lambda x: x
-            column = '%s.%s' % (table_alias, _quote(left))
+            column = '%s.%s' % (table_alias, quoted_left)
             query = '(%s %s %s)' % (unaccent(column + cast), sql_operator, unaccent(format))
 
             if need_wildcard:
                 native_str = pycompat.to_native(right)
                 if not native_str:
-                    query = '(%s OR %s."%s" IS NULL)' % (query, table_alias, left)
+                    query = '(%s OR %s.%s IS NULL)' % (query, table_alias, quoted_left)
                 params = ['%%%s%%' % native_str]
             else:
-                field = model._fields[left]
                 params = [field.convert_to_column(right, model, validate=False)]
 
         return query, params

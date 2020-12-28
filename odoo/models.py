@@ -4019,6 +4019,11 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # this is possible to have multiple translations for a same record in the same language.
             # The parenthesis surrounding the select are important, as this is a sub-select.
             # The quotes surrounding `ir_translation` are important as well.
+            if self._fields[field].translation_storage == 'json':
+                source_value = '"%s"."%s"' % (table_alias, field)
+                translated_value = '"%s"."%s"->>\'%s\'' % (table_alias, self._fields[field].translation_column, self.env.lang)
+                return 'COALESCE(%s, %s)' % (translated_value, source_value)
+
             unique_translation_subselect = """
                 (SELECT res_id, value FROM "ir_translation"
                  WHERE type='model' AND name=%s AND lang=%s AND value!='')
