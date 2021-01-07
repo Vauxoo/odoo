@@ -939,7 +939,7 @@ class IrModelFields(models.Model):
         }
         if field_data['ttype'] in ('char', 'text', 'html'):
             attrs['translate'] = bool(field_data['translate'])
-            attrs['translation_storage'] = field_data['translation_storage']
+            attrs['translation_storage'] = field_data.get('translation_storage')
             attrs['size'] = field_data['size'] or None
         elif field_data['ttype'] in ('selection', 'reference'):
             attrs['selection'] = safe_eval(field_data['selection'])
