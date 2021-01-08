@@ -50,7 +50,7 @@ class Website(models.Model):
         def_lang = self.env['res.lang'].search([('code', '=', lang_code)], limit=1)
         return def_lang.id if def_lang else self._active_languages()[0]
 
-    name = fields.Char('Website Name', required=True)
+    name = fields.Char('Website Name', required=True, translation_storage='json')
     domain = fields.Char('Website Domain')
     country_group_ids = fields.Many2many('res.country.group', 'website_country_group_rel', 'website_id', 'country_group_id',
                                          string='Country Groups', help='Used when multiple websites have the same domain.')
