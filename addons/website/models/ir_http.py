@@ -64,8 +64,7 @@ class Http(models.AbstractModel):
         if not request.session.uid:
             env = api.Environment(request.cr, SUPERUSER_ID, request.context)
             website = env['website'].get_current_website()
-            if website and website.user_id:
-                request.uid = website.user_id.id
+            request.uid = website and website._get_cached('user_id')
         if not request.uid:
             super(Http, cls)._auth_method_public()
 
@@ -94,7 +93,7 @@ class Http(models.AbstractModel):
     @classmethod
     def _get_languages(cls):
         if getattr(request, 'website', False):
-            return request.website.language_ids
+            return request.env['res.lang'].browse(request.website._get_cached('language_ids'))
         return super(Http, cls)._get_languages()
 
     @classmethod
@@ -106,7 +105,7 @@ class Http(models.AbstractModel):
     @classmethod
     def _get_default_lang(cls):
         if getattr(request, 'website', False):
-            return request.website.default_lang_id
+            return request.env['res.lang'].browse(request.website._get_cached('default_lang_id'))
         return super(Http, cls)._get_default_lang()
 
     @classmethod
