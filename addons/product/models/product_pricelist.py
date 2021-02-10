@@ -213,7 +213,15 @@ class Pricelist(models.Model):
                 if rule.base == 'pricelist' and rule.base_pricelist_id:
                     price_tmp = rule.base_pricelist_id.with_context(other_pricelist=True)._compute_price_rule(
                         [(product, qty, partner)])[product.id][0]  # TDE: 0 = price, 1 = rule
+
                     price = rule.base_pricelist_id.currency_id._convert(price_tmp, self.currency_id, self.env.user.company_id, date, round=False)
+                    company = self.env.user.company_id
+                    custom_rate = product._context.get('agreement_custom_rate', 1.0)
+                    if (rule.base_pricelist_id.currency_id != self.currency_id
+                        and self.currency_id == company.currency_id
+                        and rule.base_pricelist_id.currency_id == company.index_based_currency_id and custom_rate != 1.0):
+                        price = custom_rate * price_tmp
+
                     if not price:
                         continue
                 else:
