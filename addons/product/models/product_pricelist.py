@@ -557,6 +557,17 @@ class PricelistItem(models.Model):
                 [(product, qty, partner)], date, uom_id)[product.id][0]  # TDE: 0 = price, 1 = rule
             price = self.base_pricelist_id.currency_id._convert(
                 price_tmp, self.pricelist_id.currency_id, self.env.user.company_id, date, round=False)
+
+            company = self.env.user.company_id
+            custom_rate = product._context.get('agreement_custom_rate', 1.0)
+            to_cur = self.pricelist_id.currency_id
+            from_cur = self.base_pricelist_id.currency_id
+            if to_cur != from_cur and custom_rate != 1.0:
+                if to_cur == company.currency_id and from_cur == company.index_based_currency_id:
+                    price = custom_rate * price_tmp
+                if to_cur == company.index_based_currency_id and from_cur == company.currency_id:
+                    price = price_tmp / custom_rate
+
             if not price:
                 return False
         else:
