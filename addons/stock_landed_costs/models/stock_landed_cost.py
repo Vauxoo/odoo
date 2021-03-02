@@ -170,7 +170,7 @@ class LandedCost(models.Model):
 
         digits = dp.get_precision('Product Price')(self._cr)
         towrite_dict = {}
-        for cost in self.filtered(lambda cost: cost.picking_ids):
+        for cost in self.filtered(lambda cost: cost.picking_ids or cost.move_ids or cost.production_ids or cost.unbuild_ids):
             total_qty = 0.0
             total_cost = 0.0
             total_weight = 0.0
