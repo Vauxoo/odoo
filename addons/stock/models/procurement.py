@@ -366,23 +366,23 @@ class ProcurementGroup(models.Model):
                             op_product_virtual = product_quantity[orderpoint.product_id.id]['virtual_available']
                             if op_product_virtual is None:
                                 continue
-                            if float_compare(op_product_virtual, orderpoint.product_min_qty, precision_rounding=orderpoint.product_uom.rounding) <= 0:
+                            if float_compare(op_product_virtual, orderpoint.product_min_qty, precision_rounding=orderpoint.product_id.uom_id.rounding) <= 0:
                                 qty = max(orderpoint.product_min_qty, orderpoint.product_max_qty) - op_product_virtual
                                 remainder = orderpoint.qty_multiple > 0 and qty % orderpoint.qty_multiple or 0.0
 
-                                if float_compare(remainder, 0.0, precision_rounding=orderpoint.product_uom.rounding) > 0:
+                                if float_compare(remainder, 0.0, precision_rounding=orderpoint.product_id.uom_id.rounding) > 0:
                                     qty += orderpoint.qty_multiple - remainder
 
-                                if float_compare(qty, 0.0, precision_rounding=orderpoint.product_uom.rounding) <= 0:
+                                if float_compare(qty, 0.0, precision_rounding=orderpoint.product_id.uom_id.rounding) <= 0:
                                     continue
 
                                 qty -= substract_quantity[orderpoint.id]
-                                qty_rounded = float_round(qty, precision_rounding=orderpoint.product_uom.rounding)
+                                qty_rounded = float_round(qty, precision_rounding=orderpoint.product_id.uom_id.rounding)
                                 if qty_rounded > 0:
                                     values = orderpoint._prepare_procurement_values(qty_rounded, **group['procurement_values'])
                                     try:
                                         with self._cr.savepoint():
-                                            self.env['procurement.group'].run(orderpoint.product_id, qty_rounded, orderpoint.product_uom, orderpoint.location_id,
+                                            self.env['procurement.group'].run(orderpoint.product_id, qty_rounded, orderpoint.product_id.uom_id, orderpoint.location_id,
                                                                               orderpoint.name, orderpoint.name, values)
                                     except UserError as error:
                                         self.env['procurement.rule']._log_next_activity(orderpoint.product_id, error.name)

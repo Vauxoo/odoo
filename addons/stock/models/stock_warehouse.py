@@ -825,7 +825,7 @@ class Orderpoint(models.Model):
     @api.constrains('product_id')
     def _check_product_uom(self):
         ''' Check if the UoM has the same category as the product standard UoM '''
-        if any(orderpoint.product_id.uom_id.category_id != orderpoint.product_uom.category_id for orderpoint in self):
+        if any(orderpoint.product_id.uom_id.category_id != orderpoint.product_id.uom_id.category_id for orderpoint in self):
             raise ValidationError(_('You have to select a product unit of measure in the same category than the default unit of measure of the product'))
 
     @api.onchange('warehouse_id')
@@ -848,7 +848,7 @@ class Orderpoint(models.Model):
             days += self.product_id._select_seller(
                 quantity=product_qty,
                 date=fields.Date.to_string(start_date),
-                uom_id=self.product_uom).delay or 0.0
+                uom_id=self.product_id.uom_id).delay or 0.0
         date_planned = start_date + relativedelta.relativedelta(days=days)
         return date_planned.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
