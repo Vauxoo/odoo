@@ -477,7 +477,7 @@ class Users(models.Model):
             user_id = False
 
         status = "successful" if user_id else "failed"
-        ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
+        ip = request.httprequest.environ.get('werkzeug.proxy_fix.orig_remote_addr', False) if request else 'n/a'
         _logger.info("Login %s for db:%s login:%s from %s", status, db, login, ip)
 
         return user_id
