@@ -1301,16 +1301,22 @@ class AccountMoveLine(models.Model):
     @api.multi
     def _update_check(self):
         """ Raise Warning to cause rollback if the move is posted, some entries are reconciled or the move is older than the lock date"""
-        move_ids = set()
-        for line in self:
-            err_msg = _('Move name (id): %s (%s)') % (line.move_id.name, str(line.move_id.id))
-            if line.move_id.state != 'draft':
-                raise UserError(_('You cannot do this modification on a posted journal entry, you can just change some non legal fields. You must revert the journal entry to cancel it.\n%s.') % err_msg)
-            if line.reconciled and not (line.debit == 0 and line.credit == 0):
-                raise UserError(_('You cannot do this modification on a reconciled entry. You can just change some non legal fields or you must unreconcile first.\n%s.') % err_msg)
-            if line.move_id.id not in move_ids:
-                move_ids.add(line.move_id.id)
-        self.env['account.move'].browse(list(move_ids))._check_lock_date()
+        # If not raises it will be used at the end
+        moves = self.mapped('move_id')
+
+        # /!\ NOTE: Only check on moves not on every single journal item.
+        not_to_modify_moves = moves.filtered(lambda m: m.state != 'draft')
+        if not_to_modify_moves:
+            err_msg = '\n'.join(_('Move name (id): %s (%s)') % (move.name, str(move.id)) for move in not_to_modify_moves)
+            raise UserError(_('You cannot do this modification on a posted journal entry, you can just change some non legal fields. You must revert the journal entry to cancel it.\n%s.') % err_msg)
+
+        # /!\ NOTE: Check on all the lines if there are failures let us accumulate them and later we report them.
+        not_to_modify_moves = self.filtered(lambda l: l.reconciled and not (l.debit == 0 and l.credit == 0)).mapped('move_id')
+        if not_to_modify_moves:
+            err_msg = '\n'.join(_('Move name (id): %s (%s)') % (move.name, str(move.id)) for move in not_to_modify_moves)
+            raise UserError(_('You cannot do this modification on a reconciled entry. You can just change some non legal fields or you must unreconcile first.\n%s.') % err_msg)
+
+        moves._check_lock_date()
         return True
 
     ####################################################
