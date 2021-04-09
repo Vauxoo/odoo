@@ -645,9 +645,13 @@ class PreforkServer(CommonServer):
             fds = {w.watchdog_pipe[0]: w for w in self.workers.values()}
             fd_in = list(fds) + [self.pipe[0]]
             # check for ping or internal wakeups
-            ready = select.select(fd_in, [], [], self.beat)
+            # ready = select.select(fd_in, [], [], self.beat)
+            ready = select.poll()
+            for _socket in fd_in:
+                ready.register(_socket)
+            ready.poll(self.beat)
             # update worker watchdogs
-            for fd in ready[0]:
+            for fd, mask in ready.poll():
                 if fd in fds:
                     fds[fd].watchdog_time = time.time()
                 empty_pipe(fd)
@@ -772,7 +776,12 @@ class Worker(object):
 
     def sleep(self):
         try:
-            select.select([self.multi.socket, self.wakeup_fd_r], [], [], self.multi.beat)
+            # select.select([self.multi.socket, self.wakeup_fd_r], [], [], self.multi.beat)
+            poll = select.poll()
+            poll.register(self.multi.socket)
+            poll.register(self.wakeup_fd_r)
+            poll.poll(self.multi.beat)
+
             # clear wakeup pipe if we were interrupted
             empty_pipe(self.wakeup_fd_r)
         except select.error as e:
@@ -928,7 +937,10 @@ class WorkerCron(Worker):
 
             # simulate interruptible sleep with select(wakeup_fd, timeout)
             try:
-                select.select([self.wakeup_fd_r], [], [], interval)
+                # select.select([self.wakeup_fd_r], [], [], interval)
+                poll = select.poll()
+                poll.register(self.wakeup_fd_r)
+                poll.poll(interval)
                 # clear wakeup pipe if we were interrupted
                 empty_pipe(self.wakeup_fd_r)
             except select.error as e:
