@@ -90,15 +90,6 @@ class AccountAccount(models.Model):
         ('code_company_uniq', 'unique (code,company_id)', 'The code of the account must be unique per company !')
     ]
 
-    @api.constrains('reconcile', 'internal_group', 'tax_ids')
-    def _constrains_reconcile(self):
-        for record in self:
-            if record.internal_group == 'off_balance':
-                if record.reconcile:
-                    raise UserError(_('An Off-Balance account can not be reconcilable'))
-                if record.tax_ids:
-                    raise UserError(_('An Off-Balance account can not have taxes'))
-
     @api.constrains('allowed_journal_ids')
     def _constrains_allowed_journal_ids(self):
         self.env['account.move.line'].flush(['account_id', 'journal_id'])
