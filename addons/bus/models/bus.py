@@ -160,6 +160,7 @@ class ImDispatch(object):
             conn = cr._cnx
             cr.execute("listen imbus")
             cr.commit();
+            _logger.info("Bus.loop listen imbus on db postgres conn backend_pid %s. conn %s", conn.get_backend_pid(), conn)
             while True:
                 if select.select([conn], [], [], TIMEOUT) == ([], [], []):
                     pass
