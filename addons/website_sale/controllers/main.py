@@ -269,6 +269,7 @@ class WebsiteSale(ProductConfiguratorController):
 
         values = {
             'search': search,
+            'search_product': search_product,
             'category': category,
             'attrib_values': attrib_values,
             'attrib_set': attrib_set,
