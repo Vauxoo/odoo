@@ -558,7 +558,7 @@ class Users(models.Model):
             for user in self:
                 if not user.active and not user.partner_id.active:
                     user.partner_id.toggle_active()
-        _logger.info("%s, %s, %s, %s" % (self, self.env.user, values, self.env.su))
+        _logger.info("%s, %s, %s, %s", self, self.env.user, values, self.env.su)
         if self == self.env.user:
             for key in list(values):
                 if not (key in self.SELF_WRITEABLE_FIELDS or key.startswith('context_')):
