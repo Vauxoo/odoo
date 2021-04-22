@@ -558,6 +558,7 @@ class Users(models.Model):
             for user in self:
                 if not user.active and not user.partner_id.active:
                     user.partner_id.toggle_active()
+        _logger.info("%s, %s, %s, %s" % (self, self.env.user, values, self.env.su))
         if self == self.env.user:
             for key in list(values):
                 if not (key in self.SELF_WRITEABLE_FIELDS or key.startswith('context_')):
@@ -568,7 +569,7 @@ class Users(models.Model):
                         del values['company_id']
                 # safe fields only, so we write as super-user to bypass access rights
                 self = self.sudo().with_context(binary_field_real_user=self.env.user)
-
+                _logger.info("%s, %s" % (self, self.env.su))
         res = super(Users, self).write(values)
         if 'company_id' in values:
             for user in self:
