@@ -218,7 +218,7 @@ class AccountMove(models.Model):
         for rec in self.filtered(lambda x: x.state == 'draft'):
             document_types = rec.l10n_latam_available_document_type_ids._origin
             document_types = debit_note and document_types.filtered(lambda x: x.internal_type == 'debit_note') or document_types
-            rec.l10n_latam_document_type_id = document_types and document_types[0].id
+            rec.l10n_latam_document_type_id = document_types and document_types[0].id if not bool(rec.l10n_latam_document_type_id) else document_types and rec.l10n_latam_document_type_id.id
 
     def _compute_invoice_taxes_by_group(self):
         report_or_portal_view = 'commit_assetsbundle' in self.env.context or \
