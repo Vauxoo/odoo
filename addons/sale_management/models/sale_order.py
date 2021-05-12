@@ -63,7 +63,7 @@ class SaleOrder(models.Model):
             return
         template = self.sale_order_template_id.with_context(lang=self.partner_id.lang)
 
-        order_lines = [(5, 0, 0)]
+        order_lines = []
         for line in template.sale_order_template_line_ids:
             data = self._compute_line_data_for_template_change(line)
             if line.product_id:
@@ -93,8 +93,9 @@ class SaleOrder(models.Model):
                     data.update(self.env['sale.order.line']._get_purchase_price(self.pricelist_id, line.product_id, line.product_uom_id, fields.Date.context_today(self)))
             order_lines.append((0, 0, data))
 
-        self.order_line = order_lines
-        self.order_line._compute_tax_id()
+        if order_lines:
+            self.order_line = order_lines
+            self.order_line._compute_tax_id()
 
         option_lines = []
         for option in template.sale_order_template_option_ids:
