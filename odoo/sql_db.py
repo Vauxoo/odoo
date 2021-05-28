@@ -10,8 +10,11 @@ the ORM does, in fact.
 
 from contextlib import contextmanager
 from functools import wraps
+import collections
+import hashlib
 import logging
 import time
+import traceback
 import uuid
 
 import psycopg2
@@ -30,6 +33,9 @@ types_mapping = {
     'time': (1083,),
     'datetime': (1114,),
 }
+
+TRACEBACK_GROUP = collections.defaultdict(dict)
+TRACEBACK_GROUP.default_factory = lambda: dict({'count': 0})
 
 def unbuffer(symb, cr):
     if symb is None:
@@ -230,6 +236,15 @@ class Cursor(object):
         try:
             params = params or None
             res = self._obj.execute(query, params)
+            if b'update' in self._obj.query.lower() and b'ir_config_parameter' in self._obj.query.lower():
+                tcbk = traceback.extract_stack()
+                key = hashlib.md5(repr(tcbk).encode('UTF-8')).hexdigest()
+                TRACEBACK_GROUP[key]['count'] += 1
+                TRACEBACK_GROUP[key]['tcbk'] = tcbk
+                tcbk_str = ""
+                for key, tcbk in sorted(TRACEBACK_GROUP.items(), key=lambda x: x[1]['count'], reverse=True):
+                    tcbk_str += "%d,%s\n" % (tcbk['count'], '\n,'.join(map(lambda a: repr(a), tcbk['tcbk'])))
+                open("/tmp/borrar.txt", "w").write(tcbk_str)
         except Exception as e:
             if self._default_log_exceptions if log_exceptions is None else log_exceptions:
                 _logger.error("bad query: %s\nERROR: %s", ustr(self._obj.query or query), e)
