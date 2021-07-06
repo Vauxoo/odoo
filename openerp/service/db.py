@@ -307,6 +307,14 @@ def exp_db_exist(db_name):
 def exp_list(document=False):
     if not openerp.tools.config['list_db'] and not document:
         raise openerp.exceptions.AccessDenied()
+
+    if not openerp.tools.config['dbfilter'] and openerp.tools.config['db_name']:
+        # In case --db-filter is not provided and --database is passed, Odoo will not
+        # fetch the list of databases available on the postgres server and instead will
+        # use the value of --database as comma seperated list of exposed databases.
+        res = sorted(db.strip() for db in openerp.tools.config['db_name'].split(','))
+        return res
+
     chosen_template = openerp.tools.config['db_template']
     templates_list = tuple(set(['template0', 'template1', 'postgres', chosen_template]))
     db = openerp.sql_db.db_connect('postgres')
