@@ -234,7 +234,19 @@ class WebsiteSale(ProductConfiguratorController):
 
         Category = request.env['product.public.category']
         search_categories = False
-        search_product = Product.search(domain, order=self._get_search_order(post))
+        has_unaccent = request.env.registry.has_unaccent
+        try:
+            request.env.registry.has_unaccent = False
+            fields2translate = []
+            search_product = Product.search(domain, order=self._get_search_order(post))
+            for field in Product._fields.values():
+                if field.translate:
+                    field.translate = False
+                    fields2translate.append(field)
+        finally:
+            request.env.registry.has_unaccent = has_unaccent
+            for field2translate in fields2translate:
+                field2translate.translate = True
         if search:
             categories = search_product.mapped('public_categ_ids')
             search_categories = Category.search([('id', 'parent_of', categories.ids)] + request.website.website_domain())
