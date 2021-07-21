@@ -37,6 +37,9 @@ class WebsiteSaleProductComparison(WebsiteSale):
     @http.route(['/shop/get_product_data'], type='json', auth="public", website=True)
     def get_product_data(self, product_ids, cookies=None):
         ret = {}
+        # added this validation to avoid the launch of unecessary queries
+        if not product_ids:
+            return ret
         pricelist_context, pricelist = self._get_pricelist_context()
         prods = request.env['product.product'].with_context(pricelist_context, display_default_code=False).search([('id', 'in', product_ids)])
         compute_currency = self._get_compute_currency(pricelist, prods[:1].product_tmpl_id)
