@@ -142,11 +142,13 @@ var ProductComparison = Widget.extend(ProductConfiguratorMixin, {
                 cookies: JSON.parse(utils.get_cookie('comparelist_product_ids') || '[]'),
             },
         }).then(function (data) {
-            self.comparelist_product_ids = JSON.parse(data.cookies);
-            delete data.cookies;
-            _.each(data, function (product) {
-                self.product_data[product.product.id] = product;
-            });
+            if (!$.isEmptyObject(data)) {
+                self.comparelist_product_ids = JSON.parse(data.cookies);
+                delete data.cookies;
+                _.each(data, function (product) {
+                    self.product_data[product.product.id] = product;
+                });
+            }
         });
     },
     /**
