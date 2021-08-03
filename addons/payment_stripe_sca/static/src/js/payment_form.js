@@ -184,5 +184,6 @@ odoo.define('payment_stripe.payment_form', function (require) {
             }
         },
     });
+    return PaymentForm;
 });
     
