@@ -162,14 +162,23 @@ class WebsiteSale(ProductConfiguratorController):
 
     def _get_search_domain(self, search, category, attrib_values):
         domain = request.website.sale_product_domain()
+        domain.pop(0)
         if search:
-            for srch in search.split(" "):
-                domain += [
-                    '|', '|', '|', ('name', 'ilike', srch), ('description', 'ilike', srch),
-                    ('description_sale', 'ilike', srch), ('product_variant_ids.default_code', 'ilike', srch)]
+            domain_ex = []
+
+            for srch in search.strip().split(" "):
+                domain_ex.append(('name', 'ilike', srch))
+                domain_ex.append(('description', 'ilike', srch))
+                domain_ex.append(('description_sale', 'ilike', srch))
+                domain_ex.append(('product_variant_ids.default_code', 'ilike', srch))
+
+            for index in range(1, len(domain_ex)):
+                domain_ex.insert(0, '|')
+
+            domain += domain_ex
 
         if category:
-            domain += [('public_categ_ids', 'child_of', int(category))]
+            domain.insert(0, ('public_categ_ids', 'child_of', int(category)))
 
         if attrib_values:
             attrib = None
