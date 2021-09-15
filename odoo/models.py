@@ -105,6 +105,35 @@ def check_pg_name(name):
     if len(name) > 63:
         raise ValidationError("Table name %r is too long" % name)
 
+from contextlib import contextmanager
+
+@contextmanager
+def set_statement_timeout(cr, st_timeout):
+    if st_timeout == '0':
+        st_timeout = False
+    if st_timeout:
+        cr.execute("SHOW statement_timeout")
+        st_timeout_old = cr.fetchone()[0]
+        set_timeout = False
+        try:
+            with cr.savepoint():
+                cr.execute("SET SESSION statement_timeout=%s", (st_timeout,))
+                set_timeout = True
+        except psycopg2.DataError:
+            _logger.error("Can not set statement_timeout to %s", st_timeout)
+        if set_timeout:
+            try:
+                with cr.savepoint():
+                    yield
+            except Exception as e:
+                raise e
+            finally:
+                cr.execute("SET SESSION statement_timeout=%s", (st_timeout_old,))
+        else:
+            yield
+    else:
+        yield
+
 # match private methods, to prevent their remote invocation
 regex_private = re.compile(r'^(_.*|init)$')
 
@@ -5322,8 +5351,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     continue
                 vals = rec._convert_to_write(vals)
                 updates[frozendict(vals)].add(rec.id)
+            st_timeout = recs.env['ir.config_parameter'].sudo().get_param('compute_statement_timeout')
             # update records in batch when possible
-            with recs.env.norecompute():
+            with recs.env.norecompute(), set_statement_timeout(recs.env.cr, st_timeout):
                 for vals, ids in updates.items():
                     target = recs.browse(ids)
                     try:
