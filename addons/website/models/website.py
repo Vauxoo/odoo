@@ -834,6 +834,9 @@ class Website(models.Model):
         res = urls.url_parse(self.domain)
         return 'http://' + self.domain if not res.scheme else self.domain
 
+    def custom_method(self):
+        pass
+
 
 class SeoMetadata(models.AbstractModel):
 
