@@ -242,6 +242,8 @@ class WebsiteSale(ProductConfiguratorController):
         else:
             categs = Category.search([('parent_id', '=', False)] + request.website.website_domain())
 
+        categs = categs.with_context(lang=None, prefetch_fields=False)
+        categs.read(['name', 'parent_id', 'child_id'])  # prefetch the cache with fields used
         parent_category_ids = []
         if category:
             url = "/shop/category/%s" % slug(category)
