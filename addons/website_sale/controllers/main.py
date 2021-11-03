@@ -259,7 +259,7 @@ class WebsiteSale(ProductConfiguratorController):
         products = search_product[offset: offset + ppg]
 
         ProductAttribute = request.env['product.attribute']
-        if products and ProductAttribute.search_count([]):
+        if products and ProductAttribute.search([], limit=1, order='id'):
             attributes = ProductAttribute.search([
                 ('attribute_line_ids.value_ids', '!=', False),
                 ('attribute_line_ids.product_tmpl_id', 'in', search_product.ids)
