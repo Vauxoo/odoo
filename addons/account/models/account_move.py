@@ -406,6 +406,9 @@ class AccountMove(models.Model):
             accounting_date = self._get_accounting_date(self.invoice_date, has_tax)
             if accounting_date != self.date:
                 self.date = accounting_date
+                # /!\ NOTE: multi-currency customer invoices & credit now must be at current currency rate
+                # This guarantees that all lines are recomputed at the accounting date currency rate.
+                self.line_ids.with_context(check_move_validity=False)._onchange_amount_currency()
                 self._onchange_currency()
 
     @api.onchange('journal_id')
@@ -1927,7 +1930,12 @@ class AccountMove(models.Model):
             default['date'] = self.company_id._get_user_fiscal_lock_date() + timedelta(days=1)
         if self.move_type == 'entry':
             default['partner_id'] = False
-        return super(AccountMove, self).copy(default)
+        res = super(AccountMove, self).copy(default)
+        # /!\ NOTE: multi-currency customer invoices & credit now must be at current currency rate
+        if res.is_sale_document() and res.currency_id != res.company_currency_id:
+            res.date = fields.Date.context_today(self)
+            res.line_ids.with_context(check_move_validity=False)._onchange_amount_currency()
+        return res
 
     @api.model_create_multi
     def create(self, vals_list):
