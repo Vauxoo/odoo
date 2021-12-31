@@ -32,12 +32,12 @@ VERSION=15.0
 VERSION_IOTBOX=21.10
 REPO=https://github.com/odoo/odoo.git
 
-if ! file_exists *raspios*.img ; then
-    wget 'https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip' -O raspios.img.zip
-    unzip raspios.img.zip
-fi
+# if ! file_exists *raspios*.img ; then
+#    wget 'https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip' -O raspios.img.zip
+#    unzip raspios.img.zip
+# fi
 
-RASPIOS=$(echo *raspios*.img)
+RASPIOS=$(echo PIPIformateado.img)
 rsync -avh --progress "${RASPIOS}" iotbox.img
 
 CLONE_DIR="${OVERWRITE_FILES_BEFORE_INIT_DIR}/home/pi/odoo"
@@ -68,36 +68,16 @@ rm -v ngrok.zip
 cd "${__dir}"
 mv -v /tmp/ngrok "${USR_BIN}"
 
-# zero pad the image to be around 4.4 GiB, by default the image is only ~2.2 GiB
-echo "Enlarging the image..."
-dd if=/dev/zero bs=1M count=2048 status=progress >> iotbox.img
 
-# resize partition table
-echo "Fdisking"
+
+# Instatiate partitions to be overwritten
+
 
 SECTORS_BOOT_START=$(sudo fdisk -l iotbox.img | tail -n 2 | awk 'NR==1 {print $2}')
 SECTORS_BOOT_END=$((SECTORS_BOOT_START + 1048576)) # sectors to have a partition of ~512Mo
 SECTORS_ROOT_START=$((SECTORS_BOOT_END + 1))
 
 START_OF_ROOT_PARTITION=$(fdisk -l iotbox.img | tail -n 1 | awk '{print $2}')
-(echo 'p';                          # print
- echo 'd';                          # delete
- echo '2';                          #    number 2
- echo 'd';                          # delete number 1 by default
- echo 'n';                          # create new partition
- echo 'p';                          #   primary
- echo '1';                          #   number 1
- echo "${SECTORS_BOOT_START}";      #   first sector
- echo "${SECTORS_BOOT_END}";        #   partition size
- echo 't';                          # change type of partition. 1 selected by default
- echo 'c';                          #   change to W95 FAT32 (LBA)
- echo 'n';                          # create new partition
- echo 'p';                          #   primary
- echo '2';                          #   number 2
- echo "${SECTORS_ROOT_START}";      #   starting at previous offset
- echo '';                           #   ending at default (fdisk should propose max)
- echo 'p';                          # print
- echo 'w') | fdisk iotbox.img       # write and quit
 
 LOOP_RASPIOS=$(kpartx -avs "${RASPIOS}")
 LOOP_RASPIOS_ROOT=$(echo "${LOOP_RASPIOS}" | tail -n 1 | awk '{print $3}')
@@ -111,13 +91,6 @@ LOOP_IOT_ROOT="/dev/mapper/${LOOP_IOT_ROOT}"
 LOOP_IOT_BOOT=$(echo "${LOOP_IOT}" | tail -n 2 | awk 'NR==1 {print $3}')
 LOOP_IOT_BOOT="/dev/mapper/${LOOP_IOT_BOOT}"
 
-mkfs.ext4 -v "${LOOP_IOT_ROOT}"
-
-dd if="${LOOP_RASPIOS_ROOT}" of="${LOOP_IOT_ROOT}" bs=4M status=progress
-
-# resize filesystem
-e2fsck -fv "${LOOP_IOT_ROOT}" # resize2fs requires clean fs
-resize2fs "${LOOP_IOT_ROOT}"
 
 mkdir -pv "${MOUNT_POINT}" #-p: no error if existing
 mount -v "${LOOP_IOT_ROOT}" "${MOUNT_POINT}"
