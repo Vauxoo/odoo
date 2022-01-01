@@ -105,6 +105,7 @@ PIP_TO_INSTALL="
     polib \
     pycups \
     pyusb \
+    watchdog \
     v4l2"
 
 pip3 install ${PIP_TO_INSTALL}
