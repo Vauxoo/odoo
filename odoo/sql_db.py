@@ -90,6 +90,13 @@ re_into = re.compile('.* into "?([a-zA-Z_0-9]+)"? .*$')
 
 sql_counter = 0
 
+QUERY_TO_CATCHS = [
+    b'SELECT "sale_order_line".id FROM "sale_order_line" LEFT JOIN "sale_order" AS "sale_order_line__order_id" ON ("sale_order_line"."order_id" = "sale_order_line__order_id"."id") WHERE (((((((TRUE AND "sale_order_line"."product_id" IS NOT NULL) AND ("sale_order_line"."order_id" IN',
+    b'SELECT "sale_order".id FROM "sale_order" WHERE ("sale_order"."state" in ("sale", "done")) ORDER BY "sale_order"."id"',
+]
+import traceback
+import os
+
 class Cursor(object):
     """Represents an open transaction to the PostgreSQL DB backend,
        acting as a lightweight wrapper around psycopg2's
@@ -245,9 +252,17 @@ class Cursor(object):
             encoding = psycopg2.extensions.encodings[self.connection.encoding]
             _logger.debug("query: %s", self._obj.mogrify(query, params).decode(encoding, 'replace'))
         now = time.time()
+        catch_traceback_query = os.environ.get("CATCH_TRACEBACK_QUERY", "")
         try:
             params = params or None
             res = self._obj.execute(query, params)
+            if catch_traceback_query:
+                raw_query = self._obj.query
+                formatted_query = raw_query.replace(b"\n", b" ").replace(b"\'", b'"').replace(b" ", b"").lower()
+                for query_to_catch in QUERY_TO_CATCHS:
+                    if query_to_catch.lower().replace(b" ", b"") in formatted_query:
+                        tcbk = traceback.extract_stack()
+                        _logger.info("query executed: %s\n%s", raw_query, tcbk)
         except Exception as e:
             if self._default_log_exceptions if log_exceptions is None else log_exceptions:
                 _logger.error("bad query: %s\nERROR: %s", tools.ustr(self._obj.query or query), e)
