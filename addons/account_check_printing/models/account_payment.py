@@ -41,7 +41,7 @@ class AccountPayment(models.Model):
 
     @api.constrains('check_number', 'journal_id')
     def _constrains_check_number(self):
-        if not self:
+        if not self.filtered('check_number') or self.env.context.get('install_mode'):
             return
         try:
             self.mapped(lambda p: str(int(p.check_number)))
