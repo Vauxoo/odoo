@@ -114,7 +114,7 @@ class PaymentTransaction(models.Model):
         # invoice the sale orders if needed
         self._invoice_sale_orders()
         res = super(PaymentTransaction, self)._reconcile_after_transaction_done()
-        if self.env['ir.config_parameter'].sudo().get_param('sale.automatic_invoice'):
+        if self.env['ir.config_parameter'].sudo().get_param('sale.automatic_invoice') and not self._context.get('avoid_auto_invoice'):
             default_template = self.env['ir.config_parameter'].sudo().get_param('sale.default_email_template')
             if default_template:
                 for trans in self.filtered(lambda t: t.sale_order_ids):
@@ -129,7 +129,7 @@ class PaymentTransaction(models.Model):
 
     @api.multi
     def _invoice_sale_orders(self):
-        if self.env['ir.config_parameter'].sudo().get_param('sale.automatic_invoice'):
+        if self.env['ir.config_parameter'].sudo().get_param('sale.automatic_invoice') and not self._context.get('avoid_auto_invoice'):
             for trans in self.filtered(lambda t: t.sale_order_ids):
                 ctx_company = {'company_id': trans.acquirer_id.company_id.id,
                                'force_company': trans.acquirer_id.company_id.id}
