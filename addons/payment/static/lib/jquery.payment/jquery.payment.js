@@ -305,7 +305,7 @@
     if (/^\d$/.test(val) && (val !== '0' && val !== '1')) {
       e.preventDefault();
       return setTimeout(function() {
-        return $target.val("0" + val + " / ");
+        return $target.val("0" + val + "/");
       });
     } else if (/^\d\d$/.test(val)) {
       e.preventDefault();
@@ -314,9 +314,9 @@
         m1 = parseInt(val[0], 10);
         m2 = parseInt(val[1], 10);
         if (m2 > 2 && m1 !== 0) {
-          return $target.val("0" + m1 + " / " + m2);
+          return $target.val("0" + m1 + "/" + m2);
         } else {
-          return $target.val("" + val + " / ");
+          return $target.val("" + val + "/");
         }
       });
     }
@@ -331,7 +331,7 @@
     $target = $(e.currentTarget);
     val = $target.val();
     if (/^\d\d$/.test(val)) {
-      return $target.val("" + val + " / ");
+      return $target.val("" + val + "/");
     }
   };
 
@@ -344,7 +344,7 @@
     $target = $(e.currentTarget);
     val = $target.val();
     if (/^\d$/.test(val) && val !== '0') {
-      return $target.val("0" + val + " / ");
+      return $target.val("0" + val + "/");
     }
   };
 
@@ -636,15 +636,15 @@
     sep = parts[2] || '';
     year = parts[3] || '';
     if (year.length > 0) {
-      sep = ' / ';
-    } else if (sep === ' /') {
+      sep = '/';
+    } else if (sep === '/') {
       mon = mon.substring(0, 1);
       sep = '';
     } else if (mon.length === 2 || sep.length > 0) {
-      sep = ' / ';
+      sep = '/';
     } else if (mon.length === 1 && (mon !== '0' && mon !== '1')) {
       mon = "0" + mon;
-      sep = ' / ';
+      sep = '/';
     }
     return mon + sep + year;
   };
