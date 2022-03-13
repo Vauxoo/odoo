@@ -16,6 +16,7 @@ class FollowerListMenu extends Component {
      */
     constructor(...args) {
         super(...args);
+        this.sprintf = _.str.sprintf;
         useShouldUpdateBasedOnProps();
         this.state = useState({
             /**

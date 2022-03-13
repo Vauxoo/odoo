@@ -10,6 +10,8 @@
                 'o-temporary': attachment and attachment.isTemporary,
                 'o-viewable': attachment and attachment.isViewable,
             }" t-att-title="attachment ? attachment.displayName : undefined" t-att-data-attachment-local-id="attachment ? attachment.localId : undefined"
+                t-att-aria-label="attachment ? attachment.displayName : undefined"
+                role="group"
         >
             <t t-if="attachment">
                 <!-- Image style-->
@@ -40,19 +42,20 @@
                             <div class="o_Attachment_actions">
                                 <!-- Remove button -->
                                 <t t-if="props.isEditable" t-key="'unlink'">
-                                    <div class="o_Attachment_action o_Attachment_actionUnlink"
+                                    <button class="o_Attachment_action o_Attachment_button o_Attachment_actionUnlink"
                                         t-att-class="{
                                             'o-pretty': attachment.isLinkedToComposer,
                                         }" t-on-click="_onClickUnlink" title="Remove"
+                                        aria-label="Remove"
                                     >
                                         <i class="fa fa-times"/>
-                                    </div>
+                                    </button>
                                 </t>
                                 <!-- Download button -->
                                 <t t-if="props.isDownloadable and !attachment.isTemporary" t-key="'download'">
-                                    <div class="o_Attachment_action o_Attachment_actionDownload" t-on-click="_onClickDownload" title="Download">
+                                    <button class="o_Attachment_action o_Attachment_button o_Attachment_actionDownload" t-on-click="_onClickDownload" title="Download" aria-label="Download">
                                         <i class="fa fa-download"/>
-                                    </div>
+                                    </button>
                                 </t>
                             </div>
                         </div>
@@ -78,27 +81,27 @@
                     <div class="o_Attachment_aside" t-att-class="{ 'o-has-multiple-action': props.isDownloadable and props.isEditable }">
                         <!-- Uploading icon -->
                         <t t-if="attachment.isTemporary and attachment.isLinkedToComposer">
-                            <div class="o_Attachment_asideItem o_Attachment_asideItemUploading" title="Uploading">
+                            <div class="o_Attachment_asideItem o_Attachment_asideItemUploading" title="Uploading" aria-label="Uploading">
                                 <i class="fa fa-spin fa-spinner"/>
                             </div>
                         </t>
                         <!-- Uploaded icon -->
                         <t t-if="!attachment.isTemporary and attachment.isLinkedToComposer">
-                            <div class="o_Attachment_asideItem o_Attachment_asideItemUploaded" title="Uploaded">
+                            <div class="o_Attachment_asideItem o_Attachment_asideItemUploaded" title="Uploaded" aria-label="Uploaded">
                                 <i class="fa fa-check"/>
                             </div>
                         </t>
                         <!-- Remove button -->
                         <t t-if="props.isEditable">
-                            <div class="o_Attachment_asideItem o_Attachment_asideItemUnlink" t-att-class="{ 'o-pretty': attachment.isLinkedToComposer }" t-on-click="_onClickUnlink" title="Remove">
+                            <button class="o_Attachment_asideItem o_Attachment_button o_Attachment_asideItemUnlink" t-att-class="{ 'o-pretty': attachment.isLinkedToComposer }" t-on-click="_onClickUnlink" title="Remove" aria-label="Remove">
                                 <i class="fa fa-times"/>
-                            </div>
+                            </button>
                         </t>
                         <!-- Download button -->
                         <t t-if="props.isDownloadable and !attachment.isTemporary">
-                            <div class="o_Attachment_asideItem o_Attachment_asideItemDownload" t-on-click="_onClickDownload" title="Download">
+                            <button class="o_Attachment_asideItem o_Attachment_button o_Attachment_asideItemDownload" t-on-click="_onClickDownload" title="Download" aria-label="Download">
                                 <i class="fa fa-download"/>
-                            </div>
+                            </button>
                         </t>
                     </div>
                 </t>

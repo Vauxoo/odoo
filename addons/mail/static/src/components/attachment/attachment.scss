@@ -43,6 +43,14 @@
     justify-content: center;
 }
 
+.o_Attachment_button {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
 .o_Attachment_asideItemUnlink.o-pretty {
     position: absolute;
     top: 0;
@@ -128,7 +136,6 @@
 
 .o_Attachment_action {
     border-radius: 10px;
-    cursor: pointer;
     text-align: center;
 
     &:hover {
@@ -141,16 +148,12 @@
 }
 
 .o_Attachment_asideItemDownload {
-    cursor: pointer;
-
     &:hover {
         background-color: gray('400');
     }
 }
 
 .o_Attachment_asideItemUnlink {
-    cursor: pointer;
-
     &:not(.o-pretty):hover {
         background-color: gray('400');
     }

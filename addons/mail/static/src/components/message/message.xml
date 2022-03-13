@@ -18,7 +18,7 @@
                 <div class="o_Message_sidebar" t-att-class="{ 'o-message-squashed': props.isSquashed }">
                     <t t-if="!props.isSquashed">
                         <div class="o_Message_authorAvatarContainer o_Message_sidebarItem">
-                            <img class="o_Message_authorAvatar rounded-circle" t-att-class="{ o_Message_authorRedirect: hasAuthorOpenChat, o_redirect: hasAuthorOpenChat }" t-att-src="avatar" t-on-click="_onClickAuthorAvatar" t-att-title="hasAuthorOpenChat ? OPEN_CHAT : ''" alt="Avatar"/>
+                            <img class="o_Message_authorAvatar rounded-circle" t-att-class="{ o_Message_authorRedirect: hasAuthorOpenChat, o_redirect: hasAuthorOpenChat }" t-att-src="avatar" t-on-click="_onClickAuthorAvatar" t-att-title="hasAuthorOpenChat ? OPEN_CHAT : ''" t-att-alt="hasAuthorOpenChat ? OPEN_CHAT : ''" role="button" tabindex="0"/>
                             <t t-if="message.author and message.author.im_status">
                                 <PartnerImStatusIcon
                                     class="o_Message_partnerImStatusIcon"
@@ -61,7 +61,12 @@
                     <t t-if="!props.isSquashed">
                         <div class="o_Message_header">
                             <t t-if="message.author">
-                                <div class="o_Message_authorName o_Message_authorRedirect o_redirect" t-on-click="_onClickAuthorName" title="Open profile">
+                                <div role="link" tabindex="0" class="o_Message_authorName o_Message_authorRedirect o_redirect" t-on-click="_onClickAuthorName" title="Open profile">
+                                    <span class="sr-only">
+                                        <t t-if="message.message_type === 'notification'">System notification by</t>
+                                        <t t-elif="!(message.is_discussion or message.is_notification)">Note by</t>
+                                        <span t-esc="' '"/>
+                                    </span>
                                     <t t-if="threadView and threadView.thread">
                                         <t t-esc="threadView.thread.getMemberName(message.author)"/>
                                     </t>
@@ -103,7 +108,7 @@
                             </t>
                             <t t-if="threadView and message.originThread and message.originThread === threadView.thread and message.notifications.length > 0">
                                 <t t-if="message.failureNotifications.length > 0">
-                                    <span class="o_Message_notificationIconClickable o-error" t-on-click="_onClickFailure">
+                                    <span role="button" tabindex="0" class="o_Message_notificationIconClickable o-error" t-on-click="_onClickFailure" aria-label="Delivery failure">
                                         <i name="failureIcon" class="o_Message_notificationIcon fa fa-envelope"/>
                                     </span>
                                 </t>
@@ -130,6 +135,10 @@
                                             'o-message-starred': message.isStarred,
                                             'o-mobile': env.messaging.device.isMobile,
                                         }" t-on-click="_onClickStar" title="Mark as Todo"
+                                        role="button"
+                                        tabindex="0"
+                                        aria-label="Mark as Todo"
+                                        t-att-aria-pressed="message.isStarred ? 'true' : 'false'"
                                     />
                                 </t>
                                 <t t-if="props.hasReplyIcon">
@@ -138,6 +147,9 @@
                                             'o-message-selected': props.isSelected,
                                             'o-mobile': env.messaging.device.isMobile,
                                         }" t-on-click="_onClickReply" title="Reply"
+                                        role="button"
+                                        tabindex="0"
+                                        aria-label="Reply"
                                     />
                                 </t>
                                 <t t-if="props.hasMarkAsReadIcon">
@@ -146,6 +158,9 @@
                                             'o-message-selected': props.isSelected,
                                             'o-mobile': env.messaging.device.isMobile,
                                         }" t-on-click="_onClickMarkAsRead" title="Mark as Read"
+                                        role="button"
+                                        tabindex="0"
+                                        aria-label="Mark as Read"
                                     />
                                 </t>
                             </div>
@@ -173,12 +188,12 @@
                             <ul class="o_Message_trackingValues">
                                 <t t-foreach="trackingValues" t-as="value" t-key="value.id">
                                     <li>
-                                        <div class="o_Message_trackingValue">
+                                        <div class="o_Message_trackingValue" aria-atomic="true">
                                             <div class="o_Message_trackingValueFieldName o_Message_trackingValueItem" t-esc="value.changed_field"/>
                                             <t t-if="value.old_value">
                                                 <div class="o_Message_trackingValueOldValue o_Message_trackingValueItem" t-esc="value.old_value"/>
                                             </t>
-                                            <div class="o_Message_trackingValueSeparator o_Message_trackingValueItem fa fa-long-arrow-right" title="Changed" role="img"/>
+                                            <div class="o_Message_trackingValueSeparator o_Message_trackingValueItem fa fa-long-arrow-right" title="Changed" role="img" tabindex="-1"/>
                                             <t t-if="value.new_value">
                                                 <div class="o_Message_trackingValueNewValue o_Message_trackingValueItem" t-esc="value.new_value"/>
                                             </t>

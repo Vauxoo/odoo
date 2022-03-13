@@ -37,10 +37,18 @@
                     </t>
                     <div class="o-autogrow"/>
                         <div class="o_ChatterTopbar_rightSection">
-                            <button class="btn btn-link o_ChatterTopbar_button o_ChatterTopbar_buttonAttachments" type="button" t-att-disabled="chatter.isDisabled" t-on-click="_onClickAttachments">
+                            <t t-set="attachmentCount" t-value="chatter.thread ? chatter.thread.allAttachments.length : 0"/>
+                            <t t-set="attachmentButtonAria">%s Attachment(s)</t>
+                            <button class="btn btn-link o_ChatterTopbar_button o_ChatterTopbar_buttonAttachments"
+                                type="button"
+                                t-att-disabled="chatter.isDisabled"
+                                t-on-click="_onClickAttachments"
+                                t-att-aria-label="sprintf(attachmentButtonAria.toString(), attachmentCount)"
+                                t-att-aria-expanded="chatter.isAttachmentBoxVisible ? 'true' : 'false'"
+                            >
                                 <i class="fa fa-paperclip"/>
                                 <t t-if="chatter.isDisabled or !chatter.isShowingAttachmentsLoading">
-                                    <span class="o_ChatterTopbar_buttonCount o_ChatterTopbar_buttonAttachmentsCount" t-esc="chatter.thread ? chatter.thread.allAttachments.length : 0"/>
+                                    <span class="o_ChatterTopbar_buttonCount o_ChatterTopbar_buttonAttachmentsCount" t-esc="attachmentCount"/>
                                 </t>
                                 <t t-else="">
                                     <i class="o_ChatterTopbar_buttonAttachmentsCountLoader fa fa-spinner fa-spin" aria-label="Attachment counter loading..."/>

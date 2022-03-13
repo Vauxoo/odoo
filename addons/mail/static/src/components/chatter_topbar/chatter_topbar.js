@@ -17,6 +17,7 @@ class ChatterTopbar extends Component {
      */
     constructor(...args) {
         super(...args);
+        this.sprintf = _.str.sprintf;
         useShouldUpdateBasedOnProps();
         useStore(props => {
             const chatter = this.env.models['mail.chatter'].get(props.chatterLocalId);
