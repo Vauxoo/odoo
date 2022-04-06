@@ -437,7 +437,7 @@ class StockMove(models.Model):
         # adapt standard price on incomming moves if the product cost_method is 'average'
         std_price_update = {}
         for move in self.filtered(lambda move: move._is_in() and move.product_id.cost_method == 'average'):
-            product_tot_qty_available = move.product_id.with_context(owner_id=False).qty_available + tmpl_dict[move.product_id.id]
+            product_tot_qty_available = move.product_id.with_context(owner_id=False, company_owned=True).qty_available + tmpl_dict[move.product_id.id]
             rounding = move.product_id.uom_id.rounding
 
             qty_done = move.product_uom._compute_quantity(move.with_context(exclude_owner=True).quantity_done, move.product_id.uom_id)
