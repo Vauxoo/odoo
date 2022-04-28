@@ -116,7 +116,8 @@ class PaymentTransaction(models.Model):
         res = super(PaymentTransaction, self)._reconcile_after_transaction_done()
         if self.env['ir.config_parameter'].sudo().get_param('sale.automatic_invoice'):
             default_template = self.env['ir.config_parameter'].sudo().get_param('sale.default_email_template')
-            if default_template:
+            avoid_autosent = self.env['ir.config_parameter'].sudo().get_param('sale.avoid_auto_sent_invoice')
+            if default_template and not avoid_autosent:
                 for trans in self.filtered(lambda t: t.sale_order_ids):
                     ctx_company = {'company_id': trans.acquirer_id.company_id.id,
                                    'force_company': trans.acquirer_id.company_id.id,
