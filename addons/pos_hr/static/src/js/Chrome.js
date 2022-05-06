@@ -20,6 +20,14 @@ odoo.define('pos_hr.chrome', function (require) {
             shouldShowCashControl() {
                 return super.shouldShowCashControl() && this.env.pos.hasLoggedIn;
             }
+            /**
+             * Inherited to allow pos_hr login screen to not be affected by
+             * the pos_restaurant timer to return to the main screen.
+             */
+            _actionAfterIdle() {
+                if (this.tempScreen.name !== 'LoginScreen')
+                    return super._actionAfterIdle(...arguments);
+            }
         };
 
     Registries.Component.extend(Chrome, PosHrChrome);
