@@ -254,6 +254,9 @@ odoo.define('pos_coupon.pos', function (require) {
 
         initialize: function () {
             let res = _order_super.initialize.apply(this, arguments);
+            if(!res){
+                res = this;
+            }
             res.on(
                 'update-rewards',
                 () => {
