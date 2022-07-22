@@ -137,10 +137,37 @@ models.Order = models.Order.extend({
             var product_id = line.get_product().id;
             var product_name = line.get_full_product_name();
             var p_key = product_id + " - " + product_name;
+            /**
+             * If a line require some extras, we need it to have
+             * its own key (each key is a line in the pro-forma ticket).
+             *
+             * There will be one key per customization combination.
+             * For ex. the following is a valid output:
+             *
+             * - Product A:
+             *  -- With some extra customization.
+             *  -- With out some exception.
+             *
+             * - Product A:
+             *  -- With some extra customization.
+             *  -- With some other extra customization.
+             *  -- With out some exception.
+             *
+             * Since they have different extras even thought they
+             * have the same main product.
+             */
+            if (line.has_extras()) p_key += ` - ${ line.get_extras_exceptions_string() }`;
             var product_resume = p_key in resume ? resume[p_key] : {
                 pid: product_id,
                 product_name_wrapped: line.generate_wrapped_product_name(),
                 qties: {},
+                /**
+                 * Some lines require to show extra information in the template
+                 * without adding extra lines. So we add the extra values needed
+                 * in the payload now, since later the relationship is lost.
+                 */
+                extras: line.get_extras_for_printing(),
+                has_extras: line.has_extras(),
             };
             if (note in product_resume['qties']) product_resume['qties'][note] += qty;
             else product_resume['qties'][note] = qty;
@@ -184,6 +211,10 @@ models.Order = models.Order.extend({
                         'name_wrapped': curr.product_name_wrapped,
                         'note':     note,
                         'qty':      curr['qties'][note],
+                        // Required value to correct printing in ticket for customizable lines
+                        'extras': curr.extras,
+                        // Required value to correct printing in ticket for customizable lines
+                        'has_extras': curr.has_extras,
                     });
                 } else if (old['qties'][note] < curr['qties'][note]) {
                     add.push({
@@ -192,6 +223,10 @@ models.Order = models.Order.extend({
                         'name_wrapped': curr.product_name_wrapped,
                         'note':     note,
                         'qty':      curr['qties'][note] - old['qties'][note],
+                        // Required value to correct printing in ticket for customizable lines
+                        'extras': curr.extras,
+                        // Required value to correct printing in ticket for customizable lines
+                        'has_extras': curr.has_extras,
                     });
                 } else if (old['qties'][note] > curr['qties'][note]) {
                     rem.push({
@@ -200,6 +235,10 @@ models.Order = models.Order.extend({
                         'name_wrapped': curr.product_name_wrapped,
                         'note':     note,
                         'qty':      old['qties'][note] - curr['qties'][note],
+                        // Required value to correct printing in ticket for customizable lines
+                        'extras': curr.extras,
+                        // Required value to correct printing in ticket for customizable lines
+                        'has_extras': curr.has_extras,
                     });
                 }
             }
@@ -217,6 +256,10 @@ models.Order = models.Order.extend({
                         'name_wrapped': old.product_name_wrapped,
                         'note':     note,
                         'qty':      old['qties'][note],
+                        // Required value to correct printing in ticket for customizable lines
+                        'extras': old.extras,
+                        // Required value to correct printing in ticket for customizable lines
+                        'has_extras': old.has_extras,
                     });
                 }
             }
