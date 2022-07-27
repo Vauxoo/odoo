@@ -127,9 +127,7 @@ class AccountMoveLine(models.Model):
             posted_cogs = account_moves.line_ids.filtered(lambda l: l.is_anglo_saxon_line and l.product_id == self.product_id and l.balance > 0)
             qty_invoiced = sum([line.product_uom_id._compute_quantity(line.quantity, line.product_id.uom_id) for line in posted_cogs])
             value_invoiced = sum(posted_cogs.mapped('balance'))
-
-            product = self.product_id.with_company(self.company_id).with_context(is_returned=is_line_reversing, value_invoiced=value_invoiced)
+            product = self.product_id.with_company(self.company_id).with_context(is_returned=is_line_reversing)
             average_price_unit = product._compute_average_price(qty_invoiced, qty_to_invoice, so_line.move_ids)
-            if average_price_unit:
-                price_unit = self.product_id.uom_id.with_company(self.company_id)._compute_price(average_price_unit, self.product_uom_id)
+            price_unit = self.product_id.uom_id.with_company(self.company_id)._compute_price(average_price_unit, self.product_uom_id)
         return price_unit
