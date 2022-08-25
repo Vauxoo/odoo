@@ -27,7 +27,7 @@ FILETYPE_BASE64_MAGICWORD = {
 # Image resizing
 # ----------------------------------------
 
-def image_resize_image(base64_source, size=(1024, 1024), encoding='base64', filetype=None, avoid_if_small=False, upper_limit=False):
+def image_resize_image(base64_source, size=(1024, 1024), encoding='base64', filetype=None, avoid_if_small=False, upper_limit=False, **kw):
     """ Function to resize an image. The image will be resized to the given
         size, while keeping the aspect ratios, and holes in the image will be
         filled with transparent background. The image will not be stretched if
@@ -67,6 +67,8 @@ def image_resize_image(base64_source, size=(1024, 1024), encoding='base64', file
         return base64_source
     image_stream = io.BytesIO(codecs.decode(base64_source, encoding))
     image = Image.open(image_stream)
+    # store the opened image so that we have its 'original' value before any changes
+    original = image
     # store filetype here, as Image.new below will lose image.format
     filetype = (filetype or image.format).upper()
 
@@ -105,7 +107,12 @@ def image_resize_image(base64_source, size=(1024, 1024), encoding='base64', file
         image = image.convert("RGB")
 
     background_stream = io.BytesIO()
-    image.save(background_stream, filetype)
+    # we should only check for 'JPEG' images (PIL can only convert this format into progressive)
+    # and also check that the images are progressive already, to avoid converting a non progressive image
+    if kw.get('keep_progressive') and original.format == 'JPEG' and original.info.get('progression') == True:
+        image.save(background_stream, filetype, progressive=True)
+    else:
+        image.save(background_stream, filetype)
     return codecs.encode(background_stream.getvalue(), encoding)
 
 def image_resize_and_sharpen(image, size, preserve_aspect_ratio=False, factor=2.0, upper_limit=False):

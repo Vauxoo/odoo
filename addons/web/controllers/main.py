@@ -1110,9 +1110,10 @@ class Binary(http.Controller):
                 if height > 500:
                     height = 500
             try:
+                resize_kwargs = {'keep_progressive': True} if request.context.get('keep_progressive') else {}
                 content = odoo.tools.image_resize_image(base64_source=content, size=(width or None, height or None),
-                                                    encoding='base64', upper_limit=upper_limit,
-                                                    avoid_if_small=avoid_if_small)
+                                                        encoding='base64', upper_limit=upper_limit,
+                                                        avoid_if_small=avoid_if_small, **resize_kwargs)
             except Exception:
                 return request.not_found()
 
