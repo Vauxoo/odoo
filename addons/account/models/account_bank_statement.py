@@ -623,12 +623,13 @@ class AccountBankStatementLine(models.Model):
             total -= aml_currency._convert(balance, currency, aml_rec.company_id, aml_rec.date)
             aml_rec.with_context(check_move_validity=False).write({'statement_line_id': self.id})
             counterpart_moves = (counterpart_moves | aml_rec.move_id)
-            if aml_rec.journal_id.post_at_bank_rec and aml_rec.payment_id and aml_rec.move_id.state == 'draft':
+            if aml_rec.journal_id.post_at_bank_rec and aml_rec.payment_id:
                 # In case the journal is set to only post payments when performing bank
                 # reconciliation, we modify its date and post it.
-                aml_rec.move_id.date = self.date
-                aml_rec.payment_id.payment_date = self.date
-                aml_rec.move_id.post()
+                if aml_rec.move_id.state == 'draft':
+                    aml_rec.move_id.date = self.date
+                    aml_rec.payment_id.payment_date = self.date
+                    aml_rec.move_id.post()
                 # We check the paid status of the invoices reconciled with this payment
                 for invoice in aml_rec.payment_id.reconciled_invoice_ids:
                     self._check_invoice_state(invoice)
@@ -700,7 +701,9 @@ class AccountBankStatementLine(models.Model):
 
                 (new_aml | counterpart_move_line).reconcile()
 
-                self._check_invoice_state(counterpart_move_line.invoice_id)
+                invoices = counterpart_move_line.invoice_id | counterpart_move_line.payment_id.reconciled_invoice_ids
+                for invoice in invoices:
+                    self._check_invoice_state(invoice)
 
             # Balance the move
             st_line_amount = -sum([x.balance for x in move.line_ids])
