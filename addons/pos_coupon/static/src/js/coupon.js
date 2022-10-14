@@ -24,7 +24,6 @@ odoo.define('pos_coupon.pos', function (require) {
     const { Gui } = require('point_of_sale.Gui');
     const { float_is_zero,round_decimals } = require('web.utils');
 
-    const dp = new concurrency.DropPrevious();
 
     class CouponCode {
         /**
@@ -254,12 +253,13 @@ odoo.define('pos_coupon.pos', function (require) {
 
         initialize: function () {
             _order_super.initialize.apply(this, arguments);
+            this.dp = new concurrency.DropPrevious();
             this.on(
                 'update-rewards',
                 () => {
                     if (!this.pos.config.use_coupon_programs) return;
-                    dp.add(this._getNewRewardLines()).then(([newRewardLines, rewardsContainer]) => {
-                        this.orderlines.add(newRewardLines);
+                    this.dp.add(this._getNewRewardLines()).then(([newRewardLines, rewardsContainer]) => {
+                        newRewardLines.forEach(line => this.add_orderline(line));
                         // We need this for the rendering of ActivePrograms component.
                         this.rewardsContainer = rewardsContainer;
                         // Send a signal that the rewardsContainer are updated.
@@ -1174,4 +1174,6 @@ odoo.define('pos_coupon.pos', function (require) {
             return result;
         },
     });
+
+    return {CouponCode, RewardsContainer, Reward};
 });
