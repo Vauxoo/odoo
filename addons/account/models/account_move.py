@@ -1747,24 +1747,24 @@ class AccountPartialReconcile(models.Model):
             #create the line that will compensate all the aml_to_fix
             line_to_rec = aml_model.with_context(check_move_validity=False).create({
                 'name': _('Currency exchange rate difference'),
-                'debit': amount_diff < 0 and -aml.amount_residual or 0.0,
-                'credit': amount_diff > 0 and aml.amount_residual or 0.0,
+                'debit': aml.amount_residual < 0 and -aml.amount_residual or 0.0,
+                'credit': aml.amount_residual > 0 and aml.amount_residual or 0.0,
                 'account_id': aml.account_id.id,
                 'move_id': move.id,
-                'currency_id': currency.id,
-                'amount_currency': diff_in_currency and -aml.amount_residual_currency or 0.0,
+                'currency_id': aml.currency_id.id,
+                'amount_currency': aml.amount_residual_currency and -aml.amount_residual_currency or 0.0,
                 'partner_id': aml.partner_id.id,
             })
             #create the counterpart on exchange gain/loss account
             exchange_journal = move.company_id.currency_exchange_journal_id
             aml_model.with_context(check_move_validity=False).create({
                 'name': _('Currency exchange rate difference'),
-                'debit': amount_diff > 0 and aml.amount_residual or 0.0,
-                'credit': amount_diff < 0 and -aml.amount_residual or 0.0,
-                'account_id': amount_diff > 0 and exchange_journal.default_debit_account_id.id or exchange_journal.default_credit_account_id.id,
+                'debit': aml.amount_residual > 0 and aml.amount_residual or 0.0,
+                'credit': aml.amount_residual < 0 and -aml.amount_residual or 0.0,
+                'account_id': aml.amount_residual > 0 and exchange_journal.default_debit_account_id.id or exchange_journal.default_credit_account_id.id,
                 'move_id': move.id,
-                'currency_id': currency.id,
-                'amount_currency': diff_in_currency and aml.amount_residual_currency or 0.0,
+                'currency_id': aml.currency_id.id,
+                'amount_currency': aml.amount_residual_currency and aml.amount_residual_currency or 0.0,
                 'partner_id': aml.partner_id.id,
             })
 
