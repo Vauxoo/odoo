@@ -397,7 +397,7 @@ class StockMove(models.Model):
         return value_to_return
 
     def _action_done(self):
-        self.product_price_update_before_done()
+        self._product_price_update_before_done_hook()
         res = super(StockMove, self)._action_done()
         for move in res:
             # Apply restrictions on the stock move to be able to make
@@ -736,6 +736,9 @@ class StockMove(models.Model):
         to the way they mix stock moves with invoices.
         """
         return self.env['account.invoice']
+
+    def _product_price_update_before_done_hook(self):
+        return  self.product_price_update_before_done()
 
 
 class StockReturnPicking(models.TransientModel):
