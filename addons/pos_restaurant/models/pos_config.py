@@ -63,3 +63,13 @@ class PosConfig(models.Model):
         if ('is_order_printer' in vals and vals['is_order_printer'] == False):
             vals['printer_ids'] = [(5, 0, 0)]
         return super(PosConfig, self).write(vals)
+
+    def get_all_table_draft_orders(self):
+        self.ensure_one()
+        self = self.with_context(prefetch_fields=False)
+        order_obj = self.env['pos.order']
+        tables = self.env['restaurant.table'].search([('floor_id.pos_config_id', '=', self.id)])
+        return {
+            table.id: order_obj.get_table_draft_orders(table.id)
+            for table in tables
+        }
