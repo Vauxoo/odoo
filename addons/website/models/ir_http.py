@@ -350,6 +350,8 @@ class ModelConverter(ModelConverter):
         domain = safe_eval(self.domain, (args or {}).copy())
         if dom:
             domain += dom
-        for record in Model.search_read(domain=domain, fields=['write_date', Model._rec_name]):
-            if record.get(Model._rec_name, False):
-                yield {'loc': (record['id'], record[Model._rec_name])}
+        for record in Model.search(domain):
+            # changes based on v14 fix https://github.com/odoo/odoo/commit/b997684b062bb1010c52f4af49f72f2be570e392
+            # return record so URL will be the real endpoint URL as the record will go through `slug()`
+            # the same way as endpoint URL is retrieved during dispatch (301 redirect), see `to_url()` from ModelConverter
+            yield record

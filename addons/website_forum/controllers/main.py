@@ -238,7 +238,7 @@ class WebsiteForum(http.Controller):
         except IOError:
             return False
 
-    @http.route(['''/forum/<model("forum.forum", "[('website_id', 'in', (False, current_website_id))]"):forum>/question/<model("forum.post", "[('forum_id','=',forum[0]),('parent_id','=',False),('can_view', '=', True)]"):question>'''], type='http', auth="public", website=True)
+    @http.route(['''/forum/<model("forum.forum", "[('website_id', 'in', (False, current_website_id))]"):forum>/question/<model("forum.post", "[('forum_id','=',forum.id),('parent_id','=',False),('can_view', '=', True)]"):question>'''], type='http', auth="public", website=True)
     def question(self, forum, question, **post):
         if not forum.active:
             return request.render("website_forum.header", {'forum': forum})

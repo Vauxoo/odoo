@@ -733,11 +733,9 @@ class Website(models.Model):
                         query = sitemap_qs2dom(query, r, self.env[converter.model]._rec_name)
                         if query == FALSE_DOMAIN:
                             continue
-                    for value_dict in converter.generate(uid=self.env.uid, dom=query, args=val):
+                    for rec in converter.generate(uid=self.env.uid, dom=query, args=val):
                         newval.append(val.copy())
-                        value_dict[name] = value_dict['loc']
-                        del value_dict['loc']
-                        newval[-1].update(value_dict)
+                        newval[-1].update({name: rec})
                 values = newval
 
             for value in values:
