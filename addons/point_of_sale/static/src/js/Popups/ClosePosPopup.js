@@ -126,10 +126,17 @@ odoo.define('point_of_sale.ClosePosPopup', function(require) {
                     const bankPaymentMethodDiffPairs = this.otherPaymentMethods
                         .filter((pm) => pm.type == 'bank')
                         .map((pm) => [pm.id, this.state.payments[pm.id].difference]);
+                    let posContext = {};
+                    if (this.env.pos.env && this.env.pos.env.context){
+                        posContext = this.env.pos.env.context;
+                    }
                     response = await this.rpc({
                         model: 'pos.session',
                         method: 'close_session_from_ui',
                         args: [this.env.pos.pos_session.id, bankPaymentMethodDiffPairs],
+                        context: _.extend(
+                            this.env.session.userContext,
+                            posContext),
                     });
                     if (!response.successful) {
                         return this.handleClosingError(response);
