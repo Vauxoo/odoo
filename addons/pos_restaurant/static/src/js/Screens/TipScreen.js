@@ -67,26 +67,61 @@ odoo.define('pos_restaurant.TipScreen', function (require) {
                 });
                 if (!confirmed) return;
             }
-
+            /**
+             * Callback to be notified, when all the rewards are finish being updated.
+             * kept here to have access to the variables used within `validateTip`.
+             */
+             const _callbackAfterTip = async () => {
+                /**
+                 * We only want this to be notified once so we insta-clear this callback.
+                 * Also in this point we can safely set the order back to `finalzed = true`,
+                 * since all the rewards has been applied.
+                 */
+                order.off('rewards-updated', _callbackAfterTip);
+                const paymentline = this.env.pos.get_order().get_paymentlines()[0];
+                /**
+                 * We change the amount of the first payment line, to have the tip amount.
+                 * Then, if we have a payment terminal in the payment method, we send the
+                 * adjusment.
+                 */
+                paymentline.set_amount(paymentline.amount + amount);
+                if (paymentline.payment_method.payment_terminal) {
+                    await paymentline.payment_method.payment_terminal.send_payment_adjust(paymentline.cid);
+                }
+                /**
+                 * Now that we have finalized making all adjustments to the order,
+                 * we can set it to finalized.
+                 */
+                order.finalized = true;
+                /**
+                 * All the rest of the code within `_callbackAfterTip`, has been kept intact.
+                 */
+                // set_tip calls add_product which sets the new line as the selected_orderline
+                const tip_line = order.selected_orderline;
+                await this.rpc({
+                    method: 'set_tip',
+                    model: 'pos.order',
+                    args: [serverId, tip_line.export_as_JSON()],
+                });
+                this.goNextScreen();
+            };
             // set the tip by temporarily allowing order modification
             order.finalized = false;
-            order.set_tip(amount);
-            order.finalized = true;
-
-            const paymentline = this.env.pos.get_order().get_paymentlines()[0];
-            if (paymentline.payment_method.payment_terminal) {
-                paymentline.amount += amount;
-                await paymentline.payment_method.payment_terminal.send_payment_adjust(paymentline.cid);
+            /**
+             * The trigger `rewards-updated`, is only ran, if there is programs to be set. so we need
+             * this evaluation to use sync or async workflow.
+             */
+            if (this.env.pos.config.use_coupon_programs) {
+                /**
+                 * Since `set_tip` has asyncronous actions, we need to wait for them to be done
+                 * after we block our order again, so we declare the callback.
+                 */
+                order.on('rewards-updated', _callbackAfterTip);
+                order.set_tip(amount);
+            } else {
+                order.set_tip(amount);
+                _callbackAfterTip();
             }
-
-            // set_tip calls add_product which sets the new line as the selected_orderline
-            const tip_line = order.selected_orderline;
-            await this.rpc({
-                method: 'set_tip',
-                model: 'pos.order',
-                args: [serverId, tip_line.export_as_JSON()],
-            });
-            this.goNextScreen();
         }
         goNextScreen() {
             this.env.pos.get_order().finalize();
