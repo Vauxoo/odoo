@@ -126,6 +126,11 @@ models.Orderline = models.Orderline.extend({
 
 var _super_order = models.Order.prototype;
 models.Order = models.Order.extend({
+    /**
+     * Hook for whenever an order has been splited. This is called on
+     * the original, and the new generated order.
+     */
+    on_lines_splited () {},
     build_line_resume: function(){
         var resume = {};
         this.orderlines.each(function(line){

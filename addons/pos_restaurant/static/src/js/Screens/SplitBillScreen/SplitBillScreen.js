@@ -64,16 +64,18 @@ odoo.define('pos_restaurant.SplitBillScreen', function(require) {
                 // but avoids flooding the kitchen with unnecessary orders.
                 // Not sure what to do in this case.
 
-                if (this.newOrder.saveChanges) {
-                    this.currentOrder.saveChanges();
-                    this.newOrder.saveChanges();
-                }
+                //  needs the changes to be preserved.
+                // if (this.newOrder.saveChanges) {
+                //    this.currentOrder.saveChanges();
+                //    this.newOrder.saveChanges();
+                //}
 
                 this.newOrder.set_customer_count(1);
                 const newCustomerCount = this.currentOrder.get_customer_count() - 1;
                 this.currentOrder.set_customer_count(newCustomerCount || 1);
                 this.currentOrder.set_screen_data({ name: 'ProductScreen' });
-
+                this.newOrder.on_lines_splited();
+                this.currentOrder.on_lines_splited();
                 this.env.pos.get('orders').add(this.newOrder);
                 this.env.pos.set('selectedOrder', this.newOrder);
             }
