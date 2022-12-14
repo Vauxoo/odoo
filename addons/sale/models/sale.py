@@ -1115,6 +1115,8 @@ class SaleOrderLine(models.Model):
             values.update(self._prepare_add_missing_fields(values))
 
         lines = super().create(vals_list)
+        if self._context.get('no_create_msg'):
+            return lines
         for line in lines:
             if line.product_id and line.order_id.state == 'sale':
                 msg = _("Extra line with %s ") % (line.product_id.display_name,)
@@ -1134,6 +1136,8 @@ class SaleOrderLine(models.Model):
     ]
 
     def _update_line_quantity(self, values):
+        if self._context.get('no_update_msg'):
+            return False
         orders = self.mapped('order_id')
         for order in orders:
             order_lines = self.filtered(lambda x: x.order_id == order)
