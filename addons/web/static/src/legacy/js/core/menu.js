@@ -159,10 +159,10 @@ export async function initAutoMoreMenu(el, options) {
         var style = window.getComputedStyle(el);
         var outerWidth = rect.right - rect.left;
         const isRTL = style.direction === 'rtl';
-        if (mLeft !== false && (considerAutoMargins || !(isRTL ? autoMarginRightRegex : autoMarginLeftRegex).test(el.getAttribute('class')))) {
+        if ((isRTL ? autoMarginRightRegex : autoMarginLeftRegex).test(el.getAttribute('class'))) {
             outerWidth += parseFloat(style.marginLeft);
         }
-        if (mRight !== false && (considerAutoMargins || !(isRTL ? autoMarginLeftRegex : autoMarginRightRegex).test(el.getAttribute('class')))) {
+        if ((isRTL ? autoMarginLeftRegex : autoMarginRightRegex).test(el.getAttribute('class'))) {
             outerWidth += parseFloat(style.marginRight);
         }
         // Would be NaN for invisible elements for example
