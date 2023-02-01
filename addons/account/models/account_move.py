@@ -1772,7 +1772,7 @@ class AccountPartialReconcile(models.Model):
                                 'partner_id': line.partner_id.id,
                                 'journal_id': newly_created_move.journal_id.id,
                             })
-                            if line.account_id.reconcile and not line.reconciled:
+                            if line.account_id.reconcile and not line.full_reconcile_id and not line.reconciled:
                                 #setting the account to allow reconciliation will help to fix rounding errors
                                 to_clear_aml |= line
                                 to_clear_aml.reconcile()
