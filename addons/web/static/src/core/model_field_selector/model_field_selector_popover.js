@@ -62,12 +62,16 @@ export class ModelFieldSelectorPopover extends Component {
         const keys = Object.keys(obj);
         return sortBy(keys, (key) => obj[key].string);
     }
-    async update() {
-        const fieldNameChain = this.fieldNameChain;
-        this.fullFieldName = fieldNameChain.join(".");
-        await this.props.update(fieldNameChain);
+    async update(isSelected) {
+        const fieldNameChain = this.fieldNameChain.join(".");
+        this.fullFieldName = fieldNameChain;
         await this.loadFields();
-        this.render();
+        await this.props.update(fieldNameChain, isSelected);
+        if (isSelected) {
+            this.props.close();
+        } else {
+            this.render();
+        }
     }
 
     async onInputKeydown(ev) {
@@ -144,11 +148,9 @@ export class ModelFieldSelectorPopover extends Component {
             this.update();
         } else if(this.props.needDefaultValue) {
             this.isDefaultValueVisible = true;
-            this.render();
             this.update();
         } else {
-            this.update();
-            this.props.close();
+            this.update(true);
             this.props.validate(this.fieldNameChain, this.defaultValue);
         }
     }
@@ -156,8 +158,7 @@ export class ModelFieldSelectorPopover extends Component {
         if (!acceptDefaultValue) {
             this.defaultValue = "";
         }
-        this.props.close();
-        this.update();
+        this.update(true);
         this.props.validate(this.fieldNameChain, this.defaultValue);
     }
     async onFieldNameChange(ev) {
@@ -169,7 +170,7 @@ export class ModelFieldSelectorPopover extends Component {
         } catch (_error) {
             // WOWL TODO: rethrow error when not the expected type
             this.chain = [{ resModel, field: null }];
-            await this.props.update([]);
+            await this.props.update("");
             this.render();
         }
     }
