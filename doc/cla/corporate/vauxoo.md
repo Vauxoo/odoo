@@ -62,3 +62,4 @@ Ulises Rivadeneyra ulises@vauxoo.com https://github.com/UlisesRivadeneyra
 Alexis Hernandez alexis@vauxoo.com https://github.com/sebasdrk17
 Agustin Payen payen@vauxoo.com https://github.com/payen000
 Rodrigo Serrano rodrigosu@vauxoo.com https://github.com/Rodrigosu-Vauxoo
+Andy Quijada andy@vauxoo.com https://github.com/ajqn9094
