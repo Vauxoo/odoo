@@ -242,7 +242,8 @@ def drop_index(cr, indexname, tablename):
     _schema.debug("Table %r: dropped index %r", tablename, indexname)
 
 def drop_view_if_exists(cr, viewname):
-    cr.execute("DROP view IF EXISTS %s CASCADE" % (viewname,))
+    kind = table_kind(cr, viewname)
+    cr.execute("DROP {0} VIEW IF EXISTS {1} CASCADE".format("MATERIALIZED" if kind == "m" else "", viewname))
 
 def escape_psql(to_escape):
     return to_escape.replace('\\', r'\\').replace('%', '\%').replace('_', '\_')
