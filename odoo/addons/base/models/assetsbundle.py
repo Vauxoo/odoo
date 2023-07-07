@@ -23,12 +23,24 @@ from odoo.modules.module import get_resource_path
 from .qweb import escape
 import psycopg2
 from odoo.tools import func, misc
+from contextlib import  contextmanager
 
 import logging
 _logger = logging.getLogger(__name__)
 
 MAX_CSS_RULES = 4095
 
+
+@contextmanager
+def without_unaccent(registry):
+    """Avoid calling the method unaccent in order to use the indexes faster.
+    Use this method for values that don't need to use unaccent"""
+    has_unaccent = registry.has_unaccent
+    try:
+        registry.has_unaccent = False
+        yield
+    finally:
+        registry.has_unaccent = has_unaccent
 
 class CompileError(RuntimeError): pass
 def rjsmin(script):
@@ -240,11 +252,11 @@ class AssetsBundle(object):
             ('url', '=like', url),
             '!', ('url', '=like', self.get_asset_url(unique=self.version))
         ]
-
+        with without_unaccent(self.env.registry):
+            ira = ira.sudo().search(domain)
         # force bundle invalidation on other workers
         self.env['ir.qweb'].clear_caches()
-
-        return ira.sudo().search(domain).unlink()
+        return  ira.unlink()
 
     def get_attachments(self, type, ignore_version=False):
         """ Return the ir.attachment records for a given bundle. This method takes care of mitigating
