@@ -457,7 +457,7 @@ class account_payment(models.Model):
     def _get_move_reconciled(self):
         for payment in self:
             rec = True
-            for aml in payment.move_line_ids.filtered(lambda x: x.account_id.reconcile):
+            for aml in payment.move_line_ids.filtered(lambda x: x.account_id.reconcile and x.account_id != payment.journal_id.default_debit_account_id):
                 if not aml.reconciled:
                     rec = False
             payment.move_reconciled = rec
