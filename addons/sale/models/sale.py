@@ -60,8 +60,26 @@ class SaleOrder(models.Model):
         # directly linked to the SO.
         for order in self:
             invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.move_type in ('out_invoice', 'out_refund'))
-            order.invoice_ids = invoices
-            order.invoice_count = len(invoices)
+            # Search for invoices which have been 'cancelled' (filter_refund = 'modify' in
+            # 'account.invoice.refund')
+            # use like as origin may contains multiple references (e.g. 'SO01, SO02')
+            refunds = invoices.search([('invoice_origin', 'like', order.name), ('company_id', '=', order.company_id.id), ('move_type', 'in', ('out_invoice', 'out_refund'))])
+            invoices |= refunds.filtered(lambda r: order.name in [origin.strip() for origin in r.invoice_origin.split(',')])
+
+            # Search for refunds as well
+            domain_inv = expression.OR([
+                ['&', ('invoice_origin', '=', inv.name), ('journal_id', '=', inv.journal_id.id)]
+                for inv in invoices if inv.name
+            ])
+            if domain_inv:
+                refund_ids = self.env['account.move'].search(expression.AND([
+                    ['&', ('move_type', '=', 'out_refund'), ('invoice_origin', '!=', False)],
+                    domain_inv
+                ]))
+            else:
+                refund_ids = self.env['account.move'].browse()
+            order.invoice_ids = invoices + refund_ids
+            order.invoice_count = len(set((invoices + refund_ids).ids))
 
     @api.depends('state', 'order_line.invoice_status')
     def _get_invoice_status(self):
