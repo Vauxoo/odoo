@@ -95,9 +95,11 @@
 
     <!-- Try to instanciate for relevant companies -->
 </data>
+<!--
 <data noupdate="1">
     <function model="account.chart.template" name="try_loading">
         <value eval="[ref('l10n_generic_coa.configurable_chart_template')]"/>
     </function>
 </data>
+-->
 </odoo>
