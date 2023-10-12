@@ -8,7 +8,7 @@ from werkzeug.urls import url_encode
 
 import odoo
 import odoo.modules.registry
-from odoo import http
+from odoo import http, SUPERUSER_ID
 from odoo.modules import module
 from odoo.exceptions import AccessError, UserError, AccessDenied
 from odoo.http import request
@@ -44,9 +44,15 @@ class Session(http.Controller):
                 # request._save_session would not update the session_token
                 # as it lacks an environment, rotating the session myself
                 http.root.session_store.rotate(request.session, env)
+                max_age = http.SESSION_LIFETIME
+                if request.session.uid and request.session.uid is not SUPERUSER_ID:
+                    user = env["res.users"].sudo().browse(request.session.uid)
+                    max_age = user._get_session_expiration_time()
+                    if max_age:
+                        user.save_session(request.session.sid)
                 request.future_response.set_cookie(
                     'session_id', request.session.sid,
-                    max_age=http.SESSION_LIFETIME, httponly=True
+                    max_age=max_age, httponly=True
                 )
             return env['ir.http'].session_info()
 

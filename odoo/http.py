@@ -1513,7 +1513,13 @@ class Request:
         # - It could allow session fixation attacks.
         cookie_sid = self.httprequest.cookies.get('session_id')
         if not sess.is_explicit and (sess.is_dirty or cookie_sid != sess.sid):
-            self.future_response.set_cookie('session_id', sess.sid, max_age=SESSION_LIFETIME, httponly=True)
+            max_age = SESSION_LIFETIME
+            if sess.uid and sess.uid is not odoo.SUPERUSER_ID:
+                user = request.env["res.users"].sudo().browse(sess.uid)
+                max_age = user._get_session_expiration_time()
+                if max_age:
+                    user.save_session(sess.sid, False)
+            self.future_response.set_cookie('session_id', sess.sid, max_age=max_age, httponly=True)
 
     def _set_request_dispatcher(self, rule):
         routing = rule.endpoint.routing

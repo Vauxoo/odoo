@@ -27,7 +27,7 @@ from psycopg2 import sql
 from odoo import api, fields, models, tools, SUPERUSER_ID, _, Command
 from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
-from odoo.http import request, DEFAULT_LANG
+from odoo.http import request, DEFAULT_LANG, SESSION_LIFETIME
 from odoo.osv import expression
 from odoo.service.db import check_super
 from odoo.tools import is_html_empty, partition, collections, frozendict, lazy_property
@@ -1196,6 +1196,12 @@ class Users(models.Model):
     def _mfa_url(self):
         """ If an MFA method is enabled, returns the URL for its second step. """
         return
+
+    def save_session(self, session_id, logged_in=True):
+        return
+
+    def _get_session_expiration_time(self):
+        return SESSION_LIFETIME
 #
 # Implied groups
 #
