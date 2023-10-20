@@ -34,10 +34,19 @@ class WebsiteAccount(CustomerPortal):
 
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)
+        crm_lead = request.env['crm.lead']
         if 'lead_count' in counters:
-            values['lead_count'] = request.env['crm.lead'].search_count(self.get_domain_my_lead(request.env.user))
+            values['lead_count'] = (
+                crm_lead.search_count(self.get_domain_my_lead(request.env.user))
+                if crm_lead.check_access_rights('read', raise_exception=False)
+                else 0
+            )
         if 'opp_count' in counters:
-            values['opp_count'] = request.env['crm.lead'].search_count(self.get_domain_my_opp(request.env.user))
+            values['opp_count'] = (
+                crm_lead.search_count(self.get_domain_my_opp(request.env.user))
+                if crm_lead.check_access_rights('read', raise_exception=False)
+                else 0
+            )
         return values
 
     @http.route(['/my/leads', '/my/leads/page/<int:page>'], type='http', auth="user", website=True)
