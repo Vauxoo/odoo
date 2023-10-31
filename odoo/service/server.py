@@ -8,7 +8,7 @@ import os
 import os.path
 import platform
 import random
-import select
+import selectors
 import signal
 import socket
 import subprocess
@@ -61,6 +61,8 @@ from odoo.tools import stripped_sys_argv, dumpstacks, log_ormcache_stats
 from ..tests import loader, runner
 
 _logger = logging.getLogger(__name__)
+
+select = selectors.DefaultSelector
 
 SLEEP_INTERVAL = 60     # 1 min
 
@@ -802,15 +804,18 @@ class PreforkServer(CommonServer):
             fds = {w.watchdog_pipe[0]: w for w in self.workers.values()}
             fd_in = list(fds) + [self.pipe[0]]
             # check for ping or internal wakeups
-            ready = select.select(fd_in, [], [], self.beat)
-            # update worker watchdogs
-            for fd in ready[0]:
-                if fd in fds:
-                    fds[fd].watchdog_time = time.time()
-                empty_pipe(fd)
-        except select.error as e:
-            if e.args[0] not in [errno.EINTR]:
-                raise
+            with select() as sel:
+                for _socket in fd_in:
+                    sel.register(_socket, selectors.EVENT_READ)
+                events = sel.select(self.beat)
+                for key, mask in events:
+                    fd = key.fd
+                    # update worker watchdogs
+                    if fd in fds:
+                        fds[fd].watchdog_time = time.time()
+                    empty_pipe(fd)
+        except InterruptedError:
+            pass
 
     def start(self):
         # wakeup pipe, python doesnt throw EINTR when a syscall is interrupted
@@ -929,12 +934,14 @@ class Worker(object):
 
     def sleep(self):
         try:
-            select.select([self.multi.socket, self.wakeup_fd_r], [], [], self.multi.beat)
-            # clear wakeup pipe if we were interrupted
-            empty_pipe(self.wakeup_fd_r)
-        except select.error as e:
-            if e.args[0] not in [errno.EINTR]:
-                raise
+            with select() as sel:
+                sel.register(self.multi.socket, selectors.EVENT_READ)
+                sel.register(self.wakeup_fd_r, selectors.EVENT_READ)
+                sel.select(self.multi.beat)
+                # clear wakeup pipe if we were interrupted
+                empty_pipe(self.wakeup_fd_r)
+        except InterruptedError:
+            pass
 
     def check_limits(self):
         # If our parent changed sucide
@@ -1083,12 +1090,13 @@ class WorkerCron(Worker):
 
             # simulate interruptible sleep with select(wakeup_fd, timeout)
             try:
-                select.select([self.wakeup_fd_r], [], [], interval)
-                # clear wakeup pipe if we were interrupted
-                empty_pipe(self.wakeup_fd_r)
-            except select.error as e:
-                if e.args[0] != errno.EINTR:
-                    raise
+                with select() as sel:
+                    sel.register(self.wakeup_fd_r, selectors.EVENT_READ)
+                    sel.select(interval)
+                    # clear wakeup pipe if we were interrupted
+                    empty_pipe(self.wakeup_fd_r)
+            except InterruptedError:
+                pass
 
     def _db_list(self):
         if config['db_name']:

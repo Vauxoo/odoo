@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import random
-import select
+import selectors
 import threading
 import time
 
@@ -16,6 +16,8 @@ from odoo.tools import date_utils
 from psycopg2 import sql
 
 _logger = logging.getLogger(__name__)
+
+select = selectors.DefaultSelector
 
 # longpolling timeout connection
 TIMEOUT = 50
@@ -162,12 +164,13 @@ class ImDispatch(object):
     def loop(self):
         """ Dispatch postgres notifications to the relevant polling threads/greenlets """
         _logger.info("Bus.loop listen imbus on db postgres")
-        with odoo.sql_db.db_connect('postgres').cursor() as cr:
+        with odoo.sql_db.db_connect('postgres').cursor() as cr, select() as sel:
             conn = cr._cnx
             cr.execute("listen imbus")
             cr.commit();
+            sel.register(conn, selectors.EVENT_READ)
             while True:
-                if select.select([conn], [], [], TIMEOUT) == ([], [], []):
+                if not sel.select(TIMEOUT):
                     pass
                 else:
                     conn.poll()
