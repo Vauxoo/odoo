@@ -1343,6 +1343,7 @@ var SnippetsMenu = Widget.extend({
         // Final editor cleanup
         this.getEditableArea().find('[contentEditable]')
             .removeAttr('contentEditable')
+            .not('lt-highlighter')
             .removeProp('contentEditable');
         this.getEditableArea().find('.o_we_selected_image')
             .removeClass('o_we_selected_image');
