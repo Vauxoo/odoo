@@ -433,6 +433,16 @@ class ResPartner(models.Model):
     supplier_rank = fields.Integer(default=0, copy=False)
     customer_rank = fields.Integer(default=0, copy=False)
 
+    def copy(self, default=None):
+        self.ensure_one()
+        # Set context according to ranks fields to simulate where was created original partner
+        if not self.env.context.get('res_partner_search_mode'):
+            if self['supplier_rank'] > 0:
+                self = self.with_context(res_partner_search_mode='supplier')
+            if self['customer_rank'] > 0:
+                self = self.with_context(res_partner_search_mode='customer')
+        return super().copy(default)
+
     def _get_name_search_order_by_fields(self):
         res = super()._get_name_search_order_by_fields()
         partner_search_mode = self.env.context.get('res_partner_search_mode')
