@@ -2871,7 +2871,7 @@ class AccountMove(models.Model):
         for move in self:
             if move in move.line_ids.mapped('full_reconcile_id.exchange_move_id'):
                 raise UserError(_('You cannot reset to draft an exchange difference journal entry.'))
-            if move.tax_cash_basis_rec_id:
+            if move.tax_cash_basis_rec_id and not self.env['ir.config_parameter'].sudo().get_param('account.allow_drafting_caba', False):
                 raise UserError(_('You cannot reset to draft a tax cash basis journal entry.'))
             if move.restrict_mode_hash_table and move.state == 'posted' and move.id not in excluded_move_ids:
                 raise UserError(_('You cannot modify a posted entry of this journal because it is in strict mode.'))
