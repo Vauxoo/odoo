@@ -296,6 +296,12 @@ class SaleOrder(models.Model):
             product_with_context = self.env['product.product'].with_context(product_context).with_company(order.company_id.id)
             product = product_with_context.browse(product_id)
 
+            # compute new price ( only in other variants )
+            if order_line._context.get('price_unit') and not self._context.get('add_gift'):
+                if values['product_uom_qty'] > 1:
+                    values['price_unit'] += order_line.price_unit
+                values['product_uom_qty'] = 1
+
             order_line.write(values)
 
             # link a product to the sales order
