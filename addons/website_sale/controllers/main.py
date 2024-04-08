@@ -317,7 +317,7 @@ class WebsiteSale(http.Controller):
         return request.redirect(_build_url_w_params("/shop/%s" % slug(product), request.params), code=301)
 
     def _prepare_product_values(self, product, category, search, **kwargs):
-        add_qty = int(kwargs.get('add_qty', 1))
+        add_qty = float(kwargs.get('add_qty', 1))
 
         product_context = dict(request.env.context, quantity=add_qty,
                                active_id=product.id,
