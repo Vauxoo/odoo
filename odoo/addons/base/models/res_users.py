@@ -683,7 +683,7 @@ class Users(models.Model):
     def _login(cls, db, login, password, user_agent_env):
         if not password:
             raise AccessDenied()
-        ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
+        ip = request.httprequest.environ.get('werkzeug.proxy_fix.orig_remote_addr', False) if request else 'n/a'
         try:
             with cls.pool.cursor() as cr:
                 self = api.Environment(cr, SUPERUSER_ID, {})[cls._name]
