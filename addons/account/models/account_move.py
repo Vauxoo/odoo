@@ -1500,6 +1500,11 @@ class AccountMove(models.Model):
                         total_to_pay += line.balance
                         total_residual += line.amount_residual
                         total_residual_currency += line.amount_residual_currency
+                    else:
+                        total_untaxed += line.balance
+                        total_untaxed_currency += line.amount_currency
+                        total += line.balance
+                        total_currency += line.amount_currency
                 else:
                     # === Miscellaneous journal entry ===
                     if line.debit:
