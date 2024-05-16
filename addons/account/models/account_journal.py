@@ -56,7 +56,7 @@ class AccountJournal(models.Model):
         return 'odoo'
 
     name = fields.Char(string='Journal Name', required=True)
-    code = fields.Char(string='Short Code', size=5, required=True, help="Shorter name used for display. The journal entries of this journal will also be named using this prefix by default.")
+    code = fields.Char(string='Short Code', size=15, required=True, help="Shorter name used for display. The journal entries of this journal will also be named using this prefix by default.")
     active = fields.Boolean(default=True, help="Set active to false to hide the Journal without removing it.")
     type = fields.Selection([
             ('sale', 'Sales'),
