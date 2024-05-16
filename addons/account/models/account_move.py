@@ -3633,7 +3633,7 @@ class AccountMoveLine(models.Model):
                     company_id=record.move_id.company_id.id
                 )
                 if rec:
-                    record.analytic_account_id = rec.analytic_id
+                    record.analytic_account_id = record.analytic_account_id or rec.analytic_id
 
     @api.depends('product_id', 'account_id', 'partner_id', 'date')
     def _compute_analytic_tag_ids(self):
@@ -3648,7 +3648,7 @@ class AccountMoveLine(models.Model):
                     company_id=record.move_id.company_id.id
                 )
                 if rec:
-                    record.analytic_tag_ids = rec.analytic_tag_ids
+                    record.analytic_tag_ids = record.analytic_tag_ids or rec.analytic_tag_ids
 
     @api.depends('move_id.payment_reference')
     def _compute_name(self):
