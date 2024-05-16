@@ -2224,7 +2224,7 @@ class AccountMove(models.Model):
 
         currencies = set()
         has_term_lines = False
-        for line in self.line_ids:
+        for line in self.line_ids.filtered(lambda line: not line.display_type):
             if line.account_internal_type in ('receivable', 'payable'):
                 sign = 1 if line.balance > 0.0 else -1
 
