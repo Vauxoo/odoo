@@ -126,12 +126,12 @@ odoo.define("pos_gift_card.GiftCardPopup", function (require) {
           this.env.pos.config.gift_card_product_id[0]
         ];
 
-      for (let line of order.orderlines.models) {
-        if (line.product.id === giftProduct.id && line.price < 0) {
-          if (line.gift_card_id === (await this.getGiftCard()).id) return line;
-        }
-      }
-      return false;
+      const gitfCard = await this.getGiftCard();
+      return order.get_orderlines().filter(
+          line => line.get_product().id === giftProduct.id
+          && line.price < 0
+          && line.gift_card_id === (gitfCard).id
+      );
     }
 
     getPriceToRemove(giftCard) {
@@ -152,15 +152,56 @@ odoo.define("pos_gift_card.GiftCardPopup", function (require) {
 
       let currentOrder = this.env.pos.get_order();
       let lineUsed = await this.isGiftCardAlreadyUsed()
-      if (lineUsed) currentOrder.remove_orderline(lineUsed);
+      if (lineUsed)
+        lineUsed.forEach(line => currentOrder.remove_orderline(line));
 
-      await currentOrder.add_product(gift, {
-        price: this.getPriceToRemove(giftCard),
-        quantity: 1,
-        merge: false,
-        gift_card_id: giftCard.id,
-        extras: { price_automatically_set: true },
-      });
+      /**
+       * Obtain the total amount to pay that can be covered by a gift card (if
+       * the balance of the gift card allows to cover the total of the order
+       * will be the total of the order, otherwise will be the balance of the
+       * gift card) and the total of the order that includes all lines.
+       * */
+      let total_amount_to_pay = this.getPriceToRemove(giftCard);
+      let current_order_total = currentOrder.get_total_with_tax();
+      if (!current_order_total) return;
+
+      // Add one gift card payment line per tax group
+      let linesByTax = currentOrder.get_orderlines_grouped_by_tax_ids();
+      for (let [tax_ids_key, lines] of Object.entries(linesByTax)) {
+        // NOTE: `tax_ids` is an Array of tax ids that apply to the `lines`.
+        // That is, the use case of products with more than one tax is supported.
+        let tax_ids = tax_ids_key.split(",").filter(id => id !== "").map(id => Number(id));
+
+        // We need to obtain which is the percentage that the lines cover of the
+        // total of the order to cover the same percentage of the payment
+        let baseToPay = currentOrder.calculate_base_amount(tax_ids, lines);
+        let basePercentage = baseToPay * 100 / current_order_total;
+
+        // We add the price as manually set to avoid recomputation when changing customer.
+        let payment_amount = basePercentage * total_amount_to_pay / 100;
+        if (payment_amount < 0) {
+          let tax_description = (
+            tax_ids.length ?
+            _.str.sprintf(
+                this.env._t("Tax: %s"),
+                tax_ids.map(
+                    taxId => this.env.pos.taxes_by_id[taxId].name
+                ).join(", "))
+            : this.env._t("No tax")
+          );
+          await currentOrder.add_product(gift, {
+            price: payment_amount,
+            quantity: 1,
+            tax_ids: tax_ids,
+            merge: false,
+            description: tax_description,
+            gift_card_id: giftCard.id,
+            extras: {
+                price_automatically_set: true,
+            },
+          });
+        }
+      }
 
       this.cancel();
     }
