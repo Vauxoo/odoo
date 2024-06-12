@@ -614,8 +614,8 @@ class ConnectionPool(object):
         count = len(self._connections)
         return "ConnectionPool(used=%d/count=%d/max=%d)" % (used, count, self._maxconn)
 
-    def _debug(self, msg, *args):
-        _logger_conn.debug(('%r ' + msg), self, *args)
+    def _debug(self, msg, *args, **kwargs):
+        _logger_conn.debug(('%r ' + msg), self, *args, **kwargs)
 
     @locked
     def borrow(self, connection_info):
@@ -649,6 +649,7 @@ class ConnectionPool(object):
                 self._connections.append((cnx, True))
                 self._debug('Borrow existing connection to %r at index %d', cnx.dsn, i)
 
+
                 return cnx
 
         if len(self._connections) >= self._maxconn:
@@ -672,7 +673,9 @@ class ConnectionPool(object):
             _logger.info('Connection to the database failed')
             raise
         self._connections.append((result, True))
-        self._debug('Create new connection backend PID %d', result.get_backend_pid())
+        import traceback
+
+        self._debug('Create new connection backend PID %d. tcbk %s', result.get_backend_pid(), traceback.extract_stack(), exc_info=True)
         return result
 
     @locked

@@ -783,6 +783,7 @@ class Registry(Mapping):
             self.registry_sequence = r
             self.cache_sequence = c
 
+        _logger.debug("Registry used %s", self)
         return self
 
     def signal_changes(self):
