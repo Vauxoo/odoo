@@ -654,12 +654,15 @@ class IrHttp(models.AbstractModel):
         with registry(request.env.cr.dbname).cursor() as cr:
             env = api.Environment(cr, request.uid, request.env.context)
             if code == 500:
-                _logger.error("500 Internal Server Error:\n\n%s", values['traceback'])
+                _logger.error(
+                    "500 Internal Server Error:\n\n%s",
+                    "%s\n%s" % (values['traceback'],hash(values['traceback'])))
                 values = cls._get_values_500_error(env, values, exception)
             elif code == 403:
                 _logger.warning("403 Forbidden:\n\n%s", values['traceback'])
             elif code == 400:
                 _logger.warning("400 Bad Request:\n\n%s", values['traceback'])
+            values['traceback'] = hash(values['traceback'])
             try:
                 code, html = cls._get_error_html(env, code, values)
             except Exception:
