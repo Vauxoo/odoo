@@ -873,6 +873,7 @@ class AccountMoveLine(models.Model):
 
     def _get_computed_taxes(self):
         self.ensure_one()
+        tax_ids = self.env['account.tax']
 
         if self.move_id.is_sale_document(include_receipts=True):
             # Out invoice.
@@ -892,12 +893,12 @@ class AccountMoveLine(models.Model):
                 tax_ids = self.move_id.company_id.account_purchase_tax_id
         else:
             # Miscellaneous operation.
-            tax_ids = False if self.env.context.get('skip_computed_taxes') else self.account_id.tax_ids
+            tax_ids = self.env['account.tax'] if self.env.context.get('skip_computed_taxes') else self.account_id.tax_ids
 
         if self.company_id and tax_ids:
             tax_ids = tax_ids.filtered(lambda tax: tax.company_id == self.company_id)
 
-        if tax_ids and self.move_id.fiscal_position_id:
+        if self.move_id.fiscal_position_id:
             tax_ids = self.move_id.fiscal_position_id.map_tax(tax_ids)
 
         return tax_ids
