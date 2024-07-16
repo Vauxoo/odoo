@@ -104,7 +104,7 @@ class PaymentProvider(models.Model):
             raise UserError(_("Could not fetch merchant details:\n%s", res_content['err_msg']))
 
         currency = self.env['res.currency'].search([('name', 'in', res_content.get('currencies'))])
-        self.authorize_currency_id = currency
+        self.authorize_currency_id = currency & self.company_id.currency_id
         self.authorize_client_key = res_content.get('publicClientKey')
 
     # === BUSINESS METHODS ===#
