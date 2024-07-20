@@ -1493,7 +1493,7 @@ Please change the quantity done or the rounding precision of your unit of measur
             is performed and reservation is done on the passed quants set
         """
         self.ensure_one()
-        if quant_ids is None:
+        if not quant_ids:
             quant_ids = self.env['stock.quant']
         if not lot_id:
             lot_id = self.env['stock.lot']
