@@ -8,7 +8,7 @@ import { Component, useChildSubEnv, useState } from "@odoo/owl";
 import { debounce } from "@web/core/utils/timing";
 import { useService } from "@web/core/utils/hooks";
 
-class CompanySelector {
+export class CompanySelector {
     constructor(companyService, toggleDelay) {
         this.companyService = companyService;
         this.selectedCompaniesIds = companyService.activeCompanyIds.slice();
