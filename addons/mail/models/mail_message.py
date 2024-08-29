@@ -233,7 +233,9 @@ class Message(models.Model):
         - otherwise: remove the id
         """
         # Rules do not apply to administrator
-        if self.env.is_superuser():
+        # Using "is_admin" as temporal fix because of MemoryError
+        #   - https://github.com/odoo/odoo/issues/79905
+        if self.env.is_superuser() or self.env.is_admin():
             return super(Message, self)._search(
                 args, offset=offset, limit=limit, order=order,
                 count=count, access_rights_uid=access_rights_uid)
