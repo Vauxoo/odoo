@@ -899,7 +899,7 @@ class ChromeBrowser():
                 # this exceeds our default memory limits.
                 # OSX already reserve huge memory for processes
                 import resource
-                resource.setrlimit(resource.RLIMIT_AS, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+                resource.setrlimit(resource.RLIMIT_AS, (16**9, 16**9))
             # redirect browser stderr to /dev/null
             with open(os.devnull, 'wb', 0) as stderr_replacement:
                 os.dup2(stderr_replacement.fileno(), sys.stderr.fileno())
