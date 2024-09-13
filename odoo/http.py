@@ -1192,6 +1192,8 @@ class FutureResponse:
         if request.db and not request.env['ir.http']._is_allowed_cookie(cookie_type):
             expires = 0
             max_age = 0
+        if key == 'session_id' and not domain:
+            domain = request.env['ir.http']._get_domain(domain)
         werkzeug.Response.set_cookie(self, key, value=value, max_age=max_age, expires=expires, path=path, domain=domain, secure=secure, httponly=httponly, samesite=samesite)
 
 
