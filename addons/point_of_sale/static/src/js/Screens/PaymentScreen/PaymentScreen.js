@@ -85,6 +85,7 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
                 this.currentOrder.set_client(newClient);
                 this.currentOrder.updatePricelist(newClient);
             }
+            return confirmed;
         }
         addNewPaymentLine({ detail: paymentMethod }) {
             // original function: click_paymentmethods
