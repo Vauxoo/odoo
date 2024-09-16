@@ -42,7 +42,7 @@ class AccountPayment(models.Model):
     @api.constrains('check_number', 'journal_id')
     def _constrains_check_number(self):
         payment_checks = self.filtered('check_number')
-        if not payment_checks:
+        if not payment_checks or self.env.context.get('install_mode'):
             return
         for payment_check in payment_checks:
             if not payment_check.check_number.isdecimal():
