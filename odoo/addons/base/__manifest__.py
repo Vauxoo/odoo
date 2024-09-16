@@ -26,7 +26,6 @@ The kernel of Odoo, needed for all installation.
         'views/base_menus.xml',
         'views/decimal_precision_views.xml',
         'views/res_config_views.xml',
-        'data/res.country.state.csv',
         'views/ir_actions_views.xml',
         'views/ir_config_parameter_views.xml',
         'views/ir_cron_views.xml',
@@ -74,6 +73,8 @@ The kernel of Odoo, needed for all installation.
         'security/ir.model.access.csv',
     ],
     'demo': [
+        # needs to be loaded in demo to avoid raising relation erros
+        'data/res.country.state.csv',
         'data/res_company_demo.xml',
         'data/res_users_demo.xml',
         'data/res_partner_bank_demo.xml',
