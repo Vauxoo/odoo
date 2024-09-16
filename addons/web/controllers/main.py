@@ -43,6 +43,7 @@ from odoo.http import content_disposition, dispatch_rpc, request, serialize_exce
 from odoo.exceptions import AccessError, UserError, AccessDenied
 from odoo.models import check_method_name
 from odoo.service import db, security
+from odoo.addons.base.models.assetsbundle import without_unaccent
 
 _logger = logging.getLogger(__name__)
 
@@ -1398,7 +1399,8 @@ class Binary(http.Controller):
                 ('url', '=like', f'/web/assets/%/{filename}'),
                 ('url', 'not like', f'/web/assets/%/%/{filename}')
             ]
-        id = id or request.env['ir.attachment'].sudo().search(domain, limit=1).id
+        with without_unaccent(request.env.registry):
+            id = id or request.env['ir.attachment'].sudo().search(domain, limit=1).id
         return request.env['ir.http']._get_content_common(xmlid=None, model='ir.attachment', res_id=id, field='datas', unique=unique, filename=filename,
             filename_field='name', download=None, mimetype=None, access_token=None, token=None)
 
