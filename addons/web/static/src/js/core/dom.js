@@ -648,7 +648,7 @@ var dom = {
 
         var $extraItemsToggle = null;
 
-        var debouncedAdapt = _.debounce(_adapt, 250);
+        var debouncedAdapt = _.debounce(_adapt, 0);
         core.bus.on('resize', null, debouncedAdapt);
         _adapt();
 
