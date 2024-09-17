@@ -4862,7 +4862,7 @@ Fields:
         return cls._transient
 
     @api.model
-    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None, **read_kwargs):
         """Perform a :meth:`search` followed by a :meth:`read`.
 
         :param domain: Search domain, see ``args`` parameter in :meth:`search`.
@@ -4875,6 +4875,8 @@ Fields:
             Defaults to no limit.
         :param order: Columns to sort result, see ``order`` parameter in :meth:`search`.
             Defaults to no sort.
+        :param read_kwargs: All read keywords arguments used to call read(..., **read_kwargs) method
+            E.g. you can use search_read(..., load='') in order to avoid computing name_get
         :return: List of dictionaries containing the asked fields.
         :rtype: list(dict).
         """
@@ -4895,7 +4897,7 @@ Fields:
             del context['active_test']
             records = records.with_context(context)
 
-        result = records.read(fields)
+        result = records.read(fields, **read_kwargs)
         if len(result) <= 1:
             return result
 
