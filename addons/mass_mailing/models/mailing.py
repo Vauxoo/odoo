@@ -970,7 +970,27 @@ class MassMailing(models.Model):
 
     def _get_recipients(self):
         mailing_domain = self._parse_mailing_domain()
-        res_ids = self.env[self.mailing_model_real].search(mailing_domain).ids
+        res_model = self.env[self.mailing_model_real]
+        if "email" in res_model._fields:
+            res_ids_grouped = res_model.read_group(
+                mailing_domain, ["__my_id:max(id)"], ["email"]
+            )
+            res_ids = [r["__my_id"] for r in res_ids_grouped]
+
+        elif "partner_id" in res_model._fields:
+            res_ids_grouped = res_model.read_group(
+                mailing_domain, ["__my_id:max(id)"], ["partner_id"], orderby="partner_id"
+            )
+            seen = set()
+            res_ids = []
+            for r in res_ids_grouped:
+                curr_email = self.env["res.partner"].browse(r["partner_id"][0]).email
+                if curr_email in seen:
+                    continue
+                seen.add(curr_email)
+                res_ids.append(r["__my_id"])
+        else:
+            res_ids = res_model.search(mailing_domain).ids
 
         # randomly choose a fragment
         if self.ab_testing_enabled and self.ab_testing_pc < 100:
