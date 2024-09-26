@@ -4136,14 +4136,46 @@ class AccountMoveLine(models.Model):
 
     @api.constrains('account_id', 'tax_ids', 'tax_line_id', 'reconciled')
     def _check_off_balance(self):
+        if not self._context.get('check_move_validity', True):
+            return
+        checked_moves = set()
+        # /!\ NOTE: We have to cycle through the whole Journal Entry from the
+        # Journal Item because self could be coming from several Journal
+        # Entries
         for line in self:
-            if line.account_id.internal_group == 'off_balance':
-                if any(a.internal_group != line.account_id.internal_group for a in line.move_id.line_ids.account_id):
-                    raise UserError(_('If you want to use "Off-Balance Sheet" accounts, all the accounts of the journal entry must be of this type'))
-                if line.tax_ids or line.tax_line_id:
-                    raise UserError(_('You cannot use taxes on lines with an Off-Balance account'))
-                if line.reconciled:
-                    raise UserError(_('Lines from "Off-Balance Sheet" accounts cannot be reconciled'))
+            if line.move_id.id in checked_moves or line.account_id.internal_group != 'off_balance':
+                continue
+            checked_moves.add(line.move_id.id)
+            if any(True for l in line.move_id.line_ids if l.tax_ids or l.tax_line_id):
+                raise UserError(_('You cannot use taxes on lines with an Off-Balance account'))
+            # /!\ NOTE: I have come to realize that testing for off_balance is
+            # transitive to test for balance accounts. That is testing for one
+            # is equal to testing for the other
+            # Moreover. We have to bear in mind that method _check_balanced
+            # does a validation for debit == credit.
+            off_balance = sum(
+                line.move_id.line_ids
+                .filtered(lambda l: l.account_id.internal_group == 'off_balance')
+                .mapped('balance'))
+
+            if not line.company_currency_id.is_zero(off_balance):
+                raise UserError(_(
+                    '''
+                    This Journal Entry is not allowed. Thought the whole Journal Entry is balanced
+                    Off-balance & Balance equity must not be mixed.
+                        Off-Balance Account X (dr)         1000
+                            Balance Account 2 (cr)                      1000
+                        ----------------------------------------------------
+                        Balance Account 1 (dr)              700
+                            Off-Balance Account Y (cr)                   700
+                    The Following Journal Entry is allowed to be done:
+                        Balance Account 1 (dr)             1000
+                            Balance Account 2 (cr)                      1000
+                        ----------------------------------------------------
+                        Off-Balance Account X (dr)          700
+                            Off-Balance Account Y (cr)                   700
+                    '''
+                    ))
 
     @api.constrains('product_uom_id')
     def _check_product_uom_category_id(self):
