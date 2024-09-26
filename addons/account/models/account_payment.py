@@ -252,6 +252,8 @@ class AccountPayment(models.Model):
             partner=self.partner_id,
         )
 
+        name = ' - '.join([default_line_name or '', self.ref or ''])
+
         line_vals_list = [
             # Liquidity line.
             {
@@ -266,7 +268,7 @@ class AccountPayment(models.Model):
             },
             # Receivable / Payable.
             {
-                'name': self.payment_reference or default_line_name,
+                'name': name,
                 'date_maturity': self.date,
                 'amount_currency': counterpart_amount_currency,
                 'currency_id': currency_id,
