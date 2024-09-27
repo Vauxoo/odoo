@@ -66,6 +66,13 @@ def _message_post_helper(res_model, res_id, message, token='', _hash=False, pid=
     else:  # early check on access to avoid useless computation
         record.check_access_rights('read')
         record.check_access_rule('read')
+    
+    if request.env.context.get("skip_partner_ids") and kw.get("partner_ids"):
+        kw.pop("partner_ids")
+
+    if request.env.context.get("force_only_note"):
+        kw["message_type"] = "notification"
+        kw["subtype_xmlid"] = "mail.mt_note"
 
     # deduce author of message
     author_id = request.env.user.partner_id.id if request.env.user.partner_id else False
