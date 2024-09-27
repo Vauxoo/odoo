@@ -934,6 +934,7 @@ class ChromeBrowser():
             '--remote-debugging-port': '0',
             '--no-sandbox': '',
             '--disable-gpu': '',
+            '--remote-allow-origins': '*'
         }
         cmd = [self.executable]
         cmd += ['%s=%s' % (k, v) if v else k for k, v in switches.items()]
