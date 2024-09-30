@@ -73,42 +73,30 @@ class PosOrder(models.Model):
             'pos_order_id': order.id,
         }
 
-    # This deals with orders that belong to a closed session. In order
-    # to recover from this situation we create a new rescue session,
-    # making it obvious that something went wrong.
-    # A new, separate, rescue session is preferred for every such recovery,
-    # to avoid adding unrelated orders to live sessions.
+
+    # This function deals with orders that belong to a closed session. It attempts to find
+    # any open session that can be used to capture the order. If no open session is found,
+    # an error is raised, asking the user to open a session.
     def _get_valid_session(self, order):
         PosSession = self.env['pos.session']
         closed_session = PosSession.browse(order['pos_session_id'])
 
-        _logger.warning('session %s (ID: %s) was closed but received order %s (total: %s) belonging to it',
+        _logger.warning('Session %s (ID: %s) was closed but received order %s (total: %s) belonging to it',
                         closed_session.name,
                         closed_session.id,
                         order['name'],
                         order['amount_total'])
-        rescue_session = PosSession.search([
+
+        open_session = PosSession.search([
             ('state', 'not in', ('closed', 'closing_control')),
-            ('rescue', '=', True),
-            ('config_id', '=', closed_session.config_id.id),
+            ('config_id', '=', closed_session.config_id.id)
         ], limit=1)
-        if rescue_session:
-            _logger.warning('reusing recovery session %s for saving order %s', rescue_session.name, order['name'])
-            return rescue_session
 
-        _logger.warning('attempting to create recovery session for saving order %s', order['name'])
-        new_session = PosSession.create({
-            'config_id': closed_session.config_id.id,
-            'name': _('(RESCUE FOR %(session)s)') % {'session': closed_session.name},
-            'rescue': True,  # avoid conflict with live sessions
-        })
-        # bypass opening_control (necessary when using cash control)
-        new_session.action_pos_session_open()
-        if new_session.config_id.cash_control and new_session.rescue:
-            last_session = self.env['pos.session'].search([('config_id', '=', new_session.config_id.id), ('id', '!=', new_session.id)], limit=1)
-            new_session.cash_register_balance_start = last_session.cash_register_balance_end_real
+        if open_session:
+            _logger.warning('Using open session %s for saving order %s', open_session.name, order['name'])
+            return open_session
 
-        return new_session
+        raise UserError(_('No open session available. Please open a new session to capture the order.'))
 
     @api.model
     def _process_order(self, order, draft, existing_order):
@@ -915,6 +903,7 @@ class PosOrder(models.Model):
         sync_token = randrange(100000000)  # Use to differentiate 2 parallels calls to this function in the logs
         _logger.info("Start PoS synchronisation #%d for PoS orders references: %s (draft: %s)", sync_token, order_names, draft)
         order_ids = []
+        session_ids = set({order.get('session_id') for order in orders})
         for order in orders:
             order_name = order['data']['name']
             existing_draft_order = None
@@ -929,7 +918,7 @@ class PosOrder(models.Model):
 
             if not existing_draft_order:
                 existing_draft_order = self.env['pos.order'].search(['&', ('pos_reference', '=', order_name), ('state', '=', 'draft')], limit=1)
-
+            
             try:
                 if existing_draft_order:
                     order_ids.append(self._process_order(order, draft, existing_draft_order))
