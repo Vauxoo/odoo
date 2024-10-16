@@ -1228,7 +1228,8 @@ class HrExpenseSheet(models.Model):
         moves = self.env['account.move'].create([sheet._prepare_bill_vals() for sheet in own_account_sheets])
         payments = self.env['account.payment'].with_context(**skip_context).create([sheet._prepare_payment_vals() for sheet in company_account_sheets])
         moves |= payments.move_id
-        moves.action_post()
+        # NOTE: Only the Vendor Bills (Own account sheets) need to be left as draft, company can be posted.
+        payments.move_id.action_post()
 
         self.activity_update()
 
