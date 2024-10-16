@@ -687,6 +687,7 @@ Or send your receipts at <a href="mailto:%(email)s?subject=Lunch%%20with%%20cust
             'product_uom_id': self.product_uom_id.id,
             'analytic_distribution': self.analytic_distribution,
             'expense_id': self.id,
+            # TODO: Check if this needs to be the same with commercial...
             'partner_id': False if self.payment_mode == 'company_account' else self.employee_id.sudo().address_home_id.commercial_partner_id.id,
             'tax_ids': [Command.set(self.tax_ids.ids)],
         }
@@ -1204,31 +1205,15 @@ class HrExpenseSheet(models.Model):
         expense_line_ids = self.mapped('expense_line_ids')\
             .filtered(lambda r: not float_is_zero(r.total_amount, precision_rounding=(r.currency_id or self.env.company.currency_id).rounding))
         res = expense_line_ids.with_context(clean_context(self.env.context)).action_move_create()
-
-        paid_expenses_company = self.filtered(lambda m: m.payment_mode == 'company_account')
-        paid_expenses_company.write({'state': 'done', 'amount_residual': 0.0, 'payment_state': 'paid'})
-
-        paid_expenses_employee = self - paid_expenses_company
-        paid_expenses_employee.write({'state': 'post'})
+        self.write({"state": "post"})
 
         self.activity_update()
         return res
 
     def _do_create_moves(self):
         self = self.with_context(clean_context(self.env.context)) # remove default_*
-        skip_context = {
-            'skip_invoice_sync':True,
-            'skip_invoice_line_sync':True,
-            'skip_account_move_synchronization':True,
-            'check_move_validity':False,
-        }
-        own_account_sheets = self.filtered(lambda sheet: sheet.payment_mode == 'own_account')
-        company_account_sheets = self - own_account_sheets
 
-        moves = self.env['account.move'].create([sheet._prepare_bill_vals() for sheet in own_account_sheets])
-        payments = self.env['account.payment'].with_context(**skip_context).create([sheet._prepare_payment_vals() for sheet in company_account_sheets])
-        moves |= payments.move_id
-        moves.action_post()
+        moves = self.env["account.move"].create([sheet._prepare_bill_vals() for sheet in self])
 
         self.activity_update()
 
@@ -1374,8 +1359,8 @@ class HrExpenseSheet(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'views': [[False, "form"]],
-            'res_model': 'account.move' if self.payment_mode == 'own_account' else 'account.payment',
-            'res_id': self.account_move_id.id if self.payment_mode == 'own_account' else self.account_move_id.payment_id.id,
+            "res_id": self.account_move_id.id,
+            "res_model": "account.move",
         }
 
     # --------------------------------------------
