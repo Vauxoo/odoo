@@ -36,7 +36,7 @@ class Paymentprovider(models.Model):
         if not pay_method_line:
             pay_method_line = self.env['account.payment.method.line'].search(
                 [
-                    ('journal_id.company_id', '=', self.company_id.id),
+                    ('company_id', '=', self.company_id.id),
                     ('code', '=', self.code),
                     ('payment_provider_id', '=', False),
                 ],
@@ -48,12 +48,25 @@ class Paymentprovider(models.Model):
             pay_method_line.name = self.name
         elif allow_create:
             default_payment_method_id = self._get_default_payment_method_id(self.code)
-            self.env['account.payment.method.line'].create({
+            if not default_payment_method_id:
+                return
+
+            create_values = {
                 'name': self.name,
                 'payment_method_id': default_payment_method_id,
                 'journal_id': self.journal_id.id,
                 'payment_provider_id': self.id,
-            })
+            }
+            pay_method_line_same_code = self.env['account.payment.method.line'].search(
+                [
+                    ('company_id', '=', self.company_id.id),
+                    ('code', '=', self.code),
+                ],
+                limit=1,
+            )
+            if pay_method_line_same_code:
+                create_values['payment_account_id'] = pay_method_line_same_code.payment_account_id.id
+            self.env['account.payment.method.line'].create(create_values)
 
     @api.depends('code', 'state', 'company_id')
     def _compute_journal_id(self):
@@ -85,7 +98,7 @@ class Paymentprovider(models.Model):
         provider_payment_method = self._get_provider_payment_method(code)
         if provider_payment_method:
             return provider_payment_method.id
-        return self.env.ref('account.account_payment_method_manual_in').id
+        return None
 
     @api.model
     def _get_provider_payment_method(self, code):

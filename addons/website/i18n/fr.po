@@ -10,8 +10,8 @@
 # Fabien Bourgeois <fabien@yaltik.com>, 2022
 # Martin Trigaux, 2023
 # Jolien De Paepe, 2024
-# Wil Odoo, 2024
 # Larissa Manderfeld, 2024
+# Wil Odoo, 2024
 # Manon Rondou, 2024
 # 
 msgid ""
@@ -238,8 +238,8 @@ msgstr "+ Nouveau site web"
 #: model_terms:ir.ui.view,arch_db:website.template_header_hamburger_oe_structure_header_hamburger_3
 #: model_terms:ir.ui.view,arch_db:website.template_header_sidebar_oe_structure_header_sidebar_1
 #: model_terms:ir.ui.view,arch_db:website.template_header_vertical_oe_structure_header_vertical_2
-msgid "+1 (650) 555-0111"
-msgstr "+1 (650) 555-0111"
+msgid "+1 555-555-5556"
+msgstr "+1 555-555-5556"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.searchbar_input_snippet_options
@@ -865,11 +865,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.contactus
 #: model_terms:ir.ui.view,arch_db:website.contactus_thanks_ir_ui_view
 msgid ""
-"<i class=\"fa fa-phone fa-fw me-2\"/><span class=\"o_force_ltr\">+1 (650) "
-"555-0111</span>"
+"<i class=\"fa fa-phone fa-fw me-2\"/><span class=\"o_force_ltr\">+1 "
+"555-555-5556</span>"
 msgstr ""
-"<i class=\"fa fa-phone fa-fw me-2\"/><span class=\"o_force_ltr\">+1 (650) "
-"555-0111</span>"
+"<i class=\"fa fa-phone fa-fw me-2\"/><span class=\"o_force_ltr\">+1 "
+"555-555-5556</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.language_selector_add_language
@@ -1048,7 +1048,7 @@ msgid ""
 "your email with anyone else.</small>"
 msgstr ""
 "<small id=\"emailHelp\" class=\"form-text text-muted\">Nous ne partagerons "
-"jamais votre email.</small>"
+"jamais votre e-mail.</small>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -1179,7 +1179,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "<span class=\"o_form_label\">Email Marketing</span>"
-msgstr "<span class=\"o_form_label\">Email Marketing</span>"
+msgstr "<span class=\"o_form_label\">E-mail Marketing</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -1310,7 +1310,7 @@ msgstr "<span class=\"s_website_form_label_content\">Société</span>"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus
 msgid "<span class=\"s_website_form_label_content\">Email To</span>"
-msgstr "<span class=\"s_website_form_label_content\">Email à</span>"
+msgstr "<span class=\"s_website_form_label_content\">E-mail à</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus
@@ -1318,7 +1318,7 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Email</span>\n"
 "                                                            <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
-"<span class=\"s_website_form_label_content\">Email</span>\n"
+"<span class=\"s_website_form_label_content\">E-mail</span>\n"
 "                                                            <span class=\"s_website_form_mark\"> *</span>"
 
 #. module: website
@@ -2180,6 +2180,7 @@ msgstr "Toile de fond"
 
 #. module: website
 #. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: code:addons/website/static/src/xml/website.editor.xml:0
 #: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.s_chart_options
@@ -4213,22 +4214,22 @@ msgstr "Électronique"
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_kanban
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_tree
 msgid "Email"
-msgstr "Email"
+msgstr "E-mail"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Email &amp; Marketing"
-msgstr "Emails &amp; Marketing"
+msgstr "E-mails &amp; Marketing"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Email address"
-msgstr "Adresse email"
+msgstr "Adresse e-mail"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
 msgid "Email support"
-msgstr "Assistance par email"
+msgstr "Assistance par e-mail"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
@@ -4295,7 +4296,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Enter email"
-msgstr "Saisissez votre email"
+msgstr "Saisissez votre e-mail"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_tabs_options
@@ -5170,7 +5171,10 @@ msgid "Header Visible"
 msgstr "En-tête visible"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
+#, python-format
 msgid "Headings"
 msgstr "Titres"
 
@@ -5180,27 +5184,42 @@ msgid "Headings 1"
 msgstr "Titre 1"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
+#, python-format
 msgid "Headings 2"
 msgstr "Titre 2"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
+#, python-format
 msgid "Headings 3"
 msgstr "Titre 3"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
+#, python-format
 msgid "Headings 4"
 msgstr "Titre 4"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
+#, python-format
 msgid "Headings 5"
 msgstr "Titre 5"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
+#, python-format
 msgid "Headings 6"
 msgstr "Titre 6"
 
@@ -5340,8 +5359,8 @@ msgid "Home page of the current website"
 msgstr "Page d'accueil du site actuel"
 
 #. module: website
-#. odoo-python
 #. odoo-javascript
+#. odoo-python
 #: code:addons/website/models/website.py:0
 #: code:addons/website/static/src/client_actions/website_preview/website_preview.xml:0
 #: model:ir.model.fields,field_description:website.field_website_page__is_homepage
@@ -6457,7 +6476,10 @@ msgid "Linkedin"
 msgstr "Linkedin"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
+#, python-format
 msgid "Links"
 msgstr "Liens"
 
@@ -7892,6 +7914,11 @@ msgid "Popup"
 msgstr "Fenêtre contextuelle"
 
 #. module: website
+#: model:ir.model,name:website.model_portal_wizard_user
+msgid "Portal User Config"
+msgstr "Configuration de l'utilisateur portail"
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_mega_menu_big_icons_subtitles
 msgid "Portfolio"
 msgstr "Portfolio"
@@ -7991,6 +8018,13 @@ msgstr "Tarification"
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Primary"
 msgstr "Primaire"
+
+#. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
+#, python-format
+msgid "Primary Buttons"
+msgstr "Boutons principaux"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -8216,10 +8250,17 @@ msgstr "Prêt à créer le"
 
 #. module: website
 #. odoo-javascript
+#: code:addons/website/static/src/snippets/s_facebook_page/options.js:0
+#, python-format
+msgid "Recent Facebook Issues"
+msgstr "Problèmes Facebook récents"
+
+#. module: website
+#. odoo-javascript
 #: code:addons/website/static/src/js/form_editor_registry.js:0
 #, python-format
 msgid "Recipient Email"
-msgstr "Email du destinataire"
+msgstr "E-mail du destinataire"
 
 #. module: website
 #: model:ir.model,name:website.model_ir_rule
@@ -8713,6 +8754,13 @@ msgid "Secondary"
 msgstr "Secondaire"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
+#, python-format
+msgid "Secondary Buttons"
+msgstr "Boutons secondaires"
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Secondary Style"
 msgstr "Style secondaire"
@@ -8767,7 +8815,7 @@ msgstr "Vendez plus avec un eCommerce"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_form
 msgid "Send Email"
-msgstr "Envoyer un email"
+msgstr "Envoyer un e-mail"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.template_footer_contact
@@ -8786,7 +8834,7 @@ msgstr "Nom référencement"
 #: code:addons/website/static/src/xml/website_form_editor.xml:0
 #, python-format
 msgid "Separate email addresses with a comma."
-msgstr "Séparez les adresses email par une virgule."
+msgstr "Séparez les adresses e-mail par une virgule."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
@@ -9273,7 +9321,7 @@ msgstr "Commencer maintenant"
 #: model_terms:ir.ui.view,arch_db:website.s_tabs
 #: model_terms:ir.ui.view,arch_db:website.s_text_image
 msgid "Start with the customer – find out what they want and give it to them."
-msgstr "Commencez par le client: trouvez ce qu'il veut et donner-le lui."
+msgstr "Commencez par le client : trouvez ce qu'il veut et donnez-le lui."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_carousel
@@ -9533,9 +9581,12 @@ msgid "Test your robots.txt with Google Search Console"
 msgstr "Testez votre fichier robots.txt avec Google Search Console"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 #: model_terms:ir.ui.view,arch_db:website.snippets
+#, python-format
 msgid "Text"
 msgstr "Texte"
 
@@ -9816,7 +9867,7 @@ msgstr "Il n'y a actuellement aucune page pour ce site web."
 #: code:addons/website/models/website_visitor.py:0
 #, python-format
 msgid "There are no contact and/or no email linked to this visitor."
-msgstr "Il n'y a pas de contact et/ou d'email associé à ce visiteur."
+msgstr "Il n'y a pas de contact et/ou d'e-mail associé à ce visiteur."
 
 #. module: website
 #. odoo-javascript
@@ -9870,8 +9921,19 @@ msgstr "Troisième menu"
 #. odoo-javascript
 #: code:addons/website/static/src/components/dialog/page_properties.xml:0
 #, python-format
-msgid "This URL is contained in the '%s' of the following '%s'"
-msgstr "Cette URL est contenue dans la partie '%s' du lien '%s'."
+msgid "This URL is contained in the “%(field)s” of the following “%(model)s”"
+msgstr "Cette URL est contenue dans le champ “%(field)s” parmi “%(model)s”"
+
+#. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/snippets/s_facebook_page/options.js:0
+#, python-format
+msgid ""
+"This block will temporarily not be shown on mobile due to recent Facebook "
+"issues."
+msgstr ""
+"Ce bloc ne sera temporairement pas affiché sur les téléphones portables en "
+"raison de récents problèmes liés à Facebook."
 
 #. module: website
 #: model:ir.model.fields,help:website.field_res_config_settings__favicon
@@ -10459,7 +10521,7 @@ msgstr "URL de l'image de drapeau statique"
 #: code:addons/website/static/src/components/dialog/edit_menu.xml:0
 #, python-format
 msgid "Url or Email"
-msgstr "Url ou email"
+msgstr "Url ou e-mail"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_page_view_search
@@ -10893,6 +10955,13 @@ msgstr "Nous avons presque terminé !"
 #: model_terms:ir.ui.view,arch_db:website.s_references
 msgid "We are in good company."
 msgstr "Nous sommes en bonne compagnie."
+
+#. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/snippets/s_facebook_page/options.js:0
+#, python-format
+msgid "We couldn't find the Facebook page"
+msgstr "Nous n'avons pas trouvé la page Facebook"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.cookie_policy
@@ -11355,6 +11424,13 @@ msgstr "Année"
 
 #. module: website
 #. odoo-javascript
+#: code:addons/website/static/src/xml/website_form_editor.xml:0
+#, python-format
+msgid "Yes"
+msgstr "Oui"
+
+#. module: website
+#. odoo-javascript
 #: code:addons/website/static/src/client_actions/website_preview/website_preview.js:0
 #, python-format
 msgid ""
@@ -11462,6 +11538,13 @@ msgstr ""
 "parent par défaut pour les nouveaux sites web (par ex. /shop, /event, ...)."
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/snippets/s_facebook_page/options.js:0
+#, python-format
+msgid "You didn't provide a valid Facebook link"
+msgstr "Vous n'avez pas fourni de lien Facebook valide"
+
+#. module: website
 #. odoo-python
 #: code:addons/website/models/mixins.py:0
 #, python-format
@@ -11539,7 +11622,7 @@ msgstr ""
 #: code:addons/website/static/src/js/form_editor_registry.js:0
 #, python-format
 msgid "Your Email"
-msgstr "Votre email"
+msgstr "Votre e-mail"
 
 #. module: website
 #. odoo-javascript
@@ -11829,7 +11912,7 @@ msgstr "eLearning"
 #: code:addons/website/controllers/form.py:0
 #, python-format
 msgid "email"
-msgstr "email"
+msgstr "e-mail"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
@@ -11848,7 +11931,7 @@ msgstr "fonts.google.com"
 #: code:addons/website/static/src/client_actions/configurator/configurator.xml:0
 #, python-format
 msgid "for my"
-msgstr "pour mon commerce de"
+msgstr "pour mon business de"
 
 #. module: website
 #. odoo-javascript

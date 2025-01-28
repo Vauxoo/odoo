@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # JH CHOI <hwangtog@gmail.com>, 2022
-# Sarah Park, 2023
+# Sarah Park, 2024
 # Daye Jeong, 2024
 # 
 msgid ""
@@ -221,7 +221,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 msgid "<span class=\"fw-bold text-nowrap\">To Produce</span>"
-msgstr ""
+msgstr "<span class=\"fw-bold text-nowrap\">생산 대기</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -705,13 +705,6 @@ msgid "Assign Serial Numbers"
 msgstr "일련번호 배정"
 
 #. module: mrp
-#. odoo-python
-#: code:addons/mrp/models/product.py:0
-#, python-format
-msgid "At least one component can not be resupplied."
-msgstr ""
-
-#. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "At the creation of a Manufacturing Order."
 msgstr "제조 주문서를 만들 때."
@@ -1121,6 +1114,15 @@ msgstr "취소"
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Cancelled"
 msgstr "취소 됨"
+
+#. module: mrp
+#. odoo-python
+#: code:addons/mrp/models/product.py:0
+#, python-format
+msgid ""
+"Cannot compute days to prepare due to missing route info for at least 1 "
+"component or for the final product."
+msgstr "하나 이상의 부품 또는 최종 제품에 대한 경로 정보가 누락되었으므로 준비 일수를 계산할 수 없습니다."
 
 #. module: mrp
 #. odoo-python
@@ -3521,7 +3523,7 @@ msgstr "설비 종합 효율 : 중지 또는 차단된 시간"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "Overview"
-msgstr "입출고 현황"
+msgstr "전체보기"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_routing_workcenter__worksheet

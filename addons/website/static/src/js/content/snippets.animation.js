@@ -452,13 +452,24 @@ registry.slider = publicWidget.Widget.extend({
         // Initialize carousel and pause if in edit mode.
         this.$target.carousel(this.editableMode ? 'pause' : undefined);
         $(window).on('resize.slider', _.debounce(() => this._computeHeights(), 250));
-        if (this.editableMode) {
-            // Prevent carousel slide to be an history step.
-            this.$target.on('slide.bs.carousel.slider', () => {
-                this.options.wysiwyg.odooEditor.observerUnactive();
-            });
-            this.$target.on('slid.bs.carousel.slider', () => {
-                this.options.wysiwyg.odooEditor.observerActive();
+
+        // Only for carousels having the `Carousel` and `CarouselItem` options
+        // (i.e. matching the `section > .carousel` selector).
+        if (this.editableMode && this.el.matches("section > .carousel")
+                && !this.options.wysiwyg.options.enableTranslation) {
+            this.controlEls = this.el.querySelectorAll(".carousel-control-prev, .carousel-control-next");
+            const indicatorEls = this.el.querySelectorAll(".carousel-indicators > li");
+            // Deactivate the carousel controls to handle the slides manually in
+            // edit mode (by the options).
+            this.options.wysiwyg.odooEditor.observerUnactive("disable_controls");
+            this.controlEls.forEach(controlEl => controlEl.removeAttribute("data-bs-slide"));
+            indicatorEls.forEach(indicatorEl => indicatorEl.removeAttribute("data-bs-slide-to"));
+            this.options.wysiwyg.odooEditor.observerActive("disable_controls");
+            // Redirect the clicks on the active slide, in order to start the
+            // carousel options.
+            this.__onControlClick = this._onControlClick.bind(this);
+            [...this.controlEls, ...indicatorEls].forEach(controlEl => {
+                controlEl.addEventListener("mousedown", this.__onControlClick);
             });
         }
         return this._super.apply(this, arguments);
@@ -471,11 +482,30 @@ registry.slider = publicWidget.Widget.extend({
         this.$('img').off('.slider');
         this.$target.carousel('pause');
         this.$target.removeData('bs.carousel');
+        this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerUnactive("destroy");
         _.each(this.$('.carousel-item'), function (el) {
             $(el).css('min-height', '');
         });
+        this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerActive("destroy");
         $(window).off('.slider');
-        this.$target.off('.slider');
+        this.$target.off('.slider'); // TODO remove in master
+
+        if (this.editableMode && this.el.matches("section > .carousel")
+                && !this.options.wysiwyg.options.enableTranslation) {
+            // Restore the carousel controls.
+            const indicatorEls = this.el.querySelectorAll(".carousel-indicators > li");
+            this.options.wysiwyg.odooEditor.observerUnactive("restore_controls");
+            this.controlEls.forEach(controlEl => {
+                const direction = controlEl.classList.contains("carousel-control-prev") ?
+                    "prev" : "next";
+                controlEl.setAttribute("data-bs-slide", direction);
+            });
+            indicatorEls.forEach((indicatorEl, i) => indicatorEl.setAttribute("data-bs-slide-to", i));
+            this.options.wysiwyg.odooEditor.observerActive("restore_controls");
+            [...this.controlEls, ...indicatorEls].forEach(controlEl => {
+                controlEl.removeEventListener("mousedown", this.__onControlClick);
+            });
+        }
     },
 
     //--------------------------------------------------------------------------
@@ -488,22 +518,20 @@ registry.slider = publicWidget.Widget.extend({
     _computeHeights: function () {
         var maxHeight = 0;
         var $items = this.$('.carousel-item');
+        this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerUnactive("_computeHeights");
         $items.css('min-height', '');
         _.each($items, el => {
             var $item = $(el);
             var isActive = $item.hasClass('active');
-            this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerUnactive('_computeHeights');
             $item.addClass('active');
-            this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerActive('_computeHeights');
             var height = $item.outerHeight();
             if (height > maxHeight) {
                 maxHeight = height;
             }
-            this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerUnactive('_computeHeights');
             $item.toggleClass('active', isActive);
-            this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerActive('_computeHeights');
         });
         $items.css('min-height', maxHeight);
+        this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerActive("_computeHeights");
     },
 
     //--------------------------------------------------------------------------
@@ -515,6 +543,14 @@ registry.slider = publicWidget.Widget.extend({
      */
     _onContentChanged: function (ev) {
         this._computeHeights();
+    },
+    /**
+     * Redirects a carousel control click on the active slide.
+     *
+     * @private
+     */
+    _onControlClick() {
+        this.el.querySelector(".carousel-item.active").click();
     },
 });
 
@@ -1032,8 +1068,13 @@ registry.anchorSlide = publicWidget.Widget.extend({
      * @private
      */
     _onAnimateClick: function (ev) {
-        if (this.$target[0].pathname !== window.location.pathname) {
+        const ensureSlash = path => path.endsWith("/") ? path : path + "/";
+        if (ensureSlash(this.$target[0].pathname) !== ensureSlash(window.location.pathname)) {
             return;
+        }
+        // Avoid flicker at destination in case of ending "/" difference.
+        if (this.$target[0].pathname !== window.location.pathname) {
+            this.$target[0].pathname = window.location.pathname;
         }
         var hash = this.$target[0].hash;
         if (hash === '#top' || hash === '#bottom') {

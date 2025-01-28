@@ -148,10 +148,12 @@
           <button class="o-add-button" t-on-click="setCustomColor">Add</button>
         </div>
       </div>
-      <div class="o-separator"/>
-      <div class="o-buttons">
-        <button t-on-click="resetColor" class="o-cancel">Reset</button>
-      </div>
+      <t t-if="!props.disableNoColor">
+        <div class="o-separator"/>
+        <div class="o-buttons">
+          <button t-on-click="resetColor" class="o-cancel">Reset</button>
+        </div>
+      </t>
     </div>
   </t>
 
@@ -175,7 +177,7 @@
   </t>
 
   <t t-name="o-spreadsheet-Composer" owl="1">
-    <div class="o-composer-container">
+    <div class="o-composer-container" t-att-active="props.focus !== 'inactive'">
       <div
         t-att-class="{ 'o-composer': true, 'text-muted': env.model.getters.isReadonly(), 'unfocusable': env.model.getters.isReadonly() }"
         t-att-style="props.inputStyle"
@@ -2405,6 +2407,7 @@ https://fontawesome.com/license -->
             dropdownDirection="'left'"
             onColorPicked="(color) => this.setColorScaleColor(thresholdType, color)"
             currentColor="getThresholdColor(threshold)"
+            disableNoColor="true"
           />
         </div>
       </div>
@@ -3239,7 +3242,7 @@ https://fontawesome.com/license -->
   </t>
 </odoo>
 <!--
-  __info__.version = '16.0.45';
-  __info__.date = '2024-06-14T10:07:07.431Z';
-  __info__.hash = '5da9171';
+  __info__.version = '16.0.58';
+  __info__.date = '2025-01-27T10:55:16.545Z';
+  __info__.hash = '4886b0b';
 -->

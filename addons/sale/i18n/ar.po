@@ -615,6 +615,11 @@ msgstr "<i class=\"fa fa-fw fa-check\"/> <b>تم الدفع</b> "
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
+msgid "<i class=\"fa fa-fw fa-check\"/> <b>Reversed</b>"
+msgstr ""
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Waiting Payment</b>"
 msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>بانتظار الدفع</b> "
 
@@ -1712,7 +1717,7 @@ msgstr "إيداع "
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__deposit_default_product_id
 msgid "Deposit Product"
-msgstr "منتج الإيداع "
+msgstr "منتج التأمين "
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__name

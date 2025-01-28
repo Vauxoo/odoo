@@ -118,6 +118,17 @@ const wSnippetMenu = weSnippetEditor.SnippetsMenu.extend({
         `, _t("Position"), _t("Cover"), _t("Contain"))));
         // TODO remove me in master
         $html.find('[data-attribute-name="interval"]')[0].dataset.attributeName = "bsInterval";
+        // TODO adapt in 17.0: changing the `data-apply-to` attribute of the
+        // grid padding option so it is not applied on inner rows.
+        const $gridPaddingOptions = $html.find('[data-css-property="--grid-item-padding-y"], [data-css-property="--grid-item-padding-x"]');
+        $gridPaddingOptions.attr("data-apply-to", ".row.o_grid_mode");
+
+        // TODO remove in master and adapt XML.
+        const contentAdditionEl = $html.find("#so_content_addition")[0];
+        if (contentAdditionEl) {
+            // Necessary to be able to drop "inner blocks" next to an image link.
+            contentAdditionEl.dataset.dropNear += ", .row > div:not(.o_grid_item_image) > a";
+        }
     },
     /**
      * Depending of the demand, reconfigure they gmap key or configure it

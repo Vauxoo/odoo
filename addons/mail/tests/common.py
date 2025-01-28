@@ -4,6 +4,7 @@
 import base64
 import email
 import email.policy
+import logging
 import time
 
 from collections import defaultdict
@@ -18,9 +19,11 @@ from odoo.addons.bus.models.bus import ImBus, json_dump
 from odoo.addons.mail.models.mail_mail import MailMail
 from odoo.addons.mail.models.mail_message import Message
 from odoo.addons.mail.models.mail_notification import MailNotification
-from odoo.tests import common, new_test_user
+from odoo.tests import common, RecordCapturer, new_test_user
 from odoo.tools import email_normalize, formataddr, mute_logger, pycompat
 from odoo.tools.translate import code_translations
+
+_logger = logging.getLogger(__name__)
 
 mail_new_test_user = partial(new_test_user, context={'mail_create_nolog': True,
                                                      'mail_create_nosubscribe': True,
@@ -138,6 +141,11 @@ class MockEmail(common.BaseCase, MockSmtplibCase):
         if not msg_id:
             msg_id = "<%.7f-test@iron.sky>" % (time.time())
 
+        if kwargs.pop('debug_log', False):
+            _logger.info(
+                '-- Simulate routing --\n-From: %s (Return-Path %s)\n-To: %s / CC: %s\n-Message-Id: %s / Extra: %s',
+                email_from, return_path, to, cc, msg_id, extra,
+            )
         mail = self.format(template, to=to, subject=subject, cc=cc,
                            return_path=return_path, extra=extra,
                            email_from=email_from, msg_id=msg_id,
@@ -148,6 +156,28 @@ class MockEmail(common.BaseCase, MockSmtplibCase):
     def gateway_reply_wrecord(self, template, record, use_in_reply_to=True):
         """ Deprecated, remove in 14.4 """
         return self.gateway_mail_reply_wrecord(template, record, use_in_reply_to=use_in_reply_to)
+
+    def gateway_mail_reply_last_email(self, template, force_to=False, force_rp=False, extra=False,
+                                      debug_log=False):
+        """ Tool to automatically reply to last outgoing mail.
+
+        :param str force_to: simulate a forwarding (which forces the To);
+        :param str force_rp: force return-path;
+        """
+        self.assertEqual(len(self._mails), 1)
+        mail = self._mails[0]
+        extra = f'{extra}\n' if extra else ''
+        extra = f'{extra}References:\r\n\t{mail["message_id"]}'
+        with RecordCapturer(self.env['mail.message'], []) as capture_messages, \
+             self.mock_mail_gateway():
+            self.format_and_process(
+                template, mail['email_to'][0], force_to or mail['reply_to'],
+                extra=extra,
+                return_path=force_rp or mail['email_to'][0],
+                subject=f'Re: {mail["subject"]}',
+                debug_log=debug_log,
+            )
+        return capture_messages
 
     def gateway_mail_reply_wrecord(self, template, record, use_in_reply_to=True,
                                    target_model=None, target_field=None):
@@ -368,6 +398,14 @@ class MockEmail(common.BaseCase, MockSmtplibCase):
             sent_email = next((mail for mail in sent_emails if mail['subject'] == subject), False)
         else:
             sent_email = sent_emails[0] if sent_emails else False
+
+        debug_info = ''
+        if not sent_email:
+            debug_info = '\n-'.join('From: %s-To: %s' % (mail['email_from'], mail['email_to']) for mail in self._mails)
+        self.assertTrue(
+            bool(sent_email),
+            f'Expected mail from {email_from} to {emails_to} not found in {debug_info}'
+        )
         return sent_email
 
     # ------------------------------------------------------------
@@ -462,7 +500,7 @@ class MockEmail(common.BaseCase, MockSmtplibCase):
         for email_to in emails:
             found_mail = self._find_mail_mail_wemail(
                 email_to, status, mail_message=mail_message,
-                author=author, email_from=fields_values.get('email_from')
+                author=author, email_from=(fields_values or {}).get('email_from')
             )
             self.assertTrue(bool(found_mail))
             self._assertMailMail(
@@ -612,13 +650,6 @@ class MockEmail(common.BaseCase, MockSmtplibCase):
             expected['email_from'],
             expected['email_to'],
             values.get('subject'),
-        )
-        debug_info = ''
-        if not sent_mail:
-            debug_info = '-'.join('From: %s-To: %s' % (mail['email_from'], mail['email_to']) for mail in self._mails)
-        self.assertTrue(
-            bool(sent_mail),
-            'Expected mail from %s to %s not found in %s' % (expected['email_from'], expected['email_to'], debug_info)
         )
 
         # assert values

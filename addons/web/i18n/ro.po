@@ -9,6 +9,10 @@
 # Claudia Baisan, 2023
 # Foldi Robert <foldirobert@nexterp.ro>, 2023
 # Cozmin Candea <office@terrabit.ro>, 2024
+# Corina Calin, 2024
+# Alin Miclea, 2024
+# Fekete Mihai <mihai.fekete@forestandbiomass.ro>, 2024
+# Lyall Kindmurr, 2024
 # Dorin Hongu <dhongu@gmail.com>, 2024
 # 
 msgid ""
@@ -1681,7 +1685,7 @@ msgstr "Creează și editează..."
 #: code:addons/web/static/src/views/fields/x2many/x2many_field.xml:0
 #, python-format
 msgid "Create record"
-msgstr ""
+msgstr "Creați o înregistrare"
 
 #. module: web
 #. odoo-javascript
@@ -3724,7 +3728,7 @@ msgstr ""
 #: code:addons/web/static/src/views/form/form_error_dialog/form_error_dialog.xml:0
 #, python-format
 msgid "Oh snap!"
-msgstr "O, rahat!"
+msgstr "O, nu!"
 
 #. module: web
 #. odoo-javascript
@@ -4112,8 +4116,8 @@ msgstr "Actualizați traducerile:"
 msgid ""
 "Please use the copy button to report the error to your support service."
 msgstr ""
-"Vă rog să utilizați butonul de copiere pentru a raporta eroarea catre "
-"servicul de suport."
+"Vă rog să utilizați butonul de copiere pentru a raporta eroarea către serviciul de suport. \n"
+"Apăsați pe butonul de alături pentru a copia eroare în clipboard și apoi folosiți Ctrl+V în fereastra de conversație cu echipa de suport. Nu transmiteți o poză cu aceasta fereastră."
 
 #. module: web
 #: model_terms:ir.ui.view,arch_db:web.report_invoice_wizard_preview
@@ -4765,7 +4769,7 @@ msgstr ""
 #: code:addons/web/static/src/legacy/xml/base.xml:0
 #, python-format
 msgid "Search a field..."
-msgstr ""
+msgstr "Căutați un câmp..."
 
 #. module: web
 #. odoo-javascript
@@ -4898,6 +4902,13 @@ msgstr "Selectează tot"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/legacy/xml/base.xml:0
+#, python-format
+msgid "Select all records matching the search"
+msgstr ""
+
+#. module: web
+#. openerp-web
 #: code:addons/web/static/src/legacy/xml/base.xml:0
 #: code:addons/web/static/src/views/view_dialogs/export_data_dialog.xml:0
 #, python-format
@@ -5919,6 +5930,7 @@ msgstr "Comutator de vizualizare"
 #: code:addons/web/static/src/legacy/js/views/list/list_controller.js:0
 #: code:addons/web/static/src/legacy/xml/base.xml:0
 #: code:addons/web/static/src/legacy/xml/base.xml:0
+#: code:addons/web/static/src/legacy/xml/control_panel.xml:0
 #: code:addons/web/static/src/search/favorite_menu/favorite_menu.js:0
 #: code:addons/web/static/src/views/fields/domain/domain_field.xml:0
 #: code:addons/web/static/src/views/fields/domain/domain_field.xml:0

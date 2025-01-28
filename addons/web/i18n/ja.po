@@ -13,7 +13,7 @@
 # Tim Siu Lai <tl@roomsfor.hk>, 2023
 # Tatsuki Kanda, 2023
 # Wil Odoo, 2024
-# Junko Augias, 2024
+# Junko Augias, 2025
 # 
 msgid ""
 msgstr ""
@@ -21,7 +21,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-25 10:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:55+0000\n"
-"Last-Translator: Junko Augias, 2024\n"
+"Last-Translator: Junko Augias, 2025\n"
 "Language-Team: Japanese (https://app.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -640,7 +640,7 @@ msgstr "条件追加"
 #: code:addons/web/static/src/views/list/list_renderer.xml:0
 #, python-format
 msgid "Add a line"
-msgstr "明細追加"
+msgstr "行を追加"
 
 #. module: web
 #. odoo-javascript
@@ -2385,7 +2385,7 @@ msgstr "項目："
 #: code:addons/web/static/src/views/view_dialogs/export_data_dialog.xml:0
 #, python-format
 msgid "Fields to export"
-msgstr "エクスポートする項目"
+msgstr "エクスポートするフィールド"
 
 #. module: web
 #. odoo-javascript
@@ -2791,7 +2791,7 @@ msgstr "無効な項目連携"
 msgid ""
 "Invalid field chain. You may have used a non-existing field name or followed"
 " a non-relational field."
-msgstr "無効なフィールド・チェーンです。存在しないフィールド名を使用したか、関連性のないフィールドをたどった可能性があります。"
+msgstr "無効なフィールド・チェーンです。存在しないフィールド名を使用したか、非リレーショナルフィールドをたどった可能性があります。"
 
 #. module: web
 #. odoo-javascript
@@ -4868,6 +4868,13 @@ msgstr "全て選択"
 #. module: web
 #. odoo-javascript
 #: code:addons/web/static/src/legacy/xml/base.xml:0
+#, python-format
+msgid "Select all records matching the search"
+msgstr "検索条件に一致するレコードを全て選択"
+
+#. module: web
+#. openerp-web
+#: code:addons/web/static/src/legacy/xml/base.xml:0
 #: code:addons/web/static/src/views/view_dialogs/export_data_dialog.xml:0
 #, python-format
 msgid "Select field"
@@ -5874,6 +5881,7 @@ msgstr "サブスクリプションはすでにデータベースにリンクさ
 #: code:addons/web/static/src/legacy/js/views/list/list_controller.js:0
 #: code:addons/web/static/src/legacy/xml/base.xml:0
 #: code:addons/web/static/src/legacy/xml/base.xml:0
+#: code:addons/web/static/src/legacy/xml/control_panel.xml:0
 #: code:addons/web/static/src/search/favorite_menu/favorite_menu.js:0
 #: code:addons/web/static/src/views/fields/domain/domain_field.xml:0
 #: code:addons/web/static/src/views/fields/domain/domain_field.xml:0
@@ -6331,7 +6339,7 @@ msgstr "時間"
 #: code:addons/web/static/src/legacy/js/widgets/domain_selector.js:0
 #, python-format
 msgid "in"
-msgstr "に"
+msgstr ";"
 
 #. module: web
 #. odoo-javascript

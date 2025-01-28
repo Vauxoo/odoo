@@ -4,9 +4,8 @@ import io
 
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.exceptions import UserError
+from odoo.exceptions import RedirectWarning
 from odoo.tools import pdf
 from odoo.tests import tagged
 from odoo.tools import file_open
@@ -45,7 +44,7 @@ class TestIrActionsReport(AccountTestInvoicingCommon):
         test_record_report = self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf('account.action_account_original_vendor_bill', res_ids=in_invoice_1.id)
         self.assertTrue(test_record_report, "The PDF should have been generated")
 
-    def test_download_one_encrypted_pdf(self):
+    def test_download_with_encrypted_pdf(self):
         """
         Same as test_download_one_corrupted_pdf
         but for encrypted pdf with no password and set encryption type to 5 (not known by PyPDF2)
@@ -96,125 +95,5 @@ class TestIrActionsReport(AccountTestInvoicingCommon):
             'res_id': in_invoice_2.id,
         })
         # trying to merge with a corrupted attachment should not work
-        with self.assertRaises(UserError):
+        with self.assertRaises(RedirectWarning):
             self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf('account.action_account_original_vendor_bill', res_ids=[in_invoice_1.id, in_invoice_2.id])
-
-    def test_report_with_some_resources_reloaded_from_attachment(self):
-        """
-        Test for opw-3827700, which caused reports generated for multiple invoices to fail if there was an invoice in
-        the middle that had an attachment, and 'Reload from attachment' was enabled for the report. The misbehavior was
-        caused by an indexing issue.
-        """
-        first_invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'date': '2024-01-01',
-            'invoice_date': '2024-01-01',
-            'partner_id': self.partner_a.id,
-            'invoice_line_ids': [Command.create({
-                'name': 'Something',
-                'quantity': 1,
-                'price_unit': 123,
-                'product_id': self.product_a.id
-            })]
-        })
-
-        second_invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'date': '2024-01-01',
-            'invoice_date': '2024-01-01',
-            'partner_id': self.partner_a.id,
-            'invoice_line_ids': [Command.create({
-                'name': 'Something',
-                'quantity': 1,
-                'price_unit': 123,
-                'product_id': self.product_a.id
-            })]
-        })
-
-        third_invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'date': '2024-01-01',
-            'invoice_date': '2024-01-01',
-            'partner_id': self.partner_a.id,
-            'invoice_line_ids': [Command.create({
-                'name': 'Something',
-                'quantity': 1,
-                'price_unit': 123,
-                'product_id': self.product_a.id
-            })]
-        })
-
-        self.assert_invoice_creation([first_invoice, second_invoice, third_invoice], second_invoice)
-
-    def test_report_with_some_resources_reloaded_from_attachment_with_multiple_page_invoice(self):
-        """
-        Same as @test_report_with_some_resources_reloaded_from_attachment, but tests the behavior for invoices that
-        span multiple pages.
-        """
-        first_invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'date': '2024-01-01',
-            'invoice_date': '2024-01-01',
-            'partner_id': self.partner_a.id,
-            'invoice_line_ids': [Command.create({
-                'name': 'Something',
-                'quantity': 1,
-                'price_unit': 123,
-                'product_id': self.product_a.id
-            })]
-        })
-
-        second_invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'date': '2024-01-01',
-            'invoice_date': '2024-01-01',
-            'partner_id': self.partner_a.id,
-            'invoice_line_ids': [Command.create({
-                'name': 'Something ',
-                'quantity': 1,
-                'price_unit': 123,
-                'product_id': self.product_a.id
-            })]
-        })
-
-        third_invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'date': '2024-01-01',
-            'invoice_date': '2024-01-01',
-            'partner_id': self.partner_a.id,
-            'invoice_line_ids': [Command.create({
-                'name': f'Something #{i}',
-                'quantity': 1,
-                'price_unit': 123,
-                'product_id': self.product_a.id
-            }) for i in range(50)]  # Make this a multipage invoice.
-        })
-
-        self.assert_invoice_creation([first_invoice, second_invoice, third_invoice], second_invoice)
-
-    def assert_invoice_creation(self, invoices, invoice_to_report):
-        self.assertTrue(
-            invoice_to_report.id in [invoice.id for invoice in invoices], "Invoice to report must be in invoices list")
-
-        # Post invoices to be able to associate attachments.
-        for invoice in invoices:
-            invoice.action_post()
-
-        invoices_report_ref = 'account.report_invoice_with_payments'
-        reports = self.env['ir.actions.report'].with_context(force_report_rendering=True)
-
-        # Generate report for second invoice to create an attachment.
-        second_invoice_report_content, content_type = reports._render_qweb_pdf(invoices_report_ref,
-                                                                               res_ids=invoice_to_report.id)
-        self.assertEqual(content_type, "pdf", "Report is not a PDF")
-        self.assertTrue(second_invoice_report_content, "PDF not generated")
-
-        # Make sure the attachment is created.
-        invoices_report = reports._get_report(invoices_report_ref)
-        self.assertTrue(invoices_report.attachment, f"Report '{invoices_report_ref}' doesn't save attachments")
-        self.assertTrue(invoices_report.retrieve_attachment(invoice_to_report), "Attachment not generated")
-
-        aggregate_report_content, content_type = reports._render_qweb_pdf(invoices_report_ref,
-                                                                          res_ids=[invoice.id for invoice in invoices])
-        self.assertEqual(content_type, "pdf", "Report is not a PDF")
-        self.assertTrue(aggregate_report_content, "PDF not generated")

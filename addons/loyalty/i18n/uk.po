@@ -1010,6 +1010,13 @@ msgstr "Термін дії"
 
 #. module: loyalty
 #. odoo-python
+#: code:addons/loyalty/models/loyalty_card.py:0
+#, python-format
+msgid "Expiration date cannot be set on a loyalty card."
+msgstr ""
+
+#. module: loyalty
+#. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: code:addons/loyalty/models/loyalty_program.py:0
 #, python-format
@@ -1958,6 +1965,13 @@ msgstr "З промокодом"
 #, python-format
 msgid "You can not delete a program in an active state"
 msgstr "Ви не можете видалити програму в активному стані"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
+msgid "The reward description field cannot be empty."
+msgstr "Поле опису винагороди не може бути порожнім."
 
 #. module: loyalty
 #. odoo-python

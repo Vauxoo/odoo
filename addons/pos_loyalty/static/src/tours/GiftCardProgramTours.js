@@ -67,3 +67,31 @@ PosLoyalty.check.orderTotalIs("50.00");
 PosLoyalty.check.pointsAwardedAre("100"),
 PosLoyalty.exec.finalizeOrder("Cash", "50");
 Tour.register("PosLoyaltyPointsGiftcard", { test: true, url: "/pos/web" }, getSteps());
+
+startSteps();
+ProductScreen.do.confirmOpeningPopup();
+ProductScreen.do.clickHomeCategory();
+ProductScreen.do.clickDisplayedProduct('Gift Card');
+TextInputPopup.check.isShown();
+TextInputPopup.do.inputText('044123456');
+TextInputPopup.do.clickConfirm();
+PosLoyalty.check.orderTotalIs('50.00');
+PosLoyalty.exec.finalizeOrder('Cash', '50');
+ProductScreen.do.clickDisplayedProduct("Test Product A");
+PosLoyalty.do.enterCode("044123456");
+PosLoyalty.check.orderTotalIs("50.00");
+ProductScreen.check.checkTaxAmount("-6.52");
+Tour.register("PosLoyaltyGiftCardTaxes", { test: true }, getSteps());
+
+startSteps();
+ProductScreen.do.confirmOpeningPopup();
+ProductScreen.do.clickHomeCategory();
+ProductScreen.do.clickDisplayedProduct('Gift Card');
+TextInputPopup.check.isShown();
+TextInputPopup.do.inputText('044123456');
+TextInputPopup.do.clickConfirm();
+PosLoyalty.check.orderTotalIs('0.00');
+ProductScreen.do.pressNumpad("Price 5");
+PosLoyalty.check.orderTotalIs('5.00');
+PosLoyalty.exec.finalizeOrder('Cash', '5');
+Tour.register("PosLoyaltyGiftCardNoPoints", { test: true }, getSteps());

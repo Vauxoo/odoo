@@ -1130,6 +1130,17 @@ msgstr "ยกเลิก"
 
 #. module: mrp
 #. odoo-python
+#: code:addons/mrp/models/product.py:0
+#, python-format
+msgid ""
+"Cannot compute days to prepare due to missing route info for at least 1 "
+"component or for the final product."
+msgstr ""
+"ไม่สามารถคำนวณวันในการเตรียมการได้เนื่องจากขาดข้อมูลเส้นทางสำหรับส่วนประกอบอย่างน้อย"
+" 1 ชิ้นหรือสำหรับผลิตภัณฑ์ขั้นสุดท้าย"
+
+#. module: mrp
+#. odoo-python
 #: code:addons/mrp/models/mrp_production.py:0
 #, python-format
 msgid "Cannot delete a manufacturing order in done state."

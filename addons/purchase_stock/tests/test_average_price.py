@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.fields import Date
 from odoo.tests import tagged, Form
 
 import time
@@ -254,3 +255,85 @@ class TestAveragePrice(ValuationReconciliationTestCommon):
         picking.button_validate()
 
         self.assertEqual(avco_product.avg_cost, 300)
+
+    def test_no_compensatory_svl_from_asymmetrical_rounding(self):
+        """ Ensure that a purchase order for a high quantity of some product using avg costing does
+        not calculate the price unit asymmetrically for the order(line) and the invoice AML.
+        """
+        self.stock_account_product_categ.property_cost_method = 'average'
+        avco_product = self.env['product.product'].create({
+            'name': 'test_rounding_in_valuation product',
+            'type': 'product',
+            'categ_id': self.stock_account_product_categ.id,
+            'purchase_method': 'purchase',
+            'standard_price': 2.0,
+        })
+
+        incl_tax = self.env['account.tax'].create({
+            'name': 'test_rounding_in_valuation tax',
+            'type_tax_use': 'purchase',
+            'amount_type': 'percent',
+            'amount': 10,
+            'price_include': True,
+            'invoice_repartition_line_ids': [
+                (0, 0, {'repartition_type': 'base'}),
+                (0, 0, {
+                    'repartition_type': 'tax',
+                    'factor_percent': 100,
+                    'account_id': self.env['account.account'].search([('name', '=', 'Tax Paid')], limit=1).id,
+                }),
+            ],
+            'include_base_amount': False,
+        })
+
+        po = self.env['purchase.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [(0, 0, {
+                'product_id': avco_product.id,
+                'product_qty': 999,
+                'taxes_id': [(6, 0, [incl_tax.id])],
+            })],
+        })
+        po.button_confirm()
+
+        po.picking_ids.move_ids.quantity_done = 999
+        po.picking_ids.button_validate()
+        po.action_create_invoice()
+        po.invoice_ids[0].invoice_date = time.strftime('%Y-%m-%d')
+        po.invoice_ids[0].action_post()
+
+        self.assertFalse(po.picking_ids.move_ids.stock_valuation_layer_ids.stock_valuation_layer_ids)
+
+    def test_bill_discount_ordered_quantity_control_policy(self):
+        """
+        """
+        self.stock_account_product_categ.property_cost_method = 'average'
+        avco_product = self.env['product.product'].create({
+            'name': 'test_rounding_in_valuation product',
+            'type': 'product',
+            'categ_id': self.stock_account_product_categ.id,
+            'purchase_method': 'purchase',
+        })
+        purchase_order = self.env['purchase.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [(0, 0, {
+                'product_id': avco_product.id,
+                'product_qty': 1,
+                'price_unit': 10,
+            })],
+        })
+        purchase_order.button_confirm()
+        purchase_order.action_create_invoice()
+        bill = purchase_order.invoice_ids[0]
+        bill.invoice_line_ids[0].discount = 10
+        bill.invoice_date = Date.today()
+        bill.action_post()
+        receipt = purchase_order.picking_ids[0]
+        receipt.move_ids[0].quantity_done = 1
+        receipt.button_validate()
+        self.assertEqual(sum(self.env['stock.valuation.layer'].search([
+                ('product_id', '=', avco_product.id),
+            ]).mapped('value')),
+            9,
+        )
+        self.assertEqual(avco_product.standard_price, 9)

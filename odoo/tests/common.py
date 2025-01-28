@@ -47,6 +47,7 @@ from xmlrpc import client as xmlrpclib
 import requests
 import werkzeug.urls
 from lxml import etree, html
+from urllib3.util import Url, parse_url
 
 import odoo
 from odoo import api
@@ -873,7 +874,7 @@ class ChromeBrowser:
         self.screencast_frames = []
         os.makedirs(self.screenshots_dir, exist_ok=True)
 
-        self.window_size = test_class.browser_size
+        self.window_size = test_class.browser_size.replace('x', ',')
         self.touch_enabled = test_class.touch_enabled
         self.sigxcpu_handler = None
         self._chrome_start()
@@ -904,6 +905,19 @@ class ChromeBrowser:
         self._websocket_send('Runtime.enable')
         self._logger.info('Chrome headless enable page notifications')
         self._websocket_send('Page.enable')
+        self._websocket_send('Page.setDownloadBehavior', params={
+            'behavior': 'deny',
+            'eventsEnabled': False,
+        })
+        self._websocket_send('Emulation.setFocusEmulationEnabled', params={'enabled': True})
+        emulated_device = {
+            'mobile': False,
+            'width': None,
+            'height': None,
+            'deviceScaleFactor': 1,
+        }
+        emulated_device['width'], emulated_device['height'] = [int(size) for size in self.window_size.split(",")]
+        self._websocket_request('Emulation.setDeviceMetricsOverride', params=emulated_device)
         if os.name == 'posix':
             self.sigxcpu_handler = signal.getsignal(signal.SIGXCPU)
             signal.signal(signal.SIGXCPU, self.signal_handler)
@@ -915,11 +929,12 @@ class ChromeBrowser:
             os._exit(0)
 
     def stop(self):
-        if self.chrome_pid is not None:
+        if self.ws is not None:
             self._logger.info("Closing chrome headless with pid %s", self.chrome_pid)
             self._websocket_send('Browser.close')
             self._logger.info("Closing websocket connection")
             self.ws.close()
+        if self.chrome_pid is not None:
             self._logger.info("Terminating chrome headless with pid %s", self.chrome_pid)
             os.kill(self.chrome_pid, signal.SIGTERM)
         if self.user_data_dir and os.path.isdir(self.user_data_dir) and self.user_data_dir != '/':
@@ -1010,7 +1025,6 @@ class ChromeBrowser:
             '--disable-translate': '',
             # required for tours that use Youtube autoplay conditions (namely website_slides' "course_tour")
             '--autoplay-policy': 'no-user-gesture-required',
-            '--window-size': self.window_size,
             '--remote-debugging-address': HOST,
             '--remote-debugging-port': str(self.remote_debugging_port),
             '--no-sandbox': '',
@@ -1037,12 +1051,24 @@ class ChromeBrowser:
     def _find_websocket(self):
         version = self._json_command('version')
         self._logger.info('Browser version: %s', version['Browser'])
-        infos = self._json_command('', get_key=0)  # Infos about the first tab
-        self.ws_url = infos['webSocketDebuggerUrl']
-        self.dev_tools_frontend_url = infos.get('devtoolsFrontendUrl')
+
+        start = time.time()
+        while (time.time() - start) < 5.0:
+            self.ws_url, self.dev_tools_frontend_url = next((
+                (target['webSocketDebuggerUrl'], target['devtoolsFrontendUrl'])
+                for target in self._json_command('')
+                if target['type'] == 'page'
+                if target['url'] == 'about:blank'
+            ), None)
+            if self.ws_url:
+                break
+            time.sleep(0.1)
+        else:
+            self.stop()
+            raise unittest.SkipTest("Error during Chrome connection: never found 'page' target")
         self._logger.info('Chrome headless temporary user profile dir: %s', self.user_data_dir)
 
-    def _json_command(self, command, timeout=3, get_key=None):
+    def _json_command(self, command, timeout=3):
         """Queries browser state using JSON
 
         Available commands:
@@ -1078,11 +1104,7 @@ class ChromeBrowser:
             try:
                 r = requests.get(url, timeout=3)
                 if r.ok:
-                    res = r.json()
-                    if get_key is None:
-                        return res
-                    else:
-                        return res[get_key]
+                    return r.json()
             except requests.ConnectionError as e:
                 failure_info = str(e)
                 message = 'Connection Error while trying to connect to Chrome debugger'
@@ -1090,8 +1112,7 @@ class ChromeBrowser:
                 failure_info = str(e)
                 message = 'Connection Timeout while trying to connect to Chrome debugger'
                 break
-            except (KeyError, IndexError):
-                message = 'Key "%s" not found in json result "%s" after connecting to Chrome debugger' % (get_key, res)
+
             time.sleep(delay)
             timeout -= delay
             delay = delay * 1.5
@@ -1326,9 +1347,13 @@ which leads to stray network requests and inconsistencies."""
 
     def take_screenshot(self, prefix='sc_', suffix=None):
         def handler(f):
-            base_png = f.result(timeout=0)['data']
+            try:
+                base_png = f.result(timeout=0)['data']
+            except Exception as e:
+                self._logger.runbot("Couldn't capture screenshot: %s", e)
+                return
             if not base_png:
-                self._logger.warning("Couldn't capture screenshot: expected image data, got ?? error ??")
+                self._logger.runbot("Couldn't capture screenshot: expected image data, got %r", base_png)
                 return
 
             decoded = base64.b64decode(base_png, validate=True)
@@ -1645,6 +1670,38 @@ class HttpCase(TransactionCase):
         self.xmlrpc_object = xmlrpclib.ServerProxy(self.xmlrpc_url + 'object', transport=Transport(self.cr))
         # setup an url opener helper
         self.opener = Opener(self.cr)
+
+    def parse_http_location(self, location):
+        """ Parse a Location http header typically found in 201/3xx
+        responses, return the corresponding Url object. The scheme/host
+        are taken from ``base_url()`` in case they are missing from the
+        header.
+
+        https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Url
+        """
+        if not location:
+            return Url()
+        base_url = parse_url(self.base_url())
+        url = parse_url(location)
+        return Url(
+            scheme=url.scheme or base_url.scheme,
+            auth=url.auth or base_url.auth,
+            host=url.host or base_url.host,
+            port=url.port or base_url.port,
+            path=url.path,
+            query=url.query,
+            fragment=url.fragment,
+        )
+
+    def assertURLEqual(self, test_url, truth_url, message=None):
+        """ Assert that two URLs are equivalent. If any URL is missing
+        a scheme and/or host, assume the same scheme/host as base_url()
+        """
+        self.assertEqual(
+            self.parse_http_location(test_url).url,
+            self.parse_http_location(truth_url).url,
+            message,
+        )
 
     @classmethod
     def start_browser(cls):

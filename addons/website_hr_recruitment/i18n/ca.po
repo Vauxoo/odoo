@@ -7,12 +7,12 @@
 # Jonatan Gk, 2022
 # Sandra Franch <sandra.franch@upc.edu>, 2022
 # Arnau Ros, 2022
-# Quim - eccit <quim@eccit.com>, 2022
+# Quim - coopdevs <quim.rebull@coopdevs.org>, 2022
 # Pere Martínez, 2022
 # Josep Anton Belchi, 2022
 # Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
 # Martin Trigaux, 2022
-# Harcogourmet, 2022
+# Xavier, 2022
 # José Cabrera Lozano <jose.cabrera@edukative.es>, 2022
 # CristianCruzParra, 2022
 # RGB Consulting <odoo@rgbconsulting.com>, 2022
@@ -35,6 +35,22 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: website_hr_recruitment
+#. odoo-python
+#: code:addons/website_hr_recruitment/models/hr_job.py:0
+#, python-format
+msgid ""
+"\n"
+"            <span class=\"text-muted small\">Time to Answer</span>\n"
+"            <h6>2 open days</h6>\n"
+"            <span class=\"text-muted small\">Process</span>\n"
+"            <h6>1 Phone Call</h6>\n"
+"            <h6>1 Onsite Interview</h6>\n"
+"            <span class=\"text-muted small\">Days to get an Offer</span>\n"
+"            <h6>4 Days after Interview</h6>\n"
+"        "
+msgstr ""
 
 #. module: website_hr_recruitment
 #. odoo-python
@@ -840,6 +856,11 @@ msgstr "p. ex. https://www.linkedin.com/in/fpodoo/"
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.index
 msgid "for job opportunities."
 msgstr "per oportunitats de treball."
+
+#. module: website_hr_recruitment
+#: model_terms:ir.ui.view,arch_db:website_hr_recruitment.index
+msgid "open position"
+msgstr ""
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.index

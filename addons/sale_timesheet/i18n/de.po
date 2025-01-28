@@ -3,10 +3,10 @@
 # 	* sale_timesheet
 # 
 # Translators:
-# Friederike Fasterling-Nesselbosch, 2022
 # b4d8887ced18b222d41dc1101b082e15, 2022
 # Andreas Jonderko <a.jonderko@gastronovi.com>, 2022
 # Martin Trigaux, 2023
+# Friederike Fasterling-Nesselbosch, 2024
 # Larissa Manderfeld, 2024
 # 
 msgid ""
@@ -736,12 +736,17 @@ msgstr "Marge"
 #. odoo-python
 #: code:addons/sale_timesheet/models/project.py:0
 #: model:ir.model.fields.selection,name:sale_timesheet.selection__account_analytic_line__timesheet_invoice_type__other_costs
-#: model:ir.model.fields.selection,name:sale_timesheet.selection__account_analytic_line__timesheet_invoice_type__other_revenues
 #: model:ir.model.fields.selection,name:sale_timesheet.selection__timesheets_analysis_report__timesheet_invoice_type__other_costs
+msgid "Other costs"
+msgstr "Andere Kosten"
+
+#. module: sale_timesheet
+#. odoo-python
+#: code:addons/sale_timesheet/models/project.py:0
+#: model:ir.model.fields.selection,name:sale_timesheet.selection__account_analytic_line__timesheet_invoice_type__other_revenues
 #: model:ir.model.fields.selection,name:sale_timesheet.selection__timesheets_analysis_report__timesheet_invoice_type__other_revenues
-#, python-format
-msgid "Materials"
-msgstr "Materialien"
+msgid "Other revenues"
+msgstr "Sonstige Einnahmen"
 
 #. module: sale_timesheet
 #: model:ir.model.fields,field_description:sale_timesheet.field_sale_order_line__qty_delivered_method
@@ -1238,6 +1243,17 @@ msgid ""
 msgstr ""
 "Das Produkt %s wird von der Zeiterfassungsapp benötigt und kann weder "
 "archiviert noch gelöscht werden."
+
+#. module: sale_timesheet
+#. odoo-python
+#: code:addons/sale_timesheet/models/product.py:0
+#, python-format
+msgid ""
+"The %s product is required by the Timesheets app and cannot be linked to a "
+"company."
+msgstr ""
+"Das Produkt %s wird von der Zeiterfassungsapp benötigt und kann nicht mit "
+"einem Unternehmen verknüpft werden."
 
 #. module: sale_timesheet
 #. odoo-python

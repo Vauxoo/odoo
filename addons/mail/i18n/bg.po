@@ -3,7 +3,7 @@
 # 	* mail
 # 
 # Translators:
-# Nikola Iliev, 2023
+# KeyVillage, 2023
 # Vladimir Petrov <vladimir.petrov@gmail.com>, 2023
 # Александра Николова <alexandra1nikolova@gmail.com>, 2023
 # Boyan Rabchev <boyan.rabchev@plana.solutions>, 2023
@@ -19,14 +19,22 @@
 # Maria Boyadjieva <marabo2000@gmail.com>, 2023
 # Albena Mincheva <albena_vicheva@abv.bg>, 2023
 # Martin Trigaux, 2023
+# Rumena Georgieva <rumena.georgieva@gmail.com>, 2024
+# Meglen Hadzhitsanchev, 2024
+# Elena Varbanova, 2024
+# Venelin Stoykov, 2024
+# Margarita Katzeva, 2024
+# Milena Georgieva, 2024
+# Petko Karamotchev, 2025
+# Veselina Slavkova, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-23 08:22+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
 "PO-Revision-Date: 2022-09-22 05:53+0000\n"
-"Last-Translator: Martin Trigaux, 2023\n"
+"Last-Translator: Veselina Slavkova, 2025\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1227,7 +1235,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/text_emojis.xml:0
 #, python-format
 msgid "Add an emoji"
-msgstr ""
+msgstr "Дибавете емотикона"
 
 #. module: mail
 #. odoo-javascript
@@ -1429,8 +1437,8 @@ msgid "Animals & Nature"
 msgstr ""
 
 #. module: mail
-#. odoo-python
 #. odoo-javascript
+#. odoo-python
 #: code:addons/mail/models/mail_channel.py:0
 #: code:addons/mail/static/src/components/message/message.xml:0
 #: code:addons/mail/static/src/models/message.js:0
@@ -1674,8 +1682,21 @@ msgid "Auto subscription"
 msgstr "Автоматичен абобамент"
 
 #. module: mail
+#: model:ir.model.fields.selection,name:mail.selection__mail_compose_message__message_type__auto_comment
+#: model:ir.model.fields.selection,name:mail.selection__mail_message__message_type__auto_comment
+msgid "Automated Targeted Notification"
+msgstr ""
+
+#. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity__automated
 msgid "Automated activity"
+msgstr ""
+
+#. module: mail
+#. odoo-javascript
+#: code:addons/mail/static/src/models/message.js:0
+#, python-format
+msgid "Automated message"
 msgstr ""
 
 #. module: mail
@@ -1701,22 +1722,22 @@ msgstr "Аватар"
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_guest__avatar_1024
 msgid "Avatar 1024"
-msgstr ""
+msgstr "Аватар 1024"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_guest__avatar_128
 msgid "Avatar 128"
-msgstr ""
+msgstr "Аватар 128"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_guest__avatar_256
 msgid "Avatar 256"
-msgstr ""
+msgstr "Аватар 256"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_guest__avatar_512
 msgid "Avatar 512"
-msgstr ""
+msgstr "Аватар 512"
 
 #. module: mail
 #. odoo-javascript
@@ -1759,7 +1780,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "BACK"
-msgstr ""
+msgstr "ОБРАТНО"
 
 #. module: mail
 #. odoo-javascript
@@ -1964,7 +1985,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_compose_message__can_edit_body
 #: model:ir.model.fields,field_description:mail.field_mail_composer_mixin__can_edit_body
 msgid "Can Edit Body"
-msgstr ""
+msgstr "Може да редактира основното съдържание"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_resend_message__can_resend
@@ -2379,9 +2400,11 @@ msgstr "Фирми"
 
 #. module: mail
 #. odoo-javascript
+#. odoo-python
 #: code:addons/mail/static/src/js/activity.js:0
 #: code:addons/mail/static/src/models/composer_view.js:0
 #: code:addons/mail/static/src/models/mail_template.js:0
+#: code:addons/mail/wizard/mail_compose_message.py:0
 #: model:ir.actions.act_window,name:mail.action_email_compose_message_wizard
 #: model_terms:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
 #, python-format
@@ -2717,7 +2740,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_alias__alias_bounced_content
 msgid "Custom Bounced Message"
-msgstr ""
+msgstr "Персонализирано отвхвърлено съобщение"
 
 #. module: mail
 #: model:ir.model.fields.selection,name:mail.selection__mail_template__template_category__custom_template
@@ -2811,7 +2834,7 @@ msgstr "Краен срок:"
 #: code:addons/mail/models/mail_activity.py:0
 #, python-format
 msgid "Deadline: %s"
-msgstr ""
+msgstr "Краен срок: %s"
 
 #. module: mail
 #. odoo-javascript
@@ -2902,7 +2925,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity_type__delay_from
 msgid "Delay Type"
-msgstr ""
+msgstr "Тип на забавяне"
 
 #. module: mail
 #. odoo-javascript
@@ -3033,7 +3056,7 @@ msgstr "Обсъждане"
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.res_users_settings_view_form
 msgid "Discuss sidebar"
-msgstr ""
+msgstr "Странична лента за дискусии"
 
 #. module: mail
 #: model:ir.model,name:mail.model_mail_channel
@@ -3443,6 +3466,9 @@ msgid ""
 "mass; only used when the reply is not logged in the original discussion "
 "thread."
 msgstr ""
+"Имейл адрес, към който ще бъдат пренасочвани отговорите при изпращане на "
+"масови имейли; използва се само когато отговорът не се записва в "
+"оригиналната тема на дискусията."
 
 #. module: mail
 #: model_terms:ir.actions.act_window,help:mail.mail_blacklist_action
@@ -3593,7 +3619,7 @@ msgstr "Европа"
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "European"
-msgstr ""
+msgstr "Европейски"
 
 #. module: mail
 #: model:ir.model.fields.selection,name:mail.selection__mail_alias__alias_contact__everyone
@@ -3647,7 +3673,10 @@ msgstr "Неуспешен"
 #. odoo-python
 #: code:addons/mail/models/mail_render_mixin.py:0
 #, python-format
-msgid "Failed to render QWeb template : %s)"
+msgid ""
+"Failed to render QWeb template : %s\n"
+"\n"
+"%s)"
 msgstr ""
 
 #. module: mail
@@ -4156,7 +4185,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_res_partner__has_message
 #: model:ir.model.fields,field_description:mail.field_res_users__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Има съобщение"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session__is_deaf
@@ -4204,6 +4233,7 @@ msgstr ""
 
 #. module: mail
 #. odoo-javascript
+#: code:addons/mail/static/src/components/chat_window_header/chat_window_header.xml:0
 #: code:addons/mail/static/src/components/thread_view_topbar/thread_view_topbar.xml:0
 #, python-format
 msgid "Hide Call Settings"
@@ -4211,7 +4241,6 @@ msgstr ""
 
 #. module: mail
 #. odoo-javascript
-#: code:addons/mail/static/src/components/chat_window_header/chat_window_header.xml:0
 #: code:addons/mail/static/src/components/chat_window_header/chat_window_header.xml:0
 #: code:addons/mail/static/src/components/thread_view_topbar/thread_view_topbar.xml:0
 #, python-format
@@ -4462,6 +4491,8 @@ msgid ""
 "If set, this content will automatically be sent out to unauthorized users "
 "instead of the default message."
 msgstr ""
+"Ако е зададено, това съдържание ще се изпраща автоматично на неупълномощени "
+"потребители вместо съобщението по подразбиране."
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_thread_blacklist__is_blacklisted
@@ -4471,6 +4502,8 @@ msgid ""
 "If the email address is on the blacklist, the contact won't receive mass "
 "mailing anymore, from any list"
 msgstr ""
+"Ако имейл адресът е в черния списък, контактът няма да получава групови "
+"съобщения от нито един списък"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_mail__reply_to_force_new
@@ -4753,7 +4786,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_compose_message__is_mail_template_editor
 #: model:ir.model.fields,field_description:mail.field_mail_composer_mixin__is_mail_template_editor
 msgid "Is Editor"
-msgstr ""
+msgstr "Е редактор"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_blacklist__message_is_follower
@@ -4784,12 +4817,12 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_res_users_settings__is_discuss_sidebar_category_channel_open
 msgid "Is discuss sidebar category channel open?"
-msgstr ""
+msgstr "Отворен ли е каналът на категорията за страничната лента за дискусии?"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_res_users_settings__is_discuss_sidebar_category_chat_open
 msgid "Is discuss sidebar category chat open?"
-msgstr ""
+msgstr "Отворен ли е чатът на категорията за страничната лента за дискусии?"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session__is_muted
@@ -5463,9 +5496,9 @@ msgstr ""
 
 #. module: mail
 #. odoo-javascript
-#: code:addons/mail/static/src/components/welcome_view/welcome_view.xml:0
+#: code:addons/mail/static/src/components/welcome_view/welcome_view.js:0
 #, python-format
-msgid "Logged as"
+msgid "Logged in as %s"
 msgstr ""
 
 #. module: mail
@@ -5580,7 +5613,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_composer_mixin__template_id
 msgid "Mail Template"
-msgstr ""
+msgstr "шаблон за имейл"
 
 #. module: mail
 #: model:res.groups,name:mail.group_mail_template_editor
@@ -6148,7 +6181,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_res_partner__my_activity_date_deadline
 #: model:ir.model.fields,field_description:mail.field_res_users__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "Краен срок за моята дейност"
 
 #. module: mail
 #. odoo-javascript
@@ -6568,7 +6601,7 @@ msgstr "Брой грешки"
 #: model:ir.model.fields,help:mail.field_res_partner__message_needaction_counter
 #: model:ir.model.fields,help:mail.field_res_users__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr ""
+msgstr "Брой съобщения, изискващи действие"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_blacklist__message_has_error_counter
@@ -6825,6 +6858,14 @@ msgid "Open Document"
 msgstr "Отворен документ"
 
 #. module: mail
+#. odoo-javascript
+#: code:addons/mail/static/src/components/attachment_card/attachment_card.xml:0
+#: code:addons/mail/static/src/components/attachment_card/attachment_card.xml:0
+#, python-format
+msgid "Open Link"
+msgstr ""
+
+#. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.view_mail_alias_form
 msgid "Open Parent Document"
 msgstr "Отворен основен документ"
@@ -6849,7 +6890,7 @@ msgstr ""
 #: code:addons/mail/static/src/components/chat_window_header/chat_window_header.xml:0
 #, python-format
 msgid "Open in Discuss"
-msgstr ""
+msgstr "Отваряне на дискусия"
 
 #. module: mail
 #. odoo-javascript
@@ -6863,7 +6904,7 @@ msgstr ""
 #: code:addons/mail/models/mail_template.py:0
 #, python-format
 msgid "Operation not supported"
-msgstr ""
+msgstr "Операцията не се поддържа"
 
 #. module: mail
 #. odoo-javascript
@@ -7623,7 +7664,7 @@ msgstr "Откажете"
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_bounce_catchall
 msgid "Regards,"
-msgstr ""
+msgstr "Поздрави,"
 
 #. module: mail
 #. odoo-javascript
@@ -7735,7 +7776,7 @@ msgstr "Премахнете този последовател"
 #: model:ir.model.fields,field_description:mail.field_mail_render_mixin__render_model
 #: model:ir.model.fields,field_description:mail.field_mail_template__render_model
 msgid "Rendering Model"
-msgstr ""
+msgstr "Модел на изобразяване"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_compose_message__reply_to_mode
@@ -8263,14 +8304,14 @@ msgstr ""
 #. module: mail
 #: model:ir.actions.act_window,name:mail.action_partner_mass_mail
 msgid "Send email"
-msgstr ""
+msgstr "Изпратете имейл"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/components/chatter_topbar/chatter_topbar.xml:0
 #, python-format
 msgid "Send message"
-msgstr ""
+msgstr "Изпратете съобщение"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_template_preview__email_from
@@ -8433,6 +8474,7 @@ msgstr ""
 
 #. module: mail
 #. odoo-javascript
+#: code:addons/mail/static/src/components/chat_window_header/chat_window_header.xml:0
 #: code:addons/mail/static/src/components/thread_view_topbar/thread_view_topbar.xml:0
 #, python-format
 msgid "Show Call Settings"
@@ -8447,7 +8489,6 @@ msgstr ""
 
 #. module: mail
 #. odoo-javascript
-#: code:addons/mail/static/src/components/chat_window_header/chat_window_header.xml:0
 #: code:addons/mail/static/src/components/chat_window_header/chat_window_header.xml:0
 #: code:addons/mail/static/src/components/thread_view_topbar/thread_view_topbar.xml:0
 #, python-format
@@ -8779,7 +8820,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model,name:mail.model_ir_config_parameter
 msgid "System Parameter"
-msgstr ""
+msgstr "Системни параметри"
 
 #. module: mail
 #. odoo-javascript
@@ -8999,6 +9040,9 @@ msgid ""
 "country format. You can use '/' to indicate that the partner is not subject "
 "to tax."
 msgstr ""
+"Данъчният идентификационен номер. Стойностите тук ще бъдат валидирани въз "
+"основа на формата за съответната държава. Можете да използвате '/' за да "
+"посочите, че партньорът не подлежи на данък."
 
 #. module: mail
 #. odoo-python
@@ -9151,6 +9195,13 @@ msgstr ""
 "(Вид документ: %s, операция: %s)"
 
 #. module: mail
+#. odoo-javascript
+#: code:addons/mail/static/src/models/blur_manager.js:0
+#, python-format
+msgid "The selfie segmentation library was not loaded"
+msgstr ""
+
+#. module: mail
 #. odoo-python
 #: code:addons/mail/models/fetchmail.py:0
 #, python-format
@@ -9212,6 +9263,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mail.res_partner_view_form_inherit_mail
 msgid "This email is blacklisted for mass mailings. Click to unblacklist."
 msgstr ""
+"Този имейл адрес е в черния списък за групови имейли. Кликнете, за да го "
+"премахнете от списъка."
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_blacklist__email
@@ -9231,6 +9284,8 @@ msgid ""
 "This field is used to search on email address as the primary email field can"
 " contain more than strictly an email address."
 msgstr ""
+"Това поле се използва за търсене по имейл адрес, тъй като полето за първичен"
+" имейл може да съдържа повече от един имейл адрес."
 
 #. module: mail
 #. odoo-javascript
@@ -9844,7 +9899,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mail.res_users_settings_view_form
 #: model_terms:ir.ui.view,arch_db:mail.res_users_settings_view_tree
 msgid "User Settings"
-msgstr ""
+msgstr "Потребителски настройки"
 
 #. module: mail
 #: model:ir.model,name:mail.model_res_users_settings_volumes
@@ -9927,14 +9982,6 @@ msgid ""
 msgstr ""
 
 #. module: mail
-#: code:addons/mail/models/mail_alias.py:0
-#, python-format
-msgid ""
-"Value for `mail.catchall.domain.allowed` cannot be validated.\n"
-"It should be a comma separated list of domains e.g. example.com,example.org."
-msgstr ""
-
-#. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
@@ -9954,6 +10001,15 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "VS button"
+msgstr ""
+
+#. module: mail
+#. odoo-python
+#: code:addons/mail/models/mail_alias.py:0
+#, python-format
+msgid ""
+"Value for `mail.catchall.domain.allowed` cannot be validated.\n"
+"It should be a comma separated list of domains e.g. example.com,example.org."
 msgstr ""
 
 #. module: mail
@@ -10144,7 +10200,7 @@ msgstr ""
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
 msgid "Write your message here..."
-msgstr ""
+msgstr "Напишете вашето съобщение тук..."
 
 #. module: mail
 #. odoo-python
@@ -13658,14 +13714,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ceremony"
-msgstr ""
+msgstr "церемония"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chain"
-msgstr ""
+msgstr "верига"
 
 #. module: mail
 #. odoo-javascript
@@ -13673,7 +13729,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chains"
-msgstr ""
+msgstr "вериги"
 
 #. module: mail
 #. odoo-javascript
@@ -13682,14 +13738,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chair"
-msgstr ""
+msgstr "стол"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "change room"
-msgstr ""
+msgstr "съблекалня"
 
 #. module: mail
 #. odoo-javascript
@@ -13734,7 +13790,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chart"
-msgstr ""
+msgstr "графика"
 
 #. module: mail
 #. odoo-javascript
@@ -13767,7 +13823,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "check"
-msgstr ""
+msgstr "проверка"
 
 #. module: mail
 #. odoo-javascript
@@ -13783,14 +13839,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "check mark"
-msgstr ""
+msgstr "знак за проверка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "check mark button"
-msgstr ""
+msgstr "бутон за знак за проверка"
 
 #. module: mail
 #. odoo-javascript
@@ -13851,7 +13907,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chemist"
-msgstr ""
+msgstr "химик"
 
 #. module: mail
 #. odoo-javascript
@@ -13859,7 +13915,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chemistry"
-msgstr ""
+msgstr "химия"
 
 #. module: mail
 #. odoo-javascript
@@ -13882,7 +13938,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cherries"
-msgstr ""
+msgstr "череши"
 
 #. module: mail
 #. odoo-javascript
@@ -13890,7 +13946,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cherry"
-msgstr ""
+msgstr "череша"
 
 #. module: mail
 #. odoo-javascript
@@ -13919,7 +13975,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chest"
-msgstr ""
+msgstr "шах"
 
 #. module: mail
 #. odoo-javascript
@@ -13927,7 +13983,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chestnut"
-msgstr ""
+msgstr "кестен"
 
 #. module: mail
 #. odoo-javascript
@@ -13950,7 +14006,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chick pea"
-msgstr ""
+msgstr "нахут"
 
 #. module: mail
 #. odoo-javascript
@@ -13959,14 +14015,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chicken"
-msgstr ""
+msgstr "пиле"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chickpea"
-msgstr ""
+msgstr "нахут"
 
 #. module: mail
 #. odoo-javascript
@@ -13975,7 +14031,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "child"
-msgstr ""
+msgstr "дете"
 
 #. module: mail
 #. odoo-javascript
@@ -13983,7 +14039,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "children crossing"
-msgstr ""
+msgstr "преминават деца"
 
 #. module: mail
 #. odoo-javascript
@@ -14005,7 +14061,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chipmunk"
-msgstr ""
+msgstr "катерица"
 
 #. module: mail
 #. odoo-javascript
@@ -14019,7 +14075,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "chocolate"
-msgstr ""
+msgstr "шоколад"
 
 #. module: mail
 #. odoo-javascript
@@ -14050,7 +14106,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "church"
-msgstr ""
+msgstr "църква"
 
 #. module: mail
 #. odoo-javascript
@@ -14058,7 +14114,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cigarette"
-msgstr ""
+msgstr "цигара"
 
 #. module: mail
 #. odoo-javascript
@@ -14069,7 +14125,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cinema"
-msgstr ""
+msgstr "кино"
 
 #. module: mail
 #. odoo-javascript
@@ -14087,7 +14143,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "circle"
-msgstr ""
+msgstr "кръг"
 
 #. module: mail
 #. odoo-javascript
@@ -14102,21 +14158,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "circus"
-msgstr ""
+msgstr "цирк"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "circus tent"
-msgstr ""
+msgstr "циркова палатка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "citrus"
-msgstr ""
+msgstr "цитрус"
 
 #. module: mail
 #. odoo-javascript
@@ -14124,7 +14180,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "city"
-msgstr ""
+msgstr "град"
 
 #. module: mail
 #. odoo-javascript
@@ -14132,7 +14188,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cityscape"
-msgstr ""
+msgstr "градски пейзаж"
 
 #. module: mail
 #. odoo-javascript
@@ -14147,7 +14203,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "claim"
-msgstr ""
+msgstr "иск"
 
 #. module: mail
 #. odoo-javascript
@@ -14155,7 +14211,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clamp"
-msgstr ""
+msgstr "скоба"
 
 #. module: mail
 #. odoo-javascript
@@ -14199,7 +14255,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "classical"
-msgstr ""
+msgstr "класически"
 
 #. module: mail
 #. odoo-javascript
@@ -14207,7 +14263,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "classical building"
-msgstr ""
+msgstr "класическа сграда"
 
 #. module: mail
 #. odoo-javascript
@@ -14222,7 +14278,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "claws"
-msgstr ""
+msgstr "Нокти"
 
 #. module: mail
 #. odoo-javascript
@@ -14238,7 +14294,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cleaning"
-msgstr ""
+msgstr "чистене"
 
 #. module: mail
 #. odoo-javascript
@@ -14246,7 +14302,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clenched"
-msgstr ""
+msgstr "стиснат"
 
 #. module: mail
 #. odoo-javascript
@@ -14322,7 +14378,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clock"
-msgstr ""
+msgstr "часовник"
 
 #. module: mail
 #. odoo-javascript
@@ -14331,7 +14387,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clockwise"
-msgstr ""
+msgstr "по часовниковата стрелка"
 
 #. module: mail
 #. odoo-javascript
@@ -14351,7 +14407,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "closed"
-msgstr ""
+msgstr "затворено"
 
 #. module: mail
 #. odoo-javascript
@@ -14417,7 +14473,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "closet"
-msgstr ""
+msgstr "гардероб"
 
 #. module: mail
 #. odoo-javascript
@@ -14449,7 +14505,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clothing"
-msgstr ""
+msgstr "дрехи"
 
 #. module: mail
 #. odoo-javascript
@@ -14468,7 +14524,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cloud"
-msgstr ""
+msgstr "облак"
 
 #. module: mail
 #. odoo-javascript
@@ -14492,7 +14548,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cloud with rain"
-msgstr ""
+msgstr "облачно с дъжд"
 
 #. module: mail
 #. odoo-javascript
@@ -14500,7 +14556,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cloud with snow"
-msgstr ""
+msgstr "облачно със сняг"
 
 #. module: mail
 #. odoo-javascript
@@ -14514,14 +14570,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clown"
-msgstr ""
+msgstr "клоун"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clown face"
-msgstr ""
+msgstr "лице на клоун"
 
 #. module: mail
 #. odoo-javascript
@@ -14536,7 +14592,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "clubs"
-msgstr ""
+msgstr "клубове"
 
 #. module: mail
 #. odoo-javascript
@@ -14567,21 +14623,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "coat"
-msgstr ""
+msgstr "палто"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cocktail"
-msgstr ""
+msgstr "коктейл"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cocktail glass"
-msgstr ""
+msgstr "коктейлна чаша"
 
 #. module: mail
 #. odoo-javascript
@@ -14589,7 +14645,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "coconut"
-msgstr ""
+msgstr "кокос"
 
 #. module: mail
 #. odoo-javascript
@@ -14604,7 +14660,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "coffee"
-msgstr ""
+msgstr "кафе"
 
 #. module: mail
 #. odoo-javascript
@@ -14612,14 +14668,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "coffin"
-msgstr ""
+msgstr "ковчег"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cog"
-msgstr ""
+msgstr "Зъбно колело"
 
 #. module: mail
 #. odoo-javascript
@@ -14633,7 +14689,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "coin"
-msgstr ""
+msgstr "монета"
 
 #. module: mail
 #. odoo-javascript
@@ -14651,7 +14707,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cold"
-msgstr ""
+msgstr "студено"
 
 #. module: mail
 #. odoo-javascript
@@ -14674,7 +14730,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "column"
-msgstr ""
+msgstr "колона"
 
 #. module: mail
 #. odoo-javascript
@@ -14682,7 +14738,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "comet"
-msgstr ""
+msgstr "комета"
 
 #. module: mail
 #. odoo-javascript
@@ -14701,7 +14757,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "comic"
-msgstr ""
+msgstr "комичен"
 
 #. module: mail
 #. odoo-javascript
@@ -14709,7 +14765,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "compass"
-msgstr ""
+msgstr "компас"
 
 #. module: mail
 #. odoo-javascript
@@ -14732,14 +14788,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "computer"
-msgstr ""
+msgstr "компютър"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "computer disk"
-msgstr ""
+msgstr "компютърен диск"
 
 #. module: mail
 #. odoo-javascript
@@ -14747,7 +14803,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "computer mouse"
-msgstr ""
+msgstr "компютърна мишка"
 
 #. module: mail
 #. odoo-javascript
@@ -14789,14 +14845,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "confused"
-msgstr ""
+msgstr "объркан"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "confused face"
-msgstr ""
+msgstr "объркано лице"
 
 #. module: mail
 #. odoo-javascript
@@ -14815,14 +14871,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "construction"
-msgstr ""
+msgstr "строителство"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "construction worker"
-msgstr ""
+msgstr "строителен работник"
 
 #. module: mail
 #. odoo-javascript
@@ -14830,7 +14886,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "control"
-msgstr ""
+msgstr "контрол"
 
 #. module: mail
 #. odoo-javascript
@@ -14844,7 +14900,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "controller"
-msgstr ""
+msgstr "контрольор"
 
 #. module: mail
 #. odoo-javascript
@@ -14873,14 +14929,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cooked"
-msgstr ""
+msgstr "сготвен"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cooked rice"
-msgstr ""
+msgstr "сготвен ориз"
 
 #. module: mail
 #. odoo-javascript
@@ -14888,7 +14944,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cookie"
-msgstr ""
+msgstr "бисквитка"
 
 #. module: mail
 #. odoo-javascript
@@ -14900,7 +14956,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cooking"
-msgstr ""
+msgstr "готвене"
 
 #. module: mail
 #. odoo-javascript
@@ -14938,7 +14994,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "corn"
-msgstr ""
+msgstr "царевица"
 
 #. module: mail
 #. odoo-javascript
@@ -14953,14 +15009,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cosmetics"
-msgstr ""
+msgstr "козметика"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "couch"
-msgstr ""
+msgstr "диван"
 
 #. module: mail
 #. odoo-javascript
@@ -14968,14 +15024,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "couch and lamp"
-msgstr ""
+msgstr "диван и лампа"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "counterclockwise"
-msgstr ""
+msgstr "обратно на часовниковата стрелка"
 
 #. module: mail
 #. odoo-javascript
@@ -15001,7 +15057,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "couple"
-msgstr ""
+msgstr "двойка"
 
 #. module: mail
 #. odoo-javascript
@@ -15012,28 +15068,28 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "couple with heart"
-msgstr ""
+msgstr "двойка със сърце"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "couple with heart: man, man"
-msgstr ""
+msgstr "двойка със сърце: мъж, мъж"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "couple with heart: woman, man"
-msgstr ""
+msgstr "двойка със сърце: жена, мъж"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "couple with heart: woman, woman"
-msgstr ""
+msgstr "двойка със сърце: жена, жена"
 
 #. module: mail
 #. odoo-javascript
@@ -15049,21 +15105,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cow"
-msgstr ""
+msgstr "крава"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cow face"
-msgstr ""
+msgstr "лице на крава"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cowboy"
-msgstr ""
+msgstr "каубой"
 
 #. module: mail
 #. odoo-javascript
@@ -15086,7 +15142,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crab"
-msgstr ""
+msgstr "рак"
 
 #. module: mail
 #. odoo-javascript
@@ -15127,14 +15183,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "credit"
-msgstr ""
+msgstr "кредит"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "credit card"
-msgstr ""
+msgstr "кредитна карта"
 
 #. module: mail
 #. odoo-javascript
@@ -15143,21 +15199,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crescent"
-msgstr ""
+msgstr "полумесец"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crescent moon"
-msgstr ""
+msgstr "полумесец луна"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crescent roll"
-msgstr ""
+msgstr "кроасан"
 
 #. module: mail
 #. odoo-javascript
@@ -15166,7 +15222,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cricket"
-msgstr ""
+msgstr "крикет"
 
 #. module: mail
 #. odoo-javascript
@@ -15174,14 +15230,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cricket game"
-msgstr ""
+msgstr "игра на крикет"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cricket match"
-msgstr ""
+msgstr "крикет мач"
 
 #. module: mail
 #. odoo-javascript
@@ -15190,7 +15246,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "criminal"
-msgstr ""
+msgstr "криминален"
 
 #. module: mail
 #. odoo-javascript
@@ -15205,7 +15261,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crocodile"
-msgstr ""
+msgstr "крокодил"
 
 #. module: mail
 #. odoo-javascript
@@ -15213,7 +15269,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "croissant"
-msgstr ""
+msgstr "кроасан"
 
 #. module: mail
 #. odoo-javascript
@@ -15226,7 +15282,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cross"
-msgstr ""
+msgstr "кръст"
 
 #. module: mail
 #. odoo-javascript
@@ -15325,7 +15381,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cry"
-msgstr ""
+msgstr "плач"
 
 #. module: mail
 #. odoo-javascript
@@ -15333,7 +15389,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crying cat"
-msgstr ""
+msgstr "плачеща котка"
 
 #. module: mail
 #. odoo-javascript
@@ -15341,21 +15397,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crying face"
-msgstr ""
+msgstr "плачещо лице"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crystal"
-msgstr ""
+msgstr "кристал"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "crystal ball"
-msgstr ""
+msgstr "кристална топка"
 
 #. module: mail
 #. odoo-javascript
@@ -15370,14 +15426,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cucumber"
-msgstr ""
+msgstr "краставица"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "culture"
-msgstr ""
+msgstr "култура"
 
 #. module: mail
 #. odoo-javascript
@@ -15385,7 +15441,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cup"
-msgstr ""
+msgstr "чаша"
 
 #. module: mail
 #. odoo-javascript
@@ -15393,7 +15449,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cup with straw"
-msgstr ""
+msgstr "чаша със сламка"
 
 #. module: mail
 #. odoo-javascript
@@ -15401,7 +15457,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "cupcake"
-msgstr ""
+msgstr "кексче"
 
 #. module: mail
 #. odoo-javascript
@@ -15415,7 +15471,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "curious"
-msgstr ""
+msgstr "любопитен"
 
 #. module: mail
 #. odoo-javascript
@@ -15481,21 +15537,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "currency exchange"
-msgstr ""
+msgstr "валутен обмен"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "curry"
-msgstr ""
+msgstr "къри"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "curry rice"
-msgstr ""
+msgstr "къри ориз"
 
 #. module: mail
 #. odoo-javascript
@@ -15511,7 +15567,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "customs"
-msgstr ""
+msgstr "митница"
 
 #. module: mail
 #. odoo-javascript
@@ -16240,8 +16296,8 @@ msgid "doctor"
 msgstr ""
 
 #. module: mail
-#. odoo-python
 #. odoo-javascript
+#. odoo-python
 #: code:addons/mail/models/mail_thread.py:0
 #: code:addons/mail/static/src/components/message/message.xml:0
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
@@ -16655,12 +16711,12 @@ msgstr ""
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_activity_type_view_form
 msgid "e.g. \"Discuss proposal\""
-msgstr ""
+msgstr "напр. \"Обсъждане на предложение\""
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_activity_type_view_form
 msgid "e.g. \"Go over the offer and discuss details\""
-msgstr ""
+msgstr "напр. \"Прегледайте офертата и обсъдете детайли\""
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.email_template_form
@@ -17987,7 +18043,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fax"
-msgstr ""
+msgstr "Факс"
 
 #. module: mail
 #. odoo-javascript
@@ -17995,7 +18051,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fax machine"
-msgstr ""
+msgstr "факс машина"
 
 #. module: mail
 #. odoo-javascript
@@ -18308,7 +18364,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fish"
-msgstr ""
+msgstr "риба"
 
 #. module: mail
 #. odoo-javascript
@@ -18316,7 +18372,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fish cake with swirl"
-msgstr ""
+msgstr "Рибен кекс с вихър"
 
 #. module: mail
 #. odoo-javascript
@@ -18324,7 +18380,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fishing"
-msgstr ""
+msgstr "риболов"
 
 #. module: mail
 #. odoo-javascript
@@ -18332,7 +18388,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fishing pole"
-msgstr ""
+msgstr "въдица"
 
 #. module: mail
 #. odoo-javascript
@@ -18342,7 +18398,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fist"
-msgstr ""
+msgstr "юмрук"
 
 #. module: mail
 #. odoo-javascript
@@ -18350,14 +18406,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "five"
-msgstr ""
+msgstr "пет"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "five o’clock"
-msgstr ""
+msgstr "пет часа"
 
 #. module: mail
 #. odoo-javascript
@@ -18365,7 +18421,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "five-thirty"
-msgstr ""
+msgstr "пет и половина"
 
 #. module: mail
 #. odoo-javascript
@@ -18375,7 +18431,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flag"
-msgstr ""
+msgstr "знаме"
 
 #. module: mail
 #. odoo-javascript
@@ -18383,42 +18439,42 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flag in hole"
-msgstr ""
+msgstr "знаме в дупка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flag: England"
-msgstr ""
+msgstr "знаме: Англия"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flag: Scotland"
-msgstr ""
+msgstr "знаме: Шотландия"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flag: Wales"
-msgstr ""
+msgstr "знаме: Уелс"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flamboyant"
-msgstr ""
+msgstr "Помпозен"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flame"
-msgstr ""
+msgstr "пламък"
 
 #. module: mail
 #. odoo-javascript
@@ -18426,14 +18482,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flamingo"
-msgstr ""
+msgstr "фламинго"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flash"
-msgstr ""
+msgstr "светкавица"
 
 #. module: mail
 #. odoo-javascript
@@ -18441,7 +18497,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flashlight"
-msgstr ""
+msgstr "фенерче"
 
 #. module: mail
 #. odoo-javascript
@@ -18456,7 +18512,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flatbread"
-msgstr ""
+msgstr "Пита"
 
 #. module: mail
 #. odoo-javascript
@@ -18509,7 +18565,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "floor"
-msgstr ""
+msgstr "под"
 
 #. module: mail
 #. odoo-javascript
@@ -18539,7 +18595,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "flower"
-msgstr ""
+msgstr "цвете"
 
 #. module: mail
 #. odoo-javascript
@@ -18610,7 +18666,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fog"
-msgstr ""
+msgstr "мъгла"
 
 #. module: mail
 #. odoo-javascript
@@ -18618,7 +18674,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "foggy"
-msgstr ""
+msgstr "мъгливо"
 
 #. module: mail
 #. odoo-javascript
@@ -18626,7 +18682,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "folded hands"
-msgstr ""
+msgstr "Скръстени ръце"
 
 #. module: mail
 #. odoo-javascript
@@ -18634,7 +18690,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "folder"
-msgstr ""
+msgstr "папка"
 
 #. module: mail
 #. odoo-javascript
@@ -18656,7 +18712,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "food"
-msgstr ""
+msgstr "храна"
 
 #. module: mail
 #. odoo-javascript
@@ -18664,7 +18720,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "foot"
-msgstr ""
+msgstr "крак"
 
 #. module: mail
 #. odoo-javascript
@@ -18673,14 +18729,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "football"
-msgstr ""
+msgstr "футбол"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "footprint"
-msgstr ""
+msgstr "отпечатък"
 
 #. module: mail
 #. odoo-javascript
@@ -18688,7 +18744,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "footprints"
-msgstr ""
+msgstr "отпечатъци"
 
 #. module: mail
 #. odoo-javascript
@@ -18715,14 +18771,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "forbidden"
-msgstr ""
+msgstr "забравен"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "forever"
-msgstr ""
+msgstr "завинаги"
 
 #. module: mail
 #. odoo-javascript
@@ -18730,7 +18786,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fork"
-msgstr ""
+msgstr "вилица"
 
 #. module: mail
 #. odoo-javascript
@@ -18738,7 +18794,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fork and knife"
-msgstr ""
+msgstr "вилица и нож"
 
 #. module: mail
 #. odoo-javascript
@@ -18746,7 +18802,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fork and knife with plate"
-msgstr ""
+msgstr "вилица и нож с чиния"
 
 #. module: mail
 #. odoo-javascript
@@ -18754,7 +18810,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fortune"
-msgstr ""
+msgstr "съдба"
 
 #. module: mail
 #. odoo-javascript
@@ -18762,7 +18818,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fortune cookie"
-msgstr ""
+msgstr "Бисквитка с късметче"
 
 #. module: mail
 #. odoo-javascript
@@ -18778,14 +18834,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fountain"
-msgstr ""
+msgstr "фонтан"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fountain pen"
-msgstr ""
+msgstr "Перо "
 
 #. module: mail
 #. odoo-javascript
@@ -18794,28 +18850,28 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "four"
-msgstr ""
+msgstr "четири"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "four leaf clover"
-msgstr ""
+msgstr "Четирилистна детелина "
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "four o’clock"
-msgstr ""
+msgstr "четири часа"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "four-leaf clover"
-msgstr ""
+msgstr "Четирилистна детелина "
 
 #. module: mail
 #. odoo-javascript
@@ -18823,14 +18879,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "four-thirty"
-msgstr ""
+msgstr "четири и половина"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "four-wheel drive"
-msgstr ""
+msgstr "Кола с 4х4 "
 
 #. module: mail
 #. odoo-javascript
@@ -18838,14 +18894,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fox"
-msgstr ""
+msgstr "лисица"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frame"
-msgstr ""
+msgstr "рамка"
 
 #. module: mail
 #. odoo-javascript
@@ -18853,14 +18909,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "framed picture"
-msgstr ""
+msgstr "рамкирана снимка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frames"
-msgstr ""
+msgstr "рамки"
 
 #. module: mail
 #. odoo-javascript
@@ -18890,7 +18946,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "french"
-msgstr ""
+msgstr "френски"
 
 #. module: mail
 #. odoo-javascript
@@ -18898,35 +18954,35 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "french fries"
-msgstr ""
+msgstr "пържени картофи"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fried"
-msgstr ""
+msgstr "паржен"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fried shrimp"
-msgstr ""
+msgstr "пържена скарида"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fries"
-msgstr ""
+msgstr "Пържени картофи"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frisbee"
-msgstr ""
+msgstr "фризби"
 
 #. module: mail
 #. odoo-javascript
@@ -18934,7 +18990,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frog"
-msgstr ""
+msgstr "жаба"
 
 #. module: mail
 #. odoo-javascript
@@ -18942,7 +18998,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "front-facing baby chick"
-msgstr ""
+msgstr "Пиленце с лице напред"
 
 #. module: mail
 #. odoo-javascript
@@ -18958,7 +19014,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frown"
-msgstr ""
+msgstr "нацупен"
 
 #. module: mail
 #. odoo-javascript
@@ -18966,7 +19022,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frowning"
-msgstr ""
+msgstr "цупене"
 
 #. module: mail
 #. odoo-javascript
@@ -18974,7 +19030,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frowning face with open mouth"
-msgstr ""
+msgstr "нацупено лице с отворена уста"
 
 #. module: mail
 #. odoo-javascript
@@ -18997,49 +19053,49 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fruit"
-msgstr ""
+msgstr "плод"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frustration"
-msgstr ""
+msgstr "фрустрация"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "frying"
-msgstr ""
+msgstr "пържене"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fuel"
-msgstr ""
+msgstr "гориво"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fuel pump"
-msgstr ""
+msgstr "горивна помпа"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fuelpump"
-msgstr ""
+msgstr "горивна помпа"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "fuji"
-msgstr ""
+msgstr "Фуджи "
 
 #. module: mail
 #. odoo-javascript
@@ -19048,42 +19104,42 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "full"
-msgstr ""
+msgstr "пълен"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "full moon"
-msgstr ""
+msgstr "пълнолуние"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "full moon face"
-msgstr ""
+msgstr "Лице с пълнолуние"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "full-moon face"
-msgstr ""
+msgstr "Лице с пълнолуние"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "funeral"
-msgstr ""
+msgstr "погребение"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "funeral urn"
-msgstr ""
+msgstr "погребална урна"
 
 #. module: mail
 #. odoo-javascript
@@ -19124,7 +19180,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "garbage"
-msgstr ""
+msgstr "боклук"
 
 #. module: mail
 #. odoo-javascript
@@ -19132,7 +19188,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "garden"
-msgstr ""
+msgstr "градина"
 
 #. module: mail
 #. odoo-javascript
@@ -19140,7 +19196,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gardener"
-msgstr ""
+msgstr "градинар"
 
 #. module: mail
 #. odoo-javascript
@@ -19148,14 +19204,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "garlic"
-msgstr ""
+msgstr "чесън"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gas"
-msgstr ""
+msgstr "газ"
 
 #. module: mail
 #. odoo-javascript
@@ -19163,7 +19219,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gear"
-msgstr ""
+msgstr "Зъбно колело"
 
 #. module: mail
 #. odoo-javascript
@@ -19291,7 +19347,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ghost"
-msgstr ""
+msgstr "дух"
 
 #. module: mail
 #. odoo-javascript
@@ -19307,7 +19363,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gift"
-msgstr ""
+msgstr "подарък"
 
 #. module: mail
 #. odoo-javascript
@@ -19315,7 +19371,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "giraffe"
-msgstr ""
+msgstr "жираф"
 
 #. module: mail
 #. odoo-javascript
@@ -19338,7 +19394,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "girl"
-msgstr ""
+msgstr "момиче"
 
 #. module: mail
 #. odoo-javascript
@@ -19351,7 +19407,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "glass"
-msgstr ""
+msgstr "чаша"
 
 #. module: mail
 #. odoo-javascript
@@ -19359,7 +19415,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "glass of milk"
-msgstr ""
+msgstr "чаша мляко"
 
 #. module: mail
 #. odoo-javascript
@@ -19368,14 +19424,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "glasses"
-msgstr ""
+msgstr "очила"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "glittery"
-msgstr ""
+msgstr "блестящ"
 
 #. module: mail
 #. odoo-javascript
@@ -19426,7 +19482,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "glove"
-msgstr ""
+msgstr "ръкавица"
 
 #. module: mail
 #. odoo-javascript
@@ -19434,7 +19490,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gloves"
-msgstr ""
+msgstr "ръкавици"
 
 #. module: mail
 #. odoo-javascript
@@ -19503,7 +19559,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gold"
-msgstr ""
+msgstr "злато"
 
 #. module: mail
 #. odoo-javascript
@@ -19511,7 +19567,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "golf"
-msgstr ""
+msgstr "голф"
 
 #. module: mail
 #. odoo-javascript
@@ -19526,7 +19582,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gondola"
-msgstr ""
+msgstr "гондола"
 
 #. module: mail
 #. odoo-javascript
@@ -19568,7 +19624,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "gorilla"
-msgstr ""
+msgstr "горила"
 
 #. module: mail
 #. odoo-javascript
@@ -19611,7 +19667,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "grape"
-msgstr ""
+msgstr "грозд"
 
 #. module: mail
 #. odoo-javascript
@@ -19619,7 +19675,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "grapes"
-msgstr ""
+msgstr "грозде"
 
 #. module: mail
 #. odoo-javascript
@@ -19669,28 +19725,28 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "green"
-msgstr ""
+msgstr "зелено"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "green apple"
-msgstr ""
+msgstr "зелена ябълка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "green book"
-msgstr ""
+msgstr "зелена книга"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "green circle"
-msgstr ""
+msgstr "зелен кръг"
 
 #. module: mail
 #. odoo-javascript
@@ -19698,28 +19754,28 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "green heart"
-msgstr ""
+msgstr "зелено сърце"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "green salad"
-msgstr ""
+msgstr "зелена салата"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "green square"
-msgstr ""
+msgstr "зелен квадрат"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "grimace"
-msgstr ""
+msgstr "гримаса"
 
 #. module: mail
 #. odoo-javascript
@@ -20385,7 +20441,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hearts"
-msgstr ""
+msgstr "сърца"
 
 #. module: mail
 #. odoo-javascript
@@ -20444,14 +20500,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "helicopter"
-msgstr ""
+msgstr "хеликоптер"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "helmet"
-msgstr ""
+msgstr "каска"
 
 #. module: mail
 #. odoo-javascript
@@ -20459,7 +20515,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "help"
-msgstr ""
+msgstr "помощ"
 
 #. module: mail
 #. odoo-javascript
@@ -20476,7 +20532,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hero"
-msgstr ""
+msgstr "герой"
 
 #. module: mail
 #. odoo-javascript
@@ -20484,7 +20540,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "heroine"
-msgstr ""
+msgstr "хероин"
 
 #. module: mail
 #. odoo-javascript
@@ -20553,7 +20609,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "highway"
-msgstr ""
+msgstr "магистрала"
 
 #. module: mail
 #. odoo-javascript
@@ -20604,7 +20660,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hippo"
-msgstr ""
+msgstr "хипопотам"
 
 #. module: mail
 #. odoo-javascript
@@ -20634,7 +20690,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hockey"
-msgstr ""
+msgstr "хокей"
 
 #. module: mail
 #. odoo-javascript
@@ -20661,7 +20717,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hole"
-msgstr ""
+msgstr "дупка"
 
 #. module: mail
 #. odoo-javascript
@@ -20677,14 +20733,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "home"
-msgstr ""
+msgstr "дом"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "honey"
-msgstr ""
+msgstr "мед"
 
 #. module: mail
 #. odoo-javascript
@@ -20727,7 +20783,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hooray"
-msgstr ""
+msgstr "ура"
 
 #. module: mail
 #. odoo-javascript
@@ -20750,7 +20806,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "horn"
-msgstr ""
+msgstr "клаксон"
 
 #. module: mail
 #. odoo-javascript
@@ -20765,7 +20821,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "horrible"
-msgstr ""
+msgstr "ужасен"
 
 #. module: mail
 #. odoo-javascript
@@ -20776,7 +20832,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "horse"
-msgstr ""
+msgstr "кон"
 
 #. module: mail
 #. odoo-javascript
@@ -20805,7 +20861,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hospital"
-msgstr ""
+msgstr "болница"
 
 #. module: mail
 #. odoo-javascript
@@ -20815,14 +20871,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hot"
-msgstr ""
+msgstr "горещ"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hot beverage"
-msgstr ""
+msgstr "топла напитка"
 
 #. module: mail
 #. odoo-javascript
@@ -20830,7 +20886,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hot dog"
-msgstr ""
+msgstr "хотдог"
 
 #. module: mail
 #. odoo-javascript
@@ -20846,7 +20902,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hot pepper"
-msgstr ""
+msgstr "лютива чушка"
 
 #. module: mail
 #. odoo-javascript
@@ -20867,7 +20923,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hotdog"
-msgstr ""
+msgstr "хотдог"
 
 #. module: mail
 #. odoo-javascript
@@ -20881,7 +20937,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hotel"
-msgstr ""
+msgstr "хотел"
 
 #. module: mail
 #. odoo-javascript
@@ -20922,7 +20978,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "house"
-msgstr ""
+msgstr "къща"
 
 #. module: mail
 #. odoo-javascript
@@ -20930,7 +20986,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "house with garden"
-msgstr ""
+msgstr "къща с градина"
 
 #. module: mail
 #. odoo-javascript
@@ -20938,14 +20994,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "houses"
-msgstr ""
+msgstr "къщи"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hug"
-msgstr ""
+msgstr "прегръдка"
 
 #. module: mail
 #. odoo-javascript
@@ -20967,7 +21023,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hundred"
-msgstr ""
+msgstr "сто"
 
 #. module: mail
 #. odoo-javascript
@@ -20982,7 +21038,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "hurricane"
-msgstr ""
+msgstr "ураган"
 
 #. module: mail
 #. odoo-javascript
@@ -21023,7 +21079,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ice"
-msgstr ""
+msgstr "лед"
 
 #. module: mail
 #. odoo-javascript
@@ -21032,14 +21088,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ice cream"
-msgstr ""
+msgstr "сладолед"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ice cube"
-msgstr ""
+msgstr "леден куб"
 
 #. module: mail
 #. odoo-javascript
@@ -21067,14 +21123,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "iceberg"
-msgstr ""
+msgstr "айсберг"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "icecream"
-msgstr ""
+msgstr "сладолед"
 
 #. module: mail
 #. odoo-javascript
@@ -21088,14 +21144,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "idea"
-msgstr ""
+msgstr "идея"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "identity"
-msgstr ""
+msgstr "идентичност"
 
 #. module: mail
 #. odoo-javascript
@@ -21134,7 +21190,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ill"
-msgstr ""
+msgstr "болен"
 
 #. module: mail
 #. odoo-javascript
@@ -21148,7 +21204,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "in love"
-msgstr ""
+msgstr "влюбен"
 
 #. module: mail
 #. odoo-javascript
@@ -21176,7 +21232,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "incoming"
-msgstr ""
+msgstr "Входящ"
 
 #. module: mail
 #. odoo-javascript
@@ -21240,7 +21296,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "industrial"
-msgstr ""
+msgstr "индустриален"
 
 #. module: mail
 #. odoo-javascript
@@ -21264,14 +21320,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "information"
-msgstr ""
+msgstr "информация"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "injection"
-msgstr ""
+msgstr "инжекция"
 
 #. module: mail
 #. odoo-javascript
@@ -21287,14 +21343,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ink"
-msgstr ""
+msgstr "мастило"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "innocent"
-msgstr ""
+msgstr "невинен"
 
 #. module: mail
 #. odoo-javascript
@@ -21375,7 +21431,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "insect"
-msgstr ""
+msgstr "насекомо"
 
 #. module: mail
 #. odoo-javascript
@@ -21390,7 +21446,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "instructor"
-msgstr ""
+msgstr "инструктор"
 
 #. module: mail
 #. odoo-javascript
@@ -21401,14 +21457,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "instrument"
-msgstr ""
+msgstr "инструмент"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "intelligent"
-msgstr ""
+msgstr "интелигентен"
 
 #. module: mail
 #. odoo-javascript
@@ -21447,7 +21503,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "inventor"
-msgstr ""
+msgstr "откривател"
 
 #. module: mail
 #. odoo-javascript
@@ -21461,7 +21517,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "iron"
-msgstr ""
+msgstr "желязо"
 
 #. module: mail
 #. odoo-javascript
@@ -21477,14 +21533,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "islam"
-msgstr ""
+msgstr "Ислям"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "island"
-msgstr ""
+msgstr "остров"
 
 #. module: mail
 #. odoo-javascript
@@ -21514,14 +21570,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "jacket"
-msgstr ""
+msgstr "яке"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "jar"
-msgstr ""
+msgstr "буркан"
 
 #. module: mail
 #. odoo-javascript
@@ -21529,14 +21585,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "jeans"
-msgstr ""
+msgstr "джинси"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "jewel"
-msgstr ""
+msgstr "бижу"
 
 #. module: mail
 #. odoo-javascript
@@ -21557,7 +21613,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "jockey"
-msgstr ""
+msgstr "жокей"
 
 #. module: mail
 #. odoo-javascript
@@ -21571,7 +21627,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "joke"
-msgstr ""
+msgstr "шега"
 
 #. module: mail
 #. odoo-javascript
@@ -21579,7 +21635,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "joker"
-msgstr ""
+msgstr "жокер"
 
 #. module: mail
 #. odoo-javascript
@@ -21587,7 +21643,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "joy"
-msgstr ""
+msgstr "наслада"
 
 #. module: mail
 #. odoo-javascript
@@ -21595,7 +21651,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "joystick"
-msgstr ""
+msgstr "джойстик"
 
 #. module: mail
 #. odoo-javascript
@@ -21603,14 +21659,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "judge"
-msgstr ""
+msgstr "съдия"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "judo"
-msgstr ""
+msgstr "джудо"
 
 #. module: mail
 #. odoo-javascript
@@ -21640,7 +21696,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "juice"
-msgstr ""
+msgstr "сок"
 
 #. module: mail
 #. odoo-javascript
@@ -21654,7 +21710,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "jump"
-msgstr ""
+msgstr "скок"
 
 #. module: mail
 #. odoo-javascript
@@ -21664,7 +21720,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "justice"
-msgstr ""
+msgstr "правосъдие"
 
 #. module: mail
 #. odoo-javascript
@@ -21694,14 +21750,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "karaoke"
-msgstr ""
+msgstr "караоке"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "karate"
-msgstr ""
+msgstr "карате"
 
 #. module: mail
 #. odoo-javascript
@@ -21717,7 +21773,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "kebab"
-msgstr ""
+msgstr "кебаб"
 
 #. module: mail
 #. odoo-javascript
@@ -21727,7 +21783,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "key"
-msgstr ""
+msgstr "ключ"
 
 #. module: mail
 #. odoo-javascript
@@ -21736,7 +21792,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keyboard"
-msgstr ""
+msgstr "клавиатура"
 
 #. module: mail
 #. odoo-javascript
@@ -21755,98 +21811,98 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap"
-msgstr ""
+msgstr "ключалка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: #"
-msgstr ""
+msgstr "ключалка: #"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: *"
-msgstr ""
+msgstr "ключалка: *"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 0"
-msgstr ""
+msgstr "ключалка: 0"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 1"
-msgstr ""
+msgstr "ключалка: 1"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 10"
-msgstr ""
+msgstr "ключалка: 10"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 2"
-msgstr ""
+msgstr "ключалка: 2"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 3"
-msgstr ""
+msgstr "ключалка: 3"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 4"
-msgstr ""
+msgstr "ключалка: 4"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 5"
-msgstr ""
+msgstr "ключалка: 5"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 6"
-msgstr ""
+msgstr "ключалка: 6"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 7"
-msgstr ""
+msgstr "ключалка: 7"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 8"
-msgstr ""
+msgstr "ключалка: 8"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "keycap: 9"
-msgstr ""
+msgstr "ключалка: 9"
 
 #. module: mail
 #. odoo-javascript
@@ -21870,14 +21926,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "kimono"
-msgstr ""
+msgstr "кимоно"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "king"
-msgstr ""
+msgstr "крал"
 
 #. module: mail
 #. odoo-javascript
@@ -21894,7 +21950,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "kiss"
-msgstr ""
+msgstr "целувка"
 
 #. module: mail
 #. odoo-javascript
@@ -21963,7 +22019,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "kitchen knife"
-msgstr ""
+msgstr "кухненски нож"
 
 #. module: mail
 #. odoo-javascript
@@ -21971,14 +22027,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "kite"
-msgstr ""
+msgstr "хвърчило"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "kiwi"
-msgstr ""
+msgstr "киви"
 
 #. module: mail
 #. odoo-javascript
@@ -21986,7 +22042,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "kiwi fruit"
-msgstr ""
+msgstr "киви плод"
 
 #. module: mail
 #. odoo-javascript
@@ -22012,7 +22068,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "knife"
-msgstr ""
+msgstr "нож"
 
 #. module: mail
 #. odoo-javascript
@@ -22026,7 +22082,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "knit"
-msgstr ""
+msgstr "плетка"
 
 #. module: mail
 #. odoo-javascript
@@ -22048,7 +22104,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "koala"
-msgstr ""
+msgstr "коала"
 
 #. module: mail
 #. odoo-javascript
@@ -22063,7 +22119,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lab"
-msgstr ""
+msgstr "лаборатория"
 
 #. module: mail
 #. odoo-javascript
@@ -22152,7 +22208,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lamp"
-msgstr ""
+msgstr "лампа"
 
 #. module: mail
 #. odoo-javascript
@@ -22189,7 +22245,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "laptop"
-msgstr ""
+msgstr "лаптоп"
 
 #. module: mail
 #. odoo-javascript
@@ -22197,7 +22253,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "large"
-msgstr ""
+msgstr "голям"
 
 #. module: mail
 #. odoo-javascript
@@ -22253,7 +22309,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "latin"
-msgstr ""
+msgstr "Латински"
 
 #. module: mail
 #. odoo-javascript
@@ -22261,7 +22317,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "latin cross"
-msgstr ""
+msgstr "латински кръст"
 
 #. module: mail
 #. odoo-javascript
@@ -22270,7 +22326,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "laugh"
-msgstr ""
+msgstr "смях"
 
 #. module: mail
 #. odoo-javascript
@@ -22295,7 +22351,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lazy"
-msgstr ""
+msgstr "мързелив"
 
 #. module: mail
 #. odoo-javascript
@@ -22307,7 +22363,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "leaf"
-msgstr ""
+msgstr "листо"
 
 #. module: mail
 #. odoo-javascript
@@ -22331,14 +22387,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "ledger"
-msgstr ""
+msgstr "счетоводна книга"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "left"
-msgstr ""
+msgstr "ляво"
 
 #. module: mail
 #. odoo-javascript
@@ -22346,7 +22402,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "left arrow"
-msgstr ""
+msgstr "лява стрелка"
 
 #. module: mail
 #. odoo-javascript
@@ -22362,7 +22418,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "left luggage"
-msgstr ""
+msgstr "оставен багаж"
 
 #. module: mail
 #. odoo-javascript
@@ -22409,7 +22465,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "leg"
-msgstr ""
+msgstr "крак"
 
 #. module: mail
 #. odoo-javascript
@@ -22417,7 +22473,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lemon"
-msgstr ""
+msgstr "лимон"
 
 #. module: mail
 #. odoo-javascript
@@ -22425,7 +22481,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "leopard"
-msgstr ""
+msgstr "леопард"
 
 #. module: mail
 #. odoo-javascript
@@ -22437,7 +22493,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "letter"
-msgstr ""
+msgstr "писмо"
 
 #. module: mail
 #. odoo-javascript
@@ -22445,7 +22501,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "letterbox"
-msgstr ""
+msgstr "пощенска кутия"
 
 #. module: mail
 #. odoo-javascript
@@ -22454,21 +22510,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "letters"
-msgstr ""
+msgstr "писма"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lettuce"
-msgstr ""
+msgstr "маруля"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "level"
-msgstr ""
+msgstr "ниво"
 
 #. module: mail
 #. odoo-javascript
@@ -22482,28 +22538,28 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "liberty"
-msgstr ""
+msgstr "свобода"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lie"
-msgstr ""
+msgstr "лъжа"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "life"
-msgstr ""
+msgstr "живот"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "life jacket"
-msgstr ""
+msgstr "спасителна жилетка"
 
 #. module: mail
 #. odoo-javascript
@@ -22523,14 +22579,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "light"
-msgstr ""
+msgstr "светлина"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "light bulb"
-msgstr ""
+msgstr "електрическа крушка"
 
 #. module: mail
 #. odoo-javascript
@@ -22539,7 +22595,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "light rail"
-msgstr ""
+msgstr "лека железница"
 
 #. module: mail
 #. odoo-javascript
@@ -22547,7 +22603,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lightning"
-msgstr ""
+msgstr "светкавица"
 
 #. module: mail
 #. odoo-javascript
@@ -22555,7 +22611,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lights"
-msgstr ""
+msgstr "светлини"
 
 #. module: mail
 #. odoo-javascript
@@ -22571,7 +22627,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "link"
-msgstr ""
+msgstr "връзка"
 
 #. module: mail
 #. odoo-javascript
@@ -22588,7 +22644,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lion"
-msgstr ""
+msgstr "лъв"
 
 #. module: mail
 #. odoo-javascript
@@ -22596,7 +22652,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lips"
-msgstr ""
+msgstr "устни"
 
 #. module: mail
 #. odoo-javascript
@@ -22611,7 +22667,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "liquor"
-msgstr ""
+msgstr "ликьор"
 
 #. module: mail
 #. odoo-javascript
@@ -22725,7 +22781,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "locomotive"
-msgstr ""
+msgstr "локомотив"
 
 #. module: mail
 #. odoo-javascript
@@ -22769,7 +22825,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "lotion"
-msgstr ""
+msgstr "лосион"
 
 #. module: mail
 #. odoo-javascript
@@ -22816,14 +22872,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "love"
-msgstr ""
+msgstr "любов"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "love hotel"
-msgstr ""
+msgstr "любовен хотел"
 
 #. module: mail
 #. odoo-javascript
@@ -22884,7 +22940,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "luggage"
-msgstr ""
+msgstr "багаж"
 
 #. module: mail
 #. odoo-javascript
@@ -22902,7 +22958,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mad"
-msgstr ""
+msgstr "луд"
 
 #. module: mail
 #. odoo-javascript
@@ -22927,7 +22983,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "magnet"
-msgstr ""
+msgstr "магнит"
 
 #. module: mail
 #. odoo-javascript
@@ -22935,7 +22991,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "magnetic"
-msgstr ""
+msgstr "магнетичен"
 
 #. module: mail
 #. odoo-javascript
@@ -22989,7 +23045,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mail"
-msgstr ""
+msgstr "поща"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_blacklist_remove_view_form
@@ -23005,7 +23061,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mailbox"
-msgstr ""
+msgstr "пощенска кутия"
 
 #. module: mail
 #. odoo-javascript
@@ -23789,7 +23845,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "marathon"
-msgstr ""
+msgstr "маратон"
 
 #. module: mail
 #. odoo-javascript
@@ -23819,7 +23875,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "marker"
-msgstr ""
+msgstr "маркер"
 
 #. module: mail
 #. odoo-javascript
@@ -23834,7 +23890,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "martial arts"
-msgstr ""
+msgstr "бойни изкуства"
 
 #. module: mail
 #. odoo-javascript
@@ -23850,7 +23906,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mask"
-msgstr ""
+msgstr "маска"
 
 #. module: mail
 #. odoo-javascript
@@ -23859,7 +23915,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "massage"
-msgstr ""
+msgstr "масаж"
 
 #. module: mail
 #. odoo-javascript
@@ -23906,7 +23962,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "meat"
-msgstr ""
+msgstr "месо"
 
 #. module: mail
 #. odoo-javascript
@@ -23930,7 +23986,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mechanic"
-msgstr ""
+msgstr "мханик"
 
 #. module: mail
 #. odoo-javascript
@@ -23938,7 +23994,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mechanical arm"
-msgstr ""
+msgstr "механична ръка"
 
 #. module: mail
 #. odoo-javascript
@@ -23946,7 +24002,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mechanical leg"
-msgstr ""
+msgstr "механичен крак"
 
 #. module: mail
 #. odoo-javascript
@@ -23957,7 +24013,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "medal"
-msgstr ""
+msgstr "медал"
 
 #. module: mail
 #. odoo-javascript
@@ -23965,7 +24021,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "medical symbol"
-msgstr ""
+msgstr "медицински знак"
 
 #. module: mail
 #. odoo-javascript
@@ -23978,7 +24034,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "medicine"
-msgstr ""
+msgstr "медицина"
 
 #. module: mail
 #. odoo-javascript
@@ -23987,21 +24043,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "meditation"
-msgstr ""
+msgstr "медитация"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "medium"
-msgstr ""
+msgstr "среден"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "meeting"
-msgstr ""
+msgstr "среща"
 
 #. module: mail
 #. odoo-javascript
@@ -24009,7 +24065,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "megaphone"
-msgstr ""
+msgstr "мегафон"
 
 #. module: mail
 #. odoo-javascript
@@ -24026,7 +24082,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "melon"
-msgstr ""
+msgstr "диня"
 
 #. module: mail
 #. odoo-javascript
@@ -24034,7 +24090,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "memo"
-msgstr ""
+msgstr "записка"
 
 #. module: mail
 #. odoo-javascript
@@ -24043,7 +24099,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "men"
-msgstr ""
+msgstr "мъже"
 
 #. module: mail
 #. odoo-javascript
@@ -24120,7 +24176,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mermaid"
-msgstr ""
+msgstr "русалка"
 
 #. module: mail
 #. odoo-javascript
@@ -24193,7 +24249,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mexican"
-msgstr ""
+msgstr "мексикански"
 
 #. module: mail
 #. odoo-javascript
@@ -24201,7 +24257,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mic"
-msgstr ""
+msgstr "микрофон"
 
 #. module: mail
 #. odoo-javascript
@@ -24209,7 +24265,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "microbe"
-msgstr ""
+msgstr "микроба"
 
 #. module: mail
 #. odoo-javascript
@@ -24226,7 +24282,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "microscope"
-msgstr ""
+msgstr "микроскоп"
 
 #. module: mail
 #. odoo-javascript
@@ -24234,14 +24290,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "middle finger"
-msgstr ""
+msgstr "среден пръст"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "military"
-msgstr ""
+msgstr "военен"
 
 #. module: mail
 #. odoo-javascript
@@ -24256,7 +24312,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "milk"
-msgstr ""
+msgstr "мляко"
 
 #. module: mail
 #. odoo-javascript
@@ -24264,7 +24320,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "milky way"
-msgstr ""
+msgstr "млчен път"
 
 #. module: mail
 #. odoo-javascript
@@ -24279,21 +24335,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "minibus"
-msgstr ""
+msgstr "минибус"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "minidisk"
-msgstr ""
+msgstr "минидиск"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mining"
-msgstr ""
+msgstr "минно дело"
 
 #. module: mail
 #. odoo-javascript
@@ -24301,7 +24357,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "minus"
-msgstr ""
+msgstr "минус"
 
 #. module: mail
 #. odoo-javascript
@@ -24321,21 +24377,21 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mobile"
-msgstr ""
+msgstr "мобилен"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mobile phone"
-msgstr ""
+msgstr "мобилен телефон"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mobile phone off"
-msgstr ""
+msgstr "мобилен телефон изключен"
 
 #. module: mail
 #. odoo-javascript
@@ -24350,7 +24406,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mobility scooter"
-msgstr ""
+msgstr "скутер за придвижване"
 
 #. module: mail
 #. odoo-javascript
@@ -24410,14 +24466,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "money"
-msgstr ""
+msgstr "пари"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "money bag"
-msgstr ""
+msgstr "торба с пари"
 
 #. module: mail
 #. odoo-javascript
@@ -24452,7 +24508,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "monkey"
-msgstr ""
+msgstr "маймуна"
 
 #. module: mail
 #. odoo-javascript
@@ -24466,7 +24522,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "monocle"
-msgstr ""
+msgstr "монокъл"
 
 #. module: mail
 #. odoo-javascript
@@ -24488,7 +24544,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "monster"
-msgstr ""
+msgstr "чудовище"
 
 #. module: mail
 #: model:ir.model.fields.selection,name:mail.selection__mail_activity_type__delay_unit__months
@@ -24513,7 +24569,7 @@ msgstr "месеци"
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "moon"
-msgstr ""
+msgstr "луна"
 
 #. module: mail
 #. odoo-javascript
@@ -24544,7 +24600,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "morning"
-msgstr ""
+msgstr "сутрин"
 
 #. module: mail
 #. odoo-javascript
@@ -24559,7 +24615,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mosque"
-msgstr ""
+msgstr "джамия"
 
 #. module: mail
 #. odoo-javascript
@@ -24567,7 +24623,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mosquito"
-msgstr ""
+msgstr "комар"
 
 #. module: mail
 #. odoo-javascript
@@ -24581,14 +24637,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mother"
-msgstr ""
+msgstr "майка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "motor"
-msgstr ""
+msgstr "мотор"
 
 #. module: mail
 #. odoo-javascript
@@ -24596,14 +24652,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "motor boat"
-msgstr ""
+msgstr "моторна лодка"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "motor scooter"
-msgstr ""
+msgstr "моторен скутер"
 
 #. module: mail
 #. odoo-javascript
@@ -24618,7 +24674,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "motorcycle"
-msgstr ""
+msgstr "мотоциклет"
 
 #. module: mail
 #. odoo-javascript
@@ -24634,7 +24690,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "motorway"
-msgstr ""
+msgstr "магистрала"
 
 #. module: mail
 #. odoo-javascript
@@ -24666,7 +24722,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mountain"
-msgstr ""
+msgstr "планина"
 
 #. module: mail
 #. odoo-javascript
@@ -24690,7 +24746,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mouse"
-msgstr ""
+msgstr "мишка"
 
 #. module: mail
 #. odoo-javascript
@@ -24714,7 +24770,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mouth"
-msgstr ""
+msgstr "уста"
 
 #. module: mail
 #. odoo-javascript
@@ -24725,14 +24781,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "movie"
-msgstr ""
+msgstr "филм"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "movie camera"
-msgstr ""
+msgstr "филмова камера"
 
 #. module: mail
 #. odoo-javascript
@@ -24803,7 +24859,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "muscle"
-msgstr ""
+msgstr "мускул"
 
 #. module: mail
 #. odoo-javascript
@@ -24811,7 +24867,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "museum"
-msgstr ""
+msgstr "музей"
 
 #. module: mail
 #. odoo-javascript
@@ -24819,7 +24875,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "mushroom"
-msgstr ""
+msgstr "гъба"
 
 #. module: mail
 #. odoo-javascript
@@ -24838,7 +24894,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "music"
-msgstr ""
+msgstr "музика"
 
 #. module: mail
 #. odoo-javascript
@@ -27004,7 +27060,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "phone"
-msgstr ""
+msgstr "телефон"
 
 #. module: mail
 #. odoo-javascript
@@ -28802,7 +28858,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "right"
-msgstr ""
+msgstr "дясно"
 
 #. module: mail
 #. odoo-javascript
@@ -29246,7 +29302,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "sake"
-msgstr ""
+msgstr "саке"
 
 #. module: mail
 #. odoo-javascript
@@ -29260,14 +29316,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "salad"
-msgstr ""
+msgstr "салата"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "salon"
-msgstr ""
+msgstr "салон"
 
 #. module: mail
 #. odoo-javascript
@@ -29275,7 +29331,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "salt"
-msgstr ""
+msgstr "сол"
 
 #. module: mail
 #. odoo-javascript
@@ -29291,7 +29347,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "sand"
-msgstr ""
+msgstr "пясък"
 
 #. module: mail
 #. odoo-javascript
@@ -29306,7 +29362,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "sandwich"
-msgstr ""
+msgstr "сандвич"
 
 #. module: mail
 #. odoo-javascript
@@ -29353,14 +29409,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "satellite"
-msgstr ""
+msgstr "сателит"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "satellite antenna"
-msgstr ""
+msgstr "сателитна антена"
 
 #. module: mail
 #. odoo-javascript
@@ -29390,7 +29446,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "sauna"
-msgstr ""
+msgstr "сауна"
 
 #. module: mail
 #. odoo-javascript
@@ -29405,7 +29461,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "sausage"
-msgstr ""
+msgstr "наденица"
 
 #. module: mail
 #. odoo-javascript
@@ -29441,14 +29497,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "saxophone"
-msgstr ""
+msgstr "саксофон"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scale"
-msgstr ""
+msgstr "скала"
 
 #. module: mail
 #. odoo-javascript
@@ -29473,7 +29529,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scarf"
-msgstr ""
+msgstr "шал"
 
 #. module: mail
 #. odoo-javascript
@@ -29489,7 +29545,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "school"
-msgstr ""
+msgstr "училище"
 
 #. module: mail
 #. odoo-javascript
@@ -29498,7 +29554,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "science"
-msgstr ""
+msgstr "наука"
 
 #. module: mail
 #. odoo-javascript
@@ -29507,7 +29563,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scientist"
-msgstr ""
+msgstr "учен"
 
 #. module: mail
 #. odoo-javascript
@@ -29515,7 +29571,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scissors"
-msgstr ""
+msgstr "ножица"
 
 #. module: mail
 #. odoo-javascript
@@ -29523,7 +29579,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scooter"
-msgstr ""
+msgstr "скутер"
 
 #. module: mail
 #. odoo-javascript
@@ -29531,14 +29587,14 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "score"
-msgstr ""
+msgstr "резултат"
 
 #. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scorpio"
-msgstr ""
+msgstr "скорпион"
 
 #. module: mail
 #. odoo-javascript
@@ -29547,7 +29603,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scorpion"
-msgstr ""
+msgstr "скорпио"
 
 #. module: mail
 #. odoo-javascript
@@ -29561,7 +29617,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "scream"
-msgstr ""
+msgstr "вид"
 
 #. module: mail
 #. odoo-javascript
@@ -29583,7 +29639,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "sea"
-msgstr ""
+msgstr "море"
 
 #. module: mail
 #. odoo-javascript
@@ -29594,7 +29650,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "seafood"
-msgstr ""
+msgstr "морска храна"
 
 #. module: mail
 #. odoo-javascript
@@ -29602,7 +29658,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "search"
-msgstr ""
+msgstr "търсене"
 
 #. module: mail
 #. odoo-javascript
@@ -29611,7 +29667,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "seat"
-msgstr ""
+msgstr "място"
 
 #. module: mail
 #. odoo-javascript
@@ -29632,7 +29688,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "security"
-msgstr ""
+msgstr "сигурност"
 
 #. module: mail
 #. odoo-javascript
@@ -29692,7 +29748,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "service"
-msgstr ""
+msgstr "услуга"
 
 #. module: mail
 #. odoo-javascript
@@ -29721,7 +29777,7 @@ msgstr ""
 #: code:addons/mail/static/src/models_data/emoji_data.js:0
 #, python-format
 msgid "seven"
-msgstr ""
+msgstr "седем"
 
 #. module: mail
 #. odoo-javascript

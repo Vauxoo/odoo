@@ -439,6 +439,8 @@ class Stream:
     public = False
 
     def __init__(self, **kwargs):
+        # Remove class methods from the instances
+        self.from_path = self.from_attachment = self.from_binary_field = None
         self.__dict__.update(kwargs)
 
     @classmethod
@@ -458,6 +460,7 @@ class Stream:
         return cls(
             type='path',
             path=path,
+            mimetype=mimetypes.guess_type(path)[0],
             download_name=os.path.basename(path),
             etag=f'{int(stat.st_mtime)}-{stat.st_size}-{check}',
             last_modified=stat.st_mtime,
@@ -539,16 +542,27 @@ class Stream:
         with open(self.path, 'rb') as file:
             return file.read()
 
-    def get_response(self, as_attachment=None, immutable=None, **send_file_kwargs):
+    def get_response(
+        self,
+        as_attachment=None,
+        immutable=None,
+        content_security_policy="default-src 'none'",
+        **send_file_kwargs
+    ):
         """
         Create the corresponding :class:`~Response` for the current stream.
 
         :param bool as_attachment: Indicate to the browser that it
             should offer to save the file instead of displaying it.
-        :param bool immutable: Add the ``immutable`` directive to the
-            ``Cache-Control`` response header, allowing intermediary
-            proxies to aggressively cache the response. This option
-            also set the ``max-age`` directive to 1 year.
+        :param bool|None immutable: Add the ``immutable`` directive to
+            the ``Cache-Control`` response header, allowing intermediary
+            proxies to aggressively cache the response. This option also
+            set the ``max-age`` directive to 1 year.
+        :param str|None content_security_policy: Optional value for the
+            ``Content-Security-Policy`` (CSP) header. This header is
+            used by browsers to allow/restrict the downloaded resource
+            to itself perform new http requests. By default CSP is set
+            to ``"default-scr 'none'"`` which restrict all requests.
         :param send_file_kwargs: Other keyword arguments to send to
             :func:`odoo.tools._vendor.send_file.send_file` instead of
             the stream sensitive values. Discouraged.
@@ -588,7 +602,6 @@ class Stream:
                     send_file_kwargs['use_x_sendfile'] = True
 
             res = _send_file(self.path, **send_file_kwargs)
-
             if 'X-Sendfile' in res.headers:
                 res.headers['X-Accel-Redirect'] = x_accel_redirect
 
@@ -596,6 +609,11 @@ class Stream:
                 # yet werkzeug gives the length of the file. This makes
                 # NGINX wait for content that'll never arrive.
                 res.headers['Content-Length'] = '0'
+
+        res.headers['X-Content-Type-Options'] = 'nosniff'
+
+        if content_security_policy:  # see also Application.set_csp()
+            res.headers['Content-Security-Policy'] = content_security_policy
 
         if self.public:
             if (res.cache_control.max_age or 0) > 0:
@@ -700,7 +718,7 @@ def route(route=None, **routing):
         # Sanitize the routing
         assert routing.get('type', 'http') in _dispatchers.keys()
         if route:
-            routing['routes'] = route if isinstance(route, list) else [route]
+            routing['routes'] = [route] if isinstance(route, str) else route
         wrong = routing.pop('method', None)
         if wrong is not None:
             _logger.warning("%s defined with invalid routing parameter 'method', assuming 'methods'", fname)
@@ -1057,7 +1075,7 @@ class HTTPRequest:
 
         self.__wrapped = httprequest
         self.__environ = self.__wrapped.environ
-        self.environ = {
+        self.environ = self.headers.environ = {
             key: value
             for key, value in self.__environ.items()
             if (not key.startswith(('werkzeug.', 'wsgi.', 'socket')) or key in ['wsgi.url_scheme', 'werkzeug.proxy_fix.orig'])
@@ -1212,6 +1230,7 @@ class Request:
 
     def _post_init(self):
         self.session, self.db = self._get_session_and_dbname()
+        self._post_init = None
 
     def _get_session_and_dbname(self):
         sid = self.httprequest.cookies.get('session_id')
@@ -1511,7 +1530,7 @@ class Request:
         if isinstance(location, URL):
             location = location.to_url()
         if local:
-            location = '/' + url_parse(location).replace(scheme='', netloc='').to_url().lstrip('/')
+            location = '/' + url_parse(location).replace(scheme='', netloc='').to_url().lstrip('/\\')
         if self.db:
             return self.env['ir.http']._redirect(location, code)
         return werkzeug.utils.redirect(location, code, Response=Response)
@@ -1581,6 +1600,7 @@ class Request:
             filepath = werkzeug.security.safe_join(directory, path)
             res = Stream.from_path(filepath, public=True).get_response(
                 max_age=0 if 'assets' in self.session.debug else STATIC_CACHE,
+                content_security_policy=None,
             )
             root.set_csp(res)
             return res
@@ -1609,6 +1629,7 @@ class Request:
         """
         try:
             self.registry = Registry(self.db).check_signaling()
+            threading.current_thread().dbname = self.registry.db_name
         except (AttributeError, psycopg2.OperationalError, psycopg2.ProgrammingError):
             # psycopg2 error or attribute error while constructing
             # the registry. That means either
@@ -1633,7 +1654,8 @@ class Request:
             except Exception as exc:
                 if isinstance(exc, HTTPException) and exc.code is None:
                     raise  # bubble up to odoo.http.Application.__call__
-                exc.error_response = self.registry['ir.http']._handle_error(exc)
+                if not hasattr(exc, 'error_response'):
+                    exc.error_response = self.registry['ir.http']._handle_error(exc)
                 raise
 
     def _serve_ir_http(self):
@@ -1963,7 +1985,7 @@ class Application:
         for url, endpoint in _generate_routing_rules([''] + odoo.conf.server_wide_modules, nodb_only=True):
             routing = submap(endpoint.routing, ROUTING_KEYS)
             if routing['methods'] is not None and 'OPTIONS' not in routing['methods']:
-                routing['methods'] = routing['methods'] + ['OPTIONS']
+                routing['methods'] = [*routing['methods'], 'OPTIONS']
             rule = werkzeug.routing.Rule(url, endpoint=endpoint, **routing)
             rule.merge_slashes = False
             nodb_routing_map.add(rule)

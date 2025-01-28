@@ -3343,7 +3343,7 @@
          * Static helper which returns a successful DispatchResult
          */
         static get Success() {
-            return new DispatchResult();
+            return SUCCESS;
         }
         get isSuccessful() {
             return this.reasons.length === 0;
@@ -3356,6 +3356,7 @@
             return this.reasons.includes(reason);
         }
     }
+    const SUCCESS = new DispatchResult();
     exports.CommandResult = void 0;
     (function (CommandResult) {
         CommandResult[CommandResult["Success"] = 0] = "Success";
@@ -4083,8 +4084,8 @@
      * Return the o-spreadsheet element position relative
      * to the browser viewport.
      */
-    function useSpreadsheetPosition() {
-        const position = owl.useState({ x: 0, y: 0 });
+    function useSpreadsheetRect() {
+        const position = owl.useState({ x: 0, y: 0, width: 0, height: 0 });
         let spreadsheetElement = document.querySelector(".o-spreadsheet");
         updatePosition();
         function updatePosition() {
@@ -4092,9 +4093,11 @@
                 spreadsheetElement = document.querySelector(".o-spreadsheet");
             }
             if (spreadsheetElement) {
-                const { top, left } = spreadsheetElement.getBoundingClientRect();
+                const { top, left, width, height } = spreadsheetElement.getBoundingClientRect();
                 position.x = left;
                 position.y = top;
+                position.width = width;
+                position.height = height;
             }
         }
         owl.onMounted(updatePosition);
@@ -4129,7 +4132,7 @@
     class Popover extends owl.Component {
         constructor() {
             super(...arguments);
-            this.spreadsheetPosition = useSpreadsheetPosition();
+            this.spreadsheetRect = useSpreadsheetRect();
         }
         get maxHeight() {
             return Math.max(0, this.viewportDimension.height - BOTTOMBAR_HEIGHT - SCROLLBAR_WIDTH);
@@ -4138,8 +4141,8 @@
             // the props's position is expressed relative to the "body" element
             // but we teleport the element in ".o-spreadsheet" to keep everything
             // within our control and to avoid leaking into external DOM
-            const horizontalPosition = `left:${this.horizontalPosition() - this.spreadsheetPosition.x}`;
-            const verticalPosition = `top:${this.verticalPosition() - this.spreadsheetPosition.y}`;
+            const horizontalPosition = `left:${this.horizontalPosition() - this.spreadsheetRect.x}`;
+            const verticalPosition = `top:${this.verticalPosition() - this.spreadsheetRect.y}`;
             const maxHeight = this.maxHeight;
             const height = `max-height:${maxHeight}`;
             const shadow = maxHeight !== 0 ? "box-shadow: 1px 2px 5px 2px rgb(51 51 51 / 15%);" : "";
@@ -8248,15 +8251,6 @@
         }
         const colors = new ChartColors();
         for (let [index, { label, data }] of dataSetsValues.entries()) {
-            if (["linear", "time"].includes(axisType)) {
-                // Replace empty string labels by undefined to make sure chartJS doesn't decide that "" is the same as 0
-                data = data.map((y, index) => ({ x: labels[index] || undefined, y }));
-            }
-            const color = colors.next();
-            let backgroundRGBA = colorToRGBA(color);
-            if (chart.stacked) {
-                backgroundRGBA.a = LINE_FILL_TRANSPARENCY;
-            }
             if (chart.cumulative) {
                 let accumulator = 0;
                 data = data.map((value) => {
@@ -8266,6 +8260,15 @@
                     }
                     return value;
                 });
+            }
+            if (["linear", "time"].includes(axisType)) {
+                // Replace empty string labels by undefined to make sure chartJS doesn't decide that "" is the same as 0
+                data = data.map((y, index) => ({ x: labels[index] || undefined, y }));
+            }
+            const color = colors.next();
+            let backgroundRGBA = colorToRGBA(color);
+            if (chart.stacked) {
+                backgroundRGBA.a = LINE_FILL_TRANSPARENCY;
             }
             const backgroundColor = rgbaToHex(backgroundRGBA);
             const dataset = {
@@ -9968,6 +9971,9 @@
             }
         }
         setColorScaleColor(target, color) {
+            if (!isColorValid(color)) {
+                return;
+            }
             const point = this.state.rules.colorScale[target];
             if (point) {
                 point.color = Number.parseInt(color.substr(1), 16);
@@ -10679,14 +10685,22 @@
     ChartFigure.template = "o-spreadsheet-ChartFigure";
     ChartFigure.components = { Menu };
 
+    /**
+     * Start listening to pointer events and apply the given callbacks.
+     *
+     * @returns A function to remove the listeners.
+     */
     function startDnd(onMouseMove, onMouseUp, onMouseDown = () => { }) {
-        const _onMouseUp = (ev) => {
-            onMouseUp(ev);
+        const removeListeners = () => {
             window.removeEventListener("mousedown", onMouseDown);
             window.removeEventListener("mouseup", _onMouseUp);
             window.removeEventListener("dragstart", _onDragStart);
             window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("wheel", onMouseMove);
+        };
+        const _onMouseUp = (ev) => {
+            onMouseUp(ev);
+            removeListeners();
         };
         function _onDragStart(ev) {
             ev.preventDefault();
@@ -10696,6 +10710,7 @@
         window.addEventListener("dragstart", _onDragStart);
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("wheel", onMouseMove);
+        return removeListeners;
     }
     /**
      * Function to be used during a mousedown event, this function allows to
@@ -11372,7 +11387,7 @@
                 operand = descr;
             }
         }
-        if (isNumber(operand)) {
+        if (isNumber(operand) || isDateTime(operand)) {
             operand = toNumber(operand);
         }
         else if (operand === "TRUE" || operand === "FALSE") {
@@ -11388,6 +11403,9 @@
         return result;
     }
     function operandToRegExp(operand) {
+        if (operand === "*") {
+            return /.+/;
+        }
         let exp = "";
         let predecessor = "";
         for (let char of operand) {
@@ -11411,13 +11429,16 @@
         }
         return new RegExp("^" + exp + "$", "i");
     }
-    function evaluatePredicate(value, criterion) {
+    function evaluatePredicate(value = "", criterion) {
         const { operator, operand } = criterion;
-        if (value === undefined || operand === undefined) {
+        if (operand === undefined) {
             return false;
         }
         if (typeof operand === "number" && operator === "=") {
-            return toString(value) === toString(operand);
+            if (typeof value === "string" && (isNumber(value) || isDateTime(value))) {
+                return toNumber(value) === operand;
+            }
+            return value === operand;
         }
         if (operator === "<>" || operator === "=") {
             let result;
@@ -11544,15 +11565,18 @@
         let currentIndex;
         let currentVal;
         let currentType;
+        const getValue = sortOrder === "desc"
+            ? (i) => getValueInData(data, rangeLength - i - 1)
+            : (i) => getValueInData(data, i);
         while (indexRight - indexLeft >= 0) {
             indexMedian = Math.floor((indexLeft + indexRight) / 2);
             currentIndex = indexMedian;
-            currentVal = getValueInData(data, currentIndex);
+            currentVal = getValue(currentIndex);
             currentType = typeof currentVal;
             // 1 - linear search to find value with the same type
             while (indexLeft < currentIndex && targetType !== currentType) {
                 currentIndex--;
-                currentVal = getValueInData(data, currentIndex);
+                currentVal = getValue(currentIndex);
                 currentType = typeof currentVal;
             }
             if (currentType !== targetType || currentVal === undefined) {
@@ -11567,8 +11591,7 @@
             else if (mode === "nextSmaller" && currentVal <= target) {
                 if (matchVal === undefined ||
                     matchVal < currentVal ||
-                    (matchVal === currentVal && sortOrder === "asc" && matchValIndex < currentIndex) ||
-                    (matchVal === currentVal && sortOrder === "desc" && matchValIndex > currentIndex)) {
+                    (matchVal === currentVal && matchValIndex < currentIndex)) {
                     matchVal = currentVal;
                     matchValIndex = currentIndex;
                 }
@@ -11576,15 +11599,13 @@
             else if (mode === "nextGreater" && currentVal >= target) {
                 if (matchVal === undefined ||
                     matchVal > currentVal ||
-                    (matchVal === currentVal && sortOrder === "asc" && matchValIndex < currentIndex) ||
-                    (matchVal === currentVal && sortOrder === "desc" && matchValIndex > currentIndex)) {
+                    (matchVal === currentVal && matchValIndex < currentIndex)) {
                     matchVal = currentVal;
                     matchValIndex = currentIndex;
                 }
             }
             // 3 - give new indexes for the Binary search
-            if ((sortOrder === "asc" && currentVal > target) ||
-                (sortOrder === "desc" && currentVal <= target)) {
+            if (currentVal > target || (mode === "strict" && currentVal === target)) {
                 indexRight = currentIndex - 1;
             }
             else {
@@ -11592,7 +11613,10 @@
             }
         }
         // note that valMinIndex could be 0
-        return matchValIndex !== undefined ? matchValIndex : -1;
+        if (matchValIndex === undefined) {
+            return -1;
+        }
+        return sortOrder === "desc" ? rangeLength - matchValIndex - 1 : matchValIndex;
     }
     /**
      * Perform a linear search and return the index of the match.
@@ -18384,13 +18408,12 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
     }
     const whiteSpaceRegexp = /\s/;
     function tokenizeSpace(chars) {
-        let length = 0;
+        let spaces = "";
         while (chars[0] && chars[0].match(whiteSpaceRegexp)) {
-            length++;
-            chars.shift();
+            spaces += chars.shift();
         }
-        if (length) {
-            return { type: "SPACE", value: " ".repeat(length) };
+        if (spaces) {
+            return { type: "SPACE", value: spaces };
         }
         return null;
     }
@@ -18400,284 +18423,6 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             return { type: "INVALID_REFERENCE", value: INCORRECT_RANGE_STRING };
         }
         return null;
-    }
-
-    const functionRegex = /[a-zA-Z0-9\_]+(\.[a-zA-Z0-9\_]+)*/;
-    const UNARY_OPERATORS_PREFIX = ["-", "+"];
-    const UNARY_OPERATORS_POSTFIX = ["%"];
-    const ASSOCIATIVE_OPERATORS = ["*", "+", "&"];
-    const OP_PRIORITY = {
-        "^": 30,
-        "%": 30,
-        "*": 20,
-        "/": 20,
-        "+": 15,
-        "-": 15,
-        "&": 13,
-        ">": 10,
-        "<>": 10,
-        ">=": 10,
-        "<": 10,
-        "<=": 10,
-        "=": 10,
-    };
-    const FUNCTION_BP = 6;
-    function bindingPower(token) {
-        switch (token.type) {
-            case "NUMBER":
-            case "SYMBOL":
-            case "REFERENCE":
-                return 0;
-            case "COMMA":
-                return 3;
-            case "LEFT_PAREN":
-                return 5;
-            case "RIGHT_PAREN":
-                return 5;
-            case "OPERATOR":
-                return OP_PRIORITY[token.value] || 15;
-        }
-        throw new Error(_lt("Unknown token: %s", token.value));
-    }
-    function parsePrefix(current, tokens) {
-        var _a, _b, _c, _d;
-        switch (current.type) {
-            case "DEBUGGER":
-                const next = parseExpression(tokens, 1000);
-                next.debug = true;
-                return next;
-            case "NUMBER":
-                return { type: "NUMBER", value: parseNumber(current.value) };
-            case "STRING":
-                return { type: "STRING", value: removeStringQuotes(current.value) };
-            case "FUNCTION":
-                if (tokens.shift().type !== "LEFT_PAREN") {
-                    throw new Error(_lt("Wrong function call"));
-                }
-                else {
-                    const args = [];
-                    if (tokens[0] && tokens[0].type !== "RIGHT_PAREN") {
-                        if (tokens[0].type === "COMMA") {
-                            args.push({ type: "UNKNOWN", value: "" });
-                        }
-                        else {
-                            args.push(parseExpression(tokens, FUNCTION_BP));
-                        }
-                        while (((_a = tokens[0]) === null || _a === void 0 ? void 0 : _a.type) === "COMMA") {
-                            tokens.shift();
-                            const token = tokens[0];
-                            if ((token === null || token === void 0 ? void 0 : token.type) === "RIGHT_PAREN") {
-                                args.push({ type: "UNKNOWN", value: "" });
-                                break;
-                            }
-                            else if ((token === null || token === void 0 ? void 0 : token.type) === "COMMA") {
-                                args.push({ type: "UNKNOWN", value: "" });
-                            }
-                            else {
-                                args.push(parseExpression(tokens, FUNCTION_BP));
-                            }
-                        }
-                    }
-                    const closingToken = tokens.shift();
-                    if (!closingToken || closingToken.type !== "RIGHT_PAREN") {
-                        throw new Error(_lt("Wrong function call"));
-                    }
-                    return { type: "FUNCALL", value: current.value, args };
-                }
-            case "INVALID_REFERENCE":
-                throw new InvalidReferenceError();
-            case "REFERENCE":
-                if (((_b = tokens[0]) === null || _b === void 0 ? void 0 : _b.value) === ":" && ((_c = tokens[1]) === null || _c === void 0 ? void 0 : _c.type) === "REFERENCE") {
-                    tokens.shift();
-                    const rightReference = tokens.shift();
-                    return {
-                        type: "REFERENCE",
-                        value: `${current.value}:${rightReference === null || rightReference === void 0 ? void 0 : rightReference.value}`,
-                    };
-                }
-                return {
-                    type: "REFERENCE",
-                    value: current.value,
-                };
-            case "SYMBOL":
-                if (["TRUE", "FALSE"].includes(current.value.toUpperCase())) {
-                    return { type: "BOOLEAN", value: current.value.toUpperCase() === "TRUE" };
-                }
-                else {
-                    if (current.value) {
-                        if (functionRegex.test(current.value) && ((_d = tokens[0]) === null || _d === void 0 ? void 0 : _d.type) === "LEFT_PAREN") {
-                            throw new UnknownFunctionError(current.value);
-                        }
-                        throw new Error(_lt("Invalid formula"));
-                    }
-                    return { type: "STRING", value: current.value };
-                }
-            case "LEFT_PAREN":
-                const result = parseExpression(tokens, 5);
-                if (!tokens.length || tokens[0].type !== "RIGHT_PAREN") {
-                    throw new Error(_lt("Unmatched left parenthesis"));
-                }
-                tokens.shift();
-                return result;
-            default:
-                if (current.type === "OPERATOR" && UNARY_OPERATORS_PREFIX.includes(current.value)) {
-                    return {
-                        type: "UNARY_OPERATION",
-                        value: current.value,
-                        operand: parseExpression(tokens, OP_PRIORITY[current.value]),
-                    };
-                }
-                throw new Error(_lt("Unexpected token: %s", current.value));
-        }
-    }
-    function parseInfix(left, current, tokens) {
-        if (current.type === "OPERATOR") {
-            const bp = bindingPower(current);
-            if (UNARY_OPERATORS_POSTFIX.includes(current.value)) {
-                return {
-                    type: "UNARY_OPERATION",
-                    value: current.value,
-                    operand: left,
-                    postfix: true,
-                };
-            }
-            else {
-                const right = parseExpression(tokens, bp);
-                return {
-                    type: "BIN_OPERATION",
-                    value: current.value,
-                    left,
-                    right,
-                };
-            }
-        }
-        throw new Error(DEFAULT_ERROR_MESSAGE);
-    }
-    function parseExpression(tokens, bp) {
-        const token = tokens.shift();
-        if (!token) {
-            throw new Error(DEFAULT_ERROR_MESSAGE);
-        }
-        let expr = parsePrefix(token, tokens);
-        while (tokens[0] && bindingPower(tokens[0]) > bp) {
-            expr = parseInfix(expr, tokens.shift(), tokens);
-        }
-        return expr;
-    }
-    /**
-     * Parse an expression (as a string) into an AST.
-     */
-    function parse(str) {
-        return parseTokens(tokenize(str));
-    }
-    function parseTokens(tokens) {
-        tokens = tokens.filter((x) => x.type !== "SPACE");
-        if (tokens[0].type === "OPERATOR" && tokens[0].value === "=") {
-            tokens.splice(0, 1);
-        }
-        const result = parseExpression(tokens, 0);
-        if (tokens.length) {
-            throw new Error(DEFAULT_ERROR_MESSAGE);
-        }
-        return result;
-    }
-    /**
-     * Allows to visit all nodes of an AST and apply a mapping function
-     * to nodes of a specific type.
-     * Useful if you want to convert some part of a formula.
-     *
-     * e.g.
-     * ```ts
-     * convertAstNodes(ast, "FUNCALL", convertFormulaToExcel)
-     *
-     * function convertFormulaToExcel(ast: ASTFuncall) {
-     *   // ...
-     *   return modifiedAst
-     * }
-     * ```
-     */
-    function convertAstNodes(ast, type, fn) {
-        if (type === ast.type) {
-            ast = fn(ast);
-        }
-        switch (ast.type) {
-            case "FUNCALL":
-                return {
-                    ...ast,
-                    args: ast.args.map((child) => convertAstNodes(child, type, fn)),
-                };
-            case "UNARY_OPERATION":
-                return {
-                    ...ast,
-                    operand: convertAstNodes(ast.operand, type, fn),
-                };
-            case "BIN_OPERATION":
-                return {
-                    ...ast,
-                    right: convertAstNodes(ast.right, type, fn),
-                    left: convertAstNodes(ast.left, type, fn),
-                };
-            default:
-                return ast;
-        }
-    }
-    /**
-     * Converts an ast formula to the corresponding string
-     */
-    function astToFormula(ast) {
-        switch (ast.type) {
-            case "FUNCALL":
-                const args = ast.args.map((arg) => astToFormula(arg));
-                return `${ast.value}(${args.join(",")})`;
-            case "NUMBER":
-                return ast.value.toString();
-            case "REFERENCE":
-                return ast.value;
-            case "STRING":
-                return `"${ast.value}"`;
-            case "BOOLEAN":
-                return ast.value ? "TRUE" : "FALSE";
-            case "UNARY_OPERATION":
-                return ast.postfix
-                    ? leftOperandToFormula(ast) + ast.value
-                    : ast.value + rightOperandToFormula(ast);
-            case "BIN_OPERATION":
-                return leftOperandToFormula(ast) + ast.value + rightOperandToFormula(ast);
-            default:
-                return ast.value;
-        }
-    }
-    /**
-     * Convert the left operand of a binary operation to the corresponding string
-     * and enclose the result inside parenthesis if necessary.
-     */
-    function leftOperandToFormula(operationAST) {
-        const mainOperator = operationAST.value;
-        const leftOperation = "left" in operationAST ? operationAST.left : operationAST.operand;
-        const leftOperator = leftOperation.value;
-        const needParenthesis = leftOperation.type === "BIN_OPERATION" && OP_PRIORITY[leftOperator] < OP_PRIORITY[mainOperator];
-        return needParenthesis ? `(${astToFormula(leftOperation)})` : astToFormula(leftOperation);
-    }
-    /**
-     * Convert the right operand of a binary or unary operation to the corresponding string
-     * and enclose the result inside parenthesis if necessary.
-     */
-    function rightOperandToFormula(operationAST) {
-        const mainOperator = operationAST.value;
-        const rightOperation = "right" in operationAST ? operationAST.right : operationAST.operand;
-        const rightPriority = OP_PRIORITY[rightOperation.value];
-        const mainPriority = OP_PRIORITY[mainOperator];
-        let needParenthesis = false;
-        if (rightOperation.type !== "BIN_OPERATION") {
-            needParenthesis = false;
-        }
-        else if (rightPriority < mainPriority) {
-            needParenthesis = true;
-        }
-        else if (rightPriority === mainPriority && !ASSOCIATIVE_OPERATORS.includes(mainOperator)) {
-            needParenthesis = true;
-        }
-        return needParenthesis ? `(${astToFormula(rightOperation)})` : astToFormula(rightOperation);
     }
 
     var State;
@@ -18819,6 +18564,287 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             result.push(matchReference(tokens) || tokens.shift());
         }
         return result;
+    }
+
+    const functionRegex = /[a-zA-Z0-9\_]+(\.[a-zA-Z0-9\_]+)*/;
+    const UNARY_OPERATORS_PREFIX = ["-", "+"];
+    const UNARY_OPERATORS_POSTFIX = ["%"];
+    const ASSOCIATIVE_OPERATORS = ["*", "+", "&"];
+    const OP_PRIORITY = {
+        "^": 30,
+        "%": 30,
+        "*": 20,
+        "/": 20,
+        "+": 15,
+        "-": 15,
+        "&": 13,
+        ">": 10,
+        "<>": 10,
+        ">=": 10,
+        "<": 10,
+        "<=": 10,
+        "=": 10,
+    };
+    const FUNCTION_BP = 6;
+    function bindingPower(token) {
+        switch (token.type) {
+            case "NUMBER":
+            case "SYMBOL":
+            case "REFERENCE":
+                return 0;
+            case "COMMA":
+                return 3;
+            case "LEFT_PAREN":
+                return 5;
+            case "RIGHT_PAREN":
+                return 5;
+            case "OPERATOR":
+                return OP_PRIORITY[token.value] || 15;
+        }
+        throw new Error(_lt("Unknown token: %s", token.value));
+    }
+    function parsePrefix(current, tokens) {
+        var _a, _b, _c, _d;
+        switch (current.type) {
+            case "DEBUGGER":
+                const next = parseExpression(tokens, 1000);
+                next.debug = true;
+                return next;
+            case "NUMBER":
+                return { type: "NUMBER", value: parseNumber(current.value) };
+            case "STRING":
+                return { type: "STRING", value: removeStringQuotes(current.value) };
+            case "FUNCTION":
+                if (tokens.shift().type !== "LEFT_PAREN") {
+                    throw new Error(_lt("Wrong function call"));
+                }
+                else {
+                    const args = [];
+                    if (tokens[0] && tokens[0].type !== "RIGHT_PAREN") {
+                        if (tokens[0].type === "COMMA") {
+                            args.push({ type: "UNKNOWN", value: "" });
+                        }
+                        else {
+                            args.push(parseExpression(tokens, FUNCTION_BP));
+                        }
+                        while (((_a = tokens[0]) === null || _a === void 0 ? void 0 : _a.type) === "COMMA") {
+                            tokens.shift();
+                            const token = tokens[0];
+                            if ((token === null || token === void 0 ? void 0 : token.type) === "RIGHT_PAREN") {
+                                args.push({ type: "UNKNOWN", value: "" });
+                                break;
+                            }
+                            else if ((token === null || token === void 0 ? void 0 : token.type) === "COMMA") {
+                                args.push({ type: "UNKNOWN", value: "" });
+                            }
+                            else {
+                                args.push(parseExpression(tokens, FUNCTION_BP));
+                            }
+                        }
+                    }
+                    const closingToken = tokens.shift();
+                    if (!closingToken || closingToken.type !== "RIGHT_PAREN") {
+                        throw new Error(_lt("Wrong function call"));
+                    }
+                    return { type: "FUNCALL", value: current.value, args };
+                }
+            case "INVALID_REFERENCE":
+                return {
+                    type: "REFERENCE",
+                    value: CellErrorType.InvalidReference,
+                };
+            case "REFERENCE":
+                if (((_b = tokens[0]) === null || _b === void 0 ? void 0 : _b.value) === ":" && ((_c = tokens[1]) === null || _c === void 0 ? void 0 : _c.type) === "REFERENCE") {
+                    tokens.shift();
+                    const rightReference = tokens.shift();
+                    return {
+                        type: "REFERENCE",
+                        value: `${current.value}:${rightReference === null || rightReference === void 0 ? void 0 : rightReference.value}`,
+                    };
+                }
+                return {
+                    type: "REFERENCE",
+                    value: current.value,
+                };
+            case "SYMBOL":
+                if (["TRUE", "FALSE"].includes(current.value.toUpperCase())) {
+                    return { type: "BOOLEAN", value: current.value.toUpperCase() === "TRUE" };
+                }
+                else {
+                    if (current.value) {
+                        if (functionRegex.test(current.value) && ((_d = tokens[0]) === null || _d === void 0 ? void 0 : _d.type) === "LEFT_PAREN") {
+                            throw new UnknownFunctionError(current.value);
+                        }
+                        throw new Error(_lt("Invalid formula"));
+                    }
+                    return { type: "STRING", value: current.value };
+                }
+            case "LEFT_PAREN":
+                const result = parseExpression(tokens, 5);
+                if (!tokens.length || tokens[0].type !== "RIGHT_PAREN") {
+                    throw new Error(_lt("Unmatched left parenthesis"));
+                }
+                tokens.shift();
+                return result;
+            default:
+                if (current.type === "OPERATOR" && UNARY_OPERATORS_PREFIX.includes(current.value)) {
+                    return {
+                        type: "UNARY_OPERATION",
+                        value: current.value,
+                        operand: parseExpression(tokens, OP_PRIORITY[current.value]),
+                    };
+                }
+                throw new Error(_lt("Unexpected token: %s", current.value));
+        }
+    }
+    function parseInfix(left, current, tokens) {
+        if (current.type === "OPERATOR") {
+            const bp = bindingPower(current);
+            if (UNARY_OPERATORS_POSTFIX.includes(current.value)) {
+                return {
+                    type: "UNARY_OPERATION",
+                    value: current.value,
+                    operand: left,
+                    postfix: true,
+                };
+            }
+            else {
+                const right = parseExpression(tokens, bp);
+                return {
+                    type: "BIN_OPERATION",
+                    value: current.value,
+                    left,
+                    right,
+                };
+            }
+        }
+        throw new Error(DEFAULT_ERROR_MESSAGE);
+    }
+    function parseExpression(tokens, bp) {
+        const token = tokens.shift();
+        if (!token) {
+            throw new Error(DEFAULT_ERROR_MESSAGE);
+        }
+        let expr = parsePrefix(token, tokens);
+        while (tokens[0] && bindingPower(tokens[0]) > bp) {
+            expr = parseInfix(expr, tokens.shift(), tokens);
+        }
+        return expr;
+    }
+    /**
+     * Parse an expression (as a string) into an AST.
+     */
+    function parse(str) {
+        return parseTokens(rangeTokenize(str));
+    }
+    function parseTokens(tokens) {
+        tokens = tokens.filter((x) => x.type !== "SPACE");
+        if (tokens[0] && tokens[0].type === "OPERATOR" && tokens[0].value === "=") {
+            tokens.splice(0, 1);
+        }
+        const result = parseExpression(tokens, 0);
+        if (tokens.length) {
+            throw new Error(DEFAULT_ERROR_MESSAGE);
+        }
+        return result;
+    }
+    /**
+     * Allows to visit all nodes of an AST and apply a mapping function
+     * to nodes of a specific type.
+     * Useful if you want to convert some part of a formula.
+     *
+     * e.g.
+     * ```ts
+     * convertAstNodes(ast, "FUNCALL", convertFormulaToExcel)
+     *
+     * function convertFormulaToExcel(ast: ASTFuncall) {
+     *   // ...
+     *   return modifiedAst
+     * }
+     * ```
+     */
+    function convertAstNodes(ast, type, fn) {
+        if (type === ast.type) {
+            ast = fn(ast);
+        }
+        switch (ast.type) {
+            case "FUNCALL":
+                return {
+                    ...ast,
+                    args: ast.args.map((child) => convertAstNodes(child, type, fn)),
+                };
+            case "UNARY_OPERATION":
+                return {
+                    ...ast,
+                    operand: convertAstNodes(ast.operand, type, fn),
+                };
+            case "BIN_OPERATION":
+                return {
+                    ...ast,
+                    right: convertAstNodes(ast.right, type, fn),
+                    left: convertAstNodes(ast.left, type, fn),
+                };
+            default:
+                return ast;
+        }
+    }
+    /**
+     * Converts an ast formula to the corresponding string
+     */
+    function astToFormula(ast) {
+        switch (ast.type) {
+            case "FUNCALL":
+                const args = ast.args.map((arg) => astToFormula(arg));
+                return `${ast.value}(${args.join(",")})`;
+            case "NUMBER":
+                return ast.value.toString();
+            case "REFERENCE":
+                return ast.value;
+            case "STRING":
+                return `"${ast.value}"`;
+            case "BOOLEAN":
+                return ast.value ? "TRUE" : "FALSE";
+            case "UNARY_OPERATION":
+                return ast.postfix
+                    ? leftOperandToFormula(ast) + ast.value
+                    : ast.value + rightOperandToFormula(ast);
+            case "BIN_OPERATION":
+                return leftOperandToFormula(ast) + ast.value + rightOperandToFormula(ast);
+            default:
+                return ast.value;
+        }
+    }
+    /**
+     * Convert the left operand of a binary operation to the corresponding string
+     * and enclose the result inside parenthesis if necessary.
+     */
+    function leftOperandToFormula(operationAST) {
+        const mainOperator = operationAST.value;
+        const leftOperation = "left" in operationAST ? operationAST.left : operationAST.operand;
+        const leftOperator = leftOperation.value;
+        const needParenthesis = leftOperation.type === "BIN_OPERATION" && OP_PRIORITY[leftOperator] < OP_PRIORITY[mainOperator];
+        return needParenthesis ? `(${astToFormula(leftOperation)})` : astToFormula(leftOperation);
+    }
+    /**
+     * Convert the right operand of a binary or unary operation to the corresponding string
+     * and enclose the result inside parenthesis if necessary.
+     */
+    function rightOperandToFormula(operationAST) {
+        const mainOperator = operationAST.value;
+        const rightOperation = "right" in operationAST ? operationAST.right : operationAST.operand;
+        const rightPriority = OP_PRIORITY[rightOperation.value];
+        const mainPriority = OP_PRIORITY[mainOperator];
+        let needParenthesis = false;
+        if (rightOperation.type !== "BIN_OPERATION") {
+            needParenthesis = false;
+        }
+        else if (rightPriority < mainPriority) {
+            needParenthesis = true;
+        }
+        else if (rightPriority === mainPriority && !ASSOCIATIVE_OPERATORS.includes(mainOperator)) {
+            needParenthesis = true;
+        }
+        return needParenthesis ? `(${astToFormula(rightOperation)})` : astToFormula(rightOperation);
     }
 
     const functions$2 = functionRegistry.content;
@@ -20414,11 +20440,11 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
   }
 
   /* Custom css to highlight topbar composer on focus */
-  .o-topbar-toolbar .o-composer-container:focus-within {
-    border: 1px solid ${SELECTION_BORDER_COLOR};
+  .o-topbar-toolbar .o-composer-container[active] {
+    border: 1px solid ${SELECTION_BORDER_COLOR} !important;
   }
 
-  .o-topbar-toolbar .o-composer-container {
+  .o-topbar-toolbar .o-composer-container[active] {
     z-index: ${ComponentsImportance.TopBarComposer};
   }
 `;
@@ -20426,6 +20452,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         constructor() {
             super(...arguments);
             this.composerRef = owl.useRef("o_composer");
+            this.spreadsheetRect = useSpreadsheetRect();
             this.contentHelper = new ContentEditableHelper(this.composerRef.el);
             this.composerState = owl.useState({
                 positionStart: 0,
@@ -20461,24 +20488,28 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             };
         }
         get assistantStyle() {
+            const composerRect = this.composerRef.el.getBoundingClientRect();
+            const assistantStyle = {
+                width: `${ASSISTANT_WIDTH}px`,
+            };
             if (this.props.delimitation && this.props.rect) {
                 const { x: cellX, y: cellY, height: cellHeight } = this.props.rect;
                 const remainingHeight = this.props.delimitation.height - (cellY + cellHeight);
-                let assistantStyle = "";
                 if (cellY > remainingHeight) {
                     // render top
-                    assistantStyle += `
-          top: -8px;
-          transform: translate(0, -100%);
-        `;
+                    assistantStyle.top = "-8px";
+                    assistantStyle.transform = "translate(0, -100%)";
                 }
                 if (cellX + ASSISTANT_WIDTH > this.props.delimitation.width) {
                     // render left
-                    assistantStyle += `right:0px;`;
+                    assistantStyle.right = "0px";
                 }
-                return (assistantStyle += `width:${ASSISTANT_WIDTH}px;`);
+                return cssPropertiesToCss(assistantStyle);
             }
-            return `width:${ASSISTANT_WIDTH}px;`;
+            if (composerRect.left + ASSISTANT_WIDTH > this.spreadsheetRect.width) {
+                assistantStyle.right = "0px";
+            }
+            return cssPropertiesToCss(assistantStyle);
         }
         setup() {
             owl.onMounted(() => {
@@ -21362,6 +21393,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                 y: 0,
                 width: 0,
                 height: 0,
+                cancelDnd: undefined,
             });
         }
         setup() {
@@ -21375,11 +21407,24 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                 // new rendering
                 this.render();
             });
+            owl.onWillUpdateProps(() => {
+                const sheetId = this.env.model.getters.getActiveSheetId();
+                if (this.dnd.figId && !this.env.model.getters.getFigure(sheetId, this.dnd.figId)) {
+                    if (this.dnd.cancelDnd) {
+                        this.dnd.cancelDnd();
+                    }
+                    this.dnd.figId = undefined;
+                    this.dnd.cancelDnd = undefined;
+                }
+            });
         }
         getVisibleFigures() {
             const visibleFigures = this.env.model.getters.getVisibleFigures();
             if (this.dnd.figId && !visibleFigures.some((figure) => figure.id === this.dnd.figId)) {
-                visibleFigures.push(this.env.model.getters.getFigure(this.env.model.getters.getActiveSheetId(), this.dnd.figId));
+                const draggedFigure = this.env.model.getters.getFigure(this.env.model.getters.getActiveSheetId(), this.dnd.figId);
+                if (draggedFigure) {
+                    visibleFigures.push(draggedFigure);
+                }
             }
             return visibleFigures;
         }
@@ -21492,7 +21537,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                 this.dnd.figId = undefined;
                 this.env.model.dispatch("UPDATE_FIGURE", { sheetId, id: figure.id, x, y });
             };
-            startDnd(onMouseMove, onMouseUp);
+            this.dnd.cancelDnd = startDnd(onMouseMove, onMouseUp);
         }
         startResize(figure, dirX, dirY, ev) {
             ev.stopPropagation();
@@ -21546,7 +21591,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                     ...update,
                 });
             };
-            startDnd(onMouseMove, onMouseUp);
+            this.dnd.cancelDnd = startDnd(onMouseMove, onMouseUp);
         }
         getDndFigure() {
             const figure = this.getVisibleFigures().find((fig) => fig.id === this.dnd.figId);
@@ -21616,10 +21661,13 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             row: undefined,
         };
         const { Date } = window;
-        let x = 0;
-        let y = 0;
+        let x = undefined;
+        let y = undefined;
         let lastMoved = 0;
         function getPosition() {
+            if (x === undefined || y === undefined) {
+                return { col: -1, row: -1 };
+            }
             const col = env.model.getters.getColIndex(x);
             const row = env.model.getters.getRowIndex(y);
             return { col, row };
@@ -23682,6 +23730,8 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "BITOR",
         "BITRSHIFT",
         "BITXOR",
+        "BYCOL",
+        "BYROW",
         "CEILING.MATH",
         "CEILING.PRECISE",
         "CHISQ.DIST",
@@ -23689,6 +23739,8 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "CHISQ.INV",
         "CHISQ.INV.RT",
         "CHISQ.TEST",
+        "CHOOSECOLS",
+        "CHOOSEROWS",
         "COMBINA",
         "CONCAT",
         "CONFIDENCE.NORM",
@@ -23701,14 +23753,17 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "CSCH",
         "DAYS",
         "DECIMAL",
+        "DROP",
         "ERF.PRECISE",
         "ERFC.PRECISE",
+        "EXPAND",
         "EXPON.DIST",
         "F.DIST",
         "F.DIST.RT",
         "F.INV",
         "F.INV.RT",
         "F.TEST",
+        "FIELDVALUE",
         "FILTERXML",
         "FLOOR.MATH",
         "FLOOR.PRECISE",
@@ -23723,6 +23778,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "GAMMA.INV",
         "GAMMALN.PRECISE",
         "GAUSS",
+        "HSTACK",
         "HYPGEOM.DIST",
         "IFNA",
         "IFS",
@@ -23735,9 +23791,14 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "IMSINH",
         "IMTAN",
         "ISFORMULA",
+        "ISOMITTED",
         "ISOWEEKNUM",
+        "LAMBDA",
+        "LET",
         "LOGNORM.DIST",
         "LOGNORM.INV",
+        "MAKEARRAY",
+        "MAP",
         "MAXIFS",
         "MINIFS",
         "MODE.MULT",
@@ -23757,17 +23818,26 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "PERMUTATIONA",
         "PHI",
         "POISSON.DIST",
+        "PQSOURCE",
+        "PYTHON_STR",
+        "PYTHON_TYPE",
+        "PYTHON_TYPENAME",
         "QUARTILE.EXC",
         "QUARTILE.INC",
         "QUERYSTRING",
+        "RANDARRAY",
         "RANK.AVG",
         "RANK.EQ",
+        "REDUCE",
         "RRI",
+        "SCAN",
         "SEC",
         "SECH",
+        "SEQUENCE",
         "SHEET",
         "SHEETS",
         "SKEW.P",
+        "SORTBY",
         "STDEV.P",
         "STDEV.S",
         "SWITCH",
@@ -23777,13 +23847,24 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "T.INV",
         "T.INV.2T",
         "T.TEST",
+        "TAKE",
+        "TEXTAFTER",
+        "TEXTBEFORE",
         "TEXTJOIN",
+        "TEXTSPLIT",
+        "TOCOL",
+        "TOROW",
         "UNICHAR",
         "UNICODE",
+        "UNIQUE",
         "VAR.P",
         "VAR.S",
+        "VSTACK",
         "WEBSERVICE",
         "WEIBULL.DIST",
+        "WRAPCOLS",
+        "WRAPROWS",
+        "XLOOKUP",
         "XOR",
         "Z.TEST",
     ];
@@ -24958,6 +25039,9 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
     }
     function convertChartData(chartData) {
         var _a;
+        if (chartData.dataSets.length === 0) {
+            return undefined;
+        }
         const labelRange = (_a = chartData.dataSets[0].label) === null || _a === void 0 ? void 0 : _a.replace(/\$/g, "");
         let dataSets = chartData.dataSets.map((data) => data.range.replace(/\$/g, ""));
         // For doughnut charts, in chartJS first dataset = outer dataset, in excel first dataset = inner dataset
@@ -27426,12 +27510,37 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                     this.clearBorders(cmd.sheetId, cmd.target);
                     break;
                 case "REMOVE_COLUMNS_ROWS":
-                    for (let el of [...cmd.elements].sort((a, b) => b - a)) {
+                    const elements = [...cmd.elements].sort((a, b) => b - a);
+                    for (const group of groupConsecutive(elements)) {
                         if (cmd.dimension === "COL") {
-                            this.shiftBordersHorizontally(cmd.sheetId, el + 1, -1);
+                            if (group[0] >= this.getters.getNumberCols(cmd.sheetId)) {
+                                for (let row = 0; row < this.getters.getNumberRows(cmd.sheetId); row++) {
+                                    this.history.update("borders", cmd.sheetId, group[0] + 1, row, "vertical", undefined);
+                                }
+                            }
+                            if (group[group.length - 1] === 0) {
+                                for (let row = 0; row < this.getters.getNumberRows(cmd.sheetId); row++) {
+                                    this.history.update("borders", cmd.sheetId, 0, row, "vertical", undefined);
+                                }
+                            }
+                            const zone = this.getters.getColsZone(cmd.sheetId, group[group.length - 1] + 1, group[0]);
+                            this.clearInsideBorders(cmd.sheetId, [zone]);
+                            this.shiftBordersHorizontally(cmd.sheetId, group[0] + 1, -group.length);
                         }
                         else {
-                            this.shiftBordersVertically(cmd.sheetId, el + 1, -1);
+                            if (group[0] >= this.getters.getNumberRows(cmd.sheetId)) {
+                                for (let col = 0; col < this.getters.getNumberCols(cmd.sheetId); col++) {
+                                    this.history.update("borders", cmd.sheetId, col, group[0] + 1, "horizontal", undefined);
+                                }
+                            }
+                            if (group[group.length - 1] === 0) {
+                                for (let col = 0; col < this.getters.getNumberCols(cmd.sheetId); col++) {
+                                    this.history.update("borders", cmd.sheetId, col, 0, "horizontal", undefined);
+                                }
+                            }
+                            const zone = this.getters.getRowsZone(cmd.sheetId, group[group.length - 1] + 1, group[0]);
+                            this.clearInsideBorders(cmd.sheetId, [zone]);
+                            this.shiftBordersVertically(cmd.sheetId, group[0] + 1, -group.length);
                         }
                     }
                     break;
@@ -27571,6 +27680,22 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             return Object.keys(sheetBorders).map((index) => parseInt(index, 10));
         }
         /**
+         * Get all the rows which contains at least a border
+         */
+        getRowsWithBorders(sheetId) {
+            var _a;
+            const sheetBorders = (_a = this.borders[sheetId]) === null || _a === void 0 ? void 0 : _a.filter(isDefined$1);
+            if (!sheetBorders)
+                return [];
+            const rowsWithBorders = new Set();
+            for (const rowBorders of sheetBorders) {
+                for (const rowBorder in rowBorders) {
+                    rowsWithBorders.add(parseInt(rowBorder, 10));
+                }
+            }
+            return Array.from(rowsWithBorders);
+        }
+        /**
          * Get the range of all the rows in the sheet
          */
         getRowsRange(sheetId) {
@@ -27619,7 +27744,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                     destructive: false,
                 });
             }
-            this.getRowsRange(sheetId)
+            this.getRowsWithBorders(sheetId)
                 .filter((row) => row >= start)
                 .sort((a, b) => (delta < 0 ? a - b : b - a)) // start by the end when moving up
                 .forEach((row) => {
@@ -27707,6 +27832,18 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                 }
                 for (let col = zone.left; col <= zone.right; col++) {
                     this.history.update("borders", sheetId, col, zone.bottom + 1, "horizontal", undefined);
+                }
+            }
+        }
+        /**
+         * Remove the borders inside of a zone
+         */
+        clearInsideBorders(sheetId, zones) {
+            for (let zone of zones) {
+                for (let row = zone.top; row <= zone.bottom; row++) {
+                    for (let col = zone.left; col <= zone.right; col++) {
+                        this.history.update("borders", sheetId, col, row, undefined);
+                    }
                 }
             }
         }
@@ -27862,7 +27999,6 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
     }
     BordersPlugin.getters = ["getCellBorder"];
 
-    const nbspRegexp = new RegExp(String.fromCharCode(160), "g");
     const LINK_STYLE = { textColor: LINK_COLOR };
     /**
      * Core Plugin
@@ -28196,13 +28332,10 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             return id;
         }
         updateCell(sheetId, col, row, after) {
-            var _a;
             const before = this.getters.getCell(sheetId, col, row);
             const hasContent = "content" in after || "formula" in after;
             // Compute the new cell properties
-            const afterContent = hasContent
-                ? ((_a = after.content) === null || _a === void 0 ? void 0 : _a.replace(nbspRegexp, "")) || ""
-                : (before === null || before === void 0 ? void 0 : before.content) || "";
+            const afterContent = (hasContent ? after.content : before === null || before === void 0 ? void 0 : before.content) || "";
             let style;
             if (after.style !== undefined) {
                 style = after.style || undefined;
@@ -30912,12 +31045,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                             });
                         }
                         if (colIndex > deletedColumn) {
-                            this.dispatch("UPDATE_CELL_POSITION", {
-                                sheetId: sheet.id,
-                                cellId: cellId,
-                                col: colIndex - 1,
-                                row: rowIndex,
-                            });
+                            this.setNewPosition(cellId, sheet.id, colIndex - 1, rowIndex);
                         }
                     }
                 }
@@ -30927,7 +31055,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
          * Move the cells after a column or rows insertion
          */
         moveCellsOnAddition(sheet, addedElement, quantity, dimension) {
-            const commands = [];
+            const updates = [];
             for (let rowIndex = 0; rowIndex < sheet.rows.length; rowIndex++) {
                 const row = sheet.rows[rowIndex];
                 if (dimension !== "rows" || rowIndex >= addedElement) {
@@ -30936,20 +31064,20 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                         const cellId = row.cells[i];
                         if (cellId) {
                             if (dimension === "rows" || colIndex >= addedElement) {
-                                commands.push({
-                                    type: "UPDATE_CELL_POSITION",
+                                updates.push({
                                     sheetId: sheet.id,
                                     cellId: cellId,
                                     col: colIndex + (dimension === "columns" ? quantity : 0),
                                     row: rowIndex + (dimension === "rows" ? quantity : 0),
+                                    type: "UPDATE_CELL_POSITION",
                                 });
                             }
                         }
                     }
                 }
             }
-            for (let cmd of commands.reverse()) {
-                this.dispatch(cmd.type, cmd);
+            for (let update of updates.reverse()) {
+                this.updateCellPosition(update);
             }
         }
         /**
@@ -30982,12 +31110,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                         const colIndex = Number(i);
                         const cellId = row.cells[i];
                         if (cellId) {
-                            this.dispatch("UPDATE_CELL_POSITION", {
-                                sheetId: sheet.id,
-                                cellId: cellId,
-                                col: colIndex,
-                                row: rowIndex - numberRows,
-                            });
+                            this.setNewPosition(cellId, sheet.id, colIndex, rowIndex - numberRows);
                         }
                     }
                 }
@@ -33894,11 +34017,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                     }
                     if (cell &&
                         this.currentSearchRegex &&
-                        this.currentSearchRegex.test(this.searchOptions.searchFormulas
-                            ? cell.isFormula()
-                                ? cell.content
-                                : String(cell.evaluated.value)
-                            : String(cell.evaluated.value))) {
+                        this.currentSearchRegex.test(this.searchOptions.searchFormulas ? cell.content : String(cell.evaluated.value))) {
                         const position = this.getters.getCellPosition(cell.id);
                         const match = { col: position.col, row: position.row, selected: false };
                         matches.push(match);
@@ -34300,12 +34419,21 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         drawGrid(renderingContext, layer) {
             switch (layer) {
                 case 0 /* LAYERS.Background */:
-                    this.boxes = this.getGridBoxes();
                     this.drawBackground(renderingContext);
-                    this.drawCellBackground(renderingContext);
-                    this.drawBorders(renderingContext);
-                    this.drawTexts(renderingContext);
-                    this.drawIcon(renderingContext);
+                    for (const zone of this.getters.getAllActiveViewportsZones()) {
+                        const { ctx } = renderingContext;
+                        ctx.save();
+                        ctx.beginPath();
+                        const rect = this.getters.getVisibleRect(zone);
+                        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+                        ctx.clip();
+                        this.boxes = this.getGridBoxes(zone);
+                        this.drawCellBackground(renderingContext);
+                        this.drawBorders(renderingContext);
+                        this.drawTexts(renderingContext);
+                        this.drawIcon(renderingContext);
+                        ctx.restore();
+                    }
                     this.drawFrozenPanes(renderingContext);
                     break;
                 case 7 /* LAYERS.Headers */:
@@ -34670,7 +34798,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             const row = zone.top;
             const cell = this.getters.getCell(sheetId, col, row);
             const showFormula = this.getters.shouldShowFormulas();
-            const { x, y, width, height } = this.getters.getVisibleRect(zone);
+            const { x, y, width, height } = this.getters.getRect(zone);
             const box = {
                 x,
                 y,
@@ -34782,12 +34910,16 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             }
             return box;
         }
-        getGridBoxes() {
+        getGridBoxes(zone) {
             const boxes = [];
-            const visibleCols = this.getters.getSheetViewVisibleCols();
+            const visibleCols = this.getters
+                .getSheetViewVisibleCols()
+                .filter((col) => col >= zone.left && col <= zone.right);
             const left = visibleCols[0];
             const right = visibleCols[visibleCols.length - 1];
-            const visibleRows = this.getters.getSheetViewVisibleRows();
+            const visibleRows = this.getters
+                .getSheetViewVisibleRows()
+                .filter((row) => row >= zone.top && row <= zone.bottom);
             const top = visibleRows[0];
             const bottom = visibleRows[visibleRows.length - 1];
             const viewport = { left, right, top, bottom };
@@ -35052,6 +35184,8 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                     this.selectedFigureId = null;
                     break;
             }
+        }
+        finalize() {
             /** Any change to the selection has to be  reflected in the selection processor. */
             this.selection.resetDefaultAnchor(this, deepCopy(this.gridSelection.anchor));
         }
@@ -35315,7 +35449,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             ];
             state.paste(pasteTarget, { selectTarget: true });
             const toRemove = isBasedBefore ? cmd.elements.map((el) => el + thickness) : cmd.elements;
-            let currentIndex = cmd.base;
+            let currentIndex = isBasedBefore ? cmd.base : cmd.base + 1;
             for (const element of toRemove) {
                 const size = cmd.dimension === "COL"
                     ? this.getters.getColSize(cmd.sheetId, element)
@@ -36534,6 +36668,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                 case "REMOTE_REVISION":
                 case "REVISION_REDONE":
                 case "REVISION_UNDONE":
+                case "SNAPSHOT_CREATED":
                     return this.processedRevisions.has(message.nextRevisionId);
                 default:
                     return false;
@@ -36821,7 +36956,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
          * @param zone
          * @returns Computes the absolute coordinate of a given zone inside the viewport
          */
-        getRect(zone) {
+        getVisibleRect(zone) {
             const targetZone = intersection(zone, this.zone);
             if (targetZone) {
                 const x = this.getters.getColRowOffset("COL", this.zone.left, targetZone.left) +
@@ -36829,12 +36964,20 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                 const y = this.getters.getColRowOffset("ROW", this.zone.top, targetZone.top) + this.offsetCorrectionY;
                 const width = Math.min(this.getters.getColRowOffset("COL", targetZone.left, targetZone.right + 1), this.viewportWidth);
                 const height = Math.min(this.getters.getColRowOffset("ROW", targetZone.top, targetZone.bottom + 1), this.viewportHeight);
-                return {
-                    x,
-                    y,
-                    width,
-                    height,
-                };
+                return { x, y, width, height };
+            }
+            else {
+                return undefined;
+            }
+        }
+        getFullRect(zone) {
+            const targetZone = intersection(zone, this.zone);
+            if (targetZone) {
+                const x = this.getters.getColRowOffset("COL", this.zone.left, zone.left) + this.offsetCorrectionX;
+                const y = this.getters.getColRowOffset("ROW", this.zone.top, zone.top) + this.offsetCorrectionY;
+                const width = this.getters.getColRowOffset("COL", zone.left, zone.right + 1);
+                const height = this.getters.getColRowOffset("ROW", zone.top, zone.bottom + 1);
+                return { x, y, width, height };
             }
             else {
                 return undefined;
@@ -37051,7 +37194,6 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         }
         handle(cmd) {
             var _a;
-            this.cleanViewports();
             switch (cmd.type) {
                 case "START":
                     this.selection.observe(this, {
@@ -37095,6 +37237,10 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
                     if ("content" in cmd || "format" in cmd || ((_a = cmd.style) === null || _a === void 0 ? void 0 : _a.fontSize) !== undefined) {
                         this.sheetsWithDirtyViewports.add(cmd.sheetId);
                     }
+                    break;
+                case "DELETE_SHEET":
+                    this.cleanViewports();
+                    this.sheetsWithDirtyViewports.delete(cmd.sheetId);
                     break;
                 case "ACTIVATE_SHEET":
                     this.setViewports();
@@ -37325,21 +37471,26 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         getVisibleRect(zone) {
             const sheetId = this.getters.getActiveSheetId();
             const viewportRects = this.getSubViewports(sheetId)
-                .map((viewport) => viewport.getRect(zone))
+                .map((viewport) => viewport.getVisibleRect(zone))
                 .filter(isDefined$1);
             if (viewportRects.length === 0) {
                 return { x: 0, y: 0, width: 0, height: 0 };
             }
-            const x = Math.min(...viewportRects.map((rect) => rect.x));
-            const y = Math.min(...viewportRects.map((rect) => rect.y));
-            const width = Math.max(...viewportRects.map((rect) => rect.x + rect.width)) - x;
-            const height = Math.max(...viewportRects.map((rect) => rect.y + rect.height)) - y;
-            return {
-                x: x + this.gridOffsetX,
-                y: y + this.gridOffsetY,
-                width,
-                height,
-            };
+            return this.recomposeRect(viewportRects);
+        }
+        /**
+         * Computes the actual size and position (:Rect) of the zone on the canvas
+         * regardless of the viewport dimensions.
+         */
+        getRect(zone) {
+            const sheetId = this.getters.getActiveSheetId();
+            const viewportRects = this.getSubViewports(sheetId)
+                .map((viewport) => viewport.getFullRect(zone))
+                .filter(isDefined$1);
+            if (viewportRects.length === 0) {
+                return { x: 0, y: 0, width: 0, height: 0 };
+            }
+            return this.recomposeRect(viewportRects);
         }
         /**
          * Returns the position of the MainViewport relatively to the start of the grid (without headers)
@@ -37352,6 +37503,10 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             const x = this.getters.getColDimensions(sheetId, xSplit).start;
             const y = this.getters.getRowDimensions(sheetId, ySplit).start;
             return { x, y };
+        }
+        getAllActiveViewportsZones() {
+            const sheetId = this.getters.getActiveSheetId();
+            return this.getSubViewports(sheetId);
         }
         // ---------------------------------------------------------------------------
         // Private
@@ -37412,6 +37567,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             }
         }
         resetSheetViews() {
+            this.cleanViewports();
             for (let sheetId of Object.keys(this.viewports)) {
                 const position = this.getters.getSheetPosition(sheetId);
                 this.resetViewports(sheetId);
@@ -37446,6 +37602,9 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             };
         }
         resetViewports(sheetId) {
+            if (!this.getters.tryGetSheet(sheetId)) {
+                return;
+            }
             const { xSplit, ySplit } = this.getters.getPaneDivisions(sheetId);
             const nCols = this.getters.getNumberCols(sheetId);
             const nRows = this.getters.getNumberRows(sheetId);
@@ -37531,6 +37690,18 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             const height = this.sheetViewHeight + this.gridOffsetY;
             return { xRatio: offsetCorrectionX / width, yRatio: offsetCorrectionY / height };
         }
+        recomposeRect(viewportRects) {
+            const x = Math.min(...viewportRects.map((rect) => rect.x));
+            const y = Math.min(...viewportRects.map((rect) => rect.y));
+            const width = Math.max(...viewportRects.map((rect) => rect.x + rect.width)) - x;
+            const height = Math.max(...viewportRects.map((rect) => rect.y + rect.height)) - y;
+            return {
+                x: x + this.gridOffsetX,
+                y: y + this.gridOffsetY,
+                width,
+                height,
+            };
+        }
     }
     SheetViewPlugin.getters = [
         "getColIndex",
@@ -37551,6 +37722,8 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         "getSheetViewVisibleCols",
         "getSheetViewVisibleRows",
         "getFrozenSheetViewRatio",
+        "getAllActiveViewportsZones",
+        "getRect",
     ];
 
     class SortPlugin extends UIPlugin {
@@ -40613,7 +40786,7 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
          * @param sheetXC the string description of a range, in the form SheetName!XC:XC
          */
         getRangeFromSheetXC(defaultSheetId, sheetXC) {
-            if (!rangeReference.test(sheetXC)) {
+            if (!rangeReference.test(sheetXC) || !this.getters.tryGetSheet(defaultSheetId)) {
                 return new RangeImpl({
                     sheetId: "",
                     zone: { left: -1, top: -1, right: -1, bottom: -1 },
@@ -41797,30 +41970,28 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
         const isExported = tokens
             .filter((tk) => tk.type === "FUNCTION")
             .every((tk) => functions[tk.value.toUpperCase()].isExported);
+        const type = getCellType(cell.value);
+        const exportedValue = adaptFormulaValueToExcel(cell.value);
         if (isExported) {
-            let cycle = escapeXml ``;
             const XlsxFormula = adaptFormulaToExcel(formula);
-            // hack for cycles : if we don't set a value (be it 0 or #VALUE!), it will appear as invisible on excel,
-            // Making it very hard for the client to find where the recursion is.
-            if (cell.value === CellErrorType.CircularDependency) {
-                attrs.push(["t", "str"]);
-                cycle = escapeXml /*xml*/ `<v>${cell.value}</v>`;
-            }
-            node = escapeXml /*xml*/ `<f> ${XlsxFormula} </f> ${cycle}`;
+            node = escapeXml /*xml*/ `
+      <f>
+        ${XlsxFormula}
+      </f>
+      ${escapeXml /*xml*/ `<v>${exportedValue}</v>`}
+    `;
+            attrs.push(["t", type]);
             return { attrs, node };
         }
         else {
-            // Shouldn't we always output the value then ?
-            const value = cell.value;
             // If the cell contains a non-exported formula and that is evaluates to
             // nothing* ,we don't export it.
             // * non-falsy value are relevant and so are 0 and FALSE, which only leaves
             // the empty string.
-            if (value === "")
+            if (exportedValue === "")
                 return undefined;
-            const type = getCellType(value);
             attrs.push(["t", type]);
-            node = escapeXml /*xml*/ `<v>${value}</v>`;
+            node = escapeXml /*xml*/ `<v>${exportedValue}</v>`;
             return { attrs, node };
         }
     }
@@ -41855,7 +42026,13 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             ast = addMissingRequiredArgs(ast);
             return ast;
         });
+        ast = convertAstNodes(ast, "REFERENCE", (ast) => {
+            return ast.value === CellErrorType.InvalidReference ? { ...ast, value: "#REF!" } : ast;
+        });
         return ast ? astToFormula(ast) : formulaText;
+    }
+    function adaptFormulaValueToExcel(formulaValue) {
+        return formulaValue === CellErrorType.InvalidReference ? "#REF!" : formulaValue;
     }
     /**
      * Some Excel function need required args that might not be mandatory in o-spreadsheet.
@@ -43044,6 +43221,9 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             this.selection.observe(this, {
                 handleEvent: () => this.trigger("update"),
             });
+            // move in "Loading" mode where we ignore redundant calls to finalize triggered by the
+            // replay of stateUpdateMessages in the session
+            this.isLoading = true;
             // This should be done after construction of LocalHistory due to order of
             // events
             this.setupSessionEvents();
@@ -43056,6 +43236,9 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             // mark all models as "raw", so they will not be turned into reactive objects
             // by owl, since we do not rely on reactivity
             owl.markRaw(this);
+            this.isLoading = false;
+            // ensure propre recomputation of plugin states after the message replays
+            this.finalize();
         }
         joinSession() {
             this.session.join(this.config.client);
@@ -43165,6 +43348,9 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
             return DispatchResult.Success;
         }
         finalize() {
+            if (this.isLoading) {
+                return;
+            }
             this.status = 3 /* Status.Finalizing */;
             for (const h of this.handlers) {
                 h.finalize();
@@ -43383,9 +43569,9 @@ day_count_convention (number, default=${DEFAULT_DAY_COUNT_CONVENTION} ) ${_lt("A
     Object.defineProperty(exports, '__esModule', { value: true });
 
 
-    __info__.version = '16.0.45';
-    __info__.date = '2024-06-14T10:07:05.909Z';
-    __info__.hash = '5da9171';
+    __info__.version = '16.0.58';
+    __info__.date = '2025-01-27T10:55:15.353Z';
+    __info__.hash = '4886b0b';
 
 
 })(this.o_spreadsheet = this.o_spreadsheet || {}, owl);

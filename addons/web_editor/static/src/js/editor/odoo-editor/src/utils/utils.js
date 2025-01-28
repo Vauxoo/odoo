@@ -761,6 +761,35 @@ export function getTraversedNodes(editable, range = getDeepRange(editable)) {
     do {
         node = iterator.nextNode();
     } while (node && node !== range.startContainer && !(selectedTableCells.length && node === selectedTableCells[0]));
+    if (
+        node &&
+        !(selectedTableCells.length && node === selectedTableCells[0]) &&
+        !range.collapsed &&
+        node.nodeType === Node.ELEMENT_NODE &&
+        node.childNodes.length &&
+        range.startOffset &&
+        node.childNodes[range.startOffset - 1].nodeName === "BR"
+    ) {
+        // Handle the cases:
+        // <p>ab<br>[</p><p>cd</p>] => [p2, cd]
+        // <p>ab<br>[<br>cd</p><p>ef</p>] => [br2, cd, p2, ef]
+        const targetBr = node.childNodes[range.startOffset - 1];
+        while (node != targetBr) {
+            node = iterator.nextNode();
+        }
+        node = iterator.nextNode();
+    }
+    if (
+        node &&
+        !range.collapsed &&
+        node === range.startContainer &&
+        range.startOffset === nodeSize(node) &&
+        node.nextSibling &&
+        node.nextSibling.nodeName === "BR"
+    ) {
+        // Handle the case: <p>ab[<br>cd</p><p>ef</p>] => [br, cd, p2, ef]
+        node = iterator.nextNode();
+    }
     const traversedNodes = new Set([node, ...descendants(node)]);
     while (node && node !== range.endContainer) {
         node = iterator.nextNode();
@@ -771,9 +800,32 @@ export function getTraversedNodes(editable, range = getDeepRange(editable)) {
                     traversedNodes.add(selectedTd);
                     descendants(selectedTd).forEach(descendant => traversedNodes.add(descendant));
                 }
-            } else {
+            } else if (
+                !(
+                    // Handle the case: [<p>ab</p><p>cd<br>]ef</p> => [ab, p2, cd, br]
+                    node === range.endContainer &&
+                    range.endOffset === 0 &&
+                    !range.collapsed &&
+                    node.previousSibling &&
+                    node.previousSibling.nodeName === "BR"
+                )
+            ) {
                 traversedNodes.add(node);
             }
+        }
+    }
+    if (node) {
+        // Handle the cases:
+        // [<p>ab</p><p>cd<br>]</p> => [ab, p2, cd, br]
+        // [<p>ab</p><p>cd<br>]<br>ef</p> => [ab, p2, cd, br1]
+        for (const descendant of descendants(node)) {
+            if (
+                descendant.parentElement === node &&
+                childNodeIndex(descendant) >= range.endOffset
+            ) {
+                break;
+            }
+            traversedNodes.add(descendant);
         }
     }
     return [...traversedNodes];
@@ -871,11 +923,14 @@ export function getDeepRange(editable, { range, sel, splitText, select, correctT
     // at the last position of the previous node instead.
     const endLeaf = firstLeaf(end);
     const beforeEnd = endLeaf.previousSibling;
+    const isInsideColumn = closestElement(end, '.o_text_columns')
     if (
         correctTripleClick &&
         !endOffset &&
         (start !== end || startOffset !== endOffset) &&
-        (!beforeEnd || (beforeEnd.nodeType === Node.TEXT_NODE && !isVisibleStr(beforeEnd)))
+        (!beforeEnd || (beforeEnd.nodeType === Node.TEXT_NODE && !isVisibleStr(beforeEnd))) &&
+        !closestElement(endLeaf, 'table') &&
+        !isInsideColumn
     ) {
         const previous = previousLeaf(endLeaf, editable, true);
         if (previous && closestElement(previous).isContentEditable) {
@@ -1165,19 +1220,14 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
         getDeepRange(editor.editable, { splitText: true, select: true, correctTripleClick: true });
     }
 
-    // Get selected nodes within td to handle non-p elements like h1, h2...
-    // Targeting <br> to ensure span stays inside its corresponding block node.
-    const selectedNodesInTds = [...editor.editable.querySelectorAll('.o_selected_td')]
-        .map(node => closestElement(node).querySelector('br'));
     const selectedNodes = getSelectedNodes(editor.editable)
-        .filter(n => n.nodeType === Node.TEXT_NODE && closestElement(n).isContentEditable && isVisibleTextNode(n));
-    const selectedTextNodes = selectedNodes.length ? selectedNodes : selectedNodesInTds;
+        .filter(n => ((n.nodeType === Node.TEXT_NODE && isVisibleTextNode(n)) || n.nodeName === 'BR') && closestElement(n).isContentEditable);
 
     const formatSpec = formatsSpecs[formatName];
-    for (const selectedTextNode of selectedTextNodes) {
+    for (const node of selectedNodes) {
         const inlineAncestors = [];
-        let currentNode = selectedTextNode;
-        let parentNode = selectedTextNode.parentElement;
+        let currentNode = node;
+        let parentNode = node.parentElement;
 
         // Remove the format on all inline ancestors until a block or an element
         // with a class (in case the formating comes from the class).
@@ -1206,20 +1256,20 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
 
         const firstBlockOrClassHasFormat = formatSpec.isFormatted(parentNode, formatProps);
         if (firstBlockOrClassHasFormat && !applyStyle) {
-            formatSpec.addNeutralStyle && formatSpec.addNeutralStyle(getOrCreateSpan(selectedTextNode, inlineAncestors));
+            formatSpec.addNeutralStyle && formatSpec.addNeutralStyle(getOrCreateSpan(node, inlineAncestors));
         } else if (!firstBlockOrClassHasFormat && applyStyle) {
             const tag = formatSpec.tagName && document.createElement(formatSpec.tagName);
             if (tag) {
-                selectedTextNode.after(tag);
-                tag.append(selectedTextNode);
+                node.after(tag);
+                tag.append(node);
 
                 if (!formatSpec.isFormatted(tag, formatProps)) {
-                    tag.after(selectedTextNode);
+                    tag.after(node);
                     tag.remove();
-                    formatSpec.addStyle(getOrCreateSpan(selectedTextNode, inlineAncestors), formatProps);
+                    formatSpec.addStyle(getOrCreateSpan(node, inlineAncestors), formatProps);
                 }
             } else if (formatName !== 'fontSize' || formatProps.size !== undefined) {
-                formatSpec.addStyle(getOrCreateSpan(selectedTextNode, inlineAncestors), formatProps);
+                formatSpec.addStyle(getOrCreateSpan(node, inlineAncestors), formatProps);
             }
         }
     }
@@ -1228,8 +1278,8 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
         const siblings = [...zws.parentElement.childNodes];
         if (
             !isBlock(zws.parentElement) &&
-            selectedTextNodes.includes(siblings[0]) &&
-            selectedTextNodes.includes(siblings[siblings.length - 1])
+            selectedNodes.includes(siblings[0]) &&
+            selectedNodes.includes(siblings[siblings.length - 1])
         ) {
             zws.parentElement.setAttribute('data-oe-zws-empty-inline', '');
         } else {
@@ -1239,12 +1289,11 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
             span.append(zws);
         }
     }
-
-    if (selectedTextNodes[0] && selectedTextNodes[0].textContent === '\u200B') {
-        setSelection(selectedTextNodes[0], 0);
-    } else if (selectedTextNodes.length) {
-        const firstNode = selectedTextNodes[0];
-        const lastNode = selectedTextNodes[selectedTextNodes.length - 1];
+    if (selectedNodes.length === 1 && selectedNodes[0].textContent === '\u200B') {
+        setSelection(selectedNodes[0], 0);
+    } else if (selectedNodes.length) {
+        const firstNode = selectedNodes[0];
+        const lastNode = selectedNodes[selectedNodes.length - 1];
         if (direction === DIRECTIONS.RIGHT) {
             setSelection(firstNode, 0, lastNode, lastNode.length, false);
         } else {
@@ -1538,13 +1587,13 @@ export function isUnbreakable(node) {
                 node.getAttribute('t-value') ||
                 node.getAttribute('t-out') ||
                 node.getAttribute('t-raw'))) ||
-        node.classList.contains('oe_unbreakable')
+        node.matches(".oe_unbreakable, a.btn, a[role='tab'], a[role='button']")
     );
 }
 
 export function isUnremovable(node) {
     return (
-        (node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.TEXT_NODE) ||
+        (node.nodeType !== Node.COMMENT_NODE && node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.TEXT_NODE) ||
         node.oid === 'root' ||
         (node.nodeType === Node.ELEMENT_NODE &&
             (node.classList.contains('o_editable') || node.getAttribute('t-set') || node.getAttribute('t-call'))) ||
@@ -1702,7 +1751,7 @@ export const paragraphRelatedElements = [
  * @returns {boolean}
  */
 export function allowsParagraphRelatedElements(node) {
-    return isBlock(node) && !paragraphRelatedElements.includes(node.nodeName);
+    return isBlock(node) && !['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(node.nodeName);
 }
 
 /**
@@ -1922,6 +1971,7 @@ export function commonParentGet(node1, node2, root = undefined) {
 }
 
 export function getListMode(pnode) {
+    if (!["UL", "OL"].includes(pnode.tagName)) return;
     if (pnode.tagName == 'OL') return 'OL';
     return pnode.classList.contains('o_checklist') ? 'CL' : 'UL';
 }
@@ -1945,6 +1995,57 @@ export function insertListAfter(afterNode, mode, content = []) {
         }),
     );
     return list;
+}
+
+export function toggleList(node, mode, offset = 0) {
+    let pnode = node.closest('ul, ol');
+    if (!pnode) return;
+    const listMode = getListMode(pnode) + mode;
+    if (['OLCL', 'ULCL'].includes(listMode)) {
+        pnode.classList.add('o_checklist');
+        for (let li = pnode.firstElementChild; li !== null; li = li.nextElementSibling) {
+            if (li.style.listStyle !== 'none') {
+                li.style.listStyle = null;
+                if (!li.style.all) li.removeAttribute('style');
+            }
+        }
+        pnode = setTagName(pnode, 'UL');
+    } else if (['CLOL', 'CLUL'].includes(listMode)) {
+        toggleClass(pnode, 'o_checklist');
+        pnode = setTagName(pnode, mode);
+    } else if (['OLUL', 'ULOL'].includes(listMode)) {
+        pnode = setTagName(pnode, mode);
+    } else {
+        // toggle => remove list
+        let currNode = node;
+        while (currNode) {
+            currNode = currNode.oShiftTab(offset);
+        }
+        return;
+    }
+    return pnode;
+}
+
+/**
+ * Converts a list element and its nested elements to the specified list mode.
+ *
+ * @param {HTMLUListElement|HTMLOListElement|HTMLLIElement} node - HTML element
+ * representing a list or list item.
+ * @param {string} toMode - Target list mode
+ * @returns {HTMLUListElement|HTMLOListElement|HTMLLIElement} node - Modified
+ * list element after conversion.
+ */
+export function convertList(node, toMode) {
+    if (!["UL", "OL", "LI"].includes(node.nodeName)) return;
+    const listMode = getListMode(node);
+    if (listMode && toMode !== listMode) {
+        node = toggleList(node, toMode);
+    }
+    for (const child of node.childNodes) {
+        convertList(child, toMode);
+    }
+
+    return node;
 }
 
 export function toggleClass(node, className) {
@@ -2966,11 +3067,12 @@ export function getRangePosition(el, document, options = {}) {
         offset.left = marginLeft;
     }
 
-    if (options.parentContextRect) {
-        offset.left += options.parentContextRect.left;
-        offset.top += options.parentContextRect.top;
+    if (options.getContextFromParentRect) {
+        const parentContextRect = options.getContextFromParentRect();
+        offset.left += parentContextRect.left;
+        offset.top += parentContextRect.top;
         if (isRtl) {
-            offset.right += options.parentContextRect.left;
+            offset.right += parentContextRect.left;
         }
     }
 
@@ -3003,38 +3105,41 @@ export const isNotEditableNode = node =>
     node.getAttribute('contenteditable') &&
     node.getAttribute('contenteditable').toLowerCase() === 'false';
 
+export const isRoot = node => node.oid === "root";
+
 export const leftLeafFirstPath = createDOMPathGenerator(DIRECTIONS.LEFT);
 export const leftLeafOnlyNotBlockPath = createDOMPathGenerator(DIRECTIONS.LEFT, {
     leafOnly: true,
     stopTraverseFunction: isBlock,
-    stopFunction: isBlock,
+    stopFunction: node => isBlock(node) || isRoot(node),
 });
 export const leftLeafOnlyInScopeNotBlockEditablePath = createDOMPathGenerator(DIRECTIONS.LEFT, {
     leafOnly: true,
     inScope: true,
     stopTraverseFunction: node => isNotEditableNode(node) || isBlock(node),
-    stopFunction: node => isNotEditableNode(node) || isBlock(node),
+    stopFunction: node => isNotEditableNode(node) || isBlock(node) || isRoot(node),
 });
 
 export const rightLeafOnlyNotBlockPath = createDOMPathGenerator(DIRECTIONS.RIGHT, {
     leafOnly: true,
     stopTraverseFunction: isBlock,
-    stopFunction: isBlock,
+    stopFunction: node => isBlock(node) || isRoot(node),
 });
 
 export const rightLeafOnlyPathNotBlockNotEditablePath = createDOMPathGenerator(DIRECTIONS.RIGHT, {
     leafOnly: true,
+    stopFunction: node => isRoot(node),
 });
 export const rightLeafOnlyInScopeNotBlockEditablePath = createDOMPathGenerator(DIRECTIONS.RIGHT, {
     leafOnly: true,
     inScope: true,
     stopTraverseFunction: node => isNotEditableNode(node) || isBlock(node),
-    stopFunction: node => isNotEditableNode(node) || isBlock(node),
+    stopFunction: node => isNotEditableNode(node) || isBlock(node) || isRoot(node),
 });
 export const rightLeafOnlyNotBlockNotEditablePath = createDOMPathGenerator(DIRECTIONS.RIGHT, {
     leafOnly: true,
     stopTraverseFunction: node => isNotEditableNode(node) || isBlock(node),
-    stopFunction: node => isBlock(node) && !isNotEditableNode(node),
+    stopFunction: node => isBlock(node) && !isNotEditableNode(node) || isRoot(node),
 });
 //------------------------------------------------------------------------------
 // Miscelaneous

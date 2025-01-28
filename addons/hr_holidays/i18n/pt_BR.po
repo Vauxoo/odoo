@@ -13,6 +13,7 @@
 # Adriano Prado <adrianojprado@gmail.com>, 2023
 # a75f12d3d37ea5bf159c4b3e85eb30e7_0fa6927, 2023
 # Wil Odoo, 2024
+# Arthur Silva, 2024
 # Maitê Dietze, 2024
 # 
 msgid ""
@@ -1092,13 +1093,13 @@ msgid ""
 "Allocation request state must be \"Refused\" or \"To Approve\" in order to "
 "be reset to Draft."
 msgstr ""
-"O estado da solicitação de alocação deve ser \"Recusado\" ou \"Para "
-"Aprovar\" para ser redefinido para Rascunho."
+"O estado da solicitação de alocação deve ser \"Recusado\" ou \"A aprovar\" "
+"para ser redefinido para Rascunho."
 
 #. module: hr_holidays
 #: model:ir.model.fields,field_description:hr_holidays.field_hr_department__allocation_to_approve_count
 msgid "Allocation to Approve"
-msgstr "Atribuição a Aprovar"
+msgstr "Atribuição a aprovar"
 
 #. module: hr_holidays
 #: model:ir.actions.act_window,name:hr_holidays.hr_leave_allocation_action_approve_department
@@ -1165,6 +1166,8 @@ msgid "Approve Allocations"
 msgstr "Aprovar Alocações"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/report/holidays_summary_report.py:0
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_employee__current_leave_state__validate
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_employee_base__current_leave_state__validate
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_employee_public__current_leave_state__validate
@@ -1175,6 +1178,7 @@ msgstr "Aprovar Alocações"
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_leave_report__state__validate
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_leave_report_calendar__state__validate
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_leave_report_calendar_view_search
+#, python-format
 msgid "Approved"
 msgstr "Aprovada"
 
@@ -1514,9 +1518,19 @@ msgid "Confirmation"
 msgstr "Confirmação"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/report/holidays_summary_report.py:0
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_holidays_summary_employee__holiday_type__confirmed
+#, python-format
 msgid "Confirmed"
 msgstr "Confirmado"
+
+#. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/report/holidays_summary_report.py:0
+#, python-format
+msgid "Confirmed and Approved"
+msgstr "Confirmado e aprovado"
 
 #. module: hr_holidays
 #. odoo-javascript
@@ -3433,6 +3447,17 @@ msgid "Sick Time Off"
 msgstr "Folga por Doença"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave_accrual_plan.py:0
+#, python-format
+msgid ""
+"Some of the accrual plans you're trying to delete are linked to an existing "
+"allocation. Delete or cancel them first."
+msgstr ""
+"Alguns dos planos de acúmulo que você está tentando excluir estão vinculados"
+" a uma atribuição existente. Exclua-os ou cancele-os primeiro."
+
+#. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave_accrual_plan__time_off_type_id
 msgid ""
 "Specify if this accrual plan can only be used with this Time Off Type.\n"
@@ -3510,7 +3535,7 @@ msgstr ""
 #: model:ir.model,name:hr_holidays.model_hr_leave_stress_day
 #, python-format
 msgid "Stress Day"
-msgstr "Dia de saúde mental"
+msgstr "Dia de alta demanda"
 
 #. module: hr_holidays
 #. odoo-javascript
@@ -3520,7 +3545,7 @@ msgstr "Dia de saúde mental"
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_leave_stress_day_view_search
 #, python-format
 msgid "Stress Days"
-msgstr "Dias de saúde mental"
+msgstr "Dias de alta demanda"
 
 #. module: hr_holidays
 #: model:ir.model.fields,field_description:hr_holidays.field_hr_leave__is_striked
@@ -3597,6 +3622,15 @@ msgid "Taken Leave"
 msgstr "Licença tirada"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave_allocation.py:0
+#, python-format
+msgid ""
+"The Start Date of the Validity Period must be anterior to the End Date."
+msgstr ""
+"A data de início do período de validade deve ser anterior à data de término."
+
+#. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave_accrual_level__start_count
 msgid ""
 "The accrual starts after a defined period from the allocation start date. "
@@ -3606,6 +3640,18 @@ msgstr ""
 "O acúmulo começa após um período definido a partir da data de início da "
 "alocação. Esse campo define o número de dias, meses ou anos após os quais o "
 "acúmulo é usado."
+
+#. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave_type.py:0
+#, python-format
+msgid ""
+"The allocation requirement of a time off type cannot be changed once leaves "
+"of that type have been taken. You should create a new time off type instead."
+msgstr ""
+"O requisito de alocação de um tipo de folga não pode ser alterado depois que"
+" as folgas desse tipo tiverem sido aplicadas. Em vez disso, o usuário deve "
+"criar um novo tipo de folga."
 
 #. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave__color
@@ -3983,7 +4029,7 @@ msgstr "Folgas de Membros de Seu Time"
 #. module: hr_holidays
 #: model:ir.model.fields,field_description:hr_holidays.field_hr_department__leave_to_approve_count
 msgid "Time Off to Approve"
-msgstr "Folgas para Aprovar"
+msgstr "Folgas a aprovar"
 
 #. module: hr_holidays
 #: model_terms:ir.ui.view,arch_db:hr_holidays.report_holidayssummary
@@ -3993,7 +4039,7 @@ msgstr "Folga."
 #. module: hr_holidays
 #: model:ir.model.fields,field_description:hr_holidays.field_hr_leave_type__leaves_taken
 msgid "Time off Already Taken"
-msgstr "Folga Já Tirada"
+msgstr "Folga já tirada"
 
 #. module: hr_holidays
 #: model:ir.actions.server,name:hr_holidays.act_hr_employee_holiday_request
@@ -4003,7 +4049,7 @@ msgstr "Análise de Folga"
 #. module: hr_holidays
 #: model:ir.actions.server,name:hr_holidays.action_hr_holidays_by_employee_and_type_report
 msgid "Time off Analysis by Employee and Time Off Type"
-msgstr "Análise de Folgas por Funcionário e Tipo de Folga"
+msgstr "Análise de folgas por funcionário e tipo de folga"
 
 #. module: hr_holidays
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_leave_allocation_view_form
@@ -4023,7 +4069,7 @@ msgstr "Folga de pessoas das quais você é gerente"
 msgid ""
 "Time off request must be confirmed (\"To Approve\") in order to approve it."
 msgstr ""
-"Solicitações de folgas devem ser confirmadas (\"Para Aprovar\") a fim de "
+"Solicitações de folgas devem ser confirmadas (\"A aprovar\") a fim de "
 "aprová-las."
 
 #. module: hr_holidays
@@ -4048,8 +4094,8 @@ msgid ""
 "Time off request must be in Draft state (\"To Submit\") in order to confirm "
 "it."
 msgstr ""
-"Solicitações de folga devem estar na situação Rascunho (\"Para Enviar\") a "
-"fim de confirmá-las."
+"Solicitações de folga devem estar na situação Rascunho (\"A enviar\") a fim "
+"de confirmá-las."
 
 #. module: hr_holidays
 #. odoo-python
@@ -4059,8 +4105,8 @@ msgid ""
 "Time off request state must be \"Refused\" or \"To Approve\" in order to be "
 "reset to draft."
 msgstr ""
-"Solicitações de folga devem estar com a situação \"Recusada\" ou \"Para "
-"Aprovar\" a fim de revertê-las para rascunho."
+"Solicitações de folga devem estar com a situação \"Recusada\" ou \"A "
+"aprovar\" a fim de revertê-las para rascunho."
 
 #. module: hr_holidays
 #: model:ir.model.fields,field_description:hr_holidays.field_hr_leave_report_calendar__tz
@@ -4086,7 +4132,7 @@ msgstr "Para"
 #: model_terms:ir.ui.view,arch_db:hr_holidays.view_hr_leave_allocation_filter
 #, python-format
 msgid "To Approve"
-msgstr "Para Aprovar"
+msgstr "A aprovar"
 
 #. module: hr_holidays
 #: model_terms:ir.ui.view,arch_db:hr_holidays.view_hr_leave_allocation_filter
@@ -4113,7 +4159,7 @@ msgstr "Até a Data"
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_leave_report__state__draft
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_leave_report_calendar__state__draft
 msgid "To Submit"
-msgstr "Para Enviar"
+msgstr "A enviar"
 
 #. module: hr_holidays
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_leave_view_activity
@@ -4626,6 +4672,15 @@ msgstr "Sua folga foi cancelada."
 #, python-format
 msgid "a new public holiday completely overrides this leave."
 msgstr "um novo feriado substitui completamente esta licença."
+
+#. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"a public holiday that previously covered this leave has been cancelled or "
+"amended."
+msgstr ""
 
 #. module: hr_holidays
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_accrual_level_view_form

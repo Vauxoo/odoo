@@ -3,7 +3,7 @@
 # 	* pos_restaurant
 # 
 # Translators:
-# Nikola Iliev, 2023
+# KeyVillage, 2023
 # Boris Stefanov <borkata@gmail.com>, 2023
 # Boyan Rabchev <boyan.rabchev@plana.solutions>, 2023
 # Vladimir Petrov <vladimir.petrov@gmail.com>, 2023
@@ -14,14 +14,17 @@
 # Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2023
 # Albena Mincheva <albena_vicheva@abv.bg>, 2023
 # Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# Rumena Georgieva <rumena.georgieva@gmail.com>, 2024
+# Milena Georgieva, 2024
+# Petko Karamotchev, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-14 05:51+0000\n"
+"POT-Creation-Date: 2023-10-10 06:06+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Maria Boyadjieva <marabo2000@gmail.com>, 2023\n"
+"Last-Translator: Petko Karamotchev, 2024\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -208,7 +211,7 @@ msgstr "Фоново изображение"
 #. module: pos_restaurant
 #: model:product.template,name:pos_restaurant.pos_food_bacon_product_template
 msgid "Bacon Burger"
-msgstr ""
+msgstr "Бургер с бекон"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -256,6 +259,13 @@ msgstr "Синьо"
 #, python-format
 msgid "CANCELLED"
 msgstr "ОТКАЗАН"
+
+#. module: pos_restaurant
+#. odoo-python
+#: code:addons/pos_restaurant/models/pos_config.py:0
+#, python-format
+msgid "Cash %s"
+msgstr ""
 
 #. module: pos_restaurant
 #. odoo-python
@@ -397,7 +407,7 @@ msgstr ""
 #: code:addons/pos_restaurant/static/src/js/Screens/ProductScreen/ControlButtons/SubmitOrderButton.js:0
 #, python-format
 msgid "Failed in printing the changes in the order"
-msgstr ""
+msgstr "Неуспешно принтиране на промените в поръчката"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_table__floor_id
@@ -472,7 +482,7 @@ msgstr "Зелено"
 #: code:addons/pos_restaurant/static/src/xml/Screens/FloorScreen/EditBar.xml:0
 #, python-format
 msgid "Grey"
-msgstr ""
+msgstr "Сив"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -585,7 +595,7 @@ msgstr "Последно актуализирано на"
 #. module: pos_restaurant
 #: model:ir.model.fields,help:pos_restaurant.field_pos_order__multiprint_resume
 msgid "Last printed state of the order"
-msgstr ""
+msgstr "Последно отпечатано етап на поръчката"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -862,7 +872,7 @@ msgstr "Име на принтер"
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_printer__printer_type
 msgid "Printer Type"
-msgstr ""
+msgstr "Тип на принтера"
 
 #. module: pos_restaurant
 #: model_terms:ir.ui.view,arch_db:pos_restaurant.res_config_settings_view_form
@@ -874,7 +884,7 @@ msgstr "Принтери"
 #: code:addons/pos_restaurant/static/src/js/Screens/ProductScreen/ControlButtons/SubmitOrderButton.js:0
 #, python-format
 msgid "Printing failed"
-msgstr ""
+msgstr "Печатът не успя."
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -979,7 +989,7 @@ msgstr "Ресторантска маса"
 #: code:addons/pos_restaurant/static/src/xml/Screens/PaymentScreen/PaymentScreenPaymentLines.xml:0
 #, python-format
 msgid "Reverse"
-msgstr ""
+msgstr "Връщане"
 
 #. module: pos_restaurant
 #. odoo-javascript

@@ -777,14 +777,31 @@ class PosSession(models.Model):
                     for amount_key, amount in amounts.items():
                         taxes[tax_key][amount_key] += amount
 
-                if self.company_id.anglo_saxon_accounting and order.picking_ids.ids:
-                    # Combine stock lines
-                    stock_moves = self.env['stock.move'].sudo().search([
-                        ('picking_id', 'in', order.picking_ids.ids),
-                        ('company_id.anglo_saxon_accounting', '=', True),
-                        ('product_id.categ_id.property_valuation', '=', 'real_time')
-                    ])
-                    for move in stock_moves:
+                if self.config_id.cash_rounding:
+                    diff = order.amount_paid - order.amount_total
+                    rounding_difference = self._update_amounts(rounding_difference, {'amount': diff}, order.date_order)
+
+                # Increasing current partner's customer_rank
+                partners = (order.partner_id | order.partner_id.commercial_partner_id)
+                partners._increase_rank('customer_rank')
+
+        if self.company_id.anglo_saxon_accounting:
+            all_picking_ids = self.order_ids.filtered(lambda p: not p.is_invoiced).picking_ids.ids + self.picking_ids.filtered(lambda p: not p.pos_order_id).ids
+            if all_picking_ids:
+                # Combine stock lines
+                stock_move_sudo = self.env['stock.move'].sudo()
+                stock_moves = stock_move_sudo.search([
+                    ('picking_id', 'in', all_picking_ids),
+                    ('company_id.anglo_saxon_accounting', '=', True),
+                    ('product_id.categ_id.property_valuation', '=', 'real_time'),
+                ])
+
+                for stock_moves_split in self.env.cr.split_for_in_conditions(stock_moves.ids):
+                    stock_moves_batch = stock_move_sudo.browse(stock_moves_split)
+                    candidates = stock_moves_batch\
+                        .filtered(lambda m: not bool(m.origin_returned_move_id and sum(m.stock_valuation_layer_ids.mapped('quantity')) >= 0))\
+                        .mapped('stock_valuation_layer_ids')
+                    for move in stock_moves_batch.with_context(candidates_prefetch_ids=candidates._prefetch_ids):
                         exp_key = move.product_id._get_product_accounts()['expense']
                         out_key = move.product_id.categ_id.property_stock_account_output_categ_id
                         signed_product_qty = move.product_qty
@@ -796,35 +813,6 @@ class PosSession(models.Model):
                             stock_return[out_key] = self._update_amounts(stock_return[out_key], {'amount': amount}, move.picking_id.date, force_company_currency=True)
                         else:
                             stock_output[out_key] = self._update_amounts(stock_output[out_key], {'amount': amount}, move.picking_id.date, force_company_currency=True)
-
-                if self.config_id.cash_rounding:
-                    diff = order.amount_paid - order.amount_total
-                    rounding_difference = self._update_amounts(rounding_difference, {'amount': diff}, order.date_order)
-
-                # Increasing current partner's customer_rank
-                partners = (order.partner_id | order.partner_id.commercial_partner_id)
-                partners._increase_rank('customer_rank')
-
-        if self.company_id.anglo_saxon_accounting:
-            global_session_pickings = self.picking_ids.filtered(lambda p: not p.pos_order_id)
-            if global_session_pickings:
-                stock_moves = self.env['stock.move'].sudo().search([
-                    ('picking_id', 'in', global_session_pickings.ids),
-                    ('company_id.anglo_saxon_accounting', '=', True),
-                    ('product_id.categ_id.property_valuation', '=', 'real_time'),
-                ])
-                for move in stock_moves:
-                    exp_key = move.product_id._get_product_accounts()['expense']
-                    out_key = move.product_id.categ_id.property_stock_account_output_categ_id
-                    signed_product_qty = move.product_qty
-                    if move._is_in():
-                        signed_product_qty *= -1
-                    amount = signed_product_qty * move.product_id._compute_average_price(0, move.quantity_done, move)
-                    stock_expense[exp_key] = self._update_amounts(stock_expense[exp_key], {'amount': amount}, move.picking_id.date, force_company_currency=True)
-                    if move._is_in():
-                        stock_return[out_key] = self._update_amounts(stock_return[out_key], {'amount': amount}, move.picking_id.date, force_company_currency=True)
-                    else:
-                        stock_output[out_key] = self._update_amounts(stock_output[out_key], {'amount': amount}, move.picking_id.date, force_company_currency=True)
         MoveLine = self.env['account.move.line'].with_context(check_move_validity=False, skip_invoice_sync=True)
 
         data.update({
@@ -1127,7 +1115,7 @@ class PosSession(models.Model):
         accounts = all_lines.mapped('account_id')
         lines_by_account = [all_lines.filtered(lambda l: l.account_id == account and not l.reconciled) for account in accounts if account.reconcile]
         for lines in lines_by_account:
-            lines.reconcile()
+            lines.with_context(no_cash_basis=True).reconcile()
 
 
         for payment_method, lines in payment_method_to_receivable_lines.items():
@@ -1248,10 +1236,10 @@ class PosSession(models.Model):
         account_id, sign, tax_keys, base_tag_ids = key
         tax_ids = set(tax[0] for tax in tax_keys)
         applied_taxes = self.env['account.tax'].browse(tax_ids)
-        title = 'Sales' if sign == 1 else 'Refund'
-        name = '%s untaxed' % title
+        title = _('Sales') if sign == 1 else _('Refund')
+        name = _('%s untaxed', title)
         if applied_taxes:
-            name = '%s with %s' % (title, ', '.join([tax.name for tax in applied_taxes]))
+            name = _('%s with %s', title, ', '.join([tax.name for tax in applied_taxes]))
         partial_vals = {
             'name': name,
             'account_id': account_id,
@@ -1271,6 +1259,7 @@ class PosSession(models.Model):
             'tax_base_amount': abs(base_amount_converted),
             'tax_repartition_line_id': repartition_line_id,
             'tax_tag_ids': [(6, 0, tag_ids)],
+            'display_type': 'tax',
         }
         return self._debit_amounts(partial_args, amount, amount_converted)
 
@@ -1570,7 +1559,7 @@ class PosSession(models.Model):
         if not sessions:
             raise UserError(_("There is no cash payment method for this PoS Session"))
 
-        self.env['account.bank.statement.line'].create([
+        self.env['account.bank.statement.line'].sudo().create([
             {
                 'pos_session_id': session.id,
                 'journal_id': session.cash_journal_id.id,
@@ -1611,20 +1600,30 @@ class PosSession(models.Model):
 
     def _get_attributes_by_ptal_id(self):
         product_attributes = self.env['product.attribute'].search([('create_variant', '=', 'no_variant')])
-        product_attributes_by_id = {product_attribute.id: product_attribute for product_attribute in product_attributes}
-        domain = [('attribute_id', 'in', product_attributes.mapped('id'))]
-        product_template_attribute_values = self.env['product.template.attribute.value'].search(domain)
-        key = lambda ptav: (ptav.attribute_line_id.id, ptav.attribute_id.id)
+        product_template_attribute_values = self.env['product.template.attribute.value'].search([
+            ('attribute_id', 'in', product_attributes.ids),
+        ])
+        product_template_attribute_values._read(['attribute_id', 'attribute_line_id', 'product_attribute_value_id', 'price_extra', 'ptav_active'])
+        product_template_attribute_values.product_attribute_value_id._read(['name', 'is_custom', 'html_color'])
+
+        def key1(ptav):
+            return ptav.attribute_line_id.id, ptav.attribute_id.id
+
+        def key2(ptav):
+            return ptav.attribute_line_id.id, ptav.attribute_id
         res = {}
-        for key, group in groupby(sorted(product_template_attribute_values, key=key), key=key):
-            attribute_line_id, attribute_id = key
-            values = [{**ptav.product_attribute_value_id.read(['name', 'is_custom', 'html_color'])[0],
+        for key, group in groupby(sorted(product_template_attribute_values, key=key1), key=key2):
+            attribute_line_id, attribute = key
+            values = [{'id': ptav.product_attribute_value_id.id,
+                       'name': ptav.product_attribute_value_id.name,
+                       'is_custom': ptav.is_custom,
+                       'html_color': ptav.html_color,
                        'price_extra': ptav.price_extra} for ptav in list(group) if ptav.ptav_active]
             res[attribute_line_id] = {
                 'id': attribute_line_id,
-                'name': product_attributes_by_id[attribute_id].name,
-                'display_type': product_attributes_by_id[attribute_id].display_type,
-                'values': values
+                'name': attribute.name,
+                'display_type': attribute.display_type,
+                'values': values,
             }
 
         return res
@@ -1811,7 +1810,6 @@ class PosSession(models.Model):
         config = self.env['pos.config'].search_read(**params['search_params'])[0]
         config['use_proxy'] = config['is_posbox'] and (config['iface_electronic_scale'] or config['iface_print_via_proxy']
                                                        or config['iface_scan_via_proxy'] or config['iface_customer_facing_display_via_proxy'])
-        config['has_cash_move_permission'] = self.user_has_groups('account.group_account_invoice')
         return config
 
     def _loader_params_pos_bill(self):
@@ -1863,7 +1861,10 @@ class PosSession(models.Model):
         }
 
     def _get_pos_ui_res_users(self, params):
-        user = self.env['res.users'].search_read(**params['search_params'])[0]
+        user = self.env['res.users'].search_read(**params['search_params'], limit=1)
+        if not user:
+            raise UserError(_("You do not have permission to open a POS session. Please try opening a session with a different user"))
+        user = user[0]
         user['role'] = 'manager' if any(id == self.config_id.group_pos_manager_id.id for id in user['groups_id']) else 'cashier'
         del user['groups_id']
         return user

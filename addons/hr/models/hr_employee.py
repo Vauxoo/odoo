@@ -278,7 +278,7 @@ class HrEmployeePrivate(models.Model):
         else:
             self_sudo = self
 
-        if self_sudo.check_access_rights('read', raise_exception=False):
+        if self_sudo.user_has_groups('hr.group_hr_user'):
             return super(HrEmployeePrivate, self).get_formview_id(access_uid=access_uid)
         # Hardcode the form view for public employee
         return self.env.ref('hr.hr_employee_public_view_form').id
@@ -291,7 +291,7 @@ class HrEmployeePrivate(models.Model):
         else:
             self_sudo = self
 
-        if not self_sudo.check_access_rights('read', raise_exception=False):
+        if not self_sudo.user_has_groups('hr.group_hr_user'):
             res['res_model'] = 'hr.employee.public'
 
         return res
@@ -373,12 +373,13 @@ class HrEmployeePrivate(models.Model):
 
     def write(self, vals):
         if 'address_home_id' in vals:
+            address_home_id = vals['address_home_id']
             account_ids = vals.get('bank_account_id') or self.bank_account_id.ids
-            if account_ids:
-                self.env['res.partner.bank'].browse(account_ids).partner_id = vals['address_home_id']
+            if account_ids and address_home_id:
+                self.env['res.partner.bank'].browse(account_ids).partner_id = address_home_id
             self.message_unsubscribe(self.address_home_id.ids)
-            if vals['address_home_id']:
-                self._message_subscribe([vals['address_home_id']])
+            if address_home_id:
+                self._message_subscribe([address_home_id])
         if 'user_id' in vals:
             # Update the profile pictures with user, except if provided 
             vals.update(self._sync_user(self.env['res.users'].browse(vals['user_id']),

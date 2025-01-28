@@ -431,10 +431,11 @@ class SaleOrder(models.Model):
     def _compute_amounts(self):
         """Compute the total amounts of the SO."""
         for order in self:
+            order = order.with_company(order.company_id)
             order_lines = order.order_line.filtered(lambda x: not x.display_type)
 
             if order.company_id.tax_calculation_rounding_method == 'round_globally':
-                tax_results = self.env['account.tax']._compute_taxes([
+                tax_results = order.env['account.tax']._compute_taxes([
                     line._convert_to_tax_base_line_dict()
                     for line in order_lines
                 ])
@@ -588,16 +589,20 @@ class SaleOrder(models.Model):
             show_warning = order.state in ('draft', 'sent') and \
                            order.company_id.account_use_credit_limit
             if show_warning:
-                updated_credit = order.partner_id.commercial_partner_id.credit + (order.amount_total / order.currency_rate)
+                order_sudo = order.sudo()
+                current_credit = order_sudo.partner_id.commercial_partner_id.credit
                 order.partner_credit_warning = self.env['account.move']._build_credit_warning_message(
-                    order, updated_credit)
+                    record=order_sudo,
+                    updated_credit=current_credit + order.amount_total / order.currency_rate,
+                )
 
     @api.depends_context('lang')
     @api.depends('order_line.tax_id', 'order_line.price_unit', 'amount_total', 'amount_untaxed', 'currency_id')
     def _compute_tax_totals(self):
         for order in self:
+            order = order.with_company(order.company_id)
             order_lines = order.order_line.filtered(lambda x: not x.display_type)
-            order.tax_totals = self.env['account.tax']._prepare_tax_totals(
+            order.tax_totals = order.env['account.tax']._prepare_tax_totals(
                 [x._convert_to_tax_base_line_dict() for x in order_lines],
                 order.currency_id or order.company_id.currency_id,
             )

@@ -124,7 +124,7 @@ msgstr "10% 折扣優惠券"
 #: model:loyalty.reward,description:loyalty.10_percent_coupon_reward
 #: model:loyalty.reward,description:loyalty.10_percent_with_code_reward
 msgid "10% on your order"
-msgstr "您訂單的10%"
+msgstr "全單九折"
 
 #. module: loyalty
 #. odoo-python
@@ -556,7 +556,7 @@ msgstr "建立時"
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_attachment_count
 msgid "Attachment Count"
-msgstr "附件數"
+msgstr "附件數目"
 
 #. module: loyalty
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__trigger__auto
@@ -982,6 +982,13 @@ msgstr "排除"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__expiration_date
 msgid "Expiration Date"
 msgstr "過期日期"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_card.py:0
+#, python-format
+msgid "Expiration date cannot be set on a loyalty card."
+msgstr ""
 
 #. module: loyalty
 #. odoo-python
@@ -1535,13 +1542,13 @@ msgstr "產品"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__program_id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__program_id
 msgid "Program"
-msgstr "計畫"
+msgstr "計劃"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__name
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid "Program Name"
-msgstr "計畫名稱"
+msgstr "計劃名稱"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__program_type
@@ -1550,7 +1557,7 @@ msgstr "計畫名稱"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__program_type
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__program_type
 msgid "Program Type"
-msgstr "計畫類型"
+msgstr "計劃類型"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
@@ -1584,7 +1591,7 @@ msgstr "推廣計劃"
 #: code:addons/loyalty/models/loyalty_program.py:0
 #, python-format
 msgid "Promotional Program"
-msgstr "推廣計畫"
+msgstr "推廣計劃"
 
 #. module: loyalty
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__promotion
@@ -1900,6 +1907,13 @@ msgstr "不可刪除一個已啟用的計劃"
 
 #. module: loyalty
 #. odoo-python
+#: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
+msgid "The reward description field cannot be empty."
+msgstr "獎勵描述欄位不可留空。"
+
+#. module: loyalty
+#. odoo-python
 #: code:addons/loyalty/models/product_product.py:0
 #: code:addons/loyalty/models/product_template.py:0
 #, python-format
@@ -1911,7 +1925,7 @@ msgstr "不可刪除 %(name)s，因為它用於「優惠券及會員」。請將
 #. module: loyalty
 #: model:mail.template,report_name:loyalty.mail_template_loyalty_card
 msgid "Your Coupon Code"
-msgstr "聖上的優惠券代碼"
+msgstr "你的優惠券代碼"
 
 #. module: loyalty
 #: model:mail.template,report_name:loyalty.mail_template_gift_card

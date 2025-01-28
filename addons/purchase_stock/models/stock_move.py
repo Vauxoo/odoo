@@ -49,9 +49,11 @@ class StockMove(models.Model):
             invoiced_layer = line.sudo().invoice_lines.stock_valuation_layer_ids
             # value on valuation layer is in company's currency, while value on invoice line is in order's currency
             receipt_value = 0
-            if move_layer:
-                receipt_value += sum(move_layer.mapped(lambda l: l.currency_id._convert(
-                    l.value, order.currency_id, order.company_id, l.create_date, round=False)))
+            for layer in move_layer:
+                if not layer._should_impact_price_unit_receipt_value():
+                    continue
+                receipt_value += layer.currency_id._convert(
+                    layer.value, order.currency_id, order.company_id, layer.create_date, round=False)
             if invoiced_layer:
                 receipt_value += sum(invoiced_layer.mapped(lambda l: l.currency_id._convert(
                     l.value, order.currency_id, order.company_id, l.create_date, round=False)))
@@ -60,11 +62,16 @@ class StockMove(models.Model):
             for invoice_line in line.sudo().invoice_lines:
                 if invoice_line.move_id.state != 'posted':
                     continue
+                # Discount applied on bill prior to reception
+                if invoice_line.discount and not move_layer:
+                    price_unit = invoice_line.price_subtotal / invoice_line.quantity
+                else:
+                    price_unit = invoice_line.price_unit
                 if invoice_line.tax_ids:
                     invoice_line_value = invoice_line.tax_ids.with_context(round=False).compute_all(
-                        invoice_line.price_unit, currency=invoice_line.currency_id, quantity=invoice_line.quantity)['total_void']
+                        price_unit, currency=invoice_line.currency_id, quantity=invoice_line.quantity)['total_void']
                 else:
-                    invoice_line_value = invoice_line.price_unit * invoice_line.quantity
+                    invoice_line_value = price_unit * invoice_line.quantity
                 total_invoiced_value += invoice_line.currency_id._convert(
                         invoice_line_value, order.currency_id, order.company_id, invoice_line.move_id.invoice_date, round=False)
                 invoiced_qty += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_id.uom_id)
@@ -86,8 +93,12 @@ class StockMove(models.Model):
             # in assigned state. However, the move date is the scheduled date until move is
             # done, then date of actual move processing. See:
             # https://github.com/odoo/odoo/blob/2f789b6863407e63f90b3a2d4cc3be09815f7002/addons/stock/models/stock_move.py#L36
+            convert_date = fields.Date.context_today(self)
+            # use currency rate at bill date when invoice before receipt
+            if float_compare(line.qty_invoiced, received_qty, precision_rounding=line.product_uom.rounding) > 0:
+                convert_date = max(line.sudo().invoice_lines.move_id.filtered(lambda m: m.state == 'posted').mapped('invoice_date'), default=convert_date)
             price_unit = order.currency_id._convert(
-                price_unit, order.company_id.currency_id, order.company_id, fields.Date.context_today(self), round=False)
+                price_unit, order.company_id.currency_id, order.company_id, convert_date, round=False)
         return price_unit
 
     def _generate_valuation_lines_data(self, partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description):
@@ -156,18 +167,19 @@ class StockMove(models.Model):
         """
         am_vals_list = super()._account_entry_move(qty, description, svl_id, cost)
         returned_move = self.origin_returned_move_id
-        pdiff_exists = bool((self | returned_move).stock_valuation_layer_ids.stock_valuation_layer_ids.account_move_line_id)
+        move = (self | returned_move).with_prefetch(self._prefetch_ids)
+        pdiff_exists = bool(move.stock_valuation_layer_ids.stock_valuation_layer_ids.account_move_line_id)
 
-        if not am_vals_list or not self.purchase_line_id or pdiff_exists:
+        if not am_vals_list or not self.purchase_line_id or pdiff_exists or float_is_zero(qty, precision_rounding=self.product_id.uom_id.rounding):
             return am_vals_list
 
         layer = self.env['stock.valuation.layer'].browse(svl_id)
-        returned_move = self.origin_returned_move_id
 
         if returned_move and self._is_out() and self._is_returned(valued_type='out'):
             returned_layer = returned_move.stock_valuation_layer_ids.filtered(lambda svl: not svl.stock_valuation_layer_id)[:1]
             returned_unit_cost = returned_layer.value / returned_layer.quantity
-            unit_diff = layer.unit_cost - returned_unit_cost
+            layer_unit_cost = layer.value / layer.quantity
+            unit_diff = layer_unit_cost - returned_unit_cost
         elif returned_move and returned_move._is_out() and returned_move._is_returned(valued_type='out'):
             returned_layer = returned_move.stock_valuation_layer_ids.filtered(lambda svl: not svl.stock_valuation_layer_id)[:1]
             unit_diff = returned_layer.unit_cost - self.purchase_line_id._get_gross_price_unit()
@@ -216,7 +228,8 @@ class StockMove(models.Model):
         """ Overridden to return the vendor bills related to this stock move.
         """
         rslt = super(StockMove, self)._get_related_invoices()
-        rslt += self.mapped('picking_id.purchase_id.invoice_ids').filtered(lambda x: x.state == 'posted')
+        purchase_ids = self.env['purchase.order'].search([('picking_ids', 'in', self.picking_id.ids)])
+        rslt += purchase_ids.invoice_ids.filtered(lambda x: x.state == 'posted')
         return rslt
 
     def _get_source_document(self):
@@ -245,7 +258,7 @@ class StockMove(models.Model):
 
     def _is_purchase_return(self):
         self.ensure_one()
-        return self.location_dest_id.usage == "supplier"
+        return self.location_dest_id.usage == "supplier" or self.location_dest_id == self.env.ref('stock.stock_location_inter_wh', raise_if_not_found=False)
 
     def _get_all_related_aml(self):
         # The back and for between account_move and account_move_line is necessary to catch the

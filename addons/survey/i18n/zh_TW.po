@@ -970,7 +970,7 @@ msgstr "亞洲"
 #: model:ir.model.fields,field_description:survey.field_survey_survey__message_attachment_count
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__message_attachment_count
 msgid "Attachment Count"
-msgstr "附件數"
+msgstr "附件數目"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__attachment_ids
@@ -981,7 +981,7 @@ msgstr "附件"
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__attempts_number
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_form
 msgid "Attempt n°"
-msgstr "嘗試n°"
+msgstr "嘗試次數"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__answer_done_count
@@ -1447,7 +1447,7 @@ msgstr "山茱萸科"
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_2_choice_1
 msgid "Corner Desk Right Sit"
-msgstr "角台右坐"
+msgstr "轉角辦公桌右坐"
 
 #. module: survey
 #. odoo-javascript
@@ -2072,7 +2072,7 @@ msgstr "您在我們的網站上訂購了多少次產品？"
 #. module: survey
 #: model:survey.question,title:survey.vendor_certification_page_1_question_4
 msgid "How many versions of the Corner Desk do we have?"
-msgstr "我們有多少個版本的 Corner Desk？"
+msgstr "我們的轉角辦公桌有多少個款式？"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p3_q3
@@ -2313,7 +2313,7 @@ msgstr "無效"
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__validation_email
 msgid "Input must be an email"
-msgstr "輸入必須是電子信件"
+msgstr "輸入必須是電郵"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__invite_token
@@ -4498,7 +4498,7 @@ msgstr "這不是一個數字"
 msgid ""
 "This list of emails of recipients will not be converted in contacts.        "
 "Emails must be separated by commas, semicolons or newline."
-msgstr "此電子信件收件人列表不會轉換為聯絡人。電子信件必須由逗號、分號或新行分隔。"
+msgstr ""
 
 #. module: survey
 #: model:ir.model.fields,help:survey.field_survey_survey__description_done
@@ -4746,7 +4746,7 @@ msgstr "運用幽默感及開玩笑"
 #: code:addons/survey/static/src/js/tours/survey_tour.js:0
 #, python-format
 msgid "Use the breadcrumbs to quickly go back to the dashboard."
-msgstr "使用導航麵包屑，快速返回概覽畫面。"
+msgstr "使用導航麵包屑，快速返回Dashboard。"
 
 #. module: survey
 #: model:ir.model.fields,help:survey.field_survey_question__description

@@ -393,10 +393,14 @@ export class HtmlField extends Component {
                     // Avoid listening to changes made during the _toInline process.
                     toInlinePromise = this._toInline();
                 }
-                if (urgent) {
+                if (urgent && owl.status(this) !== 'destroyed') {
                     await this.updateValue();
                 }
                 await saveModifiedImagesPromise;
+                if (this.state.showCodeView) {
+                    const codeViewEl = this._getCodeViewEl();
+                    codeViewEl.value = this.wysiwyg.getValue();
+                }
                 if (this.props.isInlineStyle) {
                     await toInlinePromise;
                 }

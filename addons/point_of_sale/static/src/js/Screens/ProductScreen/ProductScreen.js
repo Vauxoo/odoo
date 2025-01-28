@@ -187,10 +187,14 @@ odoo.define('point_of_sale.ProductScreen', function(require) {
             if (!this.currentOrder) {
                 this.env.pos.add_new_order();
             }
-            const product = event.detail;
+            const product = event.detail.product || event.detail;
             const options = await this._getAddProductOptions(product);
             // Do not add product if options is undefined.
             if (!options) return;
+            // Update the quantity if the event has a quantity.
+            if (event.detail.quantity !== undefined) {
+                options.quantity = event.detail.quantity;
+            }
             // Add the product after having the extra information.
             await this._addProduct(product, options);
             NumberBuffer.reset();

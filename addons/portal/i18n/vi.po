@@ -528,7 +528,7 @@ msgstr ""
 "Vô hiệu hóa tài khoản của bạn để ngăn chặn mọi hoạt động đăng nhập tiếp theo.<br/>\n"
 "                                        <b>\n"
 "                                            <i class=\"fa fa-exclamation-triangle text-danger\"/>\n"
-"                                            Bạn không thể hoàn tác hành động này.\n"
+"                                            Bạn không thể hoàn tác tác vụ này.\n"
 "                                        </b>"
 
 #. module: portal
@@ -923,7 +923,7 @@ msgstr "Cổng thông tin: Mời người dùng"
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_record_sidebar
 msgid "Powered by"
-msgstr "Được hỗ trợ bởi"
+msgstr "Cung cấp bởi"
 
 #. module: portal
 #. odoo-javascript
@@ -1202,7 +1202,7 @@ msgstr "This document does not exist."
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.portal_back_in_edit_mode
 msgid "This is a preview of the customer portal."
-msgstr "This is a preview of the customer portal."
+msgstr "Đây là bản xem trước của cổng thông tin khách hàng. "
 
 #. module: portal
 #: model_terms:ir.ui.view,arch_db:portal.wizard_view

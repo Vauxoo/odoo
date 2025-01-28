@@ -12,10 +12,11 @@
 # karolína schusterová <karolina.schusterova@vdp.sk>, 2022
 # Jinjiu Liu, 2023
 # Petr Hemza, 2023
-# Jiří Podhorecký, 2023
+# Jiří Podhorecký <jirka.p@volny.cz>, 2023
 # SlavekB <slavek.banko@axis.cz>, 2023
 # Jakub Smolka, 2023
 # Tomáš Píšek, 2023
+# Marta Wacławek, 2024
 # Aleš Fiala <f.ales1@seznam.cz>, 2024
 # 
 msgid ""
@@ -299,6 +300,11 @@ msgstr "<i class=\"fa fa-fw fa-check\"/> <b>Zaplaceno</b>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
+msgid "<i class=\"fa fa-fw fa-check\"/> <b>Reversed</b>"
+msgstr "<i class=\"fa fa-fw fa-check\"/><b>Rezervováno</b>"
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Waiting Payment</b>"
 msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>Čekání na platbu</b>"
 
@@ -455,7 +461,7 @@ msgstr "<strong class=\"text-muted\">Zástupce nákupu</strong>"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "<strong>Amount</strong>"
-msgstr "<strong>Množství</strong>"
+msgstr "<strong>Částka</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -2125,8 +2131,6 @@ msgstr "Čekací čas nákupu"
 #: model:ir.model.fields,field_description:purchase.field_account_move_line__purchase_order_id
 #: model:ir.model.fields,field_description:purchase.field_account_payment__purchase_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__purchase_order_id
-#: model:ir.model.fields,field_description:purchase.field_res_partner__purchase_warn
-#: model:ir.model.fields,field_description:purchase.field_res_users__purchase_warn
 #: model:ir.model.fields.selection,name:purchase.selection__account_analytic_applicability__business_domain__purchase_order
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__purchase
@@ -2201,6 +2205,12 @@ msgid ""
 "after confirm"
 msgstr ""
 "Úprava objednávky se používá, když chcete objednávku upravit po potvrzení"
+
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_res_partner__purchase_warn
+#: model:ir.model.fields,field_description:purchase.field_res_users__purchase_warn
+msgid "Purchase Order Warning"
+msgstr "Varování nákupní objednávky"
 
 #. module: purchase
 #. odoo-python

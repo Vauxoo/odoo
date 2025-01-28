@@ -164,6 +164,7 @@ class AlarmManager(models.AbstractModel):
                AND "event"."active"
                AND "event"."start" - CAST("alarm"."duration" || ' ' || "alarm"."interval" AS Interval) >= %s
                AND "event"."start" - CAST("alarm"."duration" || ' ' || "alarm"."interval" AS Interval) < now() at time zone 'utc'
+               AND "event"."stop" > now() at time zone 'utc'
              )''', [alarm_type, lastcall])
 
         events_by_alarm = {}
@@ -237,7 +238,10 @@ class AlarmManager(models.AbstractModel):
     def _notify_next_alarm(self, partner_ids):
         """ Sends through the bus the next alarm of given partners """
         notifications = []
-        users = self.env['res.users'].search([('partner_id', 'in', tuple(partner_ids))])
+        users = self.env['res.users'].search([
+            ('partner_id', 'in', tuple(partner_ids)),
+            ('groups_id', 'in', self.env.ref('base.group_user').ids),
+        ])
         for user in users:
             notif = self.with_user(user).with_context(allowed_company_ids=user.company_ids.ids).get_next_notif()
             notifications.append([user.partner_id, 'calendar.alarm', notif])

@@ -187,7 +187,10 @@ class AccountReconcileModelLine(models.Model):
 
         amount_currency = None
         if self.amount_type == 'percentage_st_line':
-            amount_currency = currency.round(residual_amount_currency * (self.amount / 100.0))
+            _transaction_amount, _transaction_currency, journal_amount, journal_currency, _company_amount, _company_currency \
+                = st_line._get_accounting_amounts_and_currencies()
+            amount_currency = journal_currency.round(-journal_amount * (self.amount / 100.0))
+            currency = journal_currency
         elif self.amount_type == 'regex':
             match = re.search(self.amount_string, st_line.payment_ref)
             if match:
@@ -215,6 +218,21 @@ class AccountReconcileModelLine(models.Model):
             aml_vals['name'] = st_line.payment_ref
 
         return aml_vals
+
+    def _get_write_off_move_line_dict(self, balance, currency):
+        self.ensure_one()
+        return {
+            'name': self.label,
+            'balance': balance,
+            'debit': balance > 0 and balance or 0,
+            'credit': balance < 0 and -balance or 0,
+            'account_id': self.account_id.id,
+            'currency_id': currency.id,
+            'analytic_distribution': self.analytic_distribution,
+            'reconcile_model_id': self.model_id.id,
+            'journal_id': self.journal_id.id,
+            'tax_ids': [],
+        }
 
 
 class AccountReconcileModel(models.Model):
@@ -526,18 +544,7 @@ class AccountReconcileModel(models.Model):
             if currency.is_zero(balance):
                 continue
 
-            writeoff_line = {
-                'name': line.label,
-                'balance': balance,
-                'debit': balance > 0 and balance or 0,
-                'credit': balance < 0 and -balance or 0,
-                'account_id': line.account_id.id,
-                'currency_id': currency.id,
-                'analytic_distribution': line.analytic_distribution,
-                'reconcile_model_id': self.id,
-                'journal_id': line.journal_id.id,
-                'tax_ids': [],
-            }
+            writeoff_line = line._get_write_off_move_line_dict(balance, currency)
             lines_vals_list.append(writeoff_line)
 
             residual_balance -= balance
@@ -828,6 +835,10 @@ class AccountReconcileModel(models.Model):
                     'allow_auto_reconcile': True,
                     'amls': self.env['account.move.line'].browse(candidate_ids),
                 }
+            elif self.match_text_location_label or self.match_text_location_note or self.match_text_location_reference:
+                # In the case any of the Label, Note or Reference matching rule has been toggled, and the query didn't return
+                # any candidates, the model should not try to mount another aml instead.
+                return
 
         if not partner:
             st_line_currency = st_line.foreign_currency_id or st_line.journal_id.currency_id or st_line.company_currency_id

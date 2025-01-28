@@ -965,7 +965,7 @@ class HolidaysRequest(models.Model):
                 # eg : holidays_user can create a leave request with validation_type = 'manager' for someone else
                 # but they can only write on it if they are leave_manager_id
                 holiday_sudo = holiday.sudo()
-                holiday_sudo.add_follower(employee_id)
+                holiday_sudo.add_follower(holiday.employee_id.id)
                 if holiday.validation_type == 'manager':
                     holiday_sudo.message_subscribe(partner_ids=holiday.employee_id.leave_manager_id.partner_id.ids)
                 if holiday.validation_type == 'no_validation':
@@ -983,7 +983,8 @@ class HolidaysRequest(models.Model):
 
         is_officer = self.env.user.has_group('hr_holidays.group_hr_holidays_user') or self.env.is_superuser()
         if not is_officer and values.keys() - {'attachment_ids', 'supported_attachment_ids', 'message_main_attachment_id'}:
-            if any(hol.date_from.date() < fields.Date.today() and hol.employee_id.leave_manager_id != self.env.user for hol in self):
+            if any(hol.date_from.date() < fields.Date.today() and hol.employee_id.leave_manager_id != self.env.user
+                   and hol.state not in ('confirm', 'draft') for hol in self):
                 raise UserError(_('You must have manager rights to modify/validate a time off that already begun'))
 
         # Unlink existing resource.calendar.leaves for validated time off
@@ -1456,7 +1457,9 @@ class HolidaysRequest(models.Model):
                     holiday.check_access_rule('write')
 
                     # This handles states validate1 validate and refuse
-                    if holiday.employee_id == current_employee:
+                    if holiday.employee_id == current_employee\
+                            and self.env.user != holiday.employee_id.leave_manager_id\
+                            and not is_officer:
                         raise UserError(_('Only a Time Off Manager can approve/refuse its own requests.'))
 
                     if (state == 'validate1' and val_type == 'both') and holiday.holiday_type == 'employee':
@@ -1649,7 +1652,9 @@ class HolidaysRequest(models.Model):
 
     @api.model
     def get_unusual_days(self, date_from, date_to=None):
-        return self.env.user.employee_id.sudo(False)._get_unusual_days(date_from, date_to)
+        employee_id = self.env.context.get('employee_id', False)
+        employee = self.env['hr.employee'].browse(employee_id) if employee_id else self.env.user.employee_id
+        return employee.sudo(False)._get_unusual_days(date_from, date_to)
 
     def _get_start_or_end_from_attendance(self, hour, date, employee):
         hour = float_to_time(float(hour))

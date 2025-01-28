@@ -11,6 +11,7 @@
 # Nuno Silva <nuno.silva@arxi.pt>, 2022
 # Pedro Filipe <pedro2.10@hotmail.com>, 2022
 # Manuela Silva <mmsrs@sky.com>, 2022
+# Maitê Dietze, 2024
 # Peter Lawrence Romão <peterromao@yahoo.co.uk>, 2024
 # 
 msgid ""
@@ -547,7 +548,7 @@ msgstr "Artigo"
 #: model:ir.model,name:stock_account.model_product_category
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__categ_id
 msgid "Product Category"
-msgstr "Categoria de Artigo"
+msgstr "Categoria do Artigo"
 
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_stock_move_line
@@ -1078,6 +1079,17 @@ msgid ""
 msgstr ""
 "Você não tem nenhuma conta de entrada de armazém definida na sua categoria "
 "de artigo. Deve definir uma antes de processar esta operação."
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/product.py:0
+#, python-format
+msgid ""
+"You don't have any output valuation account defined on your product "
+"category. You must define one before processing this operation."
+msgstr ""
+"Não tem nenhuma conta de valorização de saída definida na sua categoria de "
+"artigo. Deve definir uma antes de processar esta operação."
 
 #. module: stock_account
 #. odoo-python

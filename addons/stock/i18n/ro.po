@@ -10,7 +10,9 @@
 # Claudia Baisan, 2023
 # Cozmin Candea <office@terrabit.ro>, 2023
 # Dorin Hongu <dhongu@gmail.com>, 2024
+# Corina Calin, 2024
 # Flavia0320, 2024
+# Alin Miclea, 2024
 # 
 msgid ""
 msgstr ""
@@ -18,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-06 13:31+0000\n"
 "PO-Revision-Date: 2022-09-22 05:55+0000\n"
-"Last-Translator: Flavia0320, 2024\n"
+"Last-Translator: Alin Miclea, 2024\n"
 "Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2921,7 +2923,7 @@ msgstr ""
 #: code:addons/stock/static/src/widgets/forecast_widget.xml:0
 #, python-format
 msgid "Exp"
-msgstr ""
+msgstr "Estimat"
 
 #. module: stock
 #. odoo-python
@@ -3279,7 +3281,7 @@ msgstr "Oferă secvența acestei linii la afișarea depozitelor."
 #: code:addons/stock/models/stock_rule.py:0
 #, python-format
 msgid "Global Visibility Days"
-msgstr ""
+msgstr "Zile de vizibilitate globală"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.search_product_lot_filter
@@ -3849,6 +3851,7 @@ msgstr "Operator de domeniu nevalid%s"
 #, python-format
 msgid "Invalid domain right operand '%s'. It must be of type Integer/Float"
 msgstr ""
+"Operand drept de domeniu invalid '%s'. Trebuie să fie de tipul Întreg/Real"
 
 #. module: stock
 #. odoo-python
@@ -3857,6 +3860,8 @@ msgstr ""
 msgid ""
 "Invalid rule's configuration, the following rule causes an endless loop: %s"
 msgstr ""
+"Configurația regulii este invalidă, următoare  regulă determină o buclă "
+"nesfârșită: %s"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_quant__inventory_quantity_auto_apply
@@ -4101,7 +4106,7 @@ msgstr "Zile de livrare JSON"
 #: code:addons/stock/static/src/widgets/json_widget.js:0
 #, python-format
 msgid "Json Popup"
-msgstr ""
+msgstr "Json Popup"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_replenishment_info__json_replenishment_history
@@ -4959,13 +4964,13 @@ msgstr "Nume"
 #: model:ir.model.fields,field_description:stock.field_product_product__nbr_moves_in
 #: model:ir.model.fields,field_description:stock.field_product_template__nbr_moves_in
 msgid "Nbr Moves In"
-msgstr ""
+msgstr "Nr. Mutări Primite"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_product_product__nbr_moves_out
 #: model:ir.model.fields,field_description:stock.field_product_template__nbr_moves_out
 msgid "Nbr Moves Out"
-msgstr ""
+msgstr "Nr. Mutări Ieșite"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.product_template_search_form_view_stock
@@ -5540,7 +5545,7 @@ msgstr "Transfer de ieșire ciornă "
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_location__outgoing_move_line_ids
 msgid "Outgoing Move Line"
-msgstr ""
+msgstr "Linie de mișcare de ieșire"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_warehouse__delivery_steps
@@ -6368,7 +6373,7 @@ msgstr "Trage din"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_stock_rule
 msgid "Pull Rule"
-msgstr ""
+msgstr "Regulă de tragere"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_stock_rule
@@ -6653,6 +6658,9 @@ msgid ""
 "Quants are auto-deleted when appropriate. If you must manually delete them, "
 "please ask a stock manager to do it."
 msgstr ""
+"Pozițiile de stoc sunt șterse automat atunci când este cazul. Dacă trebuie "
+"să le ștergeți manual, vă rugăm să cereți unui administrator de stoc să o "
+"facă."
 
 #. module: stock
 #. odoo-python
@@ -7195,7 +7203,7 @@ msgstr ""
 #: code:addons/stock/models/stock_rule.py:0
 #, python-format
 msgid "Rule %s belongs to %s while the route belongs to %s."
-msgstr ""
+msgstr "Regula %s îi aparține %s în timp ce ruta îi aparține %s."
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_rule__rule_message
@@ -7425,7 +7433,7 @@ msgstr "Transfer bunuri către ieșire și apoi livrare (2 pași)"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_sendcloud
 msgid "Sendcloud Connector"
-msgstr ""
+msgstr "Conector pentru Sendcloud"
 
 #. module: stock
 #: model:mail.template,description:stock.mail_template_data_delivery_confirmation
@@ -8617,6 +8625,8 @@ msgid ""
 "This location (if it's internal) and all its descendants filtered by "
 "type=Internal."
 msgstr ""
+"Această locație (dacă este internă) și toți descendenții săi sunt filtrați "
+"după tip=Intern"
 
 #. module: stock
 #. odoo-python
@@ -8721,6 +8731,8 @@ msgid ""
 "This product's company cannot be changed as long as there are quantities of "
 "it belonging to another company."
 msgstr ""
+"Compania acestui produs nu poate fi schimbată atâta timp cât există "
+"cantități din acesta aparținând altei companii."
 
 #. module: stock
 #. odoo-python
@@ -8730,6 +8742,8 @@ msgid ""
 "This product's company cannot be changed as long as there are stock moves of"
 " it belonging to another company."
 msgstr ""
+"Compania acestui produs nu poate fi schimbată atâta timp cât există mutări "
+"de stoc ale acestuia aparținând altei companii."
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_change_product_qty__new_quantity
@@ -8765,6 +8779,10 @@ msgid ""
 "reference values or assign the existing reference sequence to this operation"
 " type."
 msgstr ""
+"Acest prefix al secvenței este deja folosit de un alt tip de operațiune. "
+"Este recomandat să selectați un prefix unic pentru a evita problemele și/sau"
+" valorile de referință repetate sau să atribuiți secvența de referință "
+"existentă acestui tip de operațiune."
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_product_product__property_stock_production
@@ -9143,7 +9161,7 @@ msgstr "Conector USPS"
 #: code:addons/stock/static/src/components/reception_report_line/stock_reception_report_line.xml:0
 #, python-format
 msgid "Unassign"
-msgstr ""
+msgstr "Dezatribuie"
 
 #. module: stock
 #. odoo-javascript
@@ -9631,7 +9649,7 @@ msgstr "Greutatea tipului de pachet"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_storage_category__weight_uom_name
 msgid "Weight unit"
-msgstr ""
+msgstr "Unitatea de greutate"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_package_type__weight_uom_name
@@ -9905,6 +9923,15 @@ msgstr "Nu puteți schimba tipul unui produs care a fost deja utilizat."
 
 #. module: stock
 #. odoo-python
+#: code:addons/stock/models/stock_orderpoint.py:0
+#, python-format
+msgid ""
+"You can not create a snoozed orderpoint that is not manually triggered."
+msgstr ""
+"Nu puteți crea un punct de comandă amânat care nu este declanșat manual."
+
+#. module: stock
+#. odoo-python
 #: code:addons/stock/models/stock_move_line.py:0
 #, python-format
 msgid ""
@@ -9944,6 +9971,18 @@ msgstr "Puteți prelucra doar 1.0%s din produse cu număr de serie unic."
 
 #. module: stock
 #. odoo-python
+#: code:addons/stock/models/stock_orderpoint.py:0
+#, python-format
+msgid ""
+"You can only snooze manual orderpoints. You should rather archive 'auto-"
+"trigger' orderpoints if you do not want them to be triggered."
+msgstr ""
+"Puteți amâna doar punctele de comandă manuale. Ar trebui să arhivați "
+"punctele de comandă „declanșate automat” dacă nu doriți ca acestea să fie "
+"declanșate."
+
+#. module: stock
+#. odoo-python
 #: code:addons/stock/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -9978,6 +10017,7 @@ msgstr ""
 #, python-format
 msgid "You cannot change a cancelled stock move, create a new line instead."
 msgstr ""
+"Nu puteți modifica o mutare de stoc anulată, în schimb creați o linie nouă."
 
 #. module: stock
 #. odoo-python
@@ -10075,6 +10115,8 @@ msgid ""
 "You cannot pack products into the same package when they are from different "
 "transfers with different operation types."
 msgstr ""
+"Nu puteți împacheta produse în același pachet când acestea sunt din "
+"transferuri diferite cu diferite tipuri de operațiuni."
 
 #. module: stock
 #. odoo-python
@@ -10122,6 +10164,8 @@ msgstr "Nu puteți împărți o mutare ciornă. Trebuie confirmată mai întâi.
 #, python-format
 msgid "You cannot split a stock move that has been set to 'Done' or 'Cancel'."
 msgstr ""
+"Nu puteți împărți o mutare a stocului care a fost setată ca „Efectuat\" sau "
+"„Anulat\"."
 
 #. module: stock
 #. odoo-python
@@ -10197,6 +10241,8 @@ msgid ""
 "You have product(s) in stock that have lot/serial number tracking enabled. \n"
 "Switch off tracking on all the products before switching off this setting."
 msgstr ""
+"Aveți produs(e) în stoc care au activată urmărirea numărului de lot/număr de serie.\n"
+"Dezactivați urmărirea tuturor produselor înainte de a dezactiva această setare."
 
 #. module: stock
 #. odoo-python
@@ -10339,6 +10385,8 @@ msgid ""
 "Your lunch has been delivered.\n"
 "Enjoy your meal!"
 msgstr ""
+"Your lunch has been delivered.\n"
+"Enjoy your meal!"
 
 #. module: stock
 #. odoo-python

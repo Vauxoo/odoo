@@ -5,6 +5,7 @@
 # Translators:
 # Heiðar Sigurðsson, 2024
 # jonasyngvi, 2024
+# Kristófer Arnþórsson, 2024
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-06 13:33+0000\n"
 "PO-Revision-Date: 2022-09-22 05:44+0000\n"
-"Last-Translator: jonasyngvi, 2024\n"
+"Last-Translator: Kristófer Arnþórsson, 2024\n"
 "Language-Team: Icelandic (https://app.transifex.com/odoo/teams/41243/is/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -517,7 +518,7 @@ msgstr ""
 #: model:ir.module.module,description:base.module_l10n_tr_reports
 msgid ""
 "\n"
-"        Accounting reports for Turkey\n"
+"        Accounting reports for Türkiye\n"
 "    "
 msgstr ""
 
@@ -1246,6 +1247,33 @@ msgstr ""
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_sepa_direct_debit
+msgid ""
+"\n"
+"        This module enables the generation of SEPA Direct Debit (SDD)-compliant XML files (consistent\n"
+"        with pain.008.001.02 specification) to send to your bank in order to\n"
+"        collect a set of payments.\n"
+"\n"
+"        To be eligible for this payment method, a customer must have first\n"
+"        returned a mandate to the company, giving their consent to use direct debit.\n"
+"        This consent must have been encoded as a 'customer mandate' in Odoo.\n"
+"\n"
+"        You also need to meet the following requirements in order to properly\n"
+"        generate an SDD file:\n"
+"        - Your company account must be set to a valid IBAN number\n"
+"        - Your company must have been given a creditor identifier (this can be done in Settings - General Settings - Accounting section)\n"
+"        - Your company must have defined a journal to receive SDD payments (again, in 'settings' of accounting module)\n"
+"        - Every customer for whom you generate a payment must have a valid IBAN account number.\n"
+"\n"
+"        Odoo will let you know if any of these requirements are not satisfied.\n"
+"\n"
+"        To register a payment for open invoices, you can use the dedicated\n"
+"        'SEPA Direct Debit' option by selecting a bank account in the 'Register\n"
+"        Payment' wizard. An error message will appear if no valid mandate is\n"
+"        available for generating a payment on the selected invoice.\n"
+"    "
+msgstr ""
+
+#. module: base
 msgid ""
 "\n"
 "        This module enables the generation of SEPA Direct Debit (SDD)-compliant XML files (consistent\n"
@@ -8904,7 +8932,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_form_simple_modif
 msgid "Account Security"
-msgstr ""
+msgstr "Aðgangsöryggi"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_taxcloud
@@ -9054,7 +9082,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.action_view_tree
 #: model_terms:ir.ui.view,arch_db:base.view_window_action_search
 msgid "Action"
-msgstr ""
+msgstr "Aðgerð"
 
 #. module: base
 #. odoo-python
@@ -9153,7 +9181,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.module_view_kanban
 #: model_terms:ir.ui.view,arch_db:base.res_lang_tree
 msgid "Activate"
-msgstr ""
+msgstr "Virkja"
 
 #. module: base
 #: model:ir.actions.server,name:base.action_server_module_immediate_install
@@ -9188,7 +9216,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_currency_search
 #: model_terms:ir.ui.view,arch_db:base.view_view_search
 msgid "Active"
-msgstr ""
+msgstr "Virk"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__active_lang_count
@@ -9205,7 +9233,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_language_install
 msgid "Add"
-msgstr ""
+msgstr "Bæta við"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_view_base_language_install
@@ -9423,7 +9451,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 #, python-format
 msgid "Address"
-msgstr ""
+msgstr "Heimilisfang"
 
 #. module: base
 #: model:ir.model,name:base.model_format_address_mixin
@@ -9764,7 +9792,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_comparison
 msgid "Allow shoppers to compare products based on their attributes"
-msgstr ""
+msgstr "Leyfa kaupendum að bera saman vörur út frá eiginleikum þeirra"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_wishlist
@@ -9954,7 +9982,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_analytic
 msgid "Analytic Accounting"
-msgstr ""
+msgstr "Greinandi bókhald"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_analytic_enterprise
@@ -10038,7 +10066,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.base_onboarding_company_form
 #: model_terms:ir.ui.view,arch_db:base.res_config_view_base
 msgid "Apply"
-msgstr ""
+msgstr "Virkja"
 
 #. module: base
 #. odoo-python
@@ -10204,7 +10232,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_sequence_search
 #: model_terms:ir.ui.view,arch_db:base.view_users_form
 msgid "Archived"
-msgstr ""
+msgstr "Vistuð"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.base_partner_merge_automatic_wizard_form
@@ -11702,7 +11730,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_module_filter
 msgid "Categories"
-msgstr ""
+msgstr "Flokkar"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module__category_id
@@ -11773,7 +11801,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_form_simple_modif
 msgid "Change password"
-msgstr ""
+msgstr "Breyta lykilorði"
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_sequence
@@ -11990,7 +12018,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 #: model_terms:ir.ui.view,arch_db:base.view_res_bank_form
 msgid "City"
-msgstr ""
+msgstr "Borg"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_logging__type__client
@@ -12014,7 +12042,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_update
 #: model_terms:ir.ui.view,arch_db:base.wizard_lang_export
 msgid "Close"
-msgstr ""
+msgstr "Loka"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_container
@@ -12029,7 +12057,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_import_language
 msgid "Code"
-msgstr ""
+msgstr "Kóði"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields__compute
@@ -12095,14 +12123,14 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_category__color
 msgid "Color"
-msgstr ""
+msgstr "Litur"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_groups__color
 #: model:ir.model.fields,field_description:base.field_res_partner__color
 #: model:ir.model.fields,field_description:base.field_res_users__color
 msgid "Color Index"
-msgstr ""
+msgstr "Litavísitala"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__column1
@@ -12182,7 +12210,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_company_tree
 #: model_terms:ir.ui.view,arch_db:base.view_res_partner_filter
 msgid "Companies"
-msgstr ""
+msgstr "Fyrirtæki"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_form
@@ -12251,7 +12279,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__company_name
 #: model:ir.model.fields,field_description:base.field_res_users__company_name
 msgid "Company Name"
-msgstr ""
+msgstr "Nafn fyrirtækis"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__commercial_company_name
@@ -12335,7 +12363,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__complete_name
 msgid "Complete Name"
-msgstr ""
+msgstr "Fullt nafn"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__compute
@@ -12396,7 +12424,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Stillingarvalkostir"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.config_wizard_step_view_form
@@ -12450,12 +12478,12 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_upgrade
 msgid "Confirm"
-msgstr ""
+msgstr "Staðfesta"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.identity_check_wizard
 msgid "Confirm Password"
-msgstr ""
+msgstr "Staðfestu lykilorð"
 
 #. module: base
 #: model:res.country,name:base.cg
@@ -12555,7 +12583,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_company_form
 #: model_terms:ir.ui.view,arch_db:base.view_partner_simple_form
 msgid "Contact"
-msgstr ""
+msgstr "Hafa samband"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
@@ -12754,7 +12782,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_res_bank_form
 #: model_terms:ir.ui.view,arch_db:base.view_res_partner_filter
 msgid "Country"
-msgstr ""
+msgstr "Land"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country__phone_code
@@ -12766,7 +12794,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__country_code
 #: model:ir.model.fields,field_description:base.field_res_users__country_code
 msgid "Country Code"
-msgstr ""
+msgstr "Landskóði"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_country_group
@@ -13092,7 +13120,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create__create_uid
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_search
 msgid "Created by"
-msgstr ""
+msgstr "Búið til af"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_enable_profiling_wizard__create_date
@@ -13173,7 +13201,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__create_date
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Búið til þann"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_form
@@ -13186,7 +13214,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.ir_logging_search_view
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_search
 msgid "Creation Date"
-msgstr ""
+msgstr "Stofndagur"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.ir_logging_form_view
@@ -13261,7 +13289,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_currency_form
 #: model_terms:ir.ui.view,arch_db:base.view_currency_search
 msgid "Currency"
-msgstr ""
+msgstr "Gjaldmiðill"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_currency__name
@@ -13637,7 +13665,7 @@ msgstr "Dagar"
 #: model:ir.module.module,shortdesc:base.module_account_debit_note
 #: model:ir.module.module,summary:base.module_account_debit_note
 msgid "Debit Notes"
-msgstr ""
+msgstr "Debetnótur"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_mail_server__smtp_debug
@@ -13793,7 +13821,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_inventory_delivery
 msgid "Delivery"
-msgstr ""
+msgstr "Afhending"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__res_partner__type__delivery
@@ -13813,7 +13841,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_ir_demo
 msgid "Demo"
-msgstr ""
+msgstr "Prufa"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module__demo
@@ -13891,7 +13919,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_users_apikeys_description__name
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_form
 msgid "Description"
-msgstr ""
+msgstr "Lýsing"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module__description_html
@@ -14019,7 +14047,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_uninstall
 msgid "Discard"
-msgstr ""
+msgstr "Hætta við"
 
 #. module: base
 #: model_terms:res.partner,website_description:base.res_partner_1
@@ -14127,7 +14155,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__display_name
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Birtingarnafn"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_studio
@@ -14343,7 +14371,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__domain
 #: model:ir.model.fields,field_description:base.field_ir_rule__domain_force
 msgid "Domain"
-msgstr ""
+msgstr "Lén"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_act_window__domain
@@ -14386,7 +14414,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:base.selection__res_company__base_onboarding_company_state__done
 #: model:ir.model.fields.selection,name:base.selection__res_users_deletion__state__done
 msgid "Done"
-msgstr ""
+msgstr "Lokið"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.form_res_users_key_show
@@ -14720,7 +14748,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.contact
 #, python-format
 msgid "Email"
-msgstr ""
+msgstr "Netfang"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_form
@@ -14978,7 +15006,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_demo_failure__error
 msgid "Error"
-msgstr ""
+msgstr "Villa"
 
 #. module: base
 #. odoo-python
@@ -15531,7 +15559,7 @@ msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_delivery_fedex
-msgid "Fedex Shipping"
+msgid "Fedex Shipping (Legacy)"
 msgstr ""
 
 #. module: base
@@ -15592,7 +15620,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_model_fields_search
 #: model_terms:ir.ui.view,arch_db:base.view_model_fields_selection_search
 msgid "Field"
-msgstr ""
+msgstr "Reitur"
 
 #. module: base
 #. odoo-python
@@ -15679,7 +15707,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__field_description
 msgid "Field Label"
-msgstr ""
+msgstr "Merki reits"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_form
@@ -15690,7 +15718,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_exports_line__name
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__name
 msgid "Field Name"
-msgstr ""
+msgstr "Heiti reits"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_services_field_service
@@ -16082,7 +16110,7 @@ msgstr ""
 #: code:addons/base/models/ir_qweb_fields.py:0
 #, python-format
 msgid "Format"
-msgstr ""
+msgstr "Snið"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_partner__email_formatted
@@ -16143,6 +16171,11 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_fr_reports
 msgid "France - Accounting Reports"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_l10n_fr_invoice_addr
+msgid "France - Adding Mandatory Invoice Mentions (Decree no. 2022-1299)"
 msgstr ""
 
 #. module: base
@@ -16555,7 +16588,7 @@ msgstr ""
 #: code:addons/base/models/res_config.py:0
 #, python-format
 msgid "Go to the configuration panel"
-msgstr ""
+msgstr "Farðu í stillingarspjaldið"
 
 #. module: base
 #. odoo-python
@@ -16660,7 +16693,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_search
 #: model_terms:ir.ui.view,arch_db:base.view_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Hópað eftir"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_groups__full_name
@@ -16797,7 +16830,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_ir_http
 msgid "HTTP Routing"
-msgstr ""
+msgstr "HTTP Routing"
 
 #. module: base
 #: model:res.country,name:base.ht
@@ -17351,7 +17384,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__id
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create__id
 msgid "ID"
-msgstr ""
+msgstr "Auðkenni (ID)"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_server__xml_id
@@ -17584,7 +17617,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__image_1920
 #: model:ir.model.fields,field_description:base.field_res_users__image_1920
 msgid "Image"
-msgstr ""
+msgstr "Mynd"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_avatar_mixin__image_1024
@@ -17592,7 +17625,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__image_1024
 #: model:ir.model.fields,field_description:base.field_res_users__image_1024
 msgid "Image 1024"
-msgstr ""
+msgstr "Mynd 1024"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_avatar_mixin__image_128
@@ -17600,7 +17633,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__image_128
 #: model:ir.model.fields,field_description:base.field_res_users__image_128
 msgid "Image 128"
-msgstr ""
+msgstr "Mynd 128"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_avatar_mixin__image_256
@@ -17608,7 +17641,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__image_256
 #: model:ir.model.fields,field_description:base.field_res_users__image_256
 msgid "Image 256"
-msgstr ""
+msgstr "Mynd 256"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_avatar_mixin__image_512
@@ -17616,7 +17649,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__image_512
 #: model:ir.model.fields,field_description:base.field_res_users__image_512
 msgid "Image 512"
-msgstr ""
+msgstr "Mynd 512"
 
 #. module: base
 #: model:ir.model,name:base.model_image_mixin
@@ -17951,7 +17984,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_model__info
 #: model_terms:ir.ui.view,arch_db:base.module_form
 msgid "Information"
-msgstr ""
+msgstr "Upplýsingar"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_view_search
@@ -18460,7 +18493,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account
 msgid "Invoicing"
-msgstr ""
+msgstr "Reikningagerð"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hw_posbox_homepage
@@ -19066,7 +19099,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__write_uid
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Síðast uppfært af"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_enable_profiling_wizard__write_date
@@ -19148,7 +19181,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__write_date
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Síðast uppfært þann"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_currency_kanban
@@ -19230,7 +19263,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.module_view_kanban
 msgid "Learn More"
-msgstr ""
+msgstr "Skoða nánar"
 
 #. module: base
 #: model:res.country,name:base.lb
@@ -20313,7 +20346,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_logging__message
 #: model:ir.model.fields,field_description:base.field_ir_model_constraint__message
 msgid "Message"
-msgstr ""
+msgstr "Skilaboð"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_mx_edi
@@ -20467,7 +20500,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_model_fields_form
 #: model_terms:ir.ui.view,arch_db:base.view_model_form
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Ýmislegt"
 
 #. module: base
 #: model:res.partner.title,name:base.res_partner_title_miss
@@ -20951,7 +20984,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_partner_tree
 #, python-format
 msgid "Name"
-msgstr ""
+msgstr "Nafn"
 
 #. module: base
 #. odoo-python
@@ -21268,6 +21301,8 @@ msgstr ""
 #: model:ir.model.fields.selection,name:base.selection__ir_mail_server__smtp_encryption__none
 msgid "None"
 msgstr ""
+"<i class=\"fa fa-fw fa-check\"/><span class=\"d-none d-md-inline\"> "
+"Greitt</span></i>"
 
 #. module: base
 #: model:res.country,name:base.nf
@@ -22497,6 +22532,14 @@ msgid "Odoo is unable to merge the generated PDFs."
 msgstr ""
 
 #. module: base
+#. odoo-python
+#: code:addons/base/models/ir_actions_report.py:0
+msgid ""
+"Odoo is unable to merge the generated PDFs because of {num_errors} corrupted"
+" file(s)"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_sequence__padding
 msgid ""
 "Odoo will automatically adds some '0' on the left of the 'Next Number' to "
@@ -22797,7 +22840,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.base_partner_merge_automatic_wizard_form
 msgid "Options"
-msgstr ""
+msgstr "Valmöguleikar"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model__order
@@ -23296,7 +23339,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_category__parent_id
 msgid "Parent Category"
-msgstr ""
+msgstr "Foreldraflokkur"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_partner_merge_automatic_wizard__group_by_parent_id
@@ -23314,7 +23357,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_ui_menu__parent_path
 #: model:ir.model.fields,field_description:base.field_res_partner_category__parent_path
 msgid "Parent Path"
-msgstr ""
+msgstr "Foreldraleið"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__parent_name
@@ -23331,7 +23374,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_company__partner_id
 #: model_terms:ir.ui.view,arch_db:base.view_partner_address_form
 msgid "Partner"
-msgstr ""
+msgstr "Félagi"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_partner_autocomplete
@@ -23405,7 +23448,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_users__password
 #: model:ir.model.fields,field_description:base.field_res_users_identitycheck__password
 msgid "Password"
-msgstr ""
+msgstr "Lykilorð"
 
 #. module: base
 #: model:ir.model,name:base.model_res_users_identitycheck
@@ -23463,7 +23506,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_accounting_payment
 msgid "Payment"
-msgstr ""
+msgstr "Greiðsla"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_payment
@@ -23583,7 +23626,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_accounting_payment_providers
 msgid "Payment Providers"
-msgstr ""
+msgstr "Greiðsluveitendur"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_payment
@@ -23661,7 +23704,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.contact
 #, python-format
 msgid "Phone"
-msgstr ""
+msgstr "Símanúmer"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_phone_validation
@@ -24065,7 +24108,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_product_images
 msgid "Product Images"
-msgstr ""
+msgstr "Vörumyndir"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_manufacturing_product_lifecycle_management_(plm)
@@ -24569,7 +24612,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_cron__code
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_form
 msgid "Python Code"
-msgstr ""
+msgstr "Python kóði"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_server_object_lines__evaluation_type__equation
@@ -24995,7 +25038,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:base.selection__ir_server_object_lines__evaluation_type__reference
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 msgid "Reference"
-msgstr ""
+msgstr "Tilvísun"
 
 #. module: base
 #. odoo-python
@@ -25088,7 +25131,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:base.selection__ir_asset__directive__remove
 #: model_terms:ir.ui.view,arch_db:base.onboarding_container
 msgid "Remove"
-msgstr ""
+msgstr "Fjarlægja"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_form
@@ -25158,7 +25201,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_asset__directive__replace
 msgid "Replace"
-msgstr ""
+msgstr "Skipta um"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_actions_act_url__binding_type__report
@@ -25176,7 +25219,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_report
 msgid "Report Action"
-msgstr ""
+msgstr "Tilkynna aðgerð"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_report__report_file
@@ -25660,7 +25703,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_accounting_localizations_sale
 msgid "Sale"
-msgstr ""
+msgstr "Útsala"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_sms
@@ -25765,7 +25808,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.user_groups_view
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 msgid "Sales"
-msgstr ""
+msgstr "Sala"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
@@ -25823,7 +25866,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_users__user_id
 #: model_terms:ir.ui.view,arch_db:base.view_res_partner_filter
 msgid "Salesperson"
-msgstr ""
+msgstr "Sölufulltrúa"
 
 #. module: base
 #: model:res.country,name:base.ws
@@ -25961,7 +26004,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users_apikeys__scope
 msgid "Scope"
-msgstr ""
+msgstr "Umfang"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_ui_view__type__search
@@ -26079,7 +26122,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__selectable
 msgid "Selectable"
-msgstr ""
+msgstr "Hægt að velja"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.base_partner_merge_automatic_wizard_form
@@ -26270,7 +26313,10 @@ msgstr ""
 
 #. module: base
 #: model:ir.module.module,description:base.module_delivery_fedex
-msgid "Send your shippings through Fedex and track them online"
+msgid ""
+"This is the legacy integration with FedEx that is no longer supported.Please"
+" install the new \"Fedex Shipping\" module and uninstall this one as soon as"
+" possible. This integration will stop working in 2024"
 msgstr ""
 
 #. module: base
@@ -26329,7 +26375,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_sequence_search
 #: model_terms:ir.ui.view,arch_db:base.view_view_tree
 msgid "Sequence"
-msgstr ""
+msgstr "Röð"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence__code
@@ -26425,7 +26471,7 @@ msgstr ""
 #: model:res.partner.category,name:base.res_partner_category_11
 #: model_terms:ir.ui.view,arch_db:base.user_groups_view
 msgid "Services"
-msgstr ""
+msgstr "Þjónustur"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_profile__session
@@ -26650,7 +26696,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__size
 msgid "Size"
-msgstr ""
+msgstr "Stærð"
 
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_ir_model_fields_size_gt_zero
@@ -27194,7 +27240,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 #: model_terms:ir.ui.view,arch_db:base.view_res_bank_form
 msgid "State"
-msgstr ""
+msgstr "Fylki"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country_state__code
@@ -27235,7 +27281,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_module_filter
 #: model_terms:ir.ui.view,arch_db:base.view_users_form_simple_modif
 msgid "Status"
-msgstr ""
+msgstr "Staða"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence__number_increment
@@ -27523,7 +27569,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_ir_config_parameter
 msgid "System Parameter"
-msgstr ""
+msgstr "Kerfisbreyta"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.ir_config_list_action
@@ -27583,7 +27629,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_partner_filter
 msgid "Tag"
-msgstr ""
+msgstr "Efnisorð"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_category__name
@@ -27594,7 +27640,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__category_id
 #: model:ir.model.fields,field_description:base.field_res_users__category_id
 msgid "Tags"
-msgstr ""
+msgstr "Merki"
 
 #. module: base
 #: model:res.country,name:base.tw
@@ -27920,7 +27966,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:base.selection__ir_actions_report__report_type__qweb-text
 #: model:ir.model.fields.selection,name:base.selection__ir_property__type__text
 msgid "Text"
-msgstr ""
+msgstr "Texti"
 
 #. module: base
 #: model:res.country,name:base.th
@@ -27952,6 +27998,15 @@ msgid "The \"App Switcher\" action cannot be selected as home action."
 msgstr ""
 
 #. module: base
+#. odoo-python
+#: code:addons/base/models/res_users.py:0
+#, python-format
+msgid ""
+"The action \"%s\" cannot be set as the home action because it requires a "
+"record to be selected beforehand."
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_res_country__code
 #: model:ir.model.fields,help:base.field_res_partner__country_code
 #: model:ir.model.fields,help:base.field_res_users__country_code
@@ -27959,6 +28014,8 @@ msgid ""
 "The ISO country code in two chars. \n"
 "You can use this field for quick search."
 msgstr ""
+"ISO landskóði í tveimur stöfum. \n"
+"Þú getur notað þennan reit fyrir skjóta leit."
 
 #. module: base
 #: model:res.partner,website_short_description:base.res_partner_10
@@ -29067,7 +29124,7 @@ msgstr ""
 #: model:ir.module.category,name:base.module_category_human_resources_time_off
 #: model:ir.module.module,shortdesc:base.module_hr_holidays
 msgid "Time Off"
-msgstr ""
+msgstr "Frí"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_payroll_holidays
@@ -29409,17 +29466,17 @@ msgstr ""
 
 #. module: base
 #: model:res.country,name:base.tr
-msgid "Turkey"
+msgid "Türkiye"
 msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_tr
-msgid "Turkey - Accounting"
+msgid "Türkiye - Accounting"
 msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_tr_reports
-msgid "Turkey - Accounting Reports"
+msgid "Türkiye - Accounting Reports"
 msgstr ""
 
 #. module: base
@@ -29938,7 +29995,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment__url
 msgid "Url"
-msgstr ""
+msgstr "Url"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_country__image_url
@@ -30123,7 +30180,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.ir_filters_view_search
 #: model_terms:ir.ui.view,arch_db:base.view_users_search
 msgid "User"
-msgstr ""
+msgstr "Notandi"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users__user_group_warning
@@ -30294,7 +30351,7 @@ msgstr ""
 #: model:res.country,vat_label:base.uk
 #, python-format
 msgid "VAT"
-msgstr ""
+msgstr "VSK"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_base_vat
@@ -30451,7 +30508,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__view_id
 #: model_terms:ir.ui.view,arch_db:base.view_view_search
 msgid "View"
-msgstr ""
+msgstr "Skoða"
 
 #. module: base
 #. odoo-python
@@ -30515,6 +30572,12 @@ msgstr ""
 
 #. module: base
 #. odoo-python
+#: code:addons/base/models/ir_actions_report.py:0
+msgid "View Problematic Record(s)"
+msgstr ""
+
+#. module: base
+#. odoo-python
 #: code:addons/base/models/ir_model.py:0
 #, python-format
 msgid "View: %s"
@@ -30561,7 +30624,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_category__visible
 msgid "Visible"
-msgstr ""
+msgstr "Sýnilegt"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_purchase_price_diff
@@ -30603,7 +30666,7 @@ msgstr ""
 #: code:addons/base/models/res_partner.py:0 code:addons/models.py:0
 #, python-format
 msgid "Warning"
-msgstr ""
+msgstr "Aðvörun"
 
 #. module: base
 #. odoo-python
@@ -30726,7 +30789,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_partner_address_form
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 msgid "Website"
-msgstr ""
+msgstr "Vefsíða"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_payment_authorize
@@ -31660,7 +31723,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_users_form
 #: model_terms:ir.ui.view,arch_db:base.view_users_simple_form
 msgid "e.g. John Doe"
-msgstr ""
+msgstr "t.d. John Doe"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
@@ -31725,7 +31788,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sale
 msgid "eCommerce"
-msgstr ""
+msgstr "rafræn viðskipti"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sale_delivery
@@ -31785,7 +31848,7 @@ msgstr ""
 #: code:addons/base/models/ir_fields.py:0
 #, python-format
 msgid "false"
-msgstr ""
+msgstr "rangt"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_model_fields__ttype__float

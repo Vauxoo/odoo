@@ -2369,8 +2369,8 @@ msgid ""
 "If the email address is on the blacklist, the contact won't receive mass "
 "mailing anymore, from any list"
 msgstr ""
-"Si la dirección de email está en la lista negra, el contacto ya no recibirá "
-"correos masivos de ninguna lista."
+"El contacto ya no recibirá correos masivos de ninguna lista si la dirección "
+"de correo electrónico está en la lista de exclusión."
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
@@ -3195,7 +3195,7 @@ msgstr "Se importaron nuevos contactos"
 #. module: mass_mailing
 #: model:utm.campaign,title:mass_mailing.mass_mail_campaign_1
 msgid "Newsletter"
-msgstr "Boletín de noticias"
+msgstr "Boletín informativo"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__activity_calendar_event_id
@@ -3929,7 +3929,7 @@ msgstr "Periodo programado"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__next_departure
 msgid "Scheduled date"
-msgstr "Hora prevista"
+msgstr "Fecha programada"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__schedule_date
@@ -4593,9 +4593,9 @@ msgid ""
 "right icon of each block. Then, duplicate one of the columns to create a new"
 " one as a copy."
 msgstr ""
-"Para añadir una cuarta columna, reduzca el tamaño de estas tres columnas "
-"usando el icono adecuado de cada bloque. Luego duplique una de las columnas "
-"para crear una nueva como copia."
+"Para agregar una cuarta columna, reduzca el tamaño de estas tres columnas "
+"con el icono correspondiente de cada bloque y luego duplique una para crear "
+"una nueva como copia."
 
 #. module: mass_mailing
 #. odoo-python
@@ -4863,15 +4863,15 @@ msgid ""
 " back please accept this 20% discount on you next purchase by clicking the "
 "button."
 msgstr ""
-" ¡Continuamos creciendo y queremos que formes parte de ello! Hemos "
-"incrementado las horas de atención y tenemos muchas nuevas marcas "
-"disponibles. Para agradecer que volviste acepta este 20% de descuento en tu "
-"próxima compra, solo tienes que dar clic al botón."
+"¡Seguimos creciendo y queremos que seas parte de ello! Hemos incrementado "
+"las horas de atención y tenemos muchas nuevas marcas disponibles. "
+"Agradecemos que hayas vuelto y te otorgamos 20% de descuento en tu próxima "
+"compra, solo haz clic en el botón."
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_references
 msgid "We are in good company."
-msgstr "Estamos bien acompañados."
+msgstr "Está en las mejores manos."
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
@@ -4892,7 +4892,7 @@ msgstr "Mensajes del sitio web"
 #: model:ir.model.fields,help:mass_mailing.field_mailing_contact__website_message_ids
 #: model:ir.model.fields,help:mass_mailing.field_mailing_mailing__website_message_ids
 msgid "Website communication history"
-msgstr "Historial de comunicaciones del sitio web"
+msgstr "Historial de comunicación del sitio web"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets

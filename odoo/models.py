@@ -73,6 +73,7 @@ regex_pg_name = re.compile(r'^[a-z_][a-z0-9_$]*$', re.I)
 regex_field_agg = re.compile(r'(\w+)(?::(\w+)(?:\((\w+)\))?)?')
 
 AUTOINIT_RECALCULATE_STORED_FIELDS = 1000
+GC_UNLINK_LIMIT = 100_000
 
 INSERT_BATCH_SIZE = 100
 SQL_DEFAULT = psycopg2.extensions.AsIs("DEFAULT")
@@ -1118,6 +1119,7 @@ class BaseModel(metaclass=MetaModel):
             batch_xml_ids.clear()
 
             # try to create in batch
+            global_error_message = None
             try:
                 with cr.savepoint():
                     recs = self._load_records(data_list, mode == 'update')
@@ -1129,6 +1131,8 @@ class BaseModel(metaclass=MetaModel):
                     info = data_list[0]['info']
                     messages.append(dict(info, type='error', message=_(u"Unknown database error: '%s'", e)))
                 return
+            except UserError as e:
+                global_error_message = dict(data_list[0]['info'], type='error', message=str(e))
             except Exception:
                 pass
 
@@ -1167,6 +1171,9 @@ class BaseModel(metaclass=MetaModel):
                         'message': _(u"Found more than 10 errors and more than one error per 10 records, interrupted to avoid showing too many errors.")
                     })
                     break
+            if errors > 0 and global_error_message and global_error_message not in messages:
+                # If we cannot create the records 1 by 1, we display the error raised when we created the records simultaneously
+                messages.insert(0, global_error_message)
 
         # make 'flush' available to the methods below, in the case where XMLID
         # resolution fails, for instance
@@ -1625,13 +1632,31 @@ class BaseModel(metaclass=MetaModel):
         """
         args = list(args or [])
         search_fnames = self._rec_names_search or ([self._rec_name] if self._rec_name else [])
+
         if not search_fnames:
             _logger.warning("Cannot execute name_search, no _rec_name or _rec_names_search defined on %s", self._name)
+
         # optimize out the default criterion of ``like ''`` that matches everything
         elif not (name == '' and operator in ('like', 'ilike')):
             aggregator = expression.AND if operator in expression.NEGATIVE_TERM_OPERATORS else expression.OR
-            domain = aggregator([[(field_name, operator, name)] for field_name in search_fnames])
-            args += domain
+            domains = []
+            for field_name in search_fnames:
+                # field_name may be a sequence of field names (partner_id.name)
+                # retrieve the last field in the sequence
+                model = self
+                for fname in field_name.split('.'):
+                    field = model._fields[fname]
+                    model = self.env.get(field.comodel_name)
+                if field.relational:
+                    # relational fields will trigger a _name_search on their comodel
+                    domains.append([(field_name, operator, name)])
+                    continue
+                try:
+                    domains.append([(field_name, operator, field.convert_to_write(name, self))])
+                except ValueError:
+                    pass  # ignore that case if the value doesn't match the field type
+            args += aggregator(domains)
+
         return self._search(args, limit=limit, access_rights_uid=name_get_uid)
 
     @api.model
@@ -3127,7 +3152,9 @@ class BaseModel(metaclass=MetaModel):
         # We don't forbid reading inactive/non-existing languages,
         langs = set(langs or [l[0] for l in self.env['res.lang'].get_installed()])
         val_en = self.with_context(lang='en_US')[field_name]
-        if not callable(field.translate):
+        if not field.translate:
+            translations = []
+        elif field.translate is True:
             translations = [{
                 'lang': lang,
                 'source': val_en,
@@ -4396,7 +4423,7 @@ class BaseModel(metaclass=MetaModel):
             existing_modules = self.env['ir.module.module'].sudo().search([]).mapped('name')
             for data in to_create:
                 xml_id = data.get('xml_id')
-                if xml_id:
+                if xml_id and not data.get('noupdate'):
                     module_name, sep, record_id = xml_id.partition('.')
                     if sep and module_name in existing_modules:
                         raise UserError(
@@ -6851,11 +6878,13 @@ class TransientModel(Model):
         query = """
             SELECT id FROM "{}"
             WHERE COALESCE(write_date, create_date, (now() AT TIME ZONE 'UTC'))::timestamp
-                < (now() AT TIME ZONE 'UTC') - interval %s
-        """.format(self._table)
+                < (now() AT TIME ZONE 'UTC') - interval %s LIMIT {}
+        """.format(self._table, GC_UNLINK_LIMIT)
         self._cr.execute(query, ["%s seconds" % seconds])
         ids = [x[0] for x in self._cr.fetchall()]
         self.sudo().browse(ids).unlink()
+        if len(ids) >= GC_UNLINK_LIMIT:
+            self.env.ref('base.autovacuum_job')._trigger()
 
 
 def itemgetter_tuple(items):

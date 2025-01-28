@@ -344,6 +344,10 @@ class PurchaseOrderLine(models.Model):
             moves = moves.filtered(lambda r: fields.Date.context_today(r, r.date) <= self._context['accrual_entry_date'])
         return moves
 
+    def _get_po_line_invoice_lines_su(self):
+        #TODO remove in master: un-used
+        return self.sudo().invoice_lines
+
     @api.depends('move_ids.state', 'move_ids.product_uom_qty', 'move_ids.product_uom')
     def _compute_qty_received(self):
         from_stock_lines = self.filtered(lambda order_line: order_line.qty_received_method == 'stock_moves')
@@ -393,7 +397,8 @@ class PurchaseOrderLine(models.Model):
         if values.get('date_planned'):
             new_date = fields.Datetime.to_datetime(values['date_planned'])
             self.filtered(lambda l: not l.display_type)._update_move_date_deadline(new_date)
-        lines = self.filtered(lambda l: l.order_id.state == 'purchase')
+        lines = self.filtered(lambda l: l.order_id.state == 'purchase'
+                                        and not l.display_type)
 
         if 'product_packaging_id' in values:
             self.move_ids.filtered(
@@ -487,7 +492,7 @@ class PurchaseOrderLine(models.Model):
     def _get_stock_move_price_unit(self):
         self.ensure_one()
         order = self.order_id
-        price_unit = self.price_unit
+        price_unit = self._convert_to_tax_base_line_dict()['price_unit']
         price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
         if self.taxes_id:
             qty = self.product_qty or 1

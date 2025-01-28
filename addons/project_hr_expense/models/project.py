@@ -72,7 +72,7 @@ class Project(models.Model):
         # As both purchase orders and expenses (paid by employee) create vendor bills,
         # we need to make sure they are exclusive in the profitability report.
         move_line_ids = super()._get_already_included_profitability_invoice_line_ids()
-        query = self.env['account.move.line']._search([
+        query = self.env['account.move.line'].sudo()._search([
             ('move_id.expense_sheet_id', '!=', False),
             ('id', 'not in', move_line_ids),
         ])
@@ -97,10 +97,10 @@ class Project(models.Model):
         }
         if can_see_expense:
             args = [section_id, [('id', 'in', expense_data['ids'])]]
-            if expense_data['ids']:
-                args.append(expense_data['ids'])
+            if len(expense_data['ids']) == 1:
+                args.append(expense_data['ids'][0])
             action = {'name': 'action_profitability_items', 'type': 'object', 'args': json.dumps(args)}
-            expense_profitability_items['action'] = action
+            expense_profitability_items['costs']['action'] = action
         return expense_profitability_items
 
     def _get_profitability_aal_domain(self):

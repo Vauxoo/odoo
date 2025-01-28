@@ -5,9 +5,9 @@
 # Translators:
 # Linkup <link-up@naver.com>, 2022
 # JH CHOI <hwangtog@gmail.com>, 2024
-# Sarah Park, 2024
 # Martin Trigaux, 2024
 # Wil Odoo, 2024
+# Sarah Park, 2024
 # Daye Jeong, 2024
 # 
 msgid ""
@@ -834,12 +834,9 @@ msgstr ""
 #: model:ir.module.module,description:base.module_l10n_tr_reports
 msgid ""
 "\n"
-"        Accounting reports for Turkey\n"
+"        Accounting reports for Türkiye\n"
 "    "
 msgstr ""
-"\n"
-"        터키 회계 보고서\n"
-"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_uk_reports
@@ -1865,6 +1862,33 @@ msgid ""
 "        with pain.008.001.02 specification) to send to your bank in order to\n"
 "        collect a set of payments.\n"
 "\n"
+"        To be eligible for this payment method, a customer must have first\n"
+"        returned a mandate to the company, giving their consent to use direct debit.\n"
+"        This consent must have been encoded as a 'customer mandate' in Odoo.\n"
+"\n"
+"        You also need to meet the following requirements in order to properly\n"
+"        generate an SDD file:\n"
+"        - Your company account must be set to a valid IBAN number\n"
+"        - Your company must have been given a creditor identifier (this can be done in Settings - General Settings - Accounting section)\n"
+"        - Your company must have defined a journal to receive SDD payments (again, in 'settings' of accounting module)\n"
+"        - Every customer for whom you generate a payment must have a valid IBAN account number.\n"
+"\n"
+"        Odoo will let you know if any of these requirements are not satisfied.\n"
+"\n"
+"        To register a payment for open invoices, you can use the dedicated\n"
+"        'SEPA Direct Debit' option by selecting a bank account in the 'Register\n"
+"        Payment' wizard. An error message will appear if no valid mandate is\n"
+"        available for generating a payment on the selected invoice.\n"
+"    "
+msgstr ""
+
+#. module: base
+msgid ""
+"\n"
+"        This module enables the generation of SEPA Direct Debit (SDD)-compliant XML files (consistent\n"
+"        with pain.008.001.02 specification) to send to your bank in order to\n"
+"        collect a set of payments.\n"
+"\n"
 "        To be elligible for this payment method, a customer must have first\n"
 "        returned a mandate to the company, giving his consent to use direct debit.\n"
 "        This consent must have been encoded as a 'customer mandate' into Odoo.\n"
@@ -2088,6 +2112,9 @@ msgid ""
 "        ZATCA E-Invoicing, support for PoS\n"
 "    "
 msgstr ""
+"\n"
+"        ZATCA 전자 청구서, PoS 지원\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,summary:base.module_purchase_product_matrix
@@ -20088,8 +20115,8 @@ msgstr "주 연방은 국가에 속해 있으며 연락처에 있는 주소의 �
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_delivery_fedex
-msgid "Fedex Shipping"
-msgstr "페덱스 배송"
+msgid "Fedex Shipping (Legacy)"
+msgstr "Fedex 배송 (레거시)"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_fr_fec
@@ -20749,6 +20776,11 @@ msgstr "프랑스 - 회계"
 #: model:ir.module.module,shortdesc:base.module_l10n_fr_reports
 msgid "France - Accounting Reports"
 msgstr "프랑스 - 회계 보고서"
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_l10n_fr_invoice_addr
+msgid "France - Adding Mandatory Invoice Mentions (Decree no. 2022-1299)"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_fr_fec
@@ -28117,6 +28149,14 @@ msgid "Odoo is unable to merge the generated PDFs."
 msgstr "Odoo는 생성된 PDF를 병합할 수 없습니다."
 
 #. module: base
+#. odoo-python
+#: code:addons/base/models/ir_actions_report.py:0
+msgid ""
+"Odoo is unable to merge the generated PDFs because of {num_errors} corrupted"
+" file(s)"
+msgstr "{num_errors} 손상된 파일로 인해 생성된 PDF를 병합할 수 없습니다."
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_sequence__padding
 msgid ""
 "Odoo will automatically adds some '0' on the left of the 'Next Number' to "
@@ -31734,7 +31774,7 @@ msgstr "사우디 아라비아 - 전자 청구서"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_sa_edi_pos
 msgid "Saudi Arabia - E-invoicing (Simplified)"
-msgstr ""
+msgstr "사우디아라비아 - 전자 청구서 (간이 버전)"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_sa_pos
@@ -32149,8 +32189,13 @@ msgstr "DHL을 통한 상품 운송 및 온라인 물류 정보 추적"
 
 #. module: base
 #: model:ir.module.module,description:base.module_delivery_fedex
-msgid "Send your shippings through Fedex and track them online"
-msgstr "Fedex를 통한 물품 운송 및 온라인 물류 정보 추적"
+msgid ""
+"This is the legacy integration with FedEx that is no longer supported.Please"
+" install the new \"Fedex Shipping\" module and uninstall this one as soon as"
+" possible. This integration will stop working in 2024"
+msgstr ""
+"더 이상 지원되지 않는 FedEx 통합 레거시 버전입니다. 새로운 'FedEx 배송' 모듈을 설치 후 최대한 빠른 시일 내에 해당 모듈을"
+" 제거하시기 바랍니다. 통합 버전은 2024년에 작동이 중단됩니다."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_delivery_ups_rest
@@ -33837,6 +33882,15 @@ msgid "The \"App Switcher\" action cannot be selected as home action."
 msgstr "\"App Switcher\" 작업은 기본 작업으로 선택할 수 없습니다."
 
 #. module: base
+#. odoo-python
+#: code:addons/base/models/res_users.py:0
+#, python-format
+msgid ""
+"The action \"%s\" cannot be set as the home action because it requires a "
+"record to be selected beforehand."
+msgstr "\"%s\" 작업은 먼저 레코드를 선택해야 하므로 홈 작업으로 설정할 수 없습니다."
+
+#. module: base
 #: model:ir.model.fields,help:base.field_res_country__code
 #: model:ir.model.fields,help:base.field_res_partner__country_code
 #: model:ir.model.fields,help:base.field_res_users__country_code
@@ -35451,17 +35505,17 @@ msgstr "튀니지"
 
 #. module: base
 #: model:res.country,name:base.tr
-msgid "Turkey"
-msgstr "터키"
+msgid "Türkiye"
+msgstr "튀르키예"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_tr
-msgid "Turkey - Accounting"
+msgid "Türkiye - Accounting"
 msgstr "터키 - 회계"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_tr_reports
-msgid "Turkey - Accounting Reports"
+msgid "Türkiye - Accounting Reports"
 msgstr "터키 - 회계 보고서"
 
 #. module: base
@@ -36570,6 +36624,12 @@ msgstr "상속 모드 화면"
 #: model:ir.module.module,summary:base.module_website_crm_livechat
 msgid "View livechat sessions for leads"
 msgstr "영업제안 실시간 채팅 세션 보기"
+
+#. module: base
+#. odoo-python
+#: code:addons/base/models/ir_actions_report.py:0
+msgid "View Problematic Record(s)"
+msgstr "문제가 있는 기록 보기"
 
 #. module: base
 #. odoo-python

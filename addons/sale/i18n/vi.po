@@ -6,7 +6,7 @@
 # NGUYỄN HỮU DŨNG, 2022
 # Nancy Momoland <thanh.np2502@gmail.com>, 2022
 # Martin Trigaux, 2023
-# Thi Huong Nguyen, 2024
+# Thi Huong Nguyen, 2025
 # 
 msgid ""
 msgstr ""
@@ -14,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Thi Huong Nguyen, 2024\n"
+"Last-Translator: Thi Huong Nguyen, 2025\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -505,7 +505,7 @@ msgid ""
 "                            <span class=\"o_stat_text\">Preview</span>"
 msgstr ""
 "<span class=\"o_stat_text\">Xem trước</span>\n"
-"                            <span class=\"o_stat_text\">khách hàng</span>"
+"                        <span class=\"o_stat_text\">giao diện khách hàng</span>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.product_form_view_sale_order_button
@@ -1235,7 +1235,7 @@ msgstr "Tạo hoá đơn"
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_invoice_salesteams
 msgid "Create a customer invoice"
-msgstr "Tạo một hóa đơn khách hàng"
+msgstr "Tạo một hóa đơn bán hàng"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.product_template_action
@@ -1497,9 +1497,9 @@ msgid ""
 "either use the minimum or maximum lead time of the order lines."
 msgstr ""
 "Ngày giao hàng bạn có thể hẹn với khách hàng, được tính toán từ thời gian "
-"giao hàng tối thiểu của chi tiết đơn hàng trong trường hợp sản phẩm Dịch vụ."
-" Trong trường hợp vận chuyển, chính sách vận chuyển của đơn hàng sẽ được "
-"tính đến để sử dụng thời gian giao hàng tối thiểu hoặc tối đa của chi tiết "
+"hoàn thành tối thiểu của chi tiết đơn hàng trong trường hợp sản phẩm Dịch "
+"vụ. Trong trường hợp vận chuyển, chính sách vận chuyển của đơn hàng sẽ được "
+"tính đến để sử dụng thời gian hoàn thành tối thiểu hoặc tối đa của chi tiết "
 "đơn hàng. "
 
 #. module: sale
@@ -1510,7 +1510,7 @@ msgstr "Đặt cọc"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__deposit_default_product_id
 msgid "Deposit Product"
-msgstr "Sản phầm đặt cọc"
+msgstr "Sản phẩm đặt cọc"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__name
@@ -1721,9 +1721,9 @@ msgid ""
 " a validated expense can be re-invoice to a customer at its cost or sales "
 "price."
 msgstr ""
-"Có thể xuất lại hóa đơn chi phí và hóa đơn nhà cung cấp cho khách hàng. Với "
-"tùy chọn này, có thể xuất lại hóa đơn cho khoản chi phí được xác nhận cho "
-"khách hàng theo chi phí đầu vào hoặc giá bán. "
+"Có thể xuất lại hóa đơn chi phí và hóa đơn mua hàng cho khách hàng. Với tùy "
+"chọn này, có thể xuất lại hóa đơn cho khoản chi phí được xác nhận cho khách "
+"hàng theo chi phí đầu vào hoặc giá bán. "
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__validity_date
@@ -1991,7 +1991,7 @@ msgstr "Hoá đơn %s đã được thanh toán"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__partner_invoice_id
 msgid "Invoice Address"
-msgstr "Địa chỉ xuất hoá đơn"
+msgstr "Địa chỉ lập hoá đơn"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_cancel__display_invoice_alert
@@ -2180,7 +2180,7 @@ msgstr "Là chi phí"
 #: model:ir.model.fields,help:sale.field_sale_order_line__is_expense
 msgid ""
 "Is true if the sales order line comes from an expense or a vendor bills"
-msgstr "Đúng nếu dòng đơn hàng đến từ chi phí hoặc hóa đơn nhà cung cấp"
+msgstr "Đúng nếu dòng đơn hàng đến từ chi phí hoặc hóa đơn mua hàng"
 
 #. module: sale
 #. odoo-python
@@ -2258,7 +2258,7 @@ msgstr "Hoạt động trễ"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__customer_lead
 msgid "Lead Time"
-msgstr "Thời gian giao hàng"
+msgstr "Thời gian hoàn thành"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -4187,7 +4187,7 @@ msgid ""
 "order will be scheduled based on this date rather than product lead times."
 msgstr ""
 "Đây là ngày giao hàng đã hẹn với khách hàng. Nếu được đặt, lệnh giao hàng sẽ"
-" được lên lịch dựa trên ngày này thay vì thời gian giao hàng của sản phẩm."
+" được lên lịch dựa trên ngày này thay vì thời gian hoàn thành của sản phẩm."
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_account_bank_statement_line__medium_id
@@ -4379,7 +4379,7 @@ msgstr "Nhập tin nhắn..."
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "Loại hoạt động ngoại lệ trên tập dữ liệu."
+msgstr "Loại hoạt động ngoại lệ trên bản ghi."
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_ups

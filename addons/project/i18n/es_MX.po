@@ -61,7 +61,7 @@ msgstr "# Colaboradores"
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_project__rating_count
 msgid "# Ratings"
-msgstr "# Calificaciones"
+msgstr "Número de calificaciones"
 
 #. module: project
 #: model:ir.model.fields,field_description:project.field_res_partner__task_count
@@ -6363,9 +6363,9 @@ msgid ""
 "you navigate.<br/> You can discard these changes from here or manually save "
 "your task.<br/>Let's save it manually."
 msgstr ""
-"Tiene cambios sin guardar - ¡no se preocupe! Odoo los guardará "
-"automáticamente mientras avanza.<br/> Puede descartar estos cambios desde "
-"aquí o guardar manualmente su tarea.<br/>Guardémoslo de forma manual."
+"Tiene cambios sin guardar pero no se preocupe, Odoo los guardará en "
+"automático mientras avanza.<br/> Puede descartar estos cambios desde aquí o "
+"guardar su tarea de forma manual.<br/>Guardémosla manualmente."
 
 #. module: project
 #. odoo-javascript

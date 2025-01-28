@@ -119,6 +119,20 @@ msgid "%s product(s) found for \"%s\"."
 msgstr "%s tuote(t) löytyi asialle \"%s\"."
 
 #. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid "%s untaxed"
+msgstr "%s veroton"
+
+#. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid "%s with %s"
+msgstr "%s kanssa %s"
+
+#. module: point_of_sale
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml:0
 #, python-format
@@ -5275,6 +5289,8 @@ msgstr "Päivitä näyttö"
 
 #. module: point_of_sale
 #. odoo-javascript
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
 #: code:addons/point_of_sale/static/src/js/Screens/TicketScreen/TicketScreen.js:0
 #: code:addons/point_of_sale/static/src/xml/Screens/ProductScreen/ControlButtons/RefundButton.xml:0
 #: code:addons/point_of_sale/static/src/xml/Screens/ProductScreen/ControlButtons/RefundButton.xml:0
@@ -5550,6 +5566,13 @@ msgstr "Myyntirivien määrä"
 #: model:ir.actions.act_window,name:point_of_sale.action_pos_order_line_form
 msgid "Sale line"
 msgstr "Myyntirivi"
+
+#. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid "Sales"
+msgstr "Myynti"
 
 #. module: point_of_sale
 #: model:ir.actions.act_window,name:point_of_sale.action_report_pos_details
@@ -6367,9 +6390,11 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/js/Screens/PaymentScreen/PaymentScreen.js:0
 #, python-format
 msgid ""
-"The amount of your payment lines must be rounded to validate the "
-"transaction."
-msgstr "Maksurivien summa on pyöristettävä tapahtuman vahvistamiseksi."
+"The amount of your payment lines must be rounded to validate the transaction.\n"
+"The rounding precision is %s so you should set %s or %s as payment amount instead of %s."
+msgstr ""
+"Maksurivien summa on pyöristettävä tapahtuman vahvistamiseksi.\n"
+"Pyöristystarkkuus on %s, joten maksun määräksi tulisi asettaa %s tai %s, eikä %s."
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -7598,6 +7623,17 @@ msgid ""
 msgstr ""
 "Et voi poistaa yhteystietoja, kun kassaistunnot ovat aktiivisia. Sulje "
 "istunnot %s ensin."
+
+#. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid ""
+"You do not have permission to open a POS session. Please try opening a "
+"session with a different user"
+msgstr ""
+"Sinulla ei ole oikeutta avata Kassa-istuntoa. Yritä avata istunto toisella "
+"käyttäjällä"
 
 #. module: point_of_sale
 #. odoo-python

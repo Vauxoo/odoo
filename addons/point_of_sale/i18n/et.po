@@ -4,7 +4,6 @@
 # 
 # Translators:
 # Helen Sulaoja <helen@avalah.ee>, 2022
-# Aveli Kannel <aveli@avalah.ee>, 2022
 # Ants Peetsalu <ants@avalah.ee>, 2022
 # Wanradt Koell <wanradt@gmail.com>, 2022
 # Toomas Ant <toomas.ant@gmail.com>, 2022
@@ -12,12 +11,9 @@
 # Marek Pontus, 2022
 # Martin Aavastik <martin@avalah.ee>, 2022
 # Andre Roomet <andreroomet@gmail.com>, 2022
-# Rivo Zängov <eraser@eraser.ee>, 2022
 # Algo Kärp <algokarp@gmail.com>, 2022
-# Triine Aavik <triine@avalah.ee>, 2022
 # Maidu Targama <m.targama@gmail.com>, 2022
 # Egon Raamat <egon@avalah.ee>, 2022
-# Anna, 2023
 # Patrick-Jordan Kiudorv, 2023
 # JanaAvalah, 2023
 # Martin Trigaux, 2023
@@ -25,7 +21,14 @@
 # Eneli Õigus <enelioigus@gmail.com>, 2024
 # Piia Paurson <piia@avalah.ee>, 2024
 # Leaanika Randmets, 2024
+# Triine Aavik <triine@avalah.ee>, 2024
+# Rivo Zängov <eraser@eraser.ee>, 2024
+# Siim Raasuke, 2024
+# Anna, 2024
 # Stevin Lilla, 2024
+# Inno Komp, 2024
+# Karin Eelma, 2024
+# Martti Sala, 2024
 # 
 msgid ""
 msgstr ""
@@ -33,7 +36,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-06 13:31+0000\n"
 "PO-Revision-Date: 2022-09-22 05:53+0000\n"
-"Last-Translator: Stevin Lilla, 2024\n"
+"Last-Translator: Martti Sala, 2024\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,7 +50,7 @@ msgstr ""
 #: code:addons/point_of_sale/models/pos_session.py:0
 #, python-format
 msgid " - closing"
-msgstr ""
+msgstr " - sulgemine"
 
 #. module: point_of_sale
 #. odoo-python
@@ -55,7 +58,7 @@ msgstr ""
 #: code:addons/point_of_sale/models/pos_session.py:0
 #, python-format
 msgid " - opening"
-msgstr ""
+msgstr "- avamine"
 
 #. module: point_of_sale
 #. odoo-python
@@ -110,18 +113,32 @@ msgid "%s product(s) found for \"%s\"."
 msgstr "%s toode(d) leitud \"%s\" jaoks."
 
 #. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid "%s untaxed"
+msgstr "%s  maksustamata"
+
+#. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid "%s with %s"
+msgstr "%s koos%s"
+
+#. module: point_of_sale
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml:0
 #, python-format
 msgid "& invoice"
-msgstr "& arve"
+msgstr "ja arve"
 
 #. module: point_of_sale
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml:0
 #, python-format
 msgid "(Both will be sent by email)"
-msgstr "(Mõlemad saadetakse meili teel)"
+msgstr "(Nii kviitung kui ka arve edastatakse e-kirjaga)"
 
 #. module: point_of_sale
 #. odoo-python
@@ -185,7 +202,7 @@ msgstr "<i class=\"fa fa-pencil\"/> Muuda"
 #: code:addons/point_of_sale/models/pos_order.py:0
 #, python-format
 msgid "<p>Dear %s,<br/>Here is your electronic ticket for the %s. </p>"
-msgstr "<p>Lugupeetud%s,<br/>Siin on Teie elektrooniline pilet%s. </p>"
+msgstr "<p>Lugupeetud %s,<br/>Manuses on Teie ostu %s kviitung. </p>"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -843,7 +860,7 @@ msgstr "Tagasi"
 #: code:addons/point_of_sale/static/src/xml/Popups/ClosePosPopup.xml:0
 #, python-format
 msgid "Backend"
-msgstr "Lõppu"
+msgstr "Tagasi Odoosse"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -1045,7 +1062,7 @@ msgstr "Seanssi ei saa ilma võrguühenduseta sulgeda."
 #: code:addons/point_of_sale/static/src/js/Screens/ProductScreen/ProductScreen.js:0
 #, python-format
 msgid "Cannot modify a tip"
-msgstr ""
+msgstr "Tippi ei saa muuta."
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -1826,7 +1843,7 @@ msgstr "Klient on vajalik %s makseviisi jaoks."
 #: code:addons/point_of_sale/static/src/js/Screens/ProductScreen/ProductScreen.js:0
 #, python-format
 msgid "Customer tips, cannot be modified directly"
-msgstr ""
+msgstr "Kliendi tipid, ei ole muudetavad"
 
 #. module: point_of_sale
 #: model:ir.ui.menu,name:point_of_sale.menu_point_of_sale_customer
@@ -2244,14 +2261,14 @@ msgstr "E-post"
 #: code:addons/point_of_sale/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml:0
 #, python-format
 msgid "Email Receipt"
-msgstr "E-posti kviitung"
+msgstr "Saada kviitung e-kirjaga"
 
 #. module: point_of_sale
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/js/Screens/ReceiptScreen/ReceiptScreen.js:0
 #, python-format
 msgid "Email sent."
-msgstr "E-mail saadetud."
+msgstr "E-mail edastatud."
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
@@ -2408,7 +2425,7 @@ msgstr "Finantspositsioon"
 #: code:addons/point_of_sale/static/src/js/Screens/TicketScreen/TicketScreen.js:0
 #, python-format
 msgid "Fiscal Position not found"
-msgstr ""
+msgstr "Finantspositsiooni ei leitud"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config__fiscal_position_ids
@@ -2627,7 +2644,7 @@ msgstr "Kodu"
 #: code:addons/point_of_sale/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml:0
 #, python-format
 msgid "How would you like to receive your receipt"
-msgstr "Kuidas soovite kviitungit saada?"
+msgstr "Kuidas eelistate kviitungit saada?"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_bill__id
@@ -2744,7 +2761,7 @@ msgstr "Müügi kustutamiseks peab see olema uus või tühistatud."
 #. module: point_of_sale
 #: model:ir.model.fields.selection,name:point_of_sale.selection__res_company__point_of_sale_update_stock_quantities__real
 msgid "In real time (accurate but slower)"
-msgstr ""
+msgstr "Reaalajas (täpne, kuid aeglasem)"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -2995,7 +3012,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/js/models.js:0
 #, python-format
 msgid "It is not allowed to mix refunds and sales"
-msgstr ""
+msgstr "Tagastuste ja müükide segamine ei ole lubatud."
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -3584,14 +3601,14 @@ msgstr "Puudub link arvele %s."
 #: code:addons/point_of_sale/static/src/js/Screens/PartnerListScreen/PartnerListScreen.js:0
 #, python-format
 msgid "No more customer found for \"%s\"."
-msgstr ""
+msgstr "Rohkem kliente ei leitud \"%s\"."
 
 #. module: point_of_sale
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/js/Screens/ProductScreen/ProductsWidget.js:0
 #, python-format
 msgid "No more product found for \"%s\"."
-msgstr ""
+msgstr "Rohkem tooteid ei leitud \"%s\"."
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -3787,6 +3804,7 @@ msgstr ""
 #, python-format
 msgid "Only administrators can edit receipt headers and footers"
 msgstr ""
+"Ainult administraatorid saavad arvepealkirju ja -jaluseid redigeerida."
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config__only_round_cash_method
@@ -3801,6 +3819,7 @@ msgstr "Kasuta ümmardamist ainult sularaha puhul"
 msgid ""
 "Only journals of type 'Cash' or 'Bank' could be used with payment methods."
 msgstr ""
+"Ainult kassa või pank tüüpi andmikke on võimalik kasutada maksemeetoditega."
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.res_config_settings_view_form
@@ -4936,7 +4955,7 @@ msgstr "Prindi"
 #: code:addons/point_of_sale/static/src/xml/Screens/TicketScreen/ReprintReceiptScreen.xml:0
 #, python-format
 msgid "Print Receipt"
-msgstr "Prindi Kviitung"
+msgstr "Prindi kviitung"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.res_config_settings_view_form
@@ -5246,6 +5265,8 @@ msgstr "Värskenda ekraani"
 
 #. module: point_of_sale
 #. odoo-javascript
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
 #: code:addons/point_of_sale/static/src/js/Screens/TicketScreen/TicketScreen.js:0
 #: code:addons/point_of_sale/static/src/xml/Screens/ProductScreen/ControlButtons/RefundButton.xml:0
 #: code:addons/point_of_sale/static/src/xml/Screens/ProductScreen/ControlButtons/RefundButton.xml:0
@@ -5271,7 +5292,7 @@ msgstr "Tellimuste tagastamine"
 #: code:addons/point_of_sale/static/src/js/models.js:0
 #, python-format
 msgid "Refund and Sales not allowed"
-msgstr ""
+msgstr "Tagastused ja müük ei ole lubatud"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -5522,6 +5543,13 @@ msgid "Sale line"
 msgstr "Müügi rida"
 
 #. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid "Sales"
+msgstr "Müük"
+
+#. module: point_of_sale
 #: model:ir.actions.act_window,name:point_of_sale.action_report_pos_details
 #: model:ir.actions.report,name:point_of_sale.sale_details_report
 #: model:ir.ui.menu,name:point_of_sale.menu_report_order_details
@@ -5622,7 +5650,7 @@ msgstr "Otsi müügitellimust"
 #: code:addons/point_of_sale/static/src/xml/Screens/ProductScreen/ProductsWidget.xml:0
 #, python-format
 msgid "Search more"
-msgstr ""
+msgstr "Otsi rohkem"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__access_token
@@ -5735,7 +5763,7 @@ msgstr "Seeria/partiinumber"
 #: code:addons/point_of_sale/static/src/xml/Screens/ReceiptScreen/OrderReceipt.xml:0
 #, python-format
 msgid "Served by"
-msgstr "Teenindanud"
+msgstr "Teenindas"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -6332,9 +6360,9 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/js/Screens/PaymentScreen/PaymentScreen.js:0
 #, python-format
 msgid ""
-"The amount of your payment lines must be rounded to validate the "
-"transaction."
-msgstr "Tehingu kinnitamiseks tuleb Teie makseridade summa ümardada."
+"The amount of your payment lines must be rounded to validate the transaction.\n"
+"The rounding precision is %s so you should set %s or %s as payment amount instead of %s."
+msgstr ""
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -6445,6 +6473,8 @@ msgid ""
 "The maximum difference allowed is %s.\n"
 "Please contact your manager to accept the closing difference."
 msgstr ""
+"Maksimaalne lubatud erinevus on %s.\n"
+"Sulgemisel erineva summa korral võtke ühendust oma halduriga."
 
 #. module: point_of_sale
 #. odoo-python
@@ -6951,7 +6981,7 @@ msgstr "Lõpetamata"
 #: code:addons/point_of_sale/static/src/xml/Screens/ReceiptScreen/OrderReceipt.xml:0
 #, python-format
 msgid "To Pay"
-msgstr "Kinnitamata palgalehed"
+msgstr "Tasuda"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -7331,7 +7361,7 @@ msgstr "Kontrollige, kas PoS-i jaoks on tooteid"
 #: code:addons/point_of_sale/static/src/xml/Popups/ClosePosPopup.xml:0
 #, python-format
 msgid "Visit the Backend but keep session open"
-msgstr "Visit the Backend but keep session open"
+msgstr "Tagasi Odoo backendi, jättes sessiooni avatuks"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -7557,9 +7587,21 @@ msgstr ""
 #: code:addons/point_of_sale/models/pos_session.py:0
 #, python-format
 msgid ""
+"You do not have permission to open a POS session. Please try opening a "
+"session with a different user"
+msgstr ""
+"Teil pole õigust avada müügipunkti sessiooni. Proovige teise kasutajaga."
+
+#. module: point_of_sale
+#. odoo-python
+#: code:addons/point_of_sale/models/pos_session.py:0
+#, python-format
+msgid ""
 "You don't have the access rights to get the point of sale closing control "
 "data."
 msgstr ""
+"Teil puuduvad juurdepääsuõigused müügipunkti sulgemise kontrollandmete "
+"saamiseks."
 
 #. module: point_of_sale
 #. odoo-python

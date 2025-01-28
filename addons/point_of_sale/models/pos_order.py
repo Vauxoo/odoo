@@ -13,7 +13,7 @@ import re
 
 from odoo import api, fields, models, tools, _
 from odoo.tools import float_is_zero, float_round, float_repr, float_compare
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import ValidationError, UserError, AccessError
 from odoo.osv.expression import AND
 import base64
 
@@ -146,15 +146,14 @@ class PosOrder(models.Model):
                 # do not hide transactional errors, the order(s) won't be saved!
                 raise
             except Exception as e:
-                _logger.error('Could not fully process the POS Order: %s', tools.ustr(e))
+                _logger.error('Could not fully process the POS Order: %s', tools.ustr(e), exc_info=True)
             pos_order._create_order_picking()
             pos_order._compute_total_cost_in_real_time()
 
         if pos_order.to_invoice and pos_order.state == 'paid':
             pos_order._generate_pos_order_invoice()
 
-        if pos_session._is_capture_system_activated():
-            pos_session._remove_capture_content(order)
+        pos_session._remove_capture_content(order)
         return pos_order.id
 
     def _process_payment_lines(self, pos_order, order, pos_session, draft):
@@ -511,12 +510,10 @@ class PosOrder(models.Model):
 
     def _get_partner_bank_id(self):
         bank_partner_id = False
-        has_pay_later = any(not pm.journal_id for pm in self.payment_ids.mapped('payment_method_id'))
-        if has_pay_later:
-            if self.amount_total <= 0 and self.partner_id.bank_ids:
-                bank_partner_id = self.partner_id.bank_ids[0].id
-            elif self.amount_total >= 0 and self.company_id.partner_id.bank_ids:
-                bank_partner_id = self.company_id.partner_id.bank_ids[0].id
+        if self.amount_total <= 0 and self.partner_id.bank_ids:
+            bank_partner_id = self.partner_id.bank_ids[0].id
+        elif self.amount_total >= 0 and self.company_id.partner_id.bank_ids:
+            bank_partner_id = self.company_id.partner_id.bank_ids[0].id
         return bank_partner_id
 
     def _create_invoice(self, move_vals):
@@ -940,6 +937,9 @@ class PosOrder(models.Model):
                     existing_orders = self.env['pos.order'].search([('pos_reference', '=', order_name)])
                     if all(not self._is_the_same_order(order['data'], existing_order) for existing_order in existing_orders):
                         order_ids.append(self._process_order(order, draft, False))
+                    else:
+                        _logger.info("PoS order %s already exists and is the same as the one sent by the PoS", order_name)
+                        self.env['pos.session']._remove_capture_content(order['data'])
             except Exception as e:
                 _logger.exception("An error occurred when processing the PoS order %s", order_name)
                 pos_session = self.env['pos.session'].browse(order['data']['pos_session_id'])
@@ -1104,7 +1104,7 @@ class PosOrder(models.Model):
             'lines': [[0, 0, line] for line in order.lines.export_for_ui()],
             'statement_ids': [[0, 0, payment] for payment in order.payment_ids.export_for_ui()],
             'name': order.pos_reference,
-            'uid': re.search('([0-9-]){14}', order.pos_reference).group(0),
+            'uid': re.search('([0-9-]){14,}', order.pos_reference).group(0),
             'amount_paid': order.amount_paid,
             'amount_total': order.amount_total,
             'amount_tax': order.amount_tax,
@@ -1143,7 +1143,14 @@ class PosOrder(models.Model):
             `export_as_JSON` of models.Order. This is useful for back-and-forth communication
             between the pos frontend and backend.
         """
-        return self.mapped(self._export_for_ui) if self else []
+        results = []
+        for order in self:
+            try:
+                results.append(self._export_for_ui(order))
+            except AccessError:
+                # Skip the order in case of AccessError
+                continue
+        return results
 
 
 class PosOrderLine(models.Model):

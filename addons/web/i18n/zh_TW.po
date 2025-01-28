@@ -656,7 +656,7 @@ msgstr "加入組合規則"
 #: code:addons/web/static/src/views/kanban/kanban_column_quick_create.xml:0
 #, python-format
 msgid "Add column"
-msgstr "添加列"
+msgstr "加入直欄"
 
 #. module: web
 #. odoo-javascript
@@ -1257,7 +1257,7 @@ msgstr "選擇檔案"
 #: code:addons/web/static/src/core/debug/debug_menu.js:0
 #, python-format
 msgid "Choose a debug command..."
-msgstr "選擇Debug命令..."
+msgstr "選擇除錯指令⋯"
 
 #. module: web
 #. odoo-javascript
@@ -1772,7 +1772,7 @@ msgstr "日"
 #: code:addons/web/static/src/core/debug/debug_providers.js:0
 #, python-format
 msgid "Deactivate debug mode"
-msgstr "停用debug模式"
+msgstr "停用除錯模式"
 
 #. module: web
 #. odoo-javascript
@@ -1786,7 +1786,7 @@ msgstr "取消啟動開發者模式"
 #: code:addons/web/static/src/core/debug/debug_menu.js:0
 #, python-format
 msgid "Debug tools..."
-msgstr "Debug工具..."
+msgstr "除錯工具⋯"
 
 #. module: web
 #. odoo-javascript
@@ -2058,7 +2058,7 @@ msgstr "請勿關閉 / 離開，"
 #: code:addons/web/static/src/legacy/js/core/misc.js:0
 #, python-format
 msgid "Don't leave yet,<br />it's still loading..."
-msgstr "請不要離開，<br />它還在加載中..."
+msgstr ""
 
 #. module: web
 #. odoo-javascript
@@ -2452,7 +2452,7 @@ msgstr ""
 #. module: web
 #: model:ir.model.fields,field_description:web.field_base_document_layout__font
 msgid "Font"
-msgstr "字體"
+msgstr "字型"
 
 #. module: web
 #. odoo-javascript
@@ -2977,7 +2977,7 @@ msgstr "清單"
 #: code:addons/web/static/src/legacy/xml/name_and_signature.xml:0
 #, python-format
 msgid "Load"
-msgstr "加載"
+msgstr "載入"
 
 #. module: web
 #. odoo-javascript
@@ -2993,7 +2993,7 @@ msgstr "載入範例資料"
 #: code:addons/web/static/src/views/kanban/kanban_renderer.xml:0
 #, python-format
 msgid "Load more... ("
-msgstr "加載更多...("
+msgstr "載入更多⋯（"
 
 #. module: web
 #. odoo-javascript
@@ -3012,7 +3012,7 @@ msgstr "載入中⋯"
 #: code:addons/web/static/src/legacy/xml/base.xml:0
 #, python-format
 msgid "Loading, please wait..."
-msgstr "加載中，請稍候..."
+msgstr "載入中，請稍等⋯"
 
 #. module: web
 #. odoo-javascript
@@ -3163,7 +3163,7 @@ msgstr "尋找符合以下規則的記錄："
 #: code:addons/web/static/src/legacy/js/core/misc.js:0
 #, python-format
 msgid "Maybe you should consider reloading the application by pressing F5..."
-msgstr "也許您應該考慮按下 F5 鍵重新載入網頁...ORZ"
+msgstr "請考慮按 F5 鍵，重新載入應用程式⋯"
 
 #. module: web
 #. odoo-javascript
@@ -3171,7 +3171,7 @@ msgstr "也許您應該考慮按下 F5 鍵重新載入網頁...ORZ"
 #: code:addons/web/static/src/views/view.xml:0
 #, python-format
 msgid "Measures"
-msgstr "度量"
+msgstr "量度"
 
 #. module: web
 #. odoo-javascript
@@ -3232,7 +3232,7 @@ msgstr "支援手機設備"
 #: code:addons/web/static/src/views/fields/properties/property_definition.xml:0
 #, python-format
 msgid "Model"
-msgstr "資料集"
+msgstr "模型"
 
 #. module: web
 #. odoo-javascript
@@ -4731,7 +4731,7 @@ msgstr "搜尋欄位⋯"
 #: code:addons/web/static/src/core/commands/default_providers.js:0
 #, python-format
 msgid "Search for a command..."
-msgstr "搜索命令..."
+msgstr "搜尋指令⋯"
 
 #. module: web
 #. odoo-javascript
@@ -4858,6 +4858,13 @@ msgstr "全選"
 #. module: web
 #. odoo-javascript
 #: code:addons/web/static/src/legacy/xml/base.xml:0
+#, python-format
+msgid "Select all records matching the search"
+msgstr "選取所有符合搜尋條件的記錄"
+
+#. module: web
+#. openerp-web
+#: code:addons/web/static/src/legacy/xml/base.xml:0
 #: code:addons/web/static/src/views/view_dialogs/export_data_dialog.xml:0
 #, python-format
 msgid "Select field"
@@ -4901,7 +4908,7 @@ msgstr "選擇:"
 #: code:addons/web/static/src/views/fields/email/email_field.xml:0
 #, python-format
 msgid "Send Email"
-msgstr "發送電子信件"
+msgstr "傳送電郵"
 
 #. module: web
 #. odoo-javascript
@@ -5528,7 +5535,7 @@ msgstr "在這個系統上找不到Wkhtmltopdf。報告將以HTML顯示。"
 #: code:addons/web/static/src/views/form/form_status_indicator/form_status_indicator.xml:0
 #, python-format
 msgid "Unable to save"
-msgstr ""
+msgstr "未能儲存"
 
 #. module: web
 #. odoo-javascript
@@ -5868,6 +5875,7 @@ msgstr "視圖切換器"
 #: code:addons/web/static/src/legacy/js/views/list/list_controller.js:0
 #: code:addons/web/static/src/legacy/xml/base.xml:0
 #: code:addons/web/static/src/legacy/xml/base.xml:0
+#: code:addons/web/static/src/legacy/xml/control_panel.xml:0
 #: code:addons/web/static/src/search/favorite_menu/favorite_menu.js:0
 #: code:addons/web/static/src/views/fields/domain/domain_field.xml:0
 #: code:addons/web/static/src/views/fields/domain/domain_field.xml:0
@@ -6025,7 +6033,7 @@ msgstr "您無法追蹤此欄位連結構的關係。"
 #: code:addons/web/static/src/views/fields/properties/property_definition.js:0
 #, python-format
 msgid "You do not have access to the model \"%s\"."
-msgstr "你無權限存取 \"%s\" 資料集。"
+msgstr "你沒有權限存取「%s」模型。"
 
 #. module: web
 #. odoo-javascript

@@ -5,6 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Braulio D. López Vázquez <bdl@odoo.com>, 2023
+# Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2024
 # Fernanda Alvarez, 2024
 # 
 msgid ""
@@ -547,7 +548,7 @@ msgstr "Categoría de producto"
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_stock_move_line
 msgid "Product Moves (Stock Move Line)"
-msgstr "Movimientos de producto (línea de movimiento de existencias)"
+msgstr "Movimientos de producto (línea de movimiento de stock)"
 
 #. module: stock_account
 #. odoo-python
@@ -679,7 +680,7 @@ msgstr "Diario de existencias"
 #: model:ir.model.fields,field_description:stock_account.field_account_payment__stock_move_id
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__stock_move_id
 msgid "Stock Move"
-msgstr "Movimiento de existencias"
+msgstr "Movimiento de stock"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_stock_account_output_categ_id
@@ -974,7 +975,7 @@ msgstr "Valor"
 #: code:addons/stock_account/static/src/stock_account_forecasted/forecasted_header.xml:0
 #, python-format
 msgid "Value On Hand:"
-msgstr "Valor disponible:"
+msgstr "Valor a la mano:"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_product__value_svl
@@ -1081,7 +1082,7 @@ msgid ""
 "You don't have any output valuation account defined on your product "
 "category. You must define one before processing this operation."
 msgstr ""
-"No tiene ninguna cuenta de valoración de salida definida en su categoría de "
+"No definió ninguna cuenta de valoración de salida en su categoría de "
 "producto. Debe definir una antes de procesar esta operación."
 
 #. module: stock_account

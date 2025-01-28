@@ -13,6 +13,7 @@ import base64
 from collections import defaultdict
 import functools
 import logging
+import contextlib
 
 from pytz import timezone
 
@@ -737,8 +738,7 @@ class IrServerObjectLines(models.Model):
 
     @api.constrains('col1', 'evaluation_type')
     def _raise_many2many_error(self):
-        if self.filtered(lambda line: line.col1.ttype == 'many2many' and line.evaluation_type == 'reference'):
-            raise ValidationError(_('many2many fields cannot be evaluated by reference'))
+        pass  # TODO: remove in master
 
     @api.onchange('resource_ref')
     def _set_resource_ref(self):
@@ -748,6 +748,7 @@ class IrServerObjectLines(models.Model):
 
     def eval_value(self, eval_context=None):
         result = {}
+        m2m_exprs = defaultdict(list)
         for line in self:
             expr = line.value
             if line.evaluation_type == 'equation':
@@ -757,6 +758,14 @@ class IrServerObjectLines(models.Model):
                     expr = int(line.value)
                 except Exception:
                     pass
+            elif line.col1.ttype == 'many2many':
+                with contextlib.suppress(Exception):
+                    # if multiple lines target the same column, they need to exist in the same list
+                    expr = m2m_exprs[line.col1]
+                    expr.append(Command.link(int(line.value)))
+            elif line.col1.ttype == 'float':
+                with contextlib.suppress(Exception):
+                    expr = float(line.value)
             result[line.id] = expr
         return result
 

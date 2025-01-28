@@ -726,7 +726,7 @@ msgstr "確認"
 #: code:addons/web_editor/static/src/js/wysiwyg/wysiwyg.js:0
 #, python-format
 msgid "Content conflict"
-msgstr ""
+msgstr "內容衝突"
 
 #. module: web_editor
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_image_optimization_widgets
@@ -776,7 +776,11 @@ msgid "Could not install module <strong>%s</strong>"
 msgstr "無法安裝模組<strong>%s</strong>"
 
 #. module: web_editor
+#. odoo-javascript
+#. module: web_editor
+#: code:addons/web_editor/static/src/components/upload_progress_toast/upload_service.js:0
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_background_options
+#, python-format
 msgid "Cover"
 msgstr "封面"
 
@@ -2563,7 +2567,7 @@ msgstr "形狀：Circle"
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options
 #, python-format
 msgid "Shape: Rounded"
-msgstr "形狀：Rounded"
+msgstr "形狀：圓角"
 
 #. module: web_editor
 #. odoo-javascript
@@ -3077,7 +3081,7 @@ msgstr "鍵入斜線 \"/\" 查看格式選項"
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "URL or Email"
-msgstr "網址或電子信件"
+msgstr "網址或電郵"
 
 #. module: web_editor
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options
@@ -3222,7 +3226,7 @@ msgstr "寬度"
 #: code:addons/web_editor/static/src/js/editor/snippets.options.js:0
 #, python-format
 msgid "Write something..."
-msgstr "寫些什麼..."
+msgstr "寫些東西⋯"
 
 #. module: web_editor
 #. odoo-javascript

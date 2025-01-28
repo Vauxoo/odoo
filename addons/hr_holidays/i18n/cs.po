@@ -12,7 +12,7 @@
 # Jaroslav Helemik Nemec <nemec@helemik.cz>, 2022
 # Marek Reichstädter, 2022
 # karolína schusterová <karolina.schusterova@vdp.sk>, 2022
-# Jiří Podhorecký, 2022
+# Jiří Podhorecký <jirka.p@volny.cz>, 2022
 # Martin Trigaux, 2023
 # Rastislav Brencic <rastislav.brencic@azet.sk>, 2023
 # Tomáš Píšek, 2023
@@ -1172,6 +1172,8 @@ msgid "Approve Allocations"
 msgstr "Schválit přidělení"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/report/holidays_summary_report.py:0
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_employee__current_leave_state__validate
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_employee_base__current_leave_state__validate
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_employee_public__current_leave_state__validate
@@ -1182,6 +1184,7 @@ msgstr "Schválit přidělení"
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_leave_report__state__validate
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_leave_report_calendar__state__validate
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_leave_report_calendar_view_search
+#, python-format
 msgid "Approved"
 msgstr "Schváleno"
 
@@ -1523,9 +1526,19 @@ msgid "Confirmation"
 msgstr "Potvrzení"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/report/holidays_summary_report.py:0
 #: model:ir.model.fields.selection,name:hr_holidays.selection__hr_holidays_summary_employee__holiday_type__confirmed
+#, python-format
 msgid "Confirmed"
 msgstr "Potvrzeno"
+
+#. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/report/holidays_summary_report.py:0
+#, python-format
+msgid "Confirmed and Approved"
+msgstr "Potvrzeno a schváleno"
 
 #. module: hr_holidays
 #. odoo-javascript
@@ -2186,7 +2199,7 @@ msgstr "Ikona označuje vyjímečnou aktivitu."
 #. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave_allocation__number_of_days_display
 msgid "If Accrual Allocation: Days given by the accrual system."
-msgstr ""
+msgstr "Pokud je akruální alokace: Dny dané systémem časového rozlišení."
 
 #. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave_allocation__number_of_hours_display
@@ -3440,6 +3453,17 @@ msgid "Sick Time Off"
 msgstr "Volné dny z důvodu nevolnosti"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave_accrual_plan.py:0
+#, python-format
+msgid ""
+"Some of the accrual plans you're trying to delete are linked to an existing "
+"allocation. Delete or cancel them first."
+msgstr ""
+"Některé z akruálních plánů, které se pokoušíte odstranit, jsou propojeny s "
+"existující alokací. Nejprve je smažte nebo zrušte."
+
+#. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave_accrual_plan__time_off_type_id
 msgid ""
 "Specify if this accrual plan can only be used with this Time Off Type.\n"
@@ -3604,6 +3628,14 @@ msgid "Taken Leave"
 msgstr "Odebraná dovolená"
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave_allocation.py:0
+#, python-format
+msgid ""
+"The Start Date of the Validity Period must be anterior to the End Date."
+msgstr "Datum zahájení období platnosti musí být dřívější než Datum ukončení."
+
+#. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave_accrual_level__start_count
 msgid ""
 "The accrual starts after a defined period from the allocation start date. "
@@ -3613,6 +3645,17 @@ msgstr ""
 "Časové rozlišení začíná po definovaném období od data zahájení alokace. Toto"
 " pole definuje počet dní, měsíců nebo let, po kterých se používá časové "
 "rozlišení."
+
+#. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave_type.py:0
+#, python-format
+msgid ""
+"The allocation requirement of a time off type cannot be changed once leaves "
+"of that type have been taken. You should create a new time off type instead."
+msgstr ""
+"Požadavek na přidělení typu volna nelze po čerpání dovolené tohoto typu "
+"změnit. Místo toho byste měli vytvořit nový typ volna."
 
 #. module: hr_holidays
 #: model:ir.model.fields,help:hr_holidays.field_hr_leave__color
@@ -4242,7 +4285,7 @@ msgstr "Nepřečtené zprávy"
 #: code:addons/hr_holidays/static/src/dashboard/time_off_card.xml:0
 #, python-format
 msgid "Usable:"
-msgstr ""
+msgstr "Použitelné:"
 
 #. module: hr_holidays
 #: model:ir.model,name:hr_holidays.model_res_users
@@ -4620,6 +4663,16 @@ msgid "a new public holiday completely overrides this leave."
 msgstr "nový státní svátek tuto dovolenou zcela přepíše."
 
 #. module: hr_holidays
+#. odoo-python
+#: code:addons/hr_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"a public holiday that previously covered this leave has been cancelled or "
+"amended."
+msgstr ""
+"státní svátek, který dříve pokrýval tuto dovolenou, byl zrušen nebo upraven."
+
+#. module: hr_holidays
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_accrual_level_view_form
 msgid "after allocation date"
 msgstr "po datu alokace"
@@ -4788,7 +4841,7 @@ msgstr "k"
 #. module: hr_holidays
 #: model_terms:ir.ui.view,arch_db:hr_holidays.hr_leave_view_kanban
 msgid "to refuse"
-msgstr ""
+msgstr "odmítnout"
 
 #. module: hr_holidays
 #. odoo-javascript

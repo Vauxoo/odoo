@@ -580,22 +580,9 @@ publicWidget.registry.hoverableDropdown = animations.Animation.extend({
      * @override
      */
     start: function () {
-        if (this.editableMode) {
-            this._onPageClick = this._onPageClick.bind(this);
-            this.el.closest('#wrapwrap').addEventListener('click', this._onPageClick, {capture: true});
-        }
         this.$dropdownMenus = this.$el.find('.dropdown-menu');
         this.$dropdownToggles = this.$el.find('.dropdown-toggle');
         this._dropdownHover();
-        return this._super.apply(this, arguments);
-    },
-    /**
-     * @override
-     */
-    destroy() {
-        if (this.editableMode) {
-            this.el.closest('#wrapwrap').removeEventListener('click', this._onPageClick, {capture: true});
-        }
         return this._super.apply(this, arguments);
     },
 
@@ -619,6 +606,7 @@ publicWidget.registry.hoverableDropdown = animations.Animation.extend({
     /**
      * Hides all opened dropdowns.
      *
+     * TODO: Remove in master.
      * @private
      */
     _hideDropdowns() {
@@ -671,9 +659,12 @@ publicWidget.registry.hoverableDropdown = animations.Animation.extend({
         // Keep the focus on the previously focused element if any, otherwise do
         // not focus the dropdown on hover.
         if (focusedEl) {
-            focusedEl.focus();
+            focusedEl.focus({preventScroll: true});
         } else {
-            ev.currentTarget.querySelector(".dropdown-toggle").blur();
+            const dropdownToggleEl = ev.currentTarget.querySelector(".dropdown-toggle");
+            if (dropdownToggleEl) {
+                dropdownToggleEl.blur();
+            }
         }
     },
     /**
@@ -691,6 +682,7 @@ publicWidget.registry.hoverableDropdown = animations.Animation.extend({
      * Called when the page is clicked anywhere.
      * Closes the shown dropdown if the click is outside of it.
      *
+     * TODO: Remove in master.
      * @private
      * @param {Event} ev
      */

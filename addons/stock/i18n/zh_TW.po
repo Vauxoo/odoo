@@ -7,7 +7,8 @@
 # Martin Trigaux, 2022
 # 226408 台北 <226408@so8d.com>, 2022
 # Benson <Benson.Dr@Gmail.com>, 2023
-# Tony Ng, 2024
+# Wil Odoo, 2024
+# Tony Ng, 2025
 # 
 msgid ""
 msgstr ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-06 13:31+0000\n"
 "PO-Revision-Date: 2022-09-22 05:55+0000\n"
-"Last-Translator: Tony Ng, 2024\n"
+"Last-Translator: Tony Ng, 2025\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1131,7 +1132,7 @@ msgstr "確認時"
 #: model:ir.model.fields,field_description:stock.field_stock_picking__message_attachment_count
 #: model:ir.model.fields,field_description:stock.field_stock_scrap__message_attachment_count
 msgid "Attachment Count"
-msgstr "附件數"
+msgstr "附件數目"
 
 #. module: stock
 #: model:ir.ui.menu,name:stock.menu_attribute_action
@@ -1809,7 +1810,7 @@ msgstr "逾期揀貨數"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type__count_picking_ready
 msgid "Count Picking Ready"
-msgstr "揀貨數準備好"
+msgstr "點算就緒揀貨"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type__count_picking_waiting
@@ -1890,7 +1891,7 @@ msgstr "為您的品檢操作建立可客製的工作表"
 msgid ""
 "Create new putaway rules to dispatch automatically specific products to "
 "their appropriate destination location upon receptions."
-msgstr "建立新的上架規則，以便在接收時自動將特定產品發送到其適當的目的地位置."
+msgstr "建立新的上架規則，以便在接收時自動將特定產品發送到其適當的目標位置."
 
 #. module: stock
 #: model_terms:ir.actions.act_window,help:stock.action_product_stock_view
@@ -2208,7 +2209,7 @@ msgstr "十二月"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type__default_location_dest_id
 msgid "Default Destination Location"
-msgstr "預設目的位置"
+msgstr "預設目標位置"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type__default_location_src_id
@@ -2283,12 +2284,12 @@ msgid ""
 "Closet location: products/lots closest to the target location will be moved out first.\n"
 "FEFO: products/lots with the closest removal date will be moved out first (the availability of this method depends on the \"Expiration Dates\" setting)."
 msgstr ""
-"定義用於建議從何處獲取產品的確切位置(貨架)、該位置的哪個批次等的預設方法. 可以在產品類別級別強制執行此方法，如果此處未設定任何內容，則會在上級位置上進行回退\n"
+"此位置就取貨確切位置（哪個貨架）、應取哪個批次等資訊，提出建議的預設方法。此方法可在產品類別的層面強制執行，而如果此處未作設定，會使用母項位置的設定。\n"
 "\n"
-"先進先出: 最先入庫的產品/批次將最先移出(FIFO).\n"
-"後進先出: 最後入庫的產品/批次將最先移出(LIFO).\n"
-"封閉位置: 最靠近目標位置的產品/批次將首先移出.\n"
-"臨期先出: 到期日期最近的產品/批次將首先移出(FEFO) (此方法的可用性取決於“到期日期”設定)."
+"先進先出（FIFO）：最先入庫的產品/批次，會最先移出。\n"
+"後進先出（LIFO）：最後入庫的產品/批次，會最先移出。\n"
+"最接近位置：最靠近目標位置的產品/批次，會最先移出。\n"
+"先到期先出（FEFO）：最接近到期日/移除日期的產品/批次，會最先移出。（此方法是否可用，須視乎「到期日期」設定）。"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move__delay_alert_date
@@ -2488,7 +2489,7 @@ msgstr "目的地地址 "
 #: model_terms:ir.ui.view,arch_db:stock.view_move_search
 #, python-format
 msgid "Destination Location"
-msgstr "目的地位置"
+msgstr "目標位置"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move__location_dest_usage
@@ -2499,7 +2500,7 @@ msgstr "目標位置類型"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.message_body
 msgid "Destination Location:"
-msgstr "目的地位置:"
+msgstr "目標位置:"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move__move_dest_ids
@@ -2758,7 +2759,7 @@ msgstr "電子郵件確認領料"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_company__stock_mail_confirmation_template_id
 msgid "Email Template confirmation picking"
-msgstr "電子信件模板確認領料"
+msgstr "確認提取電郵範本"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_res_company__stock_mail_confirmation_template_id
@@ -2858,7 +2859,7 @@ msgstr "預計"
 #: model_terms:ir.ui.view,arch_db:stock.report_reception_body
 #, python-format
 msgid "Expected Delivery:"
-msgstr "預計送貨:"
+msgstr "預計送貨："
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_product_expiry
@@ -3884,7 +3885,7 @@ msgstr "是一個退回位置?"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_location__scrap_location
 msgid "Is a Scrap Location?"
-msgstr "是一個報廢位置?"
+msgstr "是一個報廢位置？"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move__is_initial_demand_editable
@@ -7104,7 +7105,7 @@ msgstr "移動完成前的調度日期，然後是實際移動處理的日期"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_move_search
 msgid "Scheduled or processing date"
-msgstr "調度計畫或處理日期"
+msgstr "預定或處理日期"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_picking__scheduled_date
@@ -9566,6 +9567,14 @@ msgstr "您不能更改已使用的產品類型."
 
 #. module: stock
 #. odoo-python
+#: code:addons/stock/models/stock_orderpoint.py:0
+#, python-format
+msgid ""
+"You can not create a snoozed orderpoint that is not manually triggered."
+msgstr "你不可建立並非手動觸發的延後訂單點。"
+
+#. module: stock
+#. odoo-python
 #: code:addons/stock/models/stock_move_line.py:0
 #, python-format
 msgid ""
@@ -9600,6 +9609,15 @@ msgstr "您只能輸入正整數."
 #, python-format
 msgid "You can only process 1.0 %s of products with unique serial number."
 msgstr "只能處理1.0個%s具有唯一序號的產品."
+
+#. module: stock
+#. odoo-python
+#: code:addons/stock/models/stock_orderpoint.py:0
+#, python-format
+msgid ""
+"You can only snooze manual orderpoints. You should rather archive 'auto-"
+"trigger' orderpoints if you do not want them to be triggered."
+msgstr "你只可延後手動訂單點。若不想觸發「自動觸發」的訂單點，請將它們封存。"
 
 #. module: stock
 #. odoo-python
@@ -9638,7 +9656,7 @@ msgstr "不可更改已取消的庫存移動。請改為建立新一行。"
 #: code:addons/stock/models/stock_picking.py:0
 #, python-format
 msgid "You cannot change the Scheduled Date on a done or cancelled transfer."
-msgstr "不能更改已完成或已取消調撥的\"調度計畫日期\"."
+msgstr "已完成或取消的轉移，不可更改預定日期。"
 
 #. module: stock
 #. odoo-python

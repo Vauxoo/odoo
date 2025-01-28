@@ -7,7 +7,7 @@
 # Algo Kärp <algokarp@gmail.com>, 2022
 # Andre Roomet <andreroomet@gmail.com>, 2022
 # Rivo Zängov <eraser@eraser.ee>, 2022
-# Anna, 2023
+# Anna, 2024
 # Birgit Vijar, 2024
 # 
 msgid ""
@@ -156,7 +156,7 @@ msgstr "EN 16931"
 #: code:addons/account_edi_ubl_cii/models/account_edi_xml_ubl_bis3.py:0
 #, python-format
 msgid "Each invoice line shall have one and only one tax."
-msgstr ""
+msgstr "Igal arve real peab olema ainult üks maks."
 
 #. module: account_edi_ubl_cii
 #. odoo-python
@@ -325,7 +325,7 @@ msgstr ""
 #: code:addons/account_edi_ubl_cii/models/account_edi_common.py:0
 #, python-format
 msgid "The element %s is required on %s."
-msgstr ""
+msgstr "Element %s on vajalik %s."
 
 #. module: account_edi_ubl_cii
 #. odoo-python

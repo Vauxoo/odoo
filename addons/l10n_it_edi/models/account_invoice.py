@@ -24,7 +24,7 @@ class AccountMove(models.Model):
     l10n_it_edi_transaction = fields.Char(copy=False, string="FatturaPA Transaction")
     l10n_it_edi_attachment_id = fields.Many2one('ir.attachment', copy=False, string="FatturaPA Attachment", ondelete="restrict")
 
-    l10n_it_stamp_duty = fields.Float(default=0, string="Dati Bollo", readonly=True, states={'draft': [('readonly', False)]})
+    l10n_it_stamp_duty = fields.Float(string="Dati Bollo", readonly=True, states={'draft': [('readonly', False)]})
 
     l10n_it_ddt_id = fields.Many2one('l10n_it.ddt', string='DDT', readonly=True, states={'draft': [('readonly', False)]}, copy=False)
 
@@ -35,10 +35,13 @@ class AccountMove(models.Model):
     def _get_l10n_it_amount_split_payment(self):
         self.ensure_one()
         amount = 0.0
-        if self.is_invoice(True):
-            for line in [line for line in self.line_ids if line.tax_line_id]:
-                if line.tax_line_id._l10n_it_is_split_payment() and line.credit > 0.0:
-                    amount += line.credit
+        if self.is_sale_document(False):
+            for line in self.line_ids:
+                if line.tax_line_id and line.tax_line_id._l10n_it_is_split_payment():
+                    if self.move_type  == 'out_invoice':
+                        amount += line.credit
+                    else:
+                        amount += line.debit
         return amount
 
     @api.depends('edi_document_ids', 'edi_document_ids.attachment_id')

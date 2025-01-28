@@ -5,6 +5,7 @@ var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var dom = require('web.dom');
+const { pyToJsLocale } = require('@web/core/l10n/utils');
 const { session } = require('@web/session');
 const {Markup, sprintf, confine} = require('web.utils');
 var Widget = require('web.Widget');
@@ -548,11 +549,19 @@ var SnippetEditor = Widget.extend({
         if ($parent.closest(':data("snippet-editor")').length) {
             const isEmptyAndRemovable = ($el, editor) => {
                 editor = editor || $el.data('snippet-editor');
-                const isEmpty = $el.text().trim() === ''
+
+                // Consider a <figure> element as empty if it only contains a
+                // <figcaption> element (e.g., when its image has just been
+                // removed).
+                const isEmptyFigureEl = $el[0].matches("figure")
+                    && $el[0].children.length === 1
+                    && $el[0].children[0].matches("figcaption");
+
+                const isEmpty = isEmptyFigureEl || ($el.text().trim() === ''
                     && $el.children().toArray().every(el => {
                         // Consider layout-only elements (like bg-shapes) as empty
                         return el.matches(this.layoutElementsSelector);
-                    });
+                    }));
                 return isEmpty && !$el.hasClass('oe_structure')
                     && !$el.parent().hasClass('carousel-item')
                     && (!editor || editor.isTargetParentEditable)
@@ -1897,7 +1906,7 @@ var SnippetsMenu = Widget.extend({
         // ... it probably should be.
         const context = this.options.context || session.user_context || {};
         const userLang = context.user_lang || context.lang || 'en_US';
-        this.el.setAttribute('lang', userLang.replace('_', '-'));
+        this.el.setAttribute('lang', pyToJsLocale(userLang));
 
         // We need to activate the touch events to be able to drag and drop
         // snippets on devices with a touch screen.
@@ -2033,13 +2042,14 @@ var SnippetsMenu = Widget.extend({
             // Note: we cannot listen to keyup in .o_default_snippet_text
             // elements via delegation because keyup only bubbles from focusable
             // elements which contenteditable are not.
-            const selection = this.ownerDocument.getSelection();
+            const selection = this.$body[0].ownerDocument.getSelection();
             if (!selection.rangeCount) {
                 return;
             }
             const range = selection.getRangeAt(0);
-            $(range.startContainer).closest('.o_default_snippet_text').removeClass('o_default_snippet_text');
-            alreadySelectedElements.delete(range.startContainer);
+            const $defaultTextEl = $(range.startContainer).closest('.o_default_snippet_text');
+            $defaultTextEl.removeClass('o_default_snippet_text');
+            alreadySelectedElements.delete($defaultTextEl[0]);
         });
         const refreshSnippetEditors = _.debounce(() => {
             for (const snippetEditor of this.snippetEditors) {
@@ -2304,6 +2314,10 @@ var SnippetsMenu = Widget.extend({
         // the invisible DOM list if needed.
         await this._updateInvisibleDOM();
 
+        if (this.__postSnippetDropExtraActions) {
+            this.__postSnippetDropExtraActions();
+            delete this.__postSnippetDropExtraActions;
+        }
         this._postSnippetDropResolver();
     },
     /**
@@ -2894,6 +2908,13 @@ var SnippetsMenu = Widget.extend({
         exclude += `${exclude && ', '}.o_snippet_not_selectable`;
 
         let filterFunc = function () {
+            if (forDrop) {
+                // Prevents blocks from being dropped into an image field.
+                const selfOrParentEl = isChildren ? this.parentNode : this;
+                if (selfOrParentEl.closest("[data-oe-type=image]")) {
+                    return false;
+                }
+            }
             // Exclude what it is asked to exclude.
             if ($(this).is(exclude)) {
                 return false;
@@ -2988,6 +3009,14 @@ var SnippetsMenu = Widget.extend({
         this._patchForComputeSnippetTemplates($html);
         var $scroll = $html.siblings('#o_scroll');
 
+        // TODO adapt in master. This patches the BlogPostTagSelection option
+        // in stable versions. Done here to avoid converting the html back to
+        // a string.
+        const optionEl = $html.find('[data-js="BlogPostTagSelection"][data-selector=".o_wblog_post_page_cover"]')[0];
+        if (optionEl) {
+            optionEl.dataset.selector = '.o_wblog_post_page_cover[data-res-model="blog.post"]';
+        }
+
         this.templateOptions = [];
         var selectors = [];
         var $styles = $html.find('[data-selector]');
@@ -3077,7 +3106,7 @@ var SnippetsMenu = Widget.extend({
             .addClass('oe_snippet')
             .each((i, el) => {
                 const $snippet = $(el);
-                const name = _.escape(el.getAttribute('name'));
+                const name = el.getAttribute('name');
                 const thumbnailSrc = _.escape(el.dataset.oeThumbnail);
                 const $sbody = $snippet.children().addClass('oe_snippet_body');
                 const isCustomSnippet = !!el.closest('#snippet_custom');
@@ -3096,7 +3125,7 @@ var SnippetsMenu = Widget.extend({
                 const $thumbnail = $(`
                     <div class="oe_snippet_thumbnail">
                         <div class="oe_snippet_thumbnail_img" style="background-image: url(${thumbnailSrc});"/>
-                        <span class="oe_snippet_thumbnail_title">${name}</span>
+                        <span class="oe_snippet_thumbnail_title">${_.escape(name)}</span>
                     </div>
                 `);
                 $snippet.prepend($thumbnail);
@@ -3571,14 +3600,15 @@ var SnippetsMenu = Widget.extend({
                             // (mutexed as well).
                             dragAndDropResolve();
 
+                            self.__postSnippetDropExtraActions = () => {
+                                // Restore editor to its normal edition state, also
+                                // make sure the undroppable snippets are updated.
+                                self._disableUndroppableSnippets();
+                                self.options.wysiwyg.odooEditor.unbreakableStepUnactive();
+                                self.options.wysiwyg.odooEditor.historyStep();
+                                self.$el.find('.oe_snippet_thumbnail').removeClass('o_we_already_dragging');
+                            };
                             await self.callPostSnippetDrop($target);
-
-                            // Restore editor to its normal edition state, also
-                            // make sure the undroppable snippets are updated.
-                            self._disableUndroppableSnippets();
-                            self.options.wysiwyg.odooEditor.unbreakableStepUnactive();
-                            self.options.wysiwyg.odooEditor.historyStep();
-                            self.$el.find('.oe_snippet_thumbnail').removeClass('o_we_already_dragging');
                         });
                     } else {
                         $toInsert.remove();
@@ -4260,16 +4290,19 @@ var SnippetsMenu = Widget.extend({
         }
         delete data._toMutex;
         ev.stopPropagation();
-        this._buttonClick((after) => this._execWithLoadingEffect(() => {
-            const oldOnFailure = data.onFailure;
-            data.onFailure = () => {
-                if (oldOnFailure) {
-                    oldOnFailure();
-                }
-                after();
-            };
-            this.trigger_up('request_save', data);
-        }, true), this.$el[0].querySelector('button[data-action=save]'));
+        this._buttonClick(async (after) => {
+            await this.postSnippetDropPromise;
+            return this._execWithLoadingEffect(async () => {
+                const oldOnFailure = data.onFailure;
+                data.onFailure = () => {
+                    if (oldOnFailure) {
+                        oldOnFailure();
+                    }
+                    after();
+                };
+                this.trigger_up('request_save', data);
+            }, true);
+        }, this.$el[0].querySelector('button[data-action=save]'));
     },
     /**
      * @private

@@ -201,7 +201,7 @@ class IrHttp(models.AbstractModel):
             for url, endpoint in cls._generate_routing_rules(mods, converters=cls._get_converters()):
                 routing = submap(endpoint.routing, ROUTING_KEYS)
                 if routing['methods'] is not None and 'OPTIONS' not in routing['methods']:
-                    routing['methods'] = routing['methods'] + ['OPTIONS']
+                    routing['methods'] = [*routing['methods'], 'OPTIONS']
                 rule = werkzeug.routing.Rule(url, endpoint=endpoint, **routing)
                 rule.merge_slashes = False
                 routing_map.add(rule)
@@ -216,6 +216,8 @@ class IrHttp(models.AbstractModel):
 
     @api.autovacuum
     def _gc_sessions(self):
+        if os.getenv("ODOO_SKIP_GC_SESSIONS"):
+            return
         ICP = self.env["ir.config_parameter"]
         max_lifetime = int(ICP.get_param('sessions.max_inactivity_seconds', http.SESSION_LIFETIME))
         http.root.session_store.vacuum(max_lifetime=max_lifetime)

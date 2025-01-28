@@ -8,7 +8,7 @@ from odoo.addons.hr_expense.tests.common import TestExpenseCommon
 from odoo.tests import tagged, Form
 from odoo.tools.misc import formatLang, format_date
 from odoo import fields, Command
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 @tagged('-at_install', 'post_install')
@@ -1391,3 +1391,183 @@ class TestExpenses(TestExpenseCommon):
             {'name': 'test sheet no update', 'unit_amount': 100.0, 'quantity': 1, 'total_amount': 100.0},
             {'name':    'test sheet update', 'unit_amount': 250.0, 'quantity': 1, 'total_amount': 250.0},  # no update
         ])
+
+    def test_expense_mandatory_analytic_plan_product_category(self):
+        """
+        Check that when an analytic plan has a mandatory applicability matching
+        product category this is correctly triggered
+        """
+        self.env['account.analytic.applicability'].create({
+            'business_domain': 'expense',
+            'analytic_plan_id': self.analytic_plan.id,
+            'applicability': 'mandatory',
+            'product_categ_id': self.product_a.categ_id.id,
+        })
+
+        expense_sheet = self.env['hr.expense.sheet'].create({
+            'name': 'Expense for John Smith',
+            'employee_id': self.expense_employee.id,
+            'accounting_date': '2021-01-01',
+            'expense_line_ids': [Command.create({
+                'name': 'Car Travel Expenses',
+                'employee_id': self.expense_employee.id,
+                'product_id': self.product_a.id,
+                'unit_amount': 350.00,
+                'payment_mode': 'company_account',
+            })]
+        })
+
+        expense_sheet.action_submit_sheet()
+        with self.assertRaises(ValidationError, msg="One or more lines require a 100% analytic distribution."):
+            expense_sheet.with_context(validate_analytic=True).approve_expense_sheets()
+
+        expense_sheet.expense_line_ids.analytic_distribution = {self.analytic_account_1.id: 100.00}
+        expense_sheet.with_context(validate_analytic=True).approve_expense_sheets()
+
+    def test_expense_no_stealing_from_employees(self):
+        """
+        Test to check that the company doesn't steal their employee when the commercial_partner_id of the employee partner
+        is the company
+        """
+        self.expense_employee.user_partner_id.parent_id = self.env.company.partner_id
+        self.assertEqual(self.env.company.partner_id, self.expense_employee.user_partner_id.commercial_partner_id)
+
+        expense_sheet = self.env['hr.expense.sheet'].create({
+            'name': 'Company Cash Basis Expense Report',
+            'employee_id': self.expense_employee.id,
+            'payment_mode': 'own_account',
+            'state': 'approve',
+            'expense_line_ids': [Command.create({
+                'name': 'Company Cash Basis Expense',
+                'product_id': self.product_c.id,
+                'payment_mode': 'own_account',
+                'total_amount': 20.0,
+                'employee_id': self.expense_employee.id,
+            })]
+        })
+        expense_sheet.action_submit_sheet()
+        expense_sheet.approve_expense_sheets()
+        expense_sheet.action_sheet_move_create()
+        move = expense_sheet.account_move_id
+
+        self.assertNotEqual(move.commercial_partner_id, self.env.company.partner_id)
+        self.assertEqual(move.partner_id, self.expense_employee.user_partner_id)
+        self.assertEqual(move.commercial_partner_id, self.expense_employee.user_partner_id)
+
+    def test_expense_bank_account_of_employee_on_entry_and_register_payment(self):
+        """
+        Test that the bank account defined on the employee form is correctly set on the entry and on the register payment
+        when having multiple bank accounts defined on the partner
+        """
+
+        self.partner_bank_account_1 = self.env['res.partner.bank'].create({
+            'acc_number': "987654321",
+            'partner_id': self.expense_employee.user_partner_id.id,
+            'acc_type': 'bank',
+        })
+        self.partner_bank_account_2 = self.env['res.partner.bank'].create({
+            'acc_number': "123456789",
+            'partner_id': self.expense_employee.user_partner_id.id,
+            'acc_type': 'bank',
+        })
+        # Set the second bank account for the employee
+        self.expense_employee.bank_account_id = self.partner_bank_account_2
+
+        expense_sheet = self.env['hr.expense.sheet'].create({
+            'name': 'Expense for John Smith',
+            'employee_id': self.expense_employee.id,
+            'payment_mode': 'own_account',
+            'state': 'approve',
+            'expense_line_ids': [Command.create({
+                'name': 'Car Travel Expenses',
+                'employee_id': self.expense_employee.id,
+                'product_id': self.product_a.id,
+                'payment_mode': 'own_account',
+                'unit_amount': 350.00,
+            })]
+        })
+
+        expense_sheet.action_submit_sheet()
+        expense_sheet.approve_expense_sheets()
+        expense_sheet.action_sheet_move_create()
+
+        move_bank_acc = expense_sheet.account_move_id.partner_bank_id
+        self.assertEqual(move_bank_acc, self.partner_bank_account_2)
+        action_data = expense_sheet.action_register_payment()
+        with Form(self.env['account.payment.register'].with_context(action_data['context'])) as pay_form:
+            self.assertEqual(pay_form.partner_bank_id, self.partner_bank_account_2)
+
+    def test_expense_by_company_with_caba_tax(self):
+        """When using cash basis tax in an expense paid by the company, the transition account should not be used."""
+
+        caba_tag = self.env['account.account.tag'].create({
+            'name': 'Cash Basis Tag Final Account',
+            'applicability': 'taxes',
+        })
+        caba_transition_account = self.env['account.account'].create({
+            'name': 'Cash Basis Tax Transition Account',
+            'account_type': 'asset_current',
+            'code': '131001',
+        })
+        caba_tax = self.env['account.tax'].create({
+            'name': 'Cash Basis Tax',
+            'tax_exigibility': 'on_payment',
+            'amount': 15,
+            'cash_basis_transition_account_id': caba_transition_account.id,
+            'invoice_repartition_line_ids': [
+                Command.create({
+                    'factor_percent': 100,
+                    'repartition_type': 'base',
+                }),
+                Command.create({
+                    'factor_percent': 100,
+                    'repartition_type': 'tax',
+                    'tag_ids': caba_tag.ids,
+                }),
+            ]
+        })
+
+        expense_sheet = self.env['hr.expense.sheet'].create({
+            'name': 'Company Cash Basis Expense Report',
+            'employee_id': self.expense_employee.id,
+            'payment_mode': 'company_account',
+            'state': 'approve',
+            'expense_line_ids': [Command.create({
+                'name': 'Company Cash Basis Expense',
+                'product_id': self.product_c.id,
+                'payment_mode': 'company_account',
+                'total_amount': 20.0,
+                'employee_id': self.expense_employee.id,
+                'tax_ids': [Command.set(caba_tax.ids)],
+            })]
+        })
+
+        moves = expense_sheet.action_sheet_move_create()
+        tax_lines = moves.line_ids.filtered(lambda line: line.tax_line_id == caba_tax)
+        self.assertNotEqual(tax_lines.account_id, caba_transition_account, "The tax should not be on the transition account")
+        self.assertEqual(tax_lines.tax_tag_ids, caba_tag, "The tax should still retrieve its tags")
+
+    def test_expense_set_total_amount_to_0(self):
+        """Checks that amount fields are correctly updating when setting total_amount to 0"""
+        expense = self.env['hr.expense'].create({
+            'name': 'Expense with amount',
+            'employee_id': self.expense_employee.id,
+            'product_id': self.product_c.id,
+            'total_amount': 100.0,
+            'tax_ids': self.tax_purchase_a.ids,
+        })
+        expense.total_amount = 0.0
+        self.assertTrue(expense.currency_id.is_zero(expense.amount_tax))
+        self.assertTrue(expense.company_currency_id.is_zero(expense.total_amount_company))
+
+    def test_expense_set_quantity_to_0(self):
+        """Checks that amount fields except for unit_amount are correctly updating when setting quantity to 0"""
+        expense = self.env['hr.expense'].create({
+            'name': 'Expense with amount',
+            'employee_id': self.expense_employee.id,
+            'product_id': self.product_b.id,
+            'quantity': 10
+        })
+        expense.quantity = 0
+        self.assertTrue(expense.currency_id.is_zero(expense.total_amount))
+        self.assertEqual(expense.company_currency_id.compare_amounts(expense.unit_amount, self.product_b.standard_price), 0)

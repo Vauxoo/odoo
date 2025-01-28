@@ -78,18 +78,17 @@ export class MassMailingHtmlField extends HtmlField {
         popover.style.left = leftPosition + 'px';
     }
 
-    async commitChanges() {
+    async commitChanges(...args) {
         if (this.props.readonly || !this.isRendered) {
-            return super.commitChanges();
+            return super.commitChanges(...args);
         }
-        if (!this._isDirty()) {
+        if (!this._isDirty() || this._pendingCommitChanges) {
             // In case there is still a pending change while committing the
             // changes from the save button, we need to wait for the previous
             // operation to finish, otherwise the "inline field" of the mass
             // mailing might not be saved.
             return this._pendingCommitChanges;
         }
-
         this._pendingCommitChanges = (async () => {
             const codeViewEl = this._getCodeViewEl();
             if (codeViewEl) {
@@ -103,8 +102,11 @@ export class MassMailingHtmlField extends HtmlField {
             const $editable = this.wysiwyg.getEditable();
             this.wysiwyg.odooEditor.historyPauseSteps();
             await this.wysiwyg.cleanForSave();
-
-            await super.commitChanges();
+            if (args.length) {
+                await super.commitChanges({ ...args[0], urgent: true });
+            } else {
+                await super.commitChanges({ urgent: true });
+            }
 
             const $editorEnable = $editable.closest('.editor_enable');
             $editorEnable.removeClass('editor_enable');
@@ -143,6 +145,7 @@ export class MassMailingHtmlField extends HtmlField {
 
             const fieldName = this.props.inlineField;
             await this.props.record.update({[fieldName]: this._unWrap(inlineHtml)});
+            this._pendingCommitChanges = null;
         })();
         return this._pendingCommitChanges;
     }
@@ -379,6 +382,8 @@ export class MassMailingHtmlField extends HtmlField {
             // the Odoo editor before resetting the history.
             setTimeout(() => {
                 this.wysiwyg.historyReset();
+                // Update undo/redo buttons
+                this.wysiwyg.odooEditor.dispatchEvent(new Event('historyStep'));
 
                 // The selection has been lost when switching theme.
                 const document = this.wysiwyg.odooEditor.document;
@@ -441,6 +446,7 @@ export class MassMailingHtmlField extends HtmlField {
         if (this.env.mailingFilterTemplates && this.wysiwyg) {
             this._hideIrrelevantTemplates();
         }
+        this.wysiwyg.odooEditor.activateContenteditable();
     }
     _getCodeViewEl() {
         const codeView = this.wysiwyg &&

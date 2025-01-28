@@ -8,7 +8,7 @@
 # Thang Nguyen, 2023
 # Martin Trigaux, 2024
 # Wil Odoo, 2024
-# Thi Huong Nguyen, 2024
+# Thi Huong Nguyen, 2025
 # 
 msgid ""
 msgstr ""
@@ -16,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:53+0000\n"
-"Last-Translator: Thi Huong Nguyen, 2024\n"
+"Last-Translator: Thi Huong Nguyen, 2025\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -288,8 +288,8 @@ msgid ""
 "Are you sure you want to void the authorized transaction? This action can't "
 "be undone."
 msgstr ""
-"Bạn có chắc chắn muốn hủy bỏ giao dịch được ủy quyền không? Hành động này "
-"không thể được hoàn tất."
+"Bạn có chắc chắn muốn hủy bỏ giao dịch được ủy quyền không? Tác vụ này không"
+" thể được hoàn tất."
 
 #. module: payment
 #: model:payment.provider,name:payment.payment_provider_asiapay
@@ -314,7 +314,7 @@ msgstr "Cơ chế ủy quyền"
 #. module: payment
 #: model_terms:ir.ui.view,arch_db:payment.payment_provider_form
 msgid "Availability"
-msgstr "Khả dụng"
+msgstr "Trạng thái khả dụng"
 
 #. module: payment
 #. odoo-python
@@ -1851,8 +1851,8 @@ msgid ""
 "This action will also archive %s tokens that are registered with this "
 "provider. Archiving tokens is irreversible."
 msgstr ""
-"Hành động này cũng sẽ lưu trữ %s token đã được đăng ký với nhà cung cấp này."
-" Bạn sẽ không thể đảo ngược thao tác lưu trữ token."
+"Tác vụ này cũng sẽ lưu trữ %s token đã được đăng ký với nhà cung cấp này. "
+"Bạn sẽ không thể đảo ngược thao tác lưu trữ token."
 
 #. module: payment
 #: model:ir.model.fields,help:payment.field_payment_provider__allow_tokenization
@@ -2269,7 +2269,7 @@ msgstr "Mã bưu chính"
 #. module: payment
 #: model_terms:ir.ui.view,arch_db:payment.transaction_status
 msgid "danger"
-msgstr "nguy hiểm"
+msgstr "cảnh báo"
 
 #. module: payment
 #: model_terms:ir.ui.view,arch_db:payment.transaction_status

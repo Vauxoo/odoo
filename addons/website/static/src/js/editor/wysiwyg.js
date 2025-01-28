@@ -70,6 +70,9 @@ const WebsiteWysiwyg = Wysiwyg.extend({
      * @override
      */
     start: async function () {
+        // Bind the _onPageClick handler to click event: to close the dropdown if clicked outside.
+        this.__onPageClick = this._onPageClick.bind(this);
+        this.$editable[0].addEventListener("click", this.__onPageClick, { capture: true });
         this.options.toolbarHandler = $('#web_editor-top-edit');
         // Do not insert a paragraph after each column added by the column commands:
         this.options.insertParagraphAfterColumns = false;
@@ -131,6 +134,10 @@ const WebsiteWysiwyg = Wysiwyg.extend({
                 // Extra menu attributes to ignore.
                 const extraMenuClasses = ["nav-item", "nav-link", "dropdown-item", "active"];
                 const extraMenuToggleAttributes = ["data-bs-auto-close"];
+                // Carousel attributes to ignore.
+                const carouselSlidingClasses = ["carousel-item-start", "carousel-item-end",
+                    "carousel-item-next", "carousel-item-prev", "active"];
+                const carouselIndicatorAttributes = ["aria-current"];
 
                 return filteredRecords.filter(record => {
                     if (record.type === "attributes") {
@@ -174,6 +181,19 @@ const WebsiteWysiwyg = Wysiwyg.extend({
                                 return false;
                             }
                         }
+
+                        // Do not record some carousel attributes changes.
+                        if (record.target.closest(":not(section) > .carousel")) {
+                            if (record.target.matches(".carousel-item, .carousel-indicators > li")
+                                    && record.attributeName === "class") {
+                                if (checkForExcludedClasses(record, carouselSlidingClasses)) {
+                                    return false;
+                                }
+                            } else if (record.target.matches(".carousel-indicators > li")
+                                    && carouselIndicatorAttributes.includes(record.attributeName)) {
+                                return false;
+                            }
+                        }
                     } else if (record.type === "childList") {
                         const addedOrRemovedNode = record.addedNodes[0] || record.removedNodes[0];
                         // Do not record the addition/removal of the extra menu
@@ -195,6 +215,7 @@ const WebsiteWysiwyg = Wysiwyg.extend({
      * @returns {Promise}
      */
     _saveViewBlocks: async function () {
+        this._restoreCarousels();
         await this._super.apply(this, arguments);
         if (this.isDirty()) {
             return this._restoreMegaMenus();
@@ -214,6 +235,7 @@ const WebsiteWysiwyg = Wysiwyg.extend({
         socialMediaOptions.clearDbSocialValuesCache();
 
         this._restoreMegaMenus();
+        this.$editable[0].removeEventListener("click", this.__onPageClick, { capture: true });
         this._super.apply(this, arguments);
     },
 
@@ -396,6 +418,57 @@ const WebsiteWysiwyg = Wysiwyg.extend({
         megaMenuEl.classList.add('o_no_parent_editor');
         this.odooEditor.observerActive("toggleMegaMenu");
         return this.snippetsMenu.activateSnippet($(megaMenuEl));
+    },
+    /**
+     * Restores all the carousels so their first slide is the active one.
+     *
+     * @private
+     */
+    _restoreCarousels() {
+        this.$editable[0].querySelectorAll(".carousel").forEach(carouselEl => {
+            // Set the first slide as the active one.
+            carouselEl.querySelectorAll(".carousel-item").forEach((itemEl, i) => {
+                itemEl.classList.remove("next", "prev", "left", "right");
+                itemEl.classList.toggle("active", i === 0);
+            });
+            carouselEl.querySelectorAll(".carousel-indicators li[data-bs-slide-to]").forEach((indicatorEl, i) => {
+                indicatorEl.classList.toggle("active", i === 0);
+                indicatorEl.removeAttribute("aria-current");
+                if (i === 0) {
+                    indicatorEl.setAttribute("aria-current", "true");
+                }
+            });
+        });
+    },
+    /**
+     * Hides all opened dropdowns.
+     *
+     * @private
+     */
+    _hideDropdowns() {
+        for (const toggleEl of this.$editable[0].querySelectorAll(
+            ".o_mega_menu_toggle, #top_menu_container .dropdown-toggle.show"
+        )) {
+            Dropdown.getOrCreateInstance(toggleEl).hide();
+        }
+    },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     * Called when the page is clicked anywhere.
+     * Closes the shown dropdown if the click is outside of it.
+     *
+     * @private
+     * @param {Event} ev
+     */
+    _onPageClick(ev) {
+        if (ev.target.closest(".dropdown-menu.show, .dropdown-toggle.show")) {
+            return;
+        }
+        this._hideDropdowns();
     },
 });
 

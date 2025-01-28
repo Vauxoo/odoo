@@ -17,6 +17,7 @@
 # hrvoje sić <hrvoje.sic@gmail.com>, 2024
 # Martin Trigaux, 2024
 # Bole <bole@dajmi5.com>, 2024
+# Servisi RAM d.o.o. <support@servisiram.hr>, 2024
 # Vladimir Vrgoč, 2024
 # 
 msgid ""
@@ -1398,7 +1399,7 @@ msgstr "Objavljeno"
 #. module: payment
 #: model:payment.provider,name:payment.payment_provider_razorpay
 msgid "Razorpay"
-msgstr ""
+msgstr "Razorpay"
 
 #. module: payment
 #. odoo-javascript
@@ -1574,7 +1575,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:payment.payment_provider_search
 #: model_terms:ir.ui.view,arch_db:payment.payment_transaction_form
 msgid "State"
-msgstr "Status"
+msgstr "Županija"
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_res_company__payment_provider_onboarding_state

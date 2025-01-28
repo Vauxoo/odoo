@@ -328,6 +328,9 @@ msgid ""
 "\n"
 "This module adds a custom Sales Team for the Point of Sale. This enables you to view and manage your point of sale sales with more ease.\n"
 msgstr ""
+"\n"
+"\n"
+"این ماژول یک تیم فروش سفارشی برای نقطه فروش اضافه می‌کند. این امکان را به شما می‌دهد که فروش‌های نقطه فروش خود را با سهولت بیشتری مشاهده و مدیریت کنید.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_pos_sale_margin
@@ -336,6 +339,9 @@ msgid ""
 "\n"
 "This module adds enable you to view the margin of your Point of Sale orders in the Sales Margin report.\n"
 msgstr ""
+"\n"
+"\n"
+"این ماژول به شما امکان می‌دهد حاشیه سفارش‌های نقطه فروش خود را در گزارش حاشیه فروش مشاهده کنید.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_pos_restaurant
@@ -348,6 +354,14 @@ msgid ""
 "- Kitchen Order Printing: allows you to print orders updates to kitchen or bar printers\n"
 "\n"
 msgstr ""
+"\n"
+"\n"
+"این ماژول چندین ویژگی خاص به نقطه فروش اضافه می‌کند که مربوط به مدیریت رستوران است:\n"
+"\n"
+"چاپ صورتحساب: به شما این امکان را می‌دهد که قبل از پرداخت سفارش، رسید را چاپ کنید.\n"
+"تقسیم صورتحساب: به شما امکان می‌دهد یک سفارش را به سفارشات مختلف تقسیم کنید.\n"
+"چاپ سفارشات آشپزخانه: به شما این امکان را می‌دهد که به‌روزرسانی‌های سفارش را به چاپگرهای آشپزخانه یا بار ارسال کنید.\n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_pos_discount
@@ -390,6 +404,9 @@ msgid ""
 "\n"
 "Use Epson ePOS Printers without the IoT Box in the Point of Sale\n"
 msgstr ""
+"\n"
+"\n"
+"از چاپگرهای Epson ePOS بدون استفاده از جعبه IoT در نقطه فروش استفاده کنید.\n"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_eg_edi_eta
@@ -565,7 +582,7 @@ msgstr ""
 #: model:ir.module.module,description:base.module_l10n_tr_reports
 msgid ""
 "\n"
-"        Accounting reports for Turkey\n"
+"        Accounting reports for Türkiye\n"
 "    "
 msgstr ""
 
@@ -1308,6 +1325,33 @@ msgstr ""
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_sepa_direct_debit
+msgid ""
+"\n"
+"        This module enables the generation of SEPA Direct Debit (SDD)-compliant XML files (consistent\n"
+"        with pain.008.001.02 specification) to send to your bank in order to\n"
+"        collect a set of payments.\n"
+"\n"
+"        To be eligible for this payment method, a customer must have first\n"
+"        returned a mandate to the company, giving their consent to use direct debit.\n"
+"        This consent must have been encoded as a 'customer mandate' in Odoo.\n"
+"\n"
+"        You also need to meet the following requirements in order to properly\n"
+"        generate an SDD file:\n"
+"        - Your company account must be set to a valid IBAN number\n"
+"        - Your company must have been given a creditor identifier (this can be done in Settings - General Settings - Accounting section)\n"
+"        - Your company must have defined a journal to receive SDD payments (again, in 'settings' of accounting module)\n"
+"        - Every customer for whom you generate a payment must have a valid IBAN account number.\n"
+"\n"
+"        Odoo will let you know if any of these requirements are not satisfied.\n"
+"\n"
+"        To register a payment for open invoices, you can use the dedicated\n"
+"        'SEPA Direct Debit' option by selecting a bank account in the 'Register\n"
+"        Payment' wizard. An error message will appear if no valid mandate is\n"
+"        available for generating a payment on the selected invoice.\n"
+"    "
+msgstr ""
+
+#. module: base
 msgid ""
 "\n"
 "        This module enables the generation of SEPA Direct Debit (SDD)-compliant XML files (consistent\n"
@@ -8232,6 +8276,8 @@ msgid ""
 "<code>time</code>, <code>datetime</code>, <code>dateutil</code>, "
 "<code>timezone</code>: useful Python libraries"
 msgstr ""
+"<code>time</code>، <code>datetime</code>، <code>dateutil</code>، "
+"<code>timezone</code>: کتابخانه‌های کاربردی پایتون"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_company_kanban
@@ -8933,14 +8979,14 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_res_users_apikeys_description
 msgid "API Key Description"
-msgstr ""
+msgstr "توضیحات کلید API"
 
 #. module: base
 #. odoo-python
 #: code:addons/base/models/res_users.py:0
 #, python-format
 msgid "API Key Ready"
-msgstr ""
+msgstr "کلید API آماده است"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_res_users_keys_description
@@ -8951,7 +8997,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_users__api_key_ids
 #: model_terms:ir.ui.view,arch_db:base.view_users_form_simple_modif
 msgid "API Keys"
-msgstr ""
+msgstr "کلیدهای API"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_apikeys_admin
@@ -9962,6 +10008,8 @@ msgid ""
 "All our contractual relations will be governed exclusively by United States "
 "law."
 msgstr ""
+"تمام روابط قراردادی ما به طور انحصاری تحت قوانین ایالات متحده آمریکا خواهد "
+"بود.*"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_partner__lang
@@ -10000,7 +10048,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_comparison
 msgid "Allow shoppers to compare products based on their attributes"
-msgstr ""
+msgstr "اجازه دهید خریداران محصولات را بر اساس ویژگی‌های آن‌ها مقایسه کنند"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_wishlist
@@ -10168,7 +10216,7 @@ msgstr ""
 #: code:addons/base/models/res_partner.py:0
 #, python-format
 msgid "An email is required for find_or_create to work"
-msgstr ""
+msgstr "برای اینکه find_or_create کار کند یک ایمیل لازم است"
 
 #. module: base
 #. odoo-python
@@ -10404,12 +10452,12 @@ msgstr "برنامه‌ها:"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_db
 msgid "Arch Blob"
-msgstr ""
+msgstr "بخشی از آرشیو (Arch Blob)"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_fs
 msgid "Arch Filename"
-msgstr ""
+msgstr "نام پوشه آرچ"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__arch_to_compare
@@ -10694,7 +10742,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_mail_server__smtp_authentication
 msgid "Authenticate with"
-msgstr ""
+msgstr "با استفاده از <b>پذیرش اعتبار</b>"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_mail_server__smtp_authentication_info
@@ -11128,7 +11176,7 @@ msgstr "ویژگی‌های پایه‌ای"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_base
 msgid "Base View Architecture"
-msgstr ""
+msgstr "معماری نمای پایه"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_base_import
@@ -12117,7 +12165,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment__checksum
 msgid "Checksum/SHA1"
-msgstr ""
+msgstr "کنترل مجموع/SHA1"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_server__child_ids
@@ -12265,7 +12313,7 @@ msgstr "بستن"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_container
 msgid "Close the onboarding panel"
-msgstr ""
+msgstr "بستن پنل راه‌اندازی"
 
 #. module: base
 #: model:res.country,name:base.cc
@@ -12390,7 +12438,7 @@ msgstr ""
 #: code:addons/base/models/ir_qweb_fields.py:0
 #, python-format
 msgid "Comma"
-msgstr ""
+msgstr "کاما"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_act_window__view_mode
@@ -13753,7 +13801,7 @@ msgstr "داشبوردها"
 #: model:ir.module.category,name:base.module_category_productivity_data_cleaning
 #: model:ir.module.module,shortdesc:base.module_data_cleaning
 msgid "Data Cleaning"
-msgstr ""
+msgstr "پاکسازی داده‌ها"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_data_merge
@@ -14228,7 +14276,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_decimal_precision__digits
 msgid "Digits"
-msgstr ""
+msgstr "ارقام"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_lang__direction
@@ -14238,7 +14286,7 @@ msgstr "جهت"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_asset__directive
 msgid "Directive"
-msgstr ""
+msgstr "راهنمای انجام کار"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_tree
@@ -15158,7 +15206,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.form_res_users_key_description
 msgid "Enter a description of and purpose for the key."
-msgstr ""
+msgstr "توضیحی درباره کلید و هدف از آن را وارد کنید."
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_event_track_gantt
@@ -15792,7 +15840,7 @@ msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_delivery_fedex
-msgid "Fedex Shipping"
+msgid "Fedex Shipping (Legacy)"
 msgstr ""
 
 #. module: base
@@ -16094,6 +16142,10 @@ msgstr "محتوای فایل (base64)"
 #: model:ir.model.fields,field_description:base.field_ir_attachment__raw
 msgid "File Content (raw)"
 msgstr ""
+"I'm sorry, I need the actual content of the text that you want me to "
+"translate into Persian. Please provide the specific text from the file "
+"content related to Odoo modules, and I'll translate it for you while "
+"preserving HTML tags and formatting."
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_language_export__format
@@ -16117,11 +16169,13 @@ msgid ""
 "File from where the view originates.\n"
 "                                                          Useful to (hard) reset broken views or to read arch from file in dev-xml mode."
 msgstr ""
+"فایلی که نمای آن از آن نشأت می‌گیرد.\n"
+"                                                         برای بازنشانی (سخت) نماهای خراب یا خواندن ساختار از فایل در حالت `dev-xml` مفید است."
 
 #. module: base
 #: model:ir.model,name:base.model_ir_binary
 msgid "File streaming helper model for controllers"
-msgstr ""
+msgstr "مدل کمک‌کننده استریم فایل برای کنترلرها"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_act_window__filter
@@ -16406,6 +16460,11 @@ msgstr "فرانسه - حسابداری"
 #: model:ir.module.module,shortdesc:base.module_l10n_fr_reports
 msgid "France - Accounting Reports"
 msgstr "فرانسه - گزارشهای حسابداری"
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_l10n_fr_invoice_addr
+msgid "France - Adding Mandatory Invoice Mentions (Decree no. 2022-1299)"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_fr_fec
@@ -17116,7 +17175,7 @@ msgstr "فاصله سر صفحه"
 #. module: base
 #: model:ir.model.fields,help:base.field_res_company__company_details
 msgid "Header text displayed at the top of all reports."
-msgstr ""
+msgstr "متن سربرگ که در بالای همه گزارش‌ها نمایش داده می‌شود."
 
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_Q
@@ -17621,7 +17680,7 @@ msgstr "شناسه"
 #: model:ir.model.fields,help:base.field_ir_actions_server__xml_id
 #: model:ir.model.fields,help:base.field_ir_cron__xml_id
 msgid "ID of the action if defined in a XML file"
-msgstr ""
+msgstr "شناسه عمل در صورتی که در یک فایل XML تعریف شده باشد"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_data__res_id
@@ -17783,6 +17842,8 @@ msgid ""
 "If this field is empty, the view applies to all users. Otherwise, the view "
 "applies to the users of those groups only."
 msgstr ""
+"اگر این فیلد خالی باشد، نمای مورد نظر برای تمامی کاربران اعمال می‌شود. در "
+"غیر این صورت، نمای مورد نظر فقط برای کاربران آن گروه‌ها اعمال می‌شود."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_ui_view__active
@@ -17792,6 +17853,10 @@ msgid ""
 "* if False, the view currently does not extend its parent but can be enabled\n"
 "         "
 msgstr ""
+"اگر این نما به ارث برده شود\n"
+"* اگر True باشد، نما همیشه والد خود را گسترش می‌دهد\n"
+"* اگر False باشد، نما در حال حاضر والد خود را گسترش نمی‌دهد اما می‌تواند فعال شود\n"
+"         "
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_rule_form
@@ -18793,7 +18858,7 @@ msgstr "شرکت است"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company__is_company_details_empty
 msgid "Is Company Details Empty"
-msgstr ""
+msgstr "آیا جزئیات شرکت خالی است"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_currency__is_current_company_currency
@@ -18921,7 +18986,7 @@ msgstr "سرفصل حساب انتساب داده شده به این تماس"
 #: code:addons/base/models/ir_qweb_fields.py:0
 #, python-format
 msgid "Json"
-msgstr ""
+msgstr "جیسون"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__res_company__base_onboarding_company_state__just_done
@@ -19463,7 +19528,7 @@ msgstr "جادوگر پیکربندی را راه اندازی کنید"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company__layout_background
 msgid "Layout Background"
-msgstr ""
+msgstr "پس زمینه چیدمان"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country__address_format
@@ -19948,7 +20013,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mail_group
 msgid "Mail Group"
-msgstr ""
+msgstr "گروه ایمیل"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mail_mobile
@@ -20929,7 +20994,7 @@ msgstr "مدل ها"
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_updated
 #: model_terms:ir.ui.view,arch_db:base.view_view_search
 msgid "Modified Architecture"
-msgstr ""
+msgstr "معماری اصلاح شده"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_module_module
@@ -21236,7 +21301,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.form_res_users_key_description
 msgid "Name your key"
-msgstr ""
+msgstr "نام کلید خود را وارد کنید"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.report_irmodeloverview
@@ -21298,7 +21363,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_form_simple_modif
 msgid "New API Key"
-msgstr ""
+msgstr "کلید API جدید"
 
 #. module: base
 #: model:res.country,name:base.nc
@@ -21390,7 +21455,7 @@ msgstr "نیکاراگوئه"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_container
 msgid "Nice work! Your configuration is done."
-msgstr ""
+msgstr "کار عالی! پیکربندی شما انجام شده است."
 
 #. module: base
 #: model_terms:res.partner,website_description:base.res_partner_address_16
@@ -22772,6 +22837,14 @@ msgid "Odoo is unable to merge the generated PDFs."
 msgstr ""
 
 #. module: base
+#. odoo-python
+#: code:addons/base/models/ir_actions_report.py:0
+msgid ""
+"Odoo is unable to merge the generated PDFs because of {num_errors} corrupted"
+" file(s)"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_sequence__padding
 msgid ""
 "Odoo will automatically adds some '0' on the left of the 'Next Number' to "
@@ -22942,6 +23015,14 @@ msgid ""
 "(<xpath/>) are applied, and the result is used as if it were this view's\n"
 "actual arch.\n"
 msgstr ""
+"فقط در صورتی اعمال می‌شود که این نما از نما دیگری ارث‌بری کند (inherit_id برابر با False/Null نباشد).\n"
+"\n"
+"* اگر گسترش (پیش‌فرض) باشد، اگر این نما درخواست شود، نزدیک‌ترین نمای اصلی نمایش داده می‌شود.\n"
+"جستجو می‌شود (از طریق inherit_id)، سپس تمام نماهایی که از آن ارث می‌برند و مدل این نما را دارند، اعمال می‌شوند.\n"
+"* اگر اصلی باشد، نزدیک‌ترین نمای اصلی به‌طور کامل حل می‌شود (حتی اگر از یک استفاده کند).\n"
+"مدل متفاوتی از این مدل باشد)، سپس مشخصات ارث‌بری این نما اعمال می‌شود.\n"
+"(<xpath/>) اعمال می‌شوند و نتیجه به‌عنوان نمای فعلی استفاده می‌شود.\n"
+"معماری فعلی.\n"
 
 #. module: base
 #. odoo-python
@@ -24217,7 +24298,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_asset__directive__prepend
 msgid "Prepend"
-msgstr ""
+msgstr "قبل افزودن"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_twitter_wall
@@ -24244,7 +24325,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_prev
 msgid "Previous View Architecture"
-msgstr ""
+msgstr "معماری نمای قبلی"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_cron__lastcall
@@ -24261,7 +24342,7 @@ msgstr "دقت قیمت"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company__primary_color
 msgid "Primary Color"
-msgstr ""
+msgstr "Couleur primaire"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_ca_check_printing
@@ -24976,12 +25057,12 @@ msgstr ""
 #: model:ir.model,name:base.model_ir_qweb
 #: model:ir.model.fields,field_description:base.field_ir_profile__qweb
 msgid "Qweb"
-msgstr ""
+msgstr "Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field
 msgid "Qweb Field"
-msgstr ""
+msgstr "<span>فیلد Qweb</span>"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_barcode
@@ -24991,27 +25072,27 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_contact
 msgid "Qweb Field Contact"
-msgstr ""
+msgstr "فیلد تماس کیو وب"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_date
 msgid "Qweb Field Date"
-msgstr ""
+msgstr "فیلد تاریخ Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_datetime
 msgid "Qweb Field Datetime"
-msgstr ""
+msgstr "میدان Qweb تاریخ و زمان"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_duration
 msgid "Qweb Field Duration"
-msgstr ""
+msgstr "فیلد مدت زمان Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_float
 msgid "Qweb Field Float"
-msgstr ""
+msgstr "فیلد فلو Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_float_time
@@ -25021,7 +25102,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_html
 msgid "Qweb Field HTML"
-msgstr ""
+msgstr "فیلد کیو وب اچ تی ام ال"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_image
@@ -25032,37 +25113,37 @@ msgstr "تصویر فیلد کیو وب"
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_integer
 msgid "Qweb Field Integer"
-msgstr ""
+msgstr "فیلد Qweb عدد صحیح"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_many2one
 msgid "Qweb Field Many to One"
-msgstr ""
+msgstr "فیلد Qweb بسیاری به یکی"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_monetary
 msgid "Qweb Field Monetary"
-msgstr ""
+msgstr "فیلد پولی Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_relative
 msgid "Qweb Field Relative"
-msgstr ""
+msgstr "فیلد نسبی Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_selection
 msgid "Qweb Field Selection"
-msgstr ""
+msgstr "انتخاب فیلد Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_text
 msgid "Qweb Field Text"
-msgstr ""
+msgstr "فیلد متن Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_qweb
 msgid "Qweb Field qweb"
-msgstr ""
+msgstr "فیلد کیو‌وب qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_many2many
@@ -25352,7 +25433,7 @@ msgstr "جدول رابطه"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__relation_field_id
 msgid "Relation field"
-msgstr ""
+msgstr "زمینه رابطه"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_report__attachment_use
@@ -25466,7 +25547,7 @@ msgstr "زیرنویس گزارش"
 #. module: base
 #: model:ir.model,name:base.model_report_layout
 msgid "Report Layout"
-msgstr ""
+msgstr "طرح گزارش"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.act_report_xml_search_view
@@ -25607,7 +25688,7 @@ msgstr "قابلیت های اضافه برای رستوران در پایانه
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__reset_view_arch_wizard__reset_mode__soft
 msgid "Restore previous version (soft reset)."
-msgstr ""
+msgstr "بازیابی نسخه قبلی (بازنشانی نرم)."
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_model_fields__on_delete__restrict
@@ -26545,7 +26626,10 @@ msgstr ""
 
 #. module: base
 #: model:ir.module.module,description:base.module_delivery_fedex
-msgid "Send your shippings through Fedex and track them online"
+msgid ""
+"This is the legacy integration with FedEx that is no longer supported.Please"
+" install the new \"Fedex Shipping\" module and uninstall this one as soon as"
+" possible. This integration will stop working in 2024"
 msgstr ""
 
 #. module: base
@@ -26689,6 +26773,8 @@ msgid ""
 "Server replied with following exception:\n"
 " %s"
 msgstr ""
+"سرور با استثنای زیر پاسخ داد:\n"
+" %s"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_timesheet_margin
@@ -28131,12 +28217,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_test_sale_product_configurators
 msgid "Test Suite for Sale Product Configurator"
-msgstr ""
+msgstr "مجموعه آزمایش برای پیکربندی محصولات فروش."
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_data_module_install
 msgid "Test data module (see test_data_module) installation"
-msgstr ""
+msgstr "Test data module (see test_data_module) installation"
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_discuss_full
@@ -28144,16 +28230,18 @@ msgid ""
 "Test of Discuss with all possible overrides installed, including feature and"
 " performance tests."
 msgstr ""
+"آزمایش ماژول Discuss با تمام بازنویسی‌های ممکن نصب‌شده، شامل آزمایش‌های "
+"ویژگی و عملکرد."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_test_discuss_full
 msgid "Test of Discuss with all possible overrides installed."
-msgstr ""
+msgstr "آزمایش ماژول Discuss با تمام بازنویسی‌های ممکن نصب‌شده."
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_testing_utilities
 msgid "Test testing utilities"
-msgstr ""
+msgstr "آزمون ابزارهای تست"
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_access_rights
@@ -28163,7 +28251,7 @@ msgstr "آزمایش محدودیتهای دسترسی"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_account_edi_ubl_cii_tests
 msgid "Testing the Import/Export invoices with UBL/CII"
-msgstr ""
+msgstr "آزمایش واردات/صادرات فاکتورها با UBL/CII"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_hidden_tests
@@ -28175,27 +28263,27 @@ msgstr "آزمونها"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_apikeys
 msgid "Tests flow of API keys"
-msgstr ""
+msgstr "آزمون‌های جریان کلیدهای API"
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_read_group
 msgid "Tests for read_group"
-msgstr ""
+msgstr "آزمون‌هایی برای read_group"
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_search_panel
 msgid "Tests for the search panel python methods"
-msgstr ""
+msgstr "آزمون‌های متدهای پایتون برای پنل جستجو"
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_converter
 msgid "Tests of field conversions"
-msgstr ""
+msgstr "آزمون‌های تبدیل فیلدها"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_auth_custom
 msgid "Tests that custom auth works & is not impaired by CORS"
-msgstr ""
+msgstr "آزمون‌هایی که تایید سفارشی کار می کند و تحت تأثیر CORS قرار نمی‌گیرد."
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_actions_report__report_type__qweb-text
@@ -28216,20 +28304,29 @@ msgstr "تایلند - حسابداری"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_th_reports
 msgid "Thailand - Accounting Reports"
-msgstr ""
+msgstr "تایلند - گزارش‌های حسابداری"
 
 #. module: base
 #. odoo-python
 #: code:addons/base/models/res_users.py:0
 #, python-format
 msgid "The \"%s\" action cannot be selected as home action."
-msgstr ""
+msgstr "عملکرد \"%s\" نمی‌تواند به عنوان عمل پیش‌فرض انتخاب شود."
 
 #. module: base
 #. odoo-python
 #: code:addons/base/models/res_users.py:0
 #, python-format
 msgid "The \"App Switcher\" action cannot be selected as home action."
+msgstr "عملکرد \"تغییر دهنده برنامه\" نمی‌تواند به عنوان عمل پیش‌فرض انتخاب شود."
+
+#. module: base
+#. odoo-python
+#: code:addons/base/models/res_users.py:0
+#, python-format
+msgid ""
+"The action \"%s\" cannot be set as the home action because it requires a "
+"record to be selected beforehand."
 msgstr ""
 
 #. module: base
@@ -28249,6 +28346,8 @@ msgid ""
 "The Jackson Group brings honesty and seriousness to wood industry while "
 "helping customers deal with trees, flowers and fungi."
 msgstr ""
+"گروه جکسون صداقت و جدیت را به صنعت چوب می‌آورد و به مشتریان در مدیریت "
+"درختان، گل‌ها و قارچ‌ها کمک می‌کند."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_lang__url_code
@@ -28263,6 +28362,11 @@ msgid ""
 " 1,06,500; [1,2,-1] will represent it to be 106,50,0;[3] will represent it "
 "as 106,500. Provided ',' as the thousand separator in each case."
 msgstr ""
+"قالب جداکننده باید به صورت [,n] باشد که در آن 0 < n: از رقم واحد شروع "
+"می‌شود. -1 پایان جداسازی را نشان می‌دهد. به عنوان مثال، [3,2,-1] نشان‌دهنده "
+"106500 به صورت 1,06,500 خواهد بود؛ [1,2,-1] نشان‌دهنده آن به صورت 106,50,0 "
+"خواهد بود؛ [3] آن را به عنوان 106,500 نشان می‌دهد. در هر مورد ',' به عنوان "
+"جداکننده هزار ارائه شده است."
 
 #. module: base
 #. odoo-python
@@ -28274,6 +28378,11 @@ msgid ""
 " 1,06,500;[1,2,-1] will represent it to be 106,50,0;[3] will represent it as"
 " 106,500. Provided as the thousand separator in each case."
 msgstr ""
+"قالب جداکننده باید به صورت [,n] باشد که در آن 0 < n: از رقم واحد شروع "
+"می‌شود. -1 پایان جداسازی را نشان می‌دهد. به عنوان مثال، [3,2,-1] نشان‌دهنده "
+"106500 به صورت 1,06,500 خواهد بود؛ [1,2,-1] نشان‌دهنده آن به صورت 106,50,0 "
+"خواهد بود؛ [3] آن را به عنوان 106,500 نشان می‌دهد. در هر مورد به عنوان "
+"جداکننده هزار ارائه شده است."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_company__vat
@@ -28284,6 +28393,8 @@ msgid ""
 "country format. You can use '/' to indicate that the partner is not subject "
 "to tax."
 msgstr ""
+"شماره شناسایی مالیاتی مقادیر در اینجا بر اساس قالب کشور تأیید می شوند. "
+"می‌توانید از «/» برای نشان دادن اینکه شریک مشمول مالیات نیست استفاده کنید."
 
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_res_lang_url_code_uniq
@@ -29697,6 +29808,10 @@ msgid ""
 "                IT budget by almost half within the last 2 years.\n"
 "                Famous Managing Partner."
 msgstr ""
+"تونی رودز در بخش IT <b>به مدت 10 سال</b> کار می‌کند. او شناخته شده است\n"
+"به‌ویژه به خاطر فروش تله‌های موش. با این ترفند، او در دو سال گذشته\n"
+" بودجه فناوری اطلاعات را تقریباً به نصف کاهش داده است. \n"
+"او یکی از شریک‌های مدیریتی معروف است."
 
 #. module: base
 #. odoo-python
@@ -29880,18 +29995,18 @@ msgstr "تونس"
 
 #. module: base
 #: model:res.country,name:base.tr
-msgid "Turkey"
-msgstr "ترکیه"
+msgid "Türkiye"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_tr
-msgid "Turkey - Accounting"
-msgstr "ترکیه - حسابداری"
+msgid "Türkiye - Accounting"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_tr_reports
-msgid "Turkey - Accounting Reports"
-msgstr "ترکیه - گزارش های حسابداری"
+msgid "Türkiye - Accounting Reports"
+msgstr ""
 
 #. module: base
 #: model:res.country,name:base.tm
@@ -31022,6 +31137,12 @@ msgstr "مشاهده جلسات گفتگوی زنده برای سرنخ ها"
 
 #. module: base
 #. odoo-python
+#: code:addons/base/models/ir_actions_report.py:0
+msgid "View Problematic Record(s)"
+msgstr "نمایش رکورد(های) دارای مشکل‌"
+
+#. module: base
+#. odoo-python
 #: code:addons/base/models/ir_model.py:0
 #, python-format
 msgid "View: %s"
@@ -31149,6 +31270,15 @@ msgid ""
 "enhancing solutions through the use of advanced software for our clients "
 "worldwide. At Lumber Inc we bring operational experience combined..."
 msgstr ""
+"ما یک شرکت مشاوره فناوری و مشاوره استراتژیک هستیم که راه‌حل‌های ارزش‌افزایی "
+"را از طریق استفاده از نرم‌افزارهای پیشرفته برای مشتریان خود در سرتاسر جهان "
+"ایجاد می‌کنیم. در Lumber Inc، تجربه عملی را با دانش فناوری ترکیب می‌کنیم و "
+"به این درک رسیده‌ایم که هر نرم‌افزاری که از عملیات تجاری پشتیبانی می‌کند، "
+"باید به‌گونه‌ای طراحی شود که اجرای فرآیندهای عملیاتی حیاتی را تسهیل کرده و "
+"به‌عنوان ابزاری برای کاربران عمل کند نه به‌عنوان مانعی. رویکرد ما ابتدا بر "
+"روی فرآیند تمرکز دارد و اطمینان حاصل می‌کند که به اهداف شرکت کمک می‌کند، سپس"
+" آن را بهینه‌سازی کرده و راه‌حل‌های نرم‌افزاری را برای بهترین پشتیبانی از آن"
+" طراحی می‌کنیم."
 
 #. module: base
 #: model_terms:res.partner,website_description:base.res_partner_18
@@ -31157,6 +31287,9 @@ msgid ""
 " <br> <br>\n"
 "At Lumber Inc we bring operational experience combined with technological acumen. We understand that any software that supports business operations needs to be designed in such a way that facilitates the execution of critical operational processes, and serves as a tool to the users rather than a barrier. Our approach is focused on the process first, ensuring that it contributes to the goals of the company, we then optimize it, and design the software solutions to best support it."
 msgstr ""
+"ما یک شرکت مشاوره فناوری و مشاوره استراتژیک هستیم که راه‌حل‌های ارزش‌افزایی را از طریق استفاده از نرم‌افزارهای پیشرفته برای مشتریان خود در سرتاسر جهان ایجاد می‌کنیم.\n"
+"<br><br>\n"
+"در Lumber Inc، تجربه عملی را با دانش فناوری ترکیب می‌کنیم. ما درک می‌کنیم که هر نرم‌افزاری که از عملیات تجاری پشتیبانی می‌کند، باید به گونه‌ای طراحی شود که اجرای فرآیندهای عملیاتی حیاتی را تسهیل کند و به‌عنوان ابزاری برای کاربران عمل کند نه به‌عنوان مانعی. رویکرد ما ابتدا بر روی فرآیند تمرکز دارد و اطمینان حاصل می‌کند که به اهداف شرکت کمک می‌کند، سپس آن را بهینه‌سازی کرده و راه‌حل‌های نرم‌افزاری را برای بهترین پشتیبانی از آن طراحی می‌کنیم."
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web
@@ -31544,6 +31677,8 @@ msgid ""
 "Wood Corner brings honesty and seriousness to wood industry while helping "
 "customers deal with trees, flowers and fungi."
 msgstr ""
+"Wood Corner صداقت و جدیت را به صنعت چوب می‌آورد و در عین حال به مشتریان در "
+"زمینه درختان، گل‌ها و قارچ‌ها کمک می‌کند."
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_work_entry
@@ -32041,7 +32176,7 @@ msgstr ""
 #: model_terms:res.company,sign_terms:base.main_company
 #: model_terms:res.company,sign_terms_html:base.main_company
 msgid "Your conditions..."
-msgstr ""
+msgstr "شرایط شما..."
 
 #. module: base
 #. odoo-python
@@ -32553,7 +32688,7 @@ msgstr "نه"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_step
 msgid "o_onboarding_confetti"
-msgstr ""
+msgstr "o_ورود_کنفتی"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_form

@@ -1760,3 +1760,96 @@ class TestSaleStock(TestSaleCommon, ValuationReconciliationTestCommon):
         picking.button_validate()
         self.assertEqual(sale_order.order_line.qty_delivered, -1.0)
         self.assertEqual(sale_order.order_line.qty_to_invoice, -1.0)
+
+    def test_sol_reserved_qty_wizard_3_steps_delivery(self):
+        """
+        Check that the reserved qty wizard related to a sol is computed from
+        the pick move in 2+ step deliveries.
+        """
+        admin = self.env.ref('base.user_admin')
+        warehouse = self.env.ref('stock.warehouse0').with_user(admin)
+        warehouse.delivery_steps = 'pick_pack_ship'
+        product = self.product_a
+        product.type = 'product'
+        self.env['stock.quant']._update_available_quantity(product, warehouse.lot_stock_id, 10.0)
+        sale_order = self.env['sale.order'].with_user(admin).create({
+            'company_id': warehouse.company_id.id,
+            'warehouse_id': warehouse.id,
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                Command.create({
+                'product_id': product.id,
+                'product_uom_qty': 7.0,
+                }),
+            ],
+        })
+        sale_order.action_confirm()
+        self.assertEqual(len(sale_order.picking_ids), 3)
+        pick = sale_order.picking_ids.filtered(lambda p: p.location_id == warehouse.lot_stock_id)
+        ship = sale_order.picking_ids.filtered(lambda p: p.location_dest_id == self.env.ref('stock.stock_location_customers'))
+        pack = sale_order.picking_ids - pick - ship
+        self.assertEqual(pick.move_line_ids.reserved_qty, 7.0)
+        self.assertEqual(sale_order.order_line.qty_available_today, 7.0)
+        self.assertEqual(sum(pack.move_line_ids.mapped('reserved_qty')), 0)
+        pick.move_ids.quantity_done = 7.0
+        pick.button_validate()
+        self.assertEqual(sum(pack.move_line_ids.mapped('reserved_qty')), 7.0)
+        self.assertEqual(sale_order.order_line.qty_available_today, 7.0)
+        pack.move_ids.quantity_done = 2.0
+        backorder_wizard_dict = pack.button_validate()
+        backorder_wizard = Form(self.env[backorder_wizard_dict['res_model']].with_user(admin).with_context(backorder_wizard_dict['context'])).save()
+        backorder_wizard.with_user(admin).process()
+        backorder = pack.backorder_ids
+        self.assertEqual(sum(backorder.move_line_ids.mapped('reserved_qty')), 5.0)
+        self.assertEqual(sum(ship.move_line_ids.mapped('reserved_qty')), 2.0)
+        self.assertEqual(sale_order.order_line.qty_available_today, 7.0)
+        self.assertEqual(sale_order.order_line.qty_delivered, 0.0)
+        backorder.move_ids.quantity_done = 5.0
+        backorder.button_validate()
+        self.assertEqual(sum(ship.move_line_ids.mapped('reserved_qty')), 7.0)
+        self.assertEqual(sale_order.order_line.qty_available_today, 7.0)
+        self.assertEqual(sale_order.order_line.qty_delivered, 0.0)
+        ship.move_ids.quantity_done = 7.0
+        ship.button_validate()
+        self.assertEqual(sale_order.order_line.qty_available_today, 0.0)
+        self.assertEqual(sale_order.order_line.qty_delivered, 7.0)
+
+    def test_delivery_status(self):
+        """
+            Tests the delivery status of a sales order.
+            If nothing was done: pending
+            If some pickings were completed but nothing was actually delivery to the customer yet: started
+            If not everything was delivered: partial
+            If everything was delivered: full
+        """
+        warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
+        warehouse.delivery_steps = 'pick_ship'
+
+        so = self.env['sale.order'].create({
+            'partner_id': self.env['res.partner'].create({'name': 'My Partner'}).id,
+            'order_line': [
+                Command.create({
+                    'name': 'sol_p1',
+                    'product_id': self.env['product.product'].create({'name': 'p1'}).id,
+                    'product_uom_qty': 10,
+                    'product_uom': self.env.ref('uom.product_uom_unit').id,
+                }),
+            ],
+        })
+        so.action_confirm()
+        self.assertEqual(so.delivery_status, 'pending')
+
+        pick01, ship01 = so.picking_ids
+
+        pick01.move_line_ids.qty_done = 10
+        pick01._action_done()
+        self.assertEqual(so.delivery_status, 'started')
+
+        ship01.move_line_ids[0].qty_done = 3
+        ship01._action_done()
+        self.assertEqual(so.delivery_status, 'partial')
+
+        ship02 = ship01.backorder_ids
+        ship02.move_line_ids[0].qty_done = 7
+        ship02._action_done()
+        self.assertEqual(so.delivery_status, 'full')

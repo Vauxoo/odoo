@@ -51,9 +51,9 @@
                             <field name="auto_apply"/>
                             <field name="vat_required" attrs="{'invisible': [('auto_apply', '!=', True)]}"/>
                             <field name="foreign_vat"/>
-                            <field name="country_group_id" attrs="{'invisible': [('auto_apply', '!=', True)]}"/>
+                            <field name="country_group_id" attrs="{'invisible': [('auto_apply', '=', False), ('foreign_vat', '=', False)], 'required': [('foreign_vat', '!=', False), ('country_id', '=', False)]}"/>
                             <field name="country_id"
-                                attrs="{'required': [('foreign_vat', '!=', False)]}"
+                                attrs="{'required': [('foreign_vat', '!=', False), ('country_group_id', '=', False)]}"
                                 options="{'no_open': True, 'no_create': True}"/>
                             <field name="state_ids" widget="many2many_tags" domain="[('country_id', '=', country_id)]"
                                 attrs="{'invisible': ['|', '|', '&amp;', ('auto_apply', '!=', True), ('foreign_vat', '=', False), ('country_id', '=', False), ('states_count', '=', 0)]}"/>
@@ -222,9 +222,10 @@
                                 />
                             </group>
                             <group string="Accounting Entries" name="accounting_entries" groups="account.group_account_readonly">
+                                <field name="is_coa_installed" invisible="1"/>
                                 <field name="currency_id" invisible="1"/>
-                                <field name="property_account_receivable_id"/>
-                                <field name="property_account_payable_id"/>
+                                <field name="property_account_receivable_id" attrs="{'required': [('is_coa_installed', '=', True)]}"/>
+                                <field name="property_account_payable_id" attrs="{'required': [('is_coa_installed', '=', True)]}"/>
                             </group>
                             <group string="Credit Limits"
                                    name="credit_limits"
@@ -234,7 +235,7 @@
                                 <label for="use_partner_credit_limit"/>
                                 <div class="o_row">
                                     <field name="use_partner_credit_limit"/>
-                                    <field name="credit_limit" class="oe_inline" attrs="{'invisible': [('use_partner_credit_limit', '=', False)]}"/>
+                                    <field name="credit_limit" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"  attrs="{'invisible': [('use_partner_credit_limit', '=', False)]}"/>
                                 </div>
                             </group>
                         </group>
