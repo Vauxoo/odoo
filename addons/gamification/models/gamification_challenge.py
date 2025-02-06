@@ -275,8 +275,8 @@ class Challenge(models.Model):
                         FROM gamification_goal as gg
                         JOIN res_users_log as log ON gg.user_id = log.create_uid
                         JOIN res_users ru on log.create_uid = ru.id
-                       WHERE (gg.write_date < log.create_date OR ru.share IS NOT TRUE)
-                         AND ru.active IS TRUE
+                       WHERE
+                         ru.active IS TRUE
                          AND gg.closed IS NOT TRUE
                          AND gg.challenge_id IN %s
                          AND (gg.state = 'inprogress'
