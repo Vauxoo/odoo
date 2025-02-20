@@ -99,6 +99,7 @@ var EventRegistrationForm = Widget.extend({
                 $modal.on('submit', 'form', async function (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
+                    $modal.find('.modal-footer > button.btn-primary').prop('disabled', true);
                     tokenObj = await self._recaptcha.getToken('website_event_registration');
                     const tokenInput = document.createElement('input');
                     tokenInput.setAttribute('name', 'recaptcha_token_response');
