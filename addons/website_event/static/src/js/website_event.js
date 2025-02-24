@@ -72,7 +72,7 @@ var EventRegistrationForm = Widget.extend({
             var action = $form.data('action') || $form.attr('action');
             var self = this;
             return ajax.jsonRpc(action, 'call', post).then(async function (modal) {
-                const tokenObj = await self._recaptcha.getToken('website_event_registration');
+                let tokenObj = await self._recaptcha.getToken('website_event_registration');
                 if (tokenObj.error) {
                     self.displayNotification({
                         type: 'danger',
@@ -96,12 +96,17 @@ var EventRegistrationForm = Widget.extend({
                 $modal.on('click', '.btn-close', function () {
                     $button.prop('disabled', false);
                 });
-                $modal.on('submit', 'form', function (ev) {
+                $modal.on('submit', 'form', async function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    $modal.find('.modal-footer > button.btn-primary').prop('disabled', true);
+                    tokenObj = await self._recaptcha.getToken('website_event_registration');
                     const tokenInput = document.createElement('input');
                     tokenInput.setAttribute('name', 'recaptcha_token_response');
                     tokenInput.setAttribute('type', 'hidden');
                     tokenInput.setAttribute('value', tokenObj.token);
                     ev.currentTarget.appendChild(tokenInput);
+                    ev.currentTarget.submit();
                 })
             });
         }
