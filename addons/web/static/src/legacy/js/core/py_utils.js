@@ -161,7 +161,28 @@ function eval_domains(domains, evaluation_context) {
         if (need_normalization) {
             domain_array_to_combine = get_normalized_domain(domain_array_to_combine);
         }
-        result_domain.push.apply(result_domain, domain_array_to_combine);
+        // NOTE: Allow setting a Char Field as domain of another field:
+        // In v17 this was refactored and the field is accepted as the domain.
+        // https://github.com/odoo/odoo/commit/3fac03b7
+        try {
+            result_domain.push.apply(result_domain, domain_array_to_combine);
+        } catch (err) {
+            let ChromeMessage = "CreateListFromArrayLike",
+                FirefoxMessage = "second argument to Function.prototype.apply must be an array";
+            if (
+                err.message.indexOf(ChromeMessage) !== -1
+                || err.message.indexOf(FirefoxMessage) !== -1
+            ) {
+                if (typeof (domain_array_to_combine) === "string") {
+                    domain_array_to_combine = JSON.parse(domain_array_to_combine)
+                    result_domain.push.apply(result_domain, domain_array_to_combine);
+                } else {
+                    throw err;
+                }
+            } else {
+                throw err;
+            }
+        }
     });
     return result_domain;
 }
