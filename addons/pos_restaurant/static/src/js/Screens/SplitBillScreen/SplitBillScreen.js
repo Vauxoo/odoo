@@ -85,7 +85,7 @@ odoo.define('pos_restaurant.SplitBillScreen', function(require) {
         _initSplitLines(order) {
             const splitlines = {};
             for (let line of order.get_orderlines()) {
-                splitlines[line.id] = { product: line.get_product().id, quantity: 0 };
+                splitlines[line.id] = { product: line.id, quantity: 0 };
             }
             return splitlines;
         }
@@ -95,7 +95,7 @@ odoo.define('pos_restaurant.SplitBillScreen', function(require) {
             let totalQuantity = 0;
 
             this.env.pos.get_order().get_orderlines().forEach(function(orderLine) {
-                if(orderLine.get_product().id === split.product)
+                if(orderLine.id === split.product)
                     totalQuantity += orderLine.get_quantity();
             });
 
@@ -137,13 +137,13 @@ odoo.define('pos_restaurant.SplitBillScreen', function(require) {
             let order = this.env.pos.get_order();
             let full = true;
             let splitlines = this.splitlines;
-            let groupedLines = _.groupBy(order.get_orderlines(), line => line.get_product().id);
+            let groupedLines = _.groupBy(order.get_orderlines(), line => line.id);
 
             Object.keys(groupedLines).forEach(function (lineId) {
                 var maxQuantity = groupedLines[lineId].reduce(((quantity, line) => quantity + line.get_quantity()), 0);
                 Object.keys(splitlines).forEach(id => {
                     let split = splitlines[id];
-                    if(split.product === groupedLines[lineId][0].get_product().id)
+                    if(split.product === groupedLines[lineId][0].id)
                         maxQuantity -= split.quantity;
                 });
                 if(maxQuantity !== 0)
