@@ -10,9 +10,15 @@ the ORM does, in fact.
 
 from contextlib import contextmanager
 from functools import wraps
+import collections
+import hashlib
 import itertools
 import logging
+import os
+import threading
+import sys
 import time
+import traceback
 import uuid
 import warnings
 
@@ -23,10 +29,12 @@ import psycopg2.extensions
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT, ISOLATION_LEVEL_READ_COMMITTED, ISOLATION_LEVEL_REPEATABLE_READ
 from psycopg2.pool import PoolError
 from werkzeug import urls
+from .tools.config import config
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
 _logger = logging.getLogger(__name__)
+_logger_query_user = logging.getLogger(__name__ + '.query_users')
 real_time = time.time.__call__  # ensure we have a non patched time for query times when using freezegun
 
 def unbuffer(symb, cr):
@@ -81,6 +89,18 @@ re_into = re.compile('.* into "?([a-zA-Z_0-9]+)"? .*$')
 
 sql_counter = 0
 
+
+QUERY_CATCH_VERBOSE = os.environ.get('ODOO_QUERY_USERS_VERBOSE')
+QUERIES_TO_CATCH = os.environ.get('ODOO_QUERY_TO_CATCH') or [
+    'SELECT "res_users"."id" as "id", "res_users"."partner_id" as "partner_id", "res_users"."login" as "login", "res_users"."signature" as "signature", "res_users"."active" as "active", "res_users"."action_id" as "action_id", "res_users"."share" as "share", "res_users"."company_id" as "company_id", "res_users"."create_uid" as "create_uid", "res_users"."create_date" as "create_date", "res_users"."write_uid" as "write_uid", "res_users"."write_date" as "write_date", "res_users"."notification_type" as "notification_type", "res_users"."karma" as "karma", "res_users"."rank_id" as "rank_id", "res_users"."next_rank_id" as "next_rank_id", "res_users"."odoobot_state" as "odoobot_state", "res_users"."odoobot_failed" as "odoobot_failed", "res_users"."sale_team_id" as "sale_team_id", "res_users"."oauth_provider_id" as "oauth_provider_id", "res_users"."oauth_uid" as "oauth_uid", "res_users"."oauth_access_token" as "oauth_access_token", "res_users"."google_cal_account_id" as "google_cal_account_id", "res_users"."subscribe_job" as "subscribe_job", "res_users"."last_seen_phone_call" as "last_seen_phone_call", "res_users"."target_sales_won" as "target_sales_won", "res_users"."target_sales_done" as "target_sales_done", "res_users"."helpdesk_target_closed" as "helpdesk_target_closed", "res_users"."helpdesk_target_rating" as "helpdesk_target_rating", "res_users"."helpdesk_target_success" as "helpdesk_target_success", "res_users"."livechat_username" as "livechat_username", "res_users"."website_id" as "website_id", "res_users"."tiledesk_user_id" as "tiledesk_user_id", "res_users"."tiledesk_token" as "tiledesk_token", "res_users"."target_sales_invoiced" as "target_sales_invoiced" FROM "res_users" WHERE "res_users".id IN (',
+]
+
+
+ad_paths = []
+for ad in tools.config['addons_path'].split(',') + sys.path:
+    ad = os.path.normcase(os.path.abspath(tools.ustr(ad.strip())))
+    if ad and ad not in ad_paths:
+        ad_paths.append(ad)
 
 @decorator
 def check(f, self, *args, **kwargs):
@@ -309,6 +329,20 @@ class Cursor(BaseCursor):
         try:
             params = params or None
             res = self._obj.execute(query, params)
+
+            if (getattr(threading.currentThread(), 'testing', False) or
+                config.get('test_enable') or not QUERY_CATCH_VERBOSE):
+                return
+            for query_to_catch in QUERIES_TO_CATCH:
+                if query_to_catch.encode('UTF-8') in self._obj.query.replace(b"\n", b" "):
+                    tcbk = traceback.extract_stack()
+                    key = hashlib.md5(repr(tcbk).encode('UTF-8') + bytes(query_to_catch, encoding='UTF-8')).hexdigest()
+                    tcbk_str = ""
+                    for path, line, method, sentence in tcbk:
+                        tcbk_str += "\n%s:%s (%s)" % (path, line, method)
+                    for ad_path in ad_paths:
+                        tcbk_str = tcbk_str.replace(ad_path + '/', '')
+                    _logger_query_user.info("query users executed from: %s \nkey: %s \nquery: %s", tcbk_str, key, tools.ustr(self._obj.query or query))
         except Exception as e:
             if self._default_log_exceptions if log_exceptions is None else log_exceptions:
                 _logger.error("bad query: %s\nERROR: %s", tools.ustr(self._obj.query or query), e)
