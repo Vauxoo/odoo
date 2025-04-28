@@ -1574,7 +1574,7 @@ class Request:
 
         cookie_sid = self.httprequest.cookies.get('session_id')
         if sess.is_dirty or cookie_sid != sess.sid:
-            self.future_response.set_cookie('session_id', sess.sid, max_age=SESSION_LIFETIME, httponly=True)
+            self.future_response.set_cookie('session_id', sess.sid, max_age=SESSION_LIFETIME, httponly=True, secure=True)
 
     def _set_request_dispatcher(self, rule):
         routing = rule.endpoint.routing
@@ -1814,7 +1814,7 @@ class HttpDispatcher(Dispatcher):
             response = self.request.redirect_query('/web/login', {'redirect': self.request.httprequest.full_path})
             if was_connected:
                 root.session_store.rotate(session, self.request.env)
-                response.set_cookie('session_id', session.sid, max_age=SESSION_LIFETIME, httponly=True)
+                response.set_cookie('session_id', session.sid, max_age=SESSION_LIFETIME, httponly=True, secure=True)
             return response
 
         return (exc if isinstance(exc, HTTPException)
