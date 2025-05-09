@@ -65,6 +65,53 @@ re_into = re.compile('.* into "?([a-zA-Z_0-9]+)"? .*$')
 
 sql_counter = 0
 
+import traceback
+
+_extract_stack_enabled = None
+_extract_stack_checked = False
+_stack_lock = threading.Lock()
+_thread_local = threading.local()
+
+def _check_stack_trace_enabled(dbname, cr):
+    global _extract_stack_enabled, _extract_stack_checked
+
+    if getattr(_thread_local, 'checking_stack', False):
+        return False
+
+    if _extract_stack_checked:
+        return _extract_stack_enabled
+
+    with _stack_lock:
+        if _extract_stack_checked:
+            return _extract_stack_enabled
+
+        try:
+            _thread_local.checking_stack = True
+
+            cr.execute("SELECT to_regclass('public.ir_config_parameter')")
+            result = cr.fetchone()[0]
+
+            exists = bool(result)
+            if exists:
+                cr.execute("SELECT value FROM ir_config_parameter WHERE key = %s", ('vauxoo.traceback.extract_stack',))
+                row = cr.fetchone()
+                val = str(row[0]).strip().lower() if row and row[0] else ''
+                _extract_stack_enabled = val in ['1', 'true']
+
+                _extract_stack_checked = True
+            else:
+                return False
+
+        except Exception as e:
+            _logger.warning('⚠️  Could not evaluate stack trace parameter: %s', e)
+            _extract_stack_enabled = False
+            return False
+
+        finally:
+            _thread_local.checking_stack = False
+
+        return _extract_stack_enabled
+
 class Cursor(object):
     """Represents an open transaction to the PostgreSQL DB backend,
        acting as a lightweight wrapper around psycopg2's
@@ -221,6 +268,15 @@ class Cursor(object):
             _logger.debug("query: %s", self._obj.mogrify(query, params).decode(encoding, 'replace'))
         now = time.time()
         try:
+            if re.match(r'^\s*select', query, re.IGNORECASE):
+                try:
+                    enabled = _check_stack_trace_enabled(self.dbname, self)
+                    if enabled:
+                        stack = traceback.extract_stack()
+                        formatted_stack = ''.join(traceback.format_list(stack[:-1]))
+                        _logger.info('🔥🔥🔥 Traceback for SELECT query:\n%s', formatted_stack)
+                except Exception as e:
+                    _logger.warning('🔥🔥🔥 Error capturing traceback for SELECT: %s', e)
             params = params or None
             res = self._obj.execute(query, params)
         except Exception as e:
