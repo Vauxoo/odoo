@@ -1820,7 +1820,9 @@ class AccountPartialReconcile(models.Model):
                 full_to_unlink |= rec.full_reconcile_id
         #reverse the tax basis move created at the reconciliation time
         for move in self.env['account.move'].search([('tax_cash_basis_rec_id', 'in', self._ids)]):
-            if move.date > (move.company_id.period_lock_date or date.min):
+            if self._context.get("skip_unlink_of_apr"):
+                move.reverse_moves(date=fields.Date.today())
+            elif move.date > (move.company_id.period_lock_date or date.min):
                 move.reverse_moves(date=move.date)
             else:
                 move.reverse_moves()
