@@ -469,9 +469,9 @@ class Website(Home):
         for search_result in search_results:
             results_data += search_result['results_data']
             mappings.append(search_result['mapping'])
-        if search_type == 'all':
-            # Only supported order for 'all' is on name
-            results_data.sort(key=lambda r: r.get('name', ''), reverse='name desc' in order)
+        # if search_type == 'all':
+        #     # Only supported order for 'all' is on name
+        #     results_data.sort(key=lambda r: r.get('name', ''), reverse='name desc' in order)
         results_data = results_data[:limit]
         result = []
         for record in results_data:
