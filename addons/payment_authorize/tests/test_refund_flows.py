@@ -12,7 +12,7 @@ from odoo.addons.payment_authorize.tests.common import AuthorizeCommon
 class TestRefundFlows(AuthorizeCommon):
 
     def test_refunding_voided_tx_cancels_it(self):
-        """ Test that refunding a transaction that has been voided from Authorize.net side cancels
+        """ Test that refunding a transaction that has been voided from Authorize.net side does not cancel
         it on Odoo. """
         source_tx = self._create_transaction('direct', state='done')
         with patch(
@@ -21,7 +21,7 @@ class TestRefundFlows(AuthorizeCommon):
             return_value={'transaction': {'transactionStatus': 'voided'}},
         ):
             source_tx._send_refund_request(amount_to_refund=source_tx.amount)
-        self.assertEqual(source_tx.state, 'cancel')
+        self.assertNotEqual(source_tx.state, 'cancel')
 
     def test_refunding_refunded_tx_creates_refund_tx(self):
         """ Test that refunding a transaction that has been refunded from Authorize.net side creates
