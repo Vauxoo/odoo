@@ -39,8 +39,12 @@ class AuthorizeAPI:
         self.name = provider.authorize_login
         self.transaction_key = provider.authorize_transaction_key
         self.payment_method_type = provider.authorize_payment_method_type
+        self.provider = provider
 
     def _make_request(self, operation, data=None):
+        check_env = getattr(self.provider, "_check_environment", None)
+        if callable(check_env):
+            check_env()
         request = {
             operation: {
                 'merchantAuthentication': {
