@@ -34,6 +34,7 @@
     'demo': [
         'data/purchase_demo.xml',
     ],
+    "pre_init_hook": "pre_init_hook",
     'installable': True,
     'application': True,
     'assets': {
