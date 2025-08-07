@@ -107,8 +107,7 @@ class PaymentTransaction(models.Model):
         refund_tx = self.env['payment.transaction']
         tx_status = tx_details.get('transaction', {}).get('transactionStatus')
         if tx_status in TRANSACTION_STATUS_MAPPING['voided']:
-            # The payment has been voided from Authorize.net side before we could refund it.
-            self._set_canceled()
+            self.with_context(avoid_cancel=True)._set_canceled()
         elif tx_status in TRANSACTION_STATUS_MAPPING['refunded']:
             # The payment has been refunded from Authorize.net side before we could refund it. We
             # create a refund tx on Odoo to reflect the move of the funds.
@@ -235,7 +234,7 @@ class PaymentTransaction(models.Model):
                 if self.operation == 'validation':  # Validation txs are authorized and then voided
                     self._set_done()  # If the refund went through, the validation tx is confirmed
                 else:
-                    self._set_canceled()
+                    self.with_context(avoid_cancel=True)._set_canceled()
             elif status_type == 'refund' and self.operation == 'refund':
                 self._set_done()
                 # Immediately post-process the transaction as the post-processing will not be
