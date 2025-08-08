@@ -1060,7 +1060,7 @@ class ChromeBrowser:
             # virtual mem for alignment this exceeds our default memory limits.
             def preexec():
                 import resource
-                resource.setrlimit(resource.RLIMIT_AS, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+                resource.setrlimit(resource.RLIMIT_AS, (16**9, 16**9))
         else:
             preexec = None
 
