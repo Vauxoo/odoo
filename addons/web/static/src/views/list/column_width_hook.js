@@ -157,8 +157,12 @@ function computeOptimalDateWidths() {
  */
 function computeWidths(table, state, allowedWidth, startingWidths) {
     let _columnWidths;
-    const headers = [...table.querySelectorAll("thead th")];
+    const headers = [...table.querySelectorAll("thead th:not(.o_rowno)")];
+    const rowNum = table.classList.contains("o_rowno_in_tree")
     const columns = state.columns;
+
+    if (rowNum && startingWidths)
+        startingWidths.shift();
 
     // Starting point: compute widths
     if (startingWidths) {
@@ -207,6 +211,8 @@ function computeWidths(table, state, allowedWidth, startingWidths) {
     // Expand/shrink columns for the table to fill 100% of available space
     const totalWidth = _columnWidths.reduce((tot, width) => tot + width, 0);
     let diff = totalWidth - allowedWidth;
+    if (rowNum)
+        diff += DEFAULT_MIN_WIDTH/2;
     if (diff >= 1) {
         // Case 1: table overflows its parent => shrink some columns
         const shrinkableColumns = [];
@@ -278,6 +284,8 @@ function computeWidths(table, state, allowedWidth, startingWidths) {
             }
         }
     }
+    if (rowNum)
+        _columnWidths.unshift(SELECTOR_WIDTH);
     return _columnWidths;
 }
 
