@@ -2836,13 +2836,10 @@ msgstr ""
 "No es posible reservar más productos que los %s que tiene en existencias."
 
 #. module: stock
-#: code:addons/stock/models/stock_quant.py:266
+#: code:addons/stock/models/stock_quant.py:273
 #, python-format
-msgid ""
-"It is not possible to unreserve more products of %s than you have in stock."
-msgstr ""
-"No es posible deshacer la reserva de más productos que los %s que tiene en "
-"existencias."
+msgid "It is not possible to unreserve more products of %s than you have in stock. Available quantity: %s, quantity: %s"
+msgstr "No es posible deshacer la reserva de más productos que los %s que tiene en existencias. Cantidad disponible: %s, cantidad: %s"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_move__product_packaging
