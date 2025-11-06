@@ -101,12 +101,15 @@ class SaleOrderLine(models.Model):
     def _get_sale_order_fields(self):
         return ["product_id", "display_name", "price_unit", "product_uom_qty", "tax_id", "qty_delivered", "qty_invoiced", "discount", "qty_to_invoice", "price_total", "is_downpayment"]
 
+    def get_product_uom(self):
+        return self.product_id.uom_id
+
     def read_converted(self):
         field_names = self._get_sale_order_fields()
         results = []
         for sale_line in self:
             if sale_line.product_type or (sale_line.is_downpayment and sale_line.price_unit != 0):
-                product_uom = sale_line.product_id.uom_id
+                product_uom = sale_line.get_product_uom()
                 sale_line_uom = sale_line.product_uom
                 item = sale_line.read(field_names, load=False)[0]
                 if sale_line.product_id.tracking != 'none':
