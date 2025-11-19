@@ -1632,7 +1632,7 @@ class PosOrderLine(models.Model):
                 line.order_id.with_context(backend_recomputation=True).write({'procurement_group_id': group_id})
 
             values = line._prepare_procurement_values(group_id=group_id)
-            product_qty = line.qty
+            product_qty = line.product_uom_id._compute_quantity(line.qty, line.product_id.uom_id)
 
             procurement_uom = line.product_id.uom_id
             procurements.append(self.env['procurement.group'].Procurement(
