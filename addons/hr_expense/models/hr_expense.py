@@ -1010,6 +1010,30 @@ class HrExpense(models.Model):
 
         return account
 
+    def _prepare_company_bill_vals(self):
+        # NOTE: Similar to `_prepare_bills_vals` in sheet, but to do it per expense for the vendors
+        self.ensure_one()
+        # move_vals = self.sheet_id._prepare_move_vals()
+        # if self.employee_id.sudo().bank_account_id:
+        #     move_vals['partner_bank_id'] = self.employee_id.sudo().bank_account_id.id
+        return {
+            **self.sheet_id._prepare_move_vals(),
+            "journal_id": self.sheet_id.journal_id.id,
+            "move_type": "in_invoice",
+            "ref": self.name,
+            "date": self.date,
+            "partner_id": self.vendor_id.id,
+            "commercial_partner_id": self.vendor_id.commercial_partner_id.id,
+            "currency_id": self.currency_id.id,
+            "line_ids": [Command.create(self._prepare_move_lines_vals())],
+            "attachment_ids": [
+                Command.create(
+                    attachment.copy_data({"res_model": "account.move", "res_id": False, "raw": attachment.raw})[0]
+                )
+                for attachment in self.message_main_attachment_id
+            ],
+        }
+
     def _prepare_move_lines_vals(self):
         self.ensure_one()
         account = self._get_base_account()

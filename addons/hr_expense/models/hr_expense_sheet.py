@@ -647,12 +647,8 @@ class HrExpenseSheet(models.Model):
 
     def action_open_account_moves(self):
         self.ensure_one()
-        if self.payment_mode == 'own_account':
-            res_model = 'account.move'
-            record_ids = self.account_move_ids
-        else:
-            res_model = 'account.payment'
-            record_ids = self.account_move_ids.origin_payment_id
+        res_model = 'account.move'
+        record_ids = self.account_move_ids
 
         action = {'type': 'ir.actions.act_window', 'res_model': res_model}
         if len(self.account_move_ids) == 1:
@@ -768,26 +764,13 @@ class HrExpenseSheet(models.Model):
         moves_sudo = self.env['account.move'].sudo().create([sheet._prepare_bills_vals() for sheet in own_account_sheets])
         for move_sudo in moves_sudo:
             move_sudo._message_set_main_attachment_id(move_sudo.attachment_ids, force=True, filter_xml=False)
-        if company_account_sheets:
-            move_vals_list, payment_vals_list = zip(*[
-                expense._prepare_payments_vals()
+
+        moves_sudo |= self.env["account.move"].sudo().create(
+            [
+                expense._prepare_company_bill_vals()
                 for expense in company_account_sheets.expense_line_ids
-            ])
-
-            payment_moves_sudo = self.env['account.move'].sudo().create(move_vals_list)
-            for payment_vals, move in zip(payment_vals_list, payment_moves_sudo):
-                payment_vals['move_id'] = move.id
-
-            payments_sudo = self.env['account.payment'].sudo().create(payment_vals_list)
-            for payment_sudo, move_sudo in zip(payments_sudo, payment_moves_sudo):
-                move_sudo.update({
-                    'origin_payment_id': payment_sudo.id,
-                    # We need to put the journal_id because editing origin_payment_id triggers a re-computation chain
-                    # that voids the company_currency_id of the lines
-                    'journal_id': move_sudo.journal_id.id,
-                })
-
-            moves_sudo |= payment_moves_sudo
+            ]
+        )
 
         # returning the move with the super user flag set back as it was at the origin of the call
         return moves_sudo.sudo(self.env.su)
