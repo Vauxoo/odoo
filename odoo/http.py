@@ -1604,11 +1604,18 @@ class FutureResponse:
 
     @functools.wraps(werkzeug.Response.set_cookie)
     def set_cookie(self, key, value='', max_age=None, expires=-1, path='/', domain=None, secure=False, httponly=False, samesite=None, cookie_type='required'):
+        IrHttp = request.env and request.env['ir.http']
         if expires == -1:  # not forced value -> default value -> 1 year
             expires = datetime.now() + timedelta(days=365)
 
-        if request.db and not request.env['ir.http']._is_allowed_cookie(cookie_type):
+        if request.db and IrHttp and not IrHttp._is_allowed_cookie(cookie_type):
             max_age = 0
+
+        if request.session.get("multi_login"):
+            expires = None
+            max_age = None
+        elif request.db and key == 'session_id' and not domain and hasattr(IrHttp, '_get_subdomain') and (subdomain := IrHttp._get_subdomain(domain)):
+            werkzeug.Response.set_cookie(self, "multi_session_id", value=value, max_age=max_age, expires=expires, path=path, domain=subdomain, secure=secure, httponly=httponly, samesite=samesite)
         werkzeug.Response.set_cookie(self, key, value=value, max_age=max_age, expires=expires, path=path, domain=domain, secure=secure, httponly=httponly, samesite=samesite)
 
 
