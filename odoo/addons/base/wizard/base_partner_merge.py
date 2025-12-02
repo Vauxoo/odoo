@@ -11,7 +11,7 @@ import datetime
 from odoo import api, fields, models, Command
 from odoo import _
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import mute_logger, SQL
+from odoo.tools import mute_logger, SQL, str2bool
 
 _logger = logging.getLogger('odoo.addons.base.partner.merge')
 
@@ -440,8 +440,12 @@ class MergePartnerAutomatic(models.TransientModel):
 
         self._log_merge_operation(src_partners, dst_partner)
 
-        # delete source partner, since they are merged
-        src_partners.unlink()
+        # check parameter to determine if the source partner should be deleted or archived
+        archive_src_partners = str2bool(self.env["ir.config_parameter"].sudo().get_param("base.archive_merged_src_partners"))
+        if archive_src_partners:
+            src_partners.write({src_partners._active_name: False})
+        else:
+            src_partners.unlink()
 
     def _log_merge_operation(self, src_partners, dst_partner):
         _logger.info('(uid = %s) merged the partners %r with %s', self._uid, src_partners.ids, dst_partner.id)
