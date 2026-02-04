@@ -1233,7 +1233,7 @@ class expression(object):
                         # NULL values, since it makes the IN test NULL instead
                         # of FALSE.  This may discard expected results, as for
                         # instance "id NOT IN (42, NULL)" is never TRUE.
-                        sql_in = SQL('NOT IN') if operator in NEGATIVE_TERM_OPERATORS else SQL('IN')
+                        sql_exists = SQL('NOT EXISTS') if operator in NEGATIVE_TERM_OPERATORS else SQL('EXISTS')
                         if not isinstance(ids2, Query):
                             ids2 = comodel.browse(ids2)._as_query(ordered=False)
                         sql_inverse = comodel._field_to_sql(ids2.table, inverse_field.name, ids2)
@@ -1242,11 +1242,13 @@ class expression(object):
                         if (inverse_field.company_dependent and inverse_field.index == 'btree_not_null'
                                 and not inverse_field.get_company_dependent_fallback(comodel)):
                             ids2.add_where(SQL('%s IS NOT NULL', SQL.identifier(ids2.table, inverse_field.name)))
+                        # Wrap in a subselect to avoid alias collisions and allow better query planning
                         push_result(SQL(
-                            "(%s %s %s)",
+                            "%s (SELECT FROM (%s) AS __inverse_subquery WHERE %s = %s)",
+                            sql_exists,
+                            ids2.subselect(SQL("%s AS __inverse", sql_inverse)),
+                            SQL.identifier('__inverse_subquery', '__inverse'),
                             SQL.identifier(alias, 'id'),
-                            sql_in,
-                            ids2.subselect(sql_inverse),
                         ))
                     else:
                         # determine ids1 in model related to ids2
@@ -1259,12 +1261,19 @@ class expression(object):
                 else:
                     if inverse_field.store and not (inverse_is_int and domain):
                         # rewrite condition to match records with/without lines
-                        sub_op = 'in' if operator in NEGATIVE_TERM_OPERATORS else 'not in'
+                        # Using EXISTS for better performance compared to NOT IN
+                        sql_exists = SQL('EXISTS') if operator in NEGATIVE_TERM_OPERATORS else SQL('NOT EXISTS')
                         comodel_domain = [(inverse_field.name, '!=', False)]
                         query = comodel._where_calc(comodel_domain)
                         sql_inverse = comodel._field_to_sql(query.table, inverse_field.name, query)
-                        sql = query.subselect(sql_inverse)
-                        push(('id', sub_op, sql), model, alias)
+                        # Wrap in EXISTS clause for better query planning
+                        push_result(SQL(
+                            "%s (SELECT FROM (%s) AS __inverse_subquery WHERE %s = %s)",
+                            sql_exists,
+                            query.subselect(SQL("%s AS __inverse", sql_inverse)),
+                            SQL.identifier('__inverse_subquery', '__inverse'),
+                            SQL.identifier(alias, 'id'),
+                        ))
                     else:
                         comodel_domain = [(inverse_field.name, '!=', False)]
                         if inverse_is_int and domain:
