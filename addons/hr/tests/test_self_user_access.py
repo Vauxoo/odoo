@@ -181,6 +181,41 @@ class TestSelfAccessRights(TestHrCommon):
         # Searching user based on employee_id field should not raise bad query error
         self.env['res.users'].with_user(self.richard).search([('employee_id', 'ilike', 'Hubert')])
 
+    def test_open_preferences_without_hr_group(self):
+        """The Preferences form onchange must not raise AccessError for non-HR users.
+
+        The preferences view is loaded as SUPERUSER (see hr.res_users.get_view), so
+        it exposes group-restricted fields inherited from hr.version (private_state_id,
+        work_location_id, ...). When the form runs an onchange, the value of every
+        field in the spec is recomputed as the *real* user; the inherited related
+        fields use related_sudo=False, so reading them triggers an hr.version field
+        ACL check and raises AccessError for users without hr.group_hr_user, even on
+        their own record. These fields are listed in res.users.SELF_READABLE_FIELDS,
+        so the onchange must succeed.
+        """
+        user = self.richard.with_user(self.richard)
+        view = self.env.ref('hr.res_users_view_form_preferences')
+        views_data = user.get_views([(view.id, 'form')])
+        arch = views_data['views']['form']['arch']
+        fields_info = views_data['models'].get('res.users', {}).get('fields', {})
+        field_names = [
+            el.get('name')
+            for el in etree.fromstring(arch).xpath('//field[not(ancestor::field)]')
+        ]
+        # Build the fields_spec exactly as the web client does: a nested {'fields': ...}
+        # for relational fields, an empty {} otherwise.
+        fields_spec = {
+            fname: (
+                {'fields': {'display_name': {}}}
+                if fields_info.get(fname, {}).get('type') in ('many2one', 'many2many')
+                else {}
+            )
+            for fname in field_names
+        }
+        # Full onchange (no specific field changed), as triggered when the form
+        # initializes the record. Must not raise AccessError.
+        user.onchange({}, [], fields_spec)
+
     # Write hr.department
     def testWriteDepartmentEmployee(self):
         with self.assertRaises(AccessError):
