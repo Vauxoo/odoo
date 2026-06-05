@@ -2,10 +2,6 @@
 UPDATE ir_mail_server
    SET active = false;
 
--- insert dummy mail server to prevent using fallback servers specified using command line
-INSERT INTO ir_mail_server(name, smtp_port, smtp_host, smtp_encryption, active, smtp_authentication)
-VALUES ('neutralization - disable emails', 1025, 'invalid', 'none', true, 'login');
-
 -- deactivate crons
 UPDATE ir_cron
    SET active = false
