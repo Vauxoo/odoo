@@ -1,6 +1,14 @@
+import psycopg2
 from odoo.tests import TransactionCase
 from unittest import mock
 import smtplib
+
+
+def mocked_serialization_failure(self, *vals, **kwargs):
+    try:
+        self.env.cr.execute("SELECT simulate_dirty_concurrent")
+    except psycopg2.errors.UndefinedColumn:
+        raise psycopg2.errors.SerializationFailure("Simulated concurrent update on mail_notification (SQLSTATE 40001)")
 
 
 class MailCase(TransactionCase):
@@ -20,7 +28,9 @@ class MailCase(TransactionCase):
         disconnected_smtpsession.quit.side_effect = smtplib.SMTPServerDisconnected
         mail = self.env["mail.mail"].create({})
         with mock.patch("odoo.addons.base.models.ir_mail_server.IrMailServer.connect", return_value=disconnected_smtpsession):
-            with mock.patch("odoo.addons.mail.models.mail_mail._logger.info") as mock_logging_info:
+            with (mock.patch("odoo.addons.mail.models.mail_mail._logger.info") as mock_logging_info,
+                  mock.patch.object(type(self.env["mail.mail"]), "write", autospec=True, side_effect=mocked_serialization_failure)):
+                self.env.invalidate_all()
                 mail.send()
         disconnected_smtpsession.quit.assert_called_once()
         mock_logging_info.assert_any_call(
