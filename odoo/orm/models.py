@@ -3661,8 +3661,8 @@ class BaseModel(metaclass=MetaModel):
                             SELECT jsonb_object_agg(
                                 key,
                                 CASE
-                                    WHEN value::int4 in %(ids)s THEN NULL
-                                    ELSE value::int4
+                                    WHEN value::int8 in %(ids)s THEN NULL
+                                    ELSE value::int8
                                 END)
                             FROM jsonb_each_text(%(field)s)
                         )
