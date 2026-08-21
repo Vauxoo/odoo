@@ -42,7 +42,7 @@ class AccountSaleClosing(models.Model):
             JOIN account_move m ON m.id = aml.move_id
             JOIN res_company move_company ON move_company.id = m.company_id
             WHERE j.type = 'sale'
-                AND SPLIT_PART(move_company.parent_path, '/', 1)::int = %(company_id)s
+                AND SPLIT_PART(move_company.parent_path, '/', 1)::bigint = %(company_id)s
                 AND m.state = 'posted'
                 AND acc.account_type = 'asset_receivable' '''
 
