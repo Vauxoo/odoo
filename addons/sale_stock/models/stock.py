@@ -248,7 +248,7 @@ class StockPicking(models.Model):
         no need for an UPDATE statement.
         """
         if not column_exists(self.env.cr, 'stock_picking', 'sale_id'):
-            create_column(self.env.cr, 'stock_picking', 'sale_id', 'int4')
+            create_column(self.env.cr, 'stock_picking', 'sale_id', self.pool.id_column_type[1])
         return super()._auto_init()
 
     def _action_done(self):

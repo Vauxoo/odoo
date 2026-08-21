@@ -8,7 +8,7 @@ from . import controllers, models
 def pre_init_hook(env):
     """Do not compute the sale_order_template_id field on existing SOs."""
     if not column_exists(env.cr, "sale_order", "sale_order_template_id"):
-        create_column(env.cr, "sale_order", "sale_order_template_id", "int4")
+        create_column(env.cr, "sale_order", "sale_order_template_id", env.registry.id_column_type[1])
 
 
 def uninstall_hook(env):
