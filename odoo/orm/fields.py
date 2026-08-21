@@ -46,6 +46,7 @@ COMPANY_DEPENDENT_FIELDS = (
 PYTHON_INEQUALITY_OPERATOR = {'<': pyoperator.lt, '>': pyoperator.gt, '<=': pyoperator.le, '>=': pyoperator.ge}
 
 _logger = logging.getLogger('odoo.fields')
+_schema = logging.getLogger('odoo.schema')
 
 
 def resolve_mro(model: BaseModel, name: str, predicate) -> list[typing.Any]:
@@ -260,6 +261,10 @@ class Field[T]:
     # Database column type (ident, spec) for non-company-dependent fields.
     # Company-dependent fields are stored as jsonb (see column_type).
     _column_type: tuple[str, str] | None = None
+    # Whether the column holds record identifiers: such columns follow the
+    # width the database uses for "id" columns, and are never converted from
+    # one width to the other (see db_column_type() and update_db_column()).
+    _id_column: bool = False
 
     _args__: dict[str, typing.Any] | None = None  # the parameters given to __init__()
     _module: str | None = None          # the field's module name
@@ -824,6 +829,17 @@ class Field[T]:
         """ Return the actual column type for this field, if stored as a column. """
         return ('jsonb', 'jsonb') if self.company_dependent or self.translate else self._column_type
 
+    def db_column_type(self, model: BaseModel) -> tuple[str, str] | None:
+        """ Return the column type to give this field in the database schema.
+
+        Unlike :attr:`column_type`, this depends on the database: columns
+        holding record identifiers follow the width the database was created
+        with (see :attr:`odoo.orm.registry.Registry.id_column_type`).
+        """
+        if self._id_column and not (self.company_dependent or self.translate):
+            return model.pool.id_column_type
+        return self.column_type
+
     @property
     def sql_column_type(self):
         assert self._column_type
@@ -1187,11 +1203,21 @@ class Field[T]:
             :param model: an instance of the field's model
             :param column: the column's configuration (dict) if it exists, or ``None``
         """
+        column_type = self.db_column_type(model)
         if not column:
             # the column does not exist, create it
-            sql.create_column(model.env.cr, model._table, self.name, self.column_type[1], self.string)
+            sql.create_column(model.env.cr, model._table, self.name, column_type[1], self.string)
             return
-        if column['udt_name'] == self.column_type[0]:
+        if column['udt_name'] == column_type[0]:
+            return
+        if self._id_column and column['udt_name'] in sql.ID_COLUMN_TYPES:
+            # Never convert an identifier column from one width to the other:
+            # rewriting it locks the table for as long as it takes to rewrite
+            # every row and index, and it only makes sense for a whole database
+            # at once. Keep whatever the database already has.
+            _schema.debug(
+                "Table %r: column %r kept as %s", model._table, self.name, column['udt_name'],
+            )
             return
         self._convert_db_column(model, column)
 
