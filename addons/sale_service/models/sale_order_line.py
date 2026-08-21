@@ -49,7 +49,7 @@ class SaleOrderLine(models.Model):
                         name += f" --({formatted_price})--"
                     line.display_name = name
                     sol |= line
-        super(SaleOrderLine, self - sol)._compute_display_name()
+        return super(SaleOrderLine, self - sol)._compute_display_name()
 
     def _init_column_is_service(self):
         self.env.cr.execute("""

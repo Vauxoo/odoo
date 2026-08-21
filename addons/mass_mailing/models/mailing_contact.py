@@ -38,28 +38,27 @@ class MailingContact(models.Model):
                     (0, 0, {'list_id': list_id}) for list_id in list_ids]
         return res
 
-    name = fields.Char('Name', compute='_compute_name', readonly=False, store=True, tracking=True)
-    first_name = fields.Char('First Name')
-    last_name = fields.Char('Last Name')
-    company_name = fields.Char(string='Company Name')
-    email = fields.Char('Email')
+    name = fields.Char(compute='_compute_name', readonly=False, store=True, tracking=True)
+    first_name = fields.Char()
+    last_name = fields.Char()
+    company_name = fields.Char()
+    email = fields.Char()
     list_ids = fields.Many2many(
         'mailing.list', 'mailing_subscription',
         'contact_id', 'list_id', string='Mailing Lists')
     subscription_ids = fields.One2many(
         'mailing.subscription', 'contact_id', string='Subscription Information')
-    country_id = fields.Many2one('res.country', string='Country')
+    country_id = fields.Many2one('res.country')
     tag_ids = fields.Many2many('res.partner.category', string='Tags')
     opt_out = fields.Boolean(
-        'Opt Out',
         compute='_compute_opt_out', search='_search_opt_out',
         help='Opt out flag for a specific mailing list. '
              'This field should not be used in a view without a unique and active mailing list context.')
     mailing_count = fields.Integer('Number of Mailing', compute='_compute_statistics')
-    received_ratio = fields.Float('Received Ratio', compute='_compute_statistics')
-    opened_ratio = fields.Float('Opened Ratio', compute='_compute_statistics')
-    replied_ratio = fields.Float('Replied Ratio', compute='_compute_statistics')
-    clicks_ratio = fields.Float('Clicks Ratio', compute="_compute_clicks_ratio")
+    received_ratio = fields.Float(compute='_compute_statistics')
+    opened_ratio = fields.Float(compute='_compute_statistics')
+    replied_ratio = fields.Float(compute='_compute_statistics')
+    clicks_ratio = fields.Float(compute="_compute_clicks_ratio")
     # Datetimes that mirror the onces in mailing_trace for the corresponding contact.
     # They get updated from the mailing.trace model.
     last_opened_datetime = fields.Datetime('Last Opened On')
@@ -176,7 +175,7 @@ class MailingContact(models.Model):
 
         for vals in vals_list:
             if vals.get('list_ids') and vals.get('subscription_ids'):
-                raise UserError(_('You should give either list_ids, either subscription_ids to create new contacts.'))
+                raise UserError(self.env._('You should give either list_ids, either subscription_ids to create new contacts.'))
 
         if default_list_ids:
             for vals in vals_list:
@@ -249,7 +248,7 @@ class MailingContact(models.Model):
         return {
             'type': 'ir.actions.client',
             'tag': 'import',
-            'name': _('Import Mailing Contacts'),
+            'name': self.env._('Import Mailing Contacts'),
             'params': {
                 'context': self.env.context,
                 'active_model': 'mailing.contact',
@@ -286,7 +285,7 @@ class MailingContact(models.Model):
     @api.model
     def get_import_templates(self):
         return [{
-            'label': _('Template for Mailing Contacts'),
+            'label': self.env._('Template for Mailing Contacts'),
             'template': '/mass_mailing/static/xls/mailing_contact.xls'
         }]
 

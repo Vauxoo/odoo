@@ -9,8 +9,8 @@ from odoo.tools.urls import urljoin
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_xendit import const
-from odoo.addons.payment_xendit.controllers.main import XenditController
+from .. import const
+from ..controllers.main import XenditController
 
 _logger = get_payment_logger(__name__)
 

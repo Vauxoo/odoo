@@ -21,7 +21,7 @@ class MrpProduction(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'account.analytic.account',
             'domain': [('id', 'in', self.project_id._get_analytic_accounts().ids)],
-            'name': _('Analytic Accounts'),
+            'name': self.env._('Analytic Accounts'),
             'view_mode': 'list,form',
         }
 
@@ -46,7 +46,7 @@ class MrpProduction(models.Model):
                 if plan['applicability'] == 'mandatory' and not production.project_id[plan['column_name']]
             ]
             if missing_plan_names:
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "The Project linked to the Manufacturing Order is missing a mandatory distribution for the analytic plan(s) %(missing_plan_names)s.",
                     missing_plan_names=', '.join(missing_plan_names),
                 ))

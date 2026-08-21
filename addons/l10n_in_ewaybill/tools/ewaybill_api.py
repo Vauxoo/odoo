@@ -8,7 +8,7 @@ from markupsafe import Markup
 from requests import RequestException
 
 from odoo import fields
-from odoo.addons.l10n_in_ewaybill.models.error_codes import ERROR_CODES
+from ..models.error_codes import ERROR_CODES
 from odoo.tools import _, LazyTranslate
 
 

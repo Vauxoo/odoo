@@ -22,7 +22,7 @@ class ProductTemplateAttributeValue(models.Model):
     # specific case, as opposed to `active_test`.
     ptav_active = fields.Boolean(string="Active", default=True)
     name = fields.Char(string="Value", related="product_attribute_value_id.name")
-    sequence = fields.Integer(string="Sequence", help="Determine the display order")
+    sequence = fields.Integer(help="Determine the display order")
 
     # defining fields: the product template attribute line and the product attribute value
     product_attribute_value_id = fields.Many2one(
@@ -68,7 +68,7 @@ class ProductTemplateAttributeValue(models.Model):
     html_color = fields.Char(string="HTML Color Index", related='product_attribute_value_id.html_color')
     is_custom = fields.Boolean(related='product_attribute_value_id.is_custom')
     display_type = fields.Selection(related='product_attribute_value_id.display_type')
-    color = fields.Integer(string="Color", default=_get_default_color)
+    color = fields.Integer(default=lambda self: self._get_default_color())
     image = fields.Image(related='product_attribute_value_id.image')
 
     _attribute_value_unique = models.Constraint(
@@ -80,7 +80,7 @@ class ProductTemplateAttributeValue(models.Model):
     def _check_valid_values(self):
         for ptav in self:
             if ptav.ptav_active and ptav.product_attribute_value_id not in ptav.attribute_line_id.value_ids:
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "The value %(value)s is not defined for the attribute %(attribute)s"
                     " on the product %(product)s.",
                     value=ptav.product_attribute_value_id.display_name,
@@ -93,7 +93,7 @@ class ProductTemplateAttributeValue(models.Model):
         if any('ptav_product_variant_ids' in v for v in vals_list):
             # Force write on this relation from `product.product` to properly
             # trigger `_compute_combination_indices`.
-            raise UserError(_("You cannot update related variants from the values. Please update related values from the variants."))
+            raise UserError(self.env._("You cannot update related variants from the values. Please update related values from the variants."))
         return super().create(vals_list)
 
     def write(self, vals):
@@ -101,19 +101,19 @@ class ProductTemplateAttributeValue(models.Model):
         if 'ptav_product_variant_ids' in values:
             # Force write on this relation from `product.product` to properly
             # trigger `_compute_combination_indices`.
-            raise UserError(_("You cannot update related variants from the values. Please update related values from the variants."))
+            raise UserError(self.env._("You cannot update related variants from the values. Please update related values from the variants."))
         pav_in_values = 'product_attribute_value_id' in values
         product_in_values = 'product_tmpl_id' in values
         if pav_in_values or product_in_values:
             for ptav in self:
                 if pav_in_values and ptav.product_attribute_value_id.id != values['product_attribute_value_id']:
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         "You cannot change the value of the value %(value)s set on product %(product)s.",
                         value=ptav.display_name,
                         product=ptav.product_tmpl_id.display_name,
                     ))
                 if product_in_values and ptav.product_tmpl_id.id != values['product_tmpl_id']:
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         "You cannot change the product of the value %(value)s set on product %(product)s.",
                         value=ptav.display_name,
                         product=ptav.product_tmpl_id.display_name,

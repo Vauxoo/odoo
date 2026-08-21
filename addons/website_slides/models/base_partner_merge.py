@@ -19,7 +19,7 @@ class BasePartnerMergeAutomaticWizard(models.TransientModel):
                 else:
                     courses_set.add(slide_channel.id)
         if duplicate_courses_names_set:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You cannot merge these contacts because multiple contacts are enrolled in the same courses: %s",
                 ', '.join(duplicate_courses_names_set)))
-        super()._update_foreign_keys(src_partners, dst_partner)
+        return super()._update_foreign_keys(src_partners, dst_partner)

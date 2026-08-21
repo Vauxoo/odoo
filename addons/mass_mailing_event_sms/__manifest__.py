@@ -3,13 +3,6 @@
 {
     'name': 'Event Attendees SMS Marketing',
     'category': 'Marketing/Email Marketing',
-    'description':
-        """
-SMS Marketing on event attendees
-================================
-
-Bridge module adding UX requirements to ease SMS marketing o, event attendees.
-        """,
     'depends': [
         'event',
         'mass_mailing',

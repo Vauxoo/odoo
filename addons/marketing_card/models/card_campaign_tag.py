@@ -11,7 +11,7 @@ class CardCampaignTag(models.Model):
         return random.randint(1, 11)
 
     name = fields.Char(required=True)
-    color = fields.Integer(default=_get_default_color)
+    color = fields.Integer(default=lambda self: self._get_default_color())
 
     _name_uniq = models.Constraint(
         'unique(name)',

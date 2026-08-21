@@ -14,12 +14,7 @@ class AccountMove(models.Model):
         if len(invoice_digits) > max_digits:
             raise ValidationError(
                self.env._(
-                    "FIK %(prefix)s reference cannot be generated: invoice number '%(invoice)s' has more than %(max_digits)s digits."
-                ) % {
-                    "prefix": prefix,
-                    "invoice": self.name,
-                    "max_digits": max_digits,
-                }
+                    "FIK %(prefix)s reference cannot be generated: invoice number '%(invoice)s' has more than %(max_digits)s digits.", prefix=prefix, invoice=self.name, max_digits=max_digits)
             )
         payment_id = invoice_digits.zfill(max_digits)
         check_digit = luhn.calc_check_digit(payment_id)

@@ -19,7 +19,7 @@ class PosOrderReceipt(models.AbstractModel):
         for history in histories:
             program_type = history.card_id.program_id.program_type
             if program_type == 'loyalty':
-                for field, label in [('issued', _('Won:')), ('used', _('Spent:'))]:
+                for field, label in [('issued', self.env._('Won:')), ('used', self.env._('Spent:'))]:
                     amount = history[field]
                     if amount > 0:
                         loyalties.append({
@@ -30,7 +30,7 @@ class PosOrderReceipt(models.AbstractModel):
 
                 loyalties.append({
                     'name': history.card_id.program_id.portal_point_name,
-                    'type': _('Balance:'),
+                    'type': self.env._('Balance:'),
                     'points': float_round(history.card_id.points, 2),
                 })
 

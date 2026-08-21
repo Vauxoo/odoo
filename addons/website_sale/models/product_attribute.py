@@ -7,7 +7,6 @@ class ProductAttribute(models.Model):
     _inherit = "product.attribute"
 
     category_id = fields.Many2one(
-        string="Category",
         help="Set a category to regroup similar attributes under the same section in the Comparison"
         " page of eCommerce.",
         comodel_name="product.attribute.category",
@@ -28,7 +27,6 @@ class ProductAttribute(models.Model):
         help="Use product variant images instead of the attribute values displays.",
     )
     external_identifier = fields.Char(
-        string="External Identifier",
         help="External Identifier will ensure a precise matching between your attributes "
         "and attributes in SEO and other external platforms.",
     )

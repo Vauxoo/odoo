@@ -8,4 +8,4 @@ class TestUtmSaleOrder(models.Model):
     _inherit = ['utm.mixin']
     _description = 'Fake Sale Order to test UTMs'
 
-    amount = fields.Integer('Amount')
+    amount = fields.Integer()

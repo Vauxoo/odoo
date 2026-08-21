@@ -20,20 +20,20 @@ class GamificationGoalDefinition(models.Model):
     name = fields.Char("Goal Definition", required=True, translate=True)
     description = fields.Text("Goal Description")
     monetary = fields.Boolean("Monetary Value", default=False, help="The target and current value are defined in the company currency.")
-    suffix = fields.Char("Suffix", help="The unit of the target and current values", translate=True)
-    full_suffix = fields.Char("Full Suffix", compute='_compute_full_suffix', help="The currency and suffix field")
+    suffix = fields.Char(help="The unit of the target and current values", translate=True)
+    full_suffix = fields.Char(compute='_compute_full_suffix', help="The currency and suffix field")
     computation_mode = fields.Selection([
         ('manually', "Recorded manually"),
         ('count', "Automatic: number of records"),
         ('sum', "Automatic: sum on a field"),
         ('python', "Automatic: execute a specific Python code"),
-    ], default='manually', string="Computation Mode", required=True,
+    ], default='manually', required=True,
        help="Define how the goals will be computed. The result of the operation will be stored in the field 'Current'.")
     display_mode = fields.Selection([
         ('progress', "Progressive (using numerical values)"),
         ('boolean', "Exclusive (done or not-done)"),
     ], default='progress', string="Displayed as", required=True)
-    model_id = fields.Many2one('ir.model', string='Model', index='btree_not_null', ondelete='cascade')
+    model_id = fields.Many2one('ir.model', index='btree_not_null', ondelete='cascade')
     model_inherited_ids = fields.Many2many('ir.model', related='model_id.inherited_model_ids')
     field_id = fields.Many2one(
         'ir.model.fields', string='Field to Sum',
@@ -50,7 +50,7 @@ class GamificationGoalDefinition(models.Model):
              " reference to 'user' which is a browse record of the current"
              " user if not in batch mode.")
 
-    batch_mode = fields.Boolean("Batch Mode", help="Evaluate the expression in batch instead of once for each user")
+    batch_mode = fields.Boolean(help="Evaluate the expression in batch instead of once for each user")
     batch_distinctive_field = fields.Many2one('ir.model.fields', string="Distinctive field for batch user", help="In batch mode, this indicates which field distinguishes one user from the other, e.g. user_id, partner_id...")
     batch_user_expression = fields.Char("Evaluated expression for batch mode", help="The value to compare with the distinctive field. The expression can contain reference to 'user' which is a browse record of the current user, e.g. user.id, user.partner_id.id...")
     compute_code = fields.Text("Python Code", help="Python code to be executed for each user. 'result' should contains the new current value. Evaluated user can be access through object.user_id.")
@@ -59,7 +59,7 @@ class GamificationGoalDefinition(models.Model):
         ('lower', "The lower the better")
     ], default='higher', required=True, string="Goal Performance",
        help="A goal is considered as completed when the current value is compared to the value to reach")
-    action_id = fields.Many2one('ir.actions.act_window', string="Action", help="The action that will be called to update the goal value.")
+    action_id = fields.Many2one('ir.actions.act_window', help="The action that will be called to update the goal value.")
     res_id_field = fields.Char("ID Field of user", help="The field name on the user profile (res.users) containing the value for res_id for action.")
 
     @api.constrains("computation_mode", "model_id", "field_id")
@@ -70,11 +70,11 @@ class GamificationGoalDefinition(models.Model):
                 continue
 
             if not definition.field_id:
-                errors.append(_("A field is required to compute the sum for '%s'.", definition.name))
+                errors.append(self.env._("A field is required to compute the sum for '%s'.", definition.name))
                 continue
 
             if definition.field_id.ttype not in {"integer", "float", "monetary"}:
-                errors.append(_("The sum cannot be computed for '%(definition)s' on '%(field)s'.",
+                errors.append(self.env._("The sum cannot be computed for '%(definition)s' on '%(field)s'.",
                     definition=definition.name, field=definition.field_id.name))
 
         if errors:
@@ -108,7 +108,7 @@ class GamificationGoalDefinition(models.Model):
                 msg = e
                 if isinstance(e, SyntaxError):
                     msg = (e.msg + '\n' + e.text)
-                raise exceptions.UserError(_(
+                raise exceptions.UserError(self.env._(
                     "The domain for the definition %(definition)s seems incorrect, please check it.\n\n%(error_message)s",
                     definition=definition.name,
                     error_message=msg,
@@ -125,13 +125,13 @@ class GamificationGoalDefinition(models.Model):
                 Model = self.env[definition.model_id.model]
                 field = Model._fields.get(definition.field_id.name)
                 if not (field and field.store):
-                    raise exceptions.UserError(_(
+                    raise exceptions.UserError(self.env._(
                         "The model configuration for the definition %(name)s seems incorrect, please check it.\n\n%(field_name)s not stored",
                         name=definition.name,
                         field_name=definition.field_id.name
                     ))
             except KeyError as e:
-                raise exceptions.UserError(_(
+                raise exceptions.UserError(self.env._(
                     "The model configuration for the definition %(name)s seems incorrect, please check it.\n\n%(error)s not found",
                     name=definition.name,
                     error=e

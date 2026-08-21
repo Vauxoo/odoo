@@ -47,7 +47,7 @@ class ResPartner(models.Model):
             )
         )
         l10n_sa_commercial_partners.is_company = True
-        super(ResPartner, self - l10n_sa_commercial_partners)._compute_is_company()
+        return super(ResPartner, self - l10n_sa_commercial_partners)._compute_is_company()
 
     @api.depends('additional_identifiers')
     def _compute_l10n_sa_edi_additional_identification_fields(self):

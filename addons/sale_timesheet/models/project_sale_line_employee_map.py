@@ -21,8 +21,8 @@ class ProjectSaleLineEmployeeMap(models.Model):
         ])
         return domain
 
-    project_id = fields.Many2one('project.project', "Project", domain=[('is_template', '=', False)], required=True, index=True)
-    employee_id = fields.Many2one('hr.employee', "Employee", required=True, index=True, domain="[('id', 'not in', existing_employee_ids)]")
+    project_id = fields.Many2one('project.project', domain=[('is_template', '=', False)], required=True, index=True)
+    employee_id = fields.Many2one('hr.employee', required=True, index=True, domain="[('id', 'not in', existing_employee_ids)]")
     existing_employee_ids = fields.Many2many('hr.employee', compute="_compute_existing_employee_ids", export_string_translation=False, compute_sudo=True)
     sale_line_id = fields.Many2one(
         'sale.order.line', "Sales Order Item",
@@ -33,7 +33,7 @@ class ProjectSaleLineEmployeeMap(models.Model):
     company_id = fields.Many2one('res.company', string='Company', related='project_id.company_id', export_string_translation=False)
     partner_id = fields.Many2one(related='project_id.partner_id', export_string_translation=False)
     price_unit = fields.Float("Unit Price", compute='_compute_price_unit', store=True, readonly=True)
-    currency_id = fields.Many2one('res.currency', string="Currency", compute='_compute_currency_id', store=True, readonly=False)
+    currency_id = fields.Many2one('res.currency', compute='_compute_currency_id', store=True, readonly=False)
     cost = fields.Monetary(currency_field='cost_currency_id', compute='_compute_cost', store=True, readonly=False,
                            help="This cost overrides the employee's default employee hourly wage in employee's HR Settings")
     display_cost = fields.Monetary(currency_field='cost_currency_id', compute="_compute_display_cost", inverse="_inverse_display_cost", string="Hourly Cost", groups="project.group_project_manager,hr.group_hr_user")

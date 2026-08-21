@@ -13,7 +13,6 @@ class L10nVnEdiTemplateFieldLine(models.TransientModel):
         ondelete='cascade',
     )
     key_tag = fields.Char(
-        string='Key Tag',
         required=True,
         export_string_translation=False,
     )
@@ -21,9 +20,8 @@ class L10nVnEdiTemplateFieldLine(models.TransientModel):
         string='Field',
         required=True,
     )
-    value = fields.Char(string='Value')
+    value = fields.Char()
     value_type = fields.Char(
-        string='Value Type',
         default='text',
         export_string_translation=False,
     )
@@ -32,6 +30,5 @@ class L10nVnEdiTemplateFieldLine(models.TransientModel):
         export_string_translation=False,
     )
     is_seller = fields.Boolean(
-        string='Is Seller',
         export_string_translation=False,
     )

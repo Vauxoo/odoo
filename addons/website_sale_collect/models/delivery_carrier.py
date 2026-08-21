@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 from odoo.fields import Command
 from odoo.http import request
 
-from odoo.addons.website_sale_collect import utils
+from .. import utils
 
 
 class DeliveryCarrier(models.Model):

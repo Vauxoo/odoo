@@ -4,12 +4,6 @@
     "name": "Product Availability",
     "category": "Website/Website",
     "summary": "Manage product inventory & availability",
-    "description": """
-Manage the inventory of your products and display their availability status in your eCommerce store.
-In case of stockout, you can decide to block further sales or to keep selling.
-A default behavior can be selected in the Website settings.
-Then it can be made specific at the product level.
-    """,
     "depends": ["website_sale", "sale_stock", "stock_delivery"],
     "data": [
         "views/checkout_templates.xml",

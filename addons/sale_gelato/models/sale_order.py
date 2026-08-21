@@ -8,7 +8,7 @@ from markupsafe import Markup
 from odoo import api, models
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.sale_gelato import utils
+from .. import utils
 
 _logger = logging.getLogger(__name__)
 

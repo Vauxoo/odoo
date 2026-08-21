@@ -5,7 +5,7 @@ import hashlib
 from odoo import fields, models
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_aps import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 

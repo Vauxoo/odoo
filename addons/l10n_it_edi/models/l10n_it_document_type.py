@@ -30,4 +30,4 @@ class L10n_ItDocumentType(models.Model):
             limit=1,
         )
         if duplicate:
-            raise ValidationError(_('Document Type code must be unique.'))
+            raise ValidationError(self.env._('Document Type code must be unique.'))

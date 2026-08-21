@@ -3,14 +3,6 @@
 {
     'name': 'Track Speakers SMS Marketing',
     'category': 'Marketing/Email Marketing',
-    'description':
-        """
-SMS Marketing on event track speakers
-=====================================
-
-Bridge module adding UX requirements to ease SMS marketing on event track
-speakers..
-        """,
     'depends': [
         'mass_mailing',
         'mass_mailing_sms',

@@ -4,8 +4,8 @@ from threading import Event
 import time
 
 from odoo.http import request
-from odoo.addons.iot_drivers.tools.system import IOT_IDENTIFIER
-from odoo.addons.iot_drivers.websocket_client import send_to_controller
+from .tools.system import IOT_IDENTIFIER
+from .websocket_client import send_to_controller
 
 
 class EventManager:

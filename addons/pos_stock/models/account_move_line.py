@@ -16,4 +16,4 @@ class AccountMoveLine(models.Model):
 
     def _compute_name(self):
         amls = self.filtered(lambda l: not l.move_id.pos_session_ids)
-        super(AccountMoveLine, amls)._compute_name()
+        return super(AccountMoveLine, amls)._compute_name()

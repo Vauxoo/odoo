@@ -5,12 +5,6 @@
     'countries': ['th'],
     'version': '2.0',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Chart of Accounts for Thailand.
-===============================
-
-Thai accounting chart and localization.
-    """,
     'author': 'Almacom (http://almacom.co.th/)',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/thailand.html',
     'depends': [

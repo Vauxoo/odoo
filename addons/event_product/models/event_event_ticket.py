@@ -18,7 +18,7 @@ class EventEventTicket(models.Model):
         inactive_product_tickets = self.filtered(lambda ticket: not ticket.product_id.active)
         for ticket in inactive_product_tickets:
             ticket.sale_available = False
-        super(EventEventTicket, self - inactive_product_tickets)._compute_sale_available()
+        return super(EventEventTicket, self - inactive_product_tickets)._compute_sale_available()
 
     def _compute_total_price_reduce_taxinc(self):
         for ticket in self:

@@ -14,10 +14,10 @@ class PurchaseRequisition(models.Model):
     name = fields.Char(
         string='Agreement', copy=False, readonly=True, required=True,
         default=lambda self: _('New'))
-    active = fields.Boolean('Active', default=True)
-    reference = fields.Char(string='Reference')
+    active = fields.Boolean(default=True)
+    reference = fields.Char()
     order_count = fields.Integer(compute='_compute_orders_number', string='Number of Orders')
-    vendor_id = fields.Many2one('res.partner', string='Vendor', check_company=True)
+    vendor_id = fields.Many2one('res.partner', check_company=True)
     requisition_type = fields.Selection([
         ('blanket_order', 'Blanket Order'), ('purchase_template', 'Purchase Template')],
          string='Agreement Type', required=True, default='blanket_order')
@@ -27,7 +27,7 @@ class PurchaseRequisition(models.Model):
         'res.users', string='Purchase Representative',
         default=lambda self: self.env.user, check_company=True)
     description = fields.Html()
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
     purchase_ids = fields.One2many('purchase.order', 'requisition_id', string='Purchase Orders')
     line_ids = fields.One2many('purchase.requisition.line', 'requisition_id', string='Products to Purchase', copy=True)
     product_id = fields.Many2one('product.product', related='line_ids.product_id', string='Product')
@@ -41,7 +41,7 @@ class PurchaseRequisition(models.Model):
         string='Status', tracking=True, required=True,
         copy=False, default='draft')
     currency_id = fields.Many2one(
-        'res.currency', 'Currency', required=True, precompute=True,
+        'res.currency', required=True, precompute=True,
         compute='_compute_currency_id', store=True, readonly=False)
 
     @api.onchange('vendor_id')
@@ -53,8 +53,8 @@ class PurchaseRequisition(models.Model):
             ('company_id', '=', self.company_id.id),
         ])
         if any(requisitions):
-            title = _("Warning for %s", self.vendor_id.name)
-            message = _("There is already an open blanket order for this supplier. We suggest you complete this open blanket order, instead of creating a new one.")
+            title = self.env._("Warning for %s", self.vendor_id.name)
+            message = self.env._("There is already an open blanket order for this supplier. We suggest you complete this open blanket order, instead of creating a new one.")
             warning = {
                 'title': title,
                 'message': message
@@ -78,7 +78,7 @@ class PurchaseRequisition(models.Model):
     def _check_dates(self):
         invalid_requsitions = self.filtered(lambda r: r.date_end and r.date_start and r.date_end < r.date_start)
         if invalid_requsitions:
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "End date cannot be earlier than start date. Please check dates for agreements: %s", ', '.join(invalid_requsitions.mapped('name'))
             ))
 
@@ -103,7 +103,7 @@ class PurchaseRequisition(models.Model):
         res = super().write(vals)
         for requisition in requisitions_to_rename:
             if requisition.state != 'draft':
-                raise UserError(_("You cannot change the Agreement Type or Company of a not draft purchase agreement."))
+                raise UserError(self.env._("You cannot change the Agreement Type or Company of a not draft purchase agreement."))
             if requisition.requisition_type == 'purchase_template':
                 requisition.date_start = requisition.date_end = False
             code = requisition.requisition_type == 'blanket_order' and 'purchase.requisition.blanket.order' or 'purchase.requisition.purchase.template'
@@ -123,20 +123,20 @@ class PurchaseRequisition(models.Model):
             cancellable_pos = requisition.purchase_ids.filtered(lambda po: po.state == 'draft')
             cancellable_pos.button_cancel()
             for po in cancellable_pos:
-                po.message_post(body=_('Cancelled by the agreement associated to this quotation.'))
+                po.message_post(body=self.env._('Cancelled by the agreement associated to this quotation.'))
         self.state = 'cancel'
 
     def action_confirm(self):
         self.ensure_one()
         product_lines = self.line_ids.filtered(lambda line: not line.display_type)
         if not product_lines:
-            raise UserError(_("You cannot confirm agreement '%(agreement)s' because it does not contain any product lines.", agreement=self.name))
+            raise UserError(self.env._("You cannot confirm agreement '%(agreement)s' because it does not contain any product lines.", agreement=self.name))
         if self.requisition_type == 'blanket_order':
             for requisition_line in product_lines:
                 if requisition_line.price_unit <= 0.0:
-                    raise UserError(_('You cannot confirm a blanket order with lines missing a price.'))
+                    raise UserError(self.env._('You cannot confirm a blanket order with lines missing a price.'))
                 if requisition_line.product_qty <= 0.0:
-                    raise UserError(_('You cannot confirm a blanket order with lines missing a quantity.'))
+                    raise UserError(self.env._('You cannot confirm a blanket order with lines missing a quantity.'))
                 requisition_line._create_supplier_info()
         self.state = 'confirmed'
 
@@ -149,7 +149,7 @@ class PurchaseRequisition(models.Model):
         Generate all purchase order based on selected lines, should only be called on one agreement at a time
         """
         if any(purchase_order.state in ['draft', 'sent', 'to approve'] for purchase_order in self.mapped('purchase_ids')):
-            raise UserError(_("To close this purchase requisition, cancel related Requests for Quotation.\n\n"
+            raise UserError(self.env._("To close this purchase requisition, cancel related Requests for Quotation.\n\n"
                 "Imagine the mess if someone confirms these duplicates: double the order, double the trouble :)"))
         for requisition in self:
             for requisition_line in requisition.line_ids:
@@ -159,7 +159,7 @@ class PurchaseRequisition(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_if_draft_or_cancel(self):
         if any(requisition.state not in ('draft', 'cancel') for requisition in self):
-            raise UserError(_('You can only delete draft or cancelled requisitions.'))
+            raise UserError(self.env._('You can only delete draft or cancelled requisitions.'))
 
 
 class PurchaseRequisitionLine(models.Model):
@@ -169,14 +169,14 @@ class PurchaseRequisitionLine(models.Model):
     _rec_name = 'product_id'
     _order = 'sequence, id'
 
-    sequence = fields.Integer(string='Sequence', default=10)
+    sequence = fields.Integer(default=10)
     display_type = fields.Selection([
         ('line_section', "Section"),
         ('line_subsection', "Subsection"),
         ('line_note', "Note"),
     ], default=False, help="Technical field for UX purpose.")
     name = fields.Text(string='Line Description')
-    product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)])
+    product_id = fields.Many2one('product.product', domain=[('purchase_ok', '=', True)])
     uom_id = fields.Many2one(
         'uom.uom', 'Unit',
         compute='_compute_uom_id', store=True, readonly=False, precompute=True)
@@ -201,9 +201,9 @@ class PurchaseRequisitionLine(models.Model):
     def _check_line_type(self):
         for line in self:
             if line.display_type and line.product_id:
-                raise ValidationError(_("A section or note line cannot have a product."))
+                raise ValidationError(self.env._("A section or note line cannot have a product."))
             if not line.display_type and not line.product_id:
-                raise ValidationError(_("A product is required on purchase agreement lines."))
+                raise ValidationError(self.env._("A product is required on purchase agreement lines."))
 
     @api.depends('display_type', 'product_qty', 'price_unit')
     def _compute_price_subtotal(self):
@@ -277,7 +277,7 @@ class PurchaseRequisitionLine(models.Model):
                 continue
             if line.requisition_id.requisition_type == 'blanket_order' and line.requisition_id.state not in ['draft', 'cancel', 'done']:
                 if line.price_unit <= 0.0:
-                    raise UserError(_("You cannot have a negative or unit price of 0 for an already confirmed blanket order."))
+                    raise UserError(self.env._("You cannot have a negative or unit price of 0 for an already confirmed blanket order."))
                 supplier_infos = self.env['product.supplierinfo'].search([
                     ('product_id', '=', line.product_id.id),
                     ('partner_id', '=', line.requisition_id.vendor_id.id),
@@ -288,7 +288,7 @@ class PurchaseRequisitionLine(models.Model):
 
     def write(self, vals):
         if 'display_type' in vals and self.filtered(lambda line: line.display_type != vals.get('display_type')):
-            raise UserError(_("You cannot change the type of a purchase agreement line. Instead you should delete the current line and create a new line of the proper type."))
+            raise UserError(self.env._("You cannot change the type of a purchase agreement line. Instead you should delete the current line and create a new line of the proper type."))
         if vals.get('display_type'):
             vals = dict(vals, **self._get_display_line_vals())
         res = super().write(vals)
@@ -297,7 +297,7 @@ class PurchaseRequisitionLine(models.Model):
         if vals['price_unit'] <= 0.0 and any(
                 requisition.requisition_type == 'blanket_order' and
                 requisition.state not in ['draft', 'cancel', 'done'] for requisition in self.mapped('requisition_id')):
-            raise UserError(_("You cannot have a negative or unit price of 0 for an already confirmed blanket order."))
+            raise UserError(self.env._("You cannot have a negative or unit price of 0 for an already confirmed blanket order."))
         # If the price is updated, we have to update the related SupplierInfo
         self.supplier_info_ids.write({'price': vals['price_unit']})
         return res

@@ -11,7 +11,7 @@ from odoo import fields, http
 from odoo.http import request
 from odoo.tools import is_html_empty
 
-from odoo.addons.survey.models.survey_survey import SURVEY_LEADERBOARD_MAX_PARTICIPANTS
+from ..models.survey_survey import SURVEY_LEADERBOARD_MAX_PARTICIPANTS
 
 
 class UserInputSession(http.Controller):

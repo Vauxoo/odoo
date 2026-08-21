@@ -11,7 +11,7 @@ from odoo.tools.float_utils import json_float_round
 from odoo.tools.image import image_data_uri
 from odoo.tools import SQL
 from odoo.tools.date_utils import get_month
-from odoo.addons.l10n_in.models.iap_account import IAP_SERVICE_NAME
+from .iap_account import IAP_SERVICE_NAME
 
 EDI_CANCEL_REASON = {
     # Same for both e-way bill and IRN
@@ -20,7 +20,6 @@ EDI_CANCEL_REASON = {
     '3': "Order Cancelled",
     '4': "Others",
 }
-_logger = logging.getLogger(__name__)
 
 
 class AccountMove(models.Model):
@@ -223,8 +222,8 @@ class AccountMove(models.Model):
             and (len(self.name) > 16 or not re.match(r'^[a-zA-Z0-9-\/]+$', self.name))
         ):
             return {'warning': {
-                'title' : _("Invalid sequence as per GST rule 46(b)"),
-                'message': _(
+                'title' : self.env._("Invalid sequence as per GST rule 46(b)"),
+                'message': self.env._(
                     "The invoice number should not exceed 16 characters\n"
                     "and must only contain '-' (hyphen) and '/' (slash) as special characters"
                 )
@@ -247,13 +246,13 @@ class AccountMove(models.Model):
         for move in indian_invoice:
             warnings = {}
             company = move.company_id
-            action_name = _("Journal Item(s)")
-            action_text = _("View Journal Item(s)")
+            action_name = self.env._("Journal Item(s)")
+            action_text = self.env._("View Journal Item(s)")
             if company.l10n_in_tcs_feature or company.l10n_in_tds_feature:
                 invalid_tax_lines = move._get_l10n_in_invalid_tax_lines()
                 if company.l10n_in_tcs_feature and invalid_tax_lines:
                     warnings['lower_tcs_tax'] = {
-                        'message': _("As the Partner's PAN missing/invalid apply TCS at the higher rate."),
+                        'message': self.env._("As the Partner's PAN missing/invalid apply TCS at the higher rate."),
                         'actions': invalid_tax_lines.with_context(tax_validation=True)._get_records_action(
                             name=action_name,
                             views=[(_xmlid_to_res_id("l10n_in.view_move_line_tree_hsn_l10n_in"), "list")],
@@ -273,7 +272,7 @@ class AccountMove(models.Model):
                 if line._origin
             ):
                 warnings['invalid_self_invoice'] = {
-                    'message': _(
+                    'message': self.env._(
                         "This invoice does not meet the Self Invoice conditions. "
                         "Please verify before printing.",
                     ),
@@ -300,13 +299,13 @@ class AccountMove(models.Model):
 
                 if lines:
                     digit_suffixes = {
-                        '4': _("4 digits, 6 digits or 8 digits"),
-                        '6': _("6 digits or 8 digits"),
-                        '8': _("8 digits")
+                        '4': self.env._("4 digits, 6 digits or 8 digits"),
+                        '6': self.env._("6 digits or 8 digits"),
+                        '8': self.env._("8 digits")
                     }
-                    msg = _(
+                    msg = self.env._(
                         "Ensure that the HSN/SAC Code consists either %s in invoice lines",
-                        digit_suffixes.get(company.l10n_in_hsn_code_digit, _("Invalid HSN/SAC Code digit"))
+                        digit_suffixes.get(company.l10n_in_hsn_code_digit, self.env._("Invalid HSN/SAC Code digit"))
                     )
                     warnings['invalid_hsn_code_length'] = {
                         'message': msg,
@@ -598,9 +597,9 @@ class AccountMove(models.Model):
                              self._fields['l10n_in_gst_treatment']._description_selection(self.env)}
         for move in posted.filtered(lambda m: m.country_code == 'IN' and m.company_id.l10n_in_is_gst_registered and m.is_sale_document()):
             if move.l10n_in_state_id and not move.l10n_in_state_id.l10n_in_tin:
-                raise UserError(_("Please set a valid TIN Number on the Place of Supply %s", move.l10n_in_state_id.name))
+                raise UserError(self.env._("Please set a valid TIN Number on the Place of Supply %s", move.l10n_in_state_id.name))
             if not move.company_id.state_id:
-                msg = _("Your company %s needs to have a correct address in order to validate this invoice.\n"
+                msg = self.env._("Your company %s needs to have a correct address in order to validate this invoice.\n"
                 "Set the address of your company (Don't forget the State field)", move.company_id.name)
                 action = {
                     "view_mode": "form",
@@ -609,7 +608,7 @@ class AccountMove(models.Model):
                     "res_id" : move.company_id.id,
                     "views": [[self.env.ref("base.view_company_form").id, "form"]],
                 }
-                raise RedirectWarning(msg, action, _('Go to Company configuration'))
+                raise RedirectWarning(msg, action, self.env._('Go to Company configuration'))
             move.l10n_in_gstin = move.partner_id.vat
             if (
                 not move.l10n_in_gstin
@@ -620,7 +619,7 @@ class AccountMove(models.Model):
                     'deemed_export'
                 ]
             ):
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "Partner %(partner_name)s (%(partner_id)s) GSTIN is required under GST Treatment %(name)s",
                     partner_name=move.partner_id.name,
                     partner_id=move.partner_id.id,
@@ -768,10 +767,10 @@ class AccountMove(models.Model):
     def _l10n_in_edi_get_iap_buy_credits_message(self):
         url = self.env['iap.account'].get_credits_url(service_name=IAP_SERVICE_NAME)
         return Markup("""<p><b>%s</b></p><p>%s <a href="%s">%s</a></p>""") % (
-            _("You have insufficient credits to send this document!"),
-            _("Please buy more credits and retry: "),
+            self.env._("You have insufficient credits to send this document!"),
+            self.env._("Please buy more credits and retry: "),
             url,
-            _("Buy Credits")
+            self.env._("Buy Credits")
         )
 
     def _get_sync_stack(self, container):

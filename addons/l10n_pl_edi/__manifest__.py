@@ -3,7 +3,6 @@
     'category': 'Accounting/Localizations',
     'author': 'Odoo S.A.',
     'summary': 'Support for FA(3) electronic invoices in Poland via KSeF',
-    'description': """Export FA(3) compliant XML invoices and prepare for integration with KSeF.""",
     'data': [
         'views/account_move_views.xml',
         'views/report_invoice.xml',

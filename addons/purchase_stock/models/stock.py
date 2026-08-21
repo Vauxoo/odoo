@@ -59,7 +59,7 @@ class StockPicking(models.Model):
         if purchase_order:
             purchase_order.sudo().activity_schedule(
                 'mail.mail_activity_data_warning',
-                summary=_('Missing products in receipt'),
+                summary=self.env._('Missing products in receipt'),
                 note=self.env['ir.qweb']._render('purchase_stock.exception_on_picking', {
                     'origin_picking': self,
                     'moves_information': moves_information,
@@ -96,7 +96,7 @@ class StockWarehouse(models.Model):
                 buy_route.warehouse_ids = [Command.unlink(warehouse.id)]
 
     def _create_or_update_route(self):
-        purchase_route = self._find_or_create_global_route('purchase_stock.route_warehouse0_buy', _('Buy'))
+        purchase_route = self._find_or_create_global_route('purchase_stock.route_warehouse0_buy', self.env._('Buy'))
         for warehouse in self:
             if warehouse.buy_to_resupply:
                 purchase_route.sudo().warehouse_ids = [Command.link(warehouse.id)]
@@ -112,7 +112,7 @@ class StockWarehouse(models.Model):
                     'action': 'buy',
                     'picking_type_id': self.in_type_id.id,
                     'company_id': self.company_id.id,
-                    'route_id': self._find_or_create_global_route('purchase_stock.route_warehouse0_buy', _('Buy')).id,
+                    'route_id': self._find_or_create_global_route('purchase_stock.route_warehouse0_buy', self.env._('Buy')).id,
                     'propagate_cancel': self.reception_steps != 'one_step',
                 },
                 'update_values': {
@@ -165,18 +165,18 @@ class StockWarehouseOrderpoint(models.Model):
         'res.partner', search='_search_effective_vendor_id', compute='_compute_effective_vendor_id',
         store=False, help='Either the vendor set directly or the one computed to be used by this replenishment'
     )
-    available_vendor = fields.Many2one('res.partner', string='Available Vendor', search='_search_available_vendor', store=False, help="Any vendor on the product's pricelist")
+    available_vendor = fields.Many2one('res.partner', search='_search_available_vendor', store=False, help="Any vendor on the product's pricelist")
 
     def _inverse_route_id(self):
         for orderpoint in self:
             if not orderpoint.route_id:
                 orderpoint.supplier_id = False
-        super()._inverse_route_id()
+        return super()._inverse_route_id()
 
     @api.depends('supplier_id')
     def _compute_deadline_date(self):
         """ Extend to add more depends values """
-        super()._compute_deadline_date()
+        return super()._compute_deadline_date()
 
     @api.depends('product_id.purchase_order_line_ids.product_qty', 'product_id.purchase_order_line_ids.state', 'supplier_id', 'supplier_id.uom_id', 'product_id.seller_ids', 'product_id.seller_ids.uom_id')
     def _compute_qty_to_order_computed(self):
@@ -302,7 +302,7 @@ class StockWarehouseOrderpoint(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _('The following replenishment order has been generated'),
+                    'title': self.env._('The following replenishment order has been generated'),
                     'message': '%s',
                     'links': [{
                         'label': order.display_name,

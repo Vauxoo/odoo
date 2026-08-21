@@ -14,12 +14,12 @@ class AccountEdiXmlUbl_Bis3(models.AbstractModel):
         customer, supplier = vals['customer'].commercial_partner_id, vals['supplier']
         if self._is_customer_behind_chorus_pro(customer):
             if not customer._get_additional_identifier('FR_SIRET'):
-                constraints['chorus_customer'] = _("The Company Registry (Siret) of the final recipient is mandatory for the customer when invoicing through Chorus Pro.")
+                constraints['chorus_customer'] = self.env._("The Company Registry (Siret) of the final recipient is mandatory for the customer when invoicing through Chorus Pro.")
             france_country_codes = self.env['res.company']._get_france_country_codes()
             if supplier.country_code in france_country_codes and not supplier._get_additional_identifier('FR_SIRET'):
-                constraints['chorus_supplier_fr'] = _("The Company Registry (Siret) is mandatory for french suppliers when invoicing through Chorus Pro.")
+                constraints['chorus_supplier_fr'] = self.env._("The Company Registry (Siret) is mandatory for french suppliers when invoicing through Chorus Pro.")
             if supplier.country_code not in france_country_codes and not supplier.vat:
-                constraints['chorus_supplier_not_fr'] = _("The VAT is mandatory for non-french suppliers when invoicing through Chorus Pro.")
+                constraints['chorus_supplier_not_fr'] = self.env._("The VAT is mandatory for non-french suppliers when invoicing through Chorus Pro.")
         return constraints
 
     def _add_invoice_header_nodes(self, document_node, vals):

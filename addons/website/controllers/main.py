@@ -44,7 +44,7 @@ from odoo.addons.web.controllers.binary import Binary
 from odoo.addons.web.controllers.session import Session
 from odoo.addons.html_editor.controllers.svg_utils import get_shape_svg, make_shaped_image
 from odoo.addons.html_editor.models.ir_attachment import SUPPORTED_IMAGE_MIMETYPES
-from odoo.addons.website.tools import adapt_dark_palette_content, get_base_domain
+from ..tools import adapt_dark_palette_content, get_base_domain
 
 _lt = LazyTranslate(__name__)
 logger = logging.getLogger(__name__)
@@ -1517,7 +1517,7 @@ class Website(Home):
         language = [match.group(1), match.group(2) or ''] if match else ['en', 'US']
         url = "https://google.com/complete/search"
         try:
-            req = requests.get(url, params={
+            req = requests.get(url, timeout=120, params={
                 'ie': 'utf8', 'oe': 'utf8', 'output': 'toolbar', 'q': keywords, 'hl': language[0], 'gl': language[1]})
             req.raise_for_status()
             response = req.content

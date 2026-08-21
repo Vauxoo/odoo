@@ -292,7 +292,7 @@ class HrEmployee(models.Model):
                 })
             self._notify_employee_presence_status()
         else:
-            raise exceptions.UserError(_(
+            raise exceptions.UserError(self.env._(
                 'Cannot perform check out on %(empl_name)s, could not find corresponding check in. '
                 'Your attendances have probably been modified manually by human resources.',
                 empl_name=self.sudo().name))
@@ -302,7 +302,7 @@ class HrEmployee(models.Model):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": _("Attendances This Month"),
+            "name": self.env._("Attendances This Month"),
             "res_model": "hr.attendance",
             "views": [[self.env.ref('hr_attendance.hr_attendance_employee_calendar_view').id, "calendar"]],
             "context": {

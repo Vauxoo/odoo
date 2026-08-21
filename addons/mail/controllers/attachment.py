@@ -14,8 +14,8 @@ from odoo.http.stream import content_disposition
 from odoo.tools import BinaryBytes, file_open
 from odoo.tools.pdf import DependencyError, PdfReadError, extract_page
 
-from odoo.addons.mail.controllers.thread import ThreadController
-from odoo.addons.mail.tools.discuss import Store, add_guest_to_context, mail_route
+from .thread import ThreadController
+from ..tools.discuss import Store, add_guest_to_context, mail_route
 
 logger = logging.getLogger(__name__)
 

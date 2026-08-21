@@ -4,7 +4,6 @@ from odoo.addons.auth_totp.tests.test_totp import TestTOTPMixin
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.tests import tagged
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged('post_install', '-at_install')

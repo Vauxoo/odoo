@@ -2,7 +2,7 @@
 
 from odoo import fields
 from odoo.addons.bus.tests.common import BusResult
-from odoo.addons.mail.tests.common import MailCase
+from ..common import MailCase
 
 
 class TestGuest(MailCase):

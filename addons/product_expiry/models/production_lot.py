@@ -10,13 +10,13 @@ class StockLot(models.Model):
     use_expiration_date = fields.Boolean(
         string='Use Expiration Date', related='product_id.use_expiration_date')
     expiration_date = fields.Datetime(
-        string='Expiration Date', compute='_compute_expiration_date', store=True, readonly=False,
+        compute='_compute_expiration_date', store=True, readonly=False,
         help='This is the date on which the goods with this Serial Number may become dangerous and must not be consumed.')
     use_date = fields.Datetime(string='Best before Date', compute='_compute_dates', store=True, readonly=False,
         help='This is the date on which the goods with this Serial Number start deteriorating, without being dangerous yet.')
-    removal_date = fields.Datetime(string='Removal Date', compute='_compute_dates', store=True, readonly=False,
+    removal_date = fields.Datetime(compute='_compute_dates', store=True, readonly=False,
         help='This is the date on which the goods with this Serial Number should be removed from the stock and not be counted in the Fresh On Hand Stock anymore. This date will be used in FEFO removal strategy.')
-    alert_date = fields.Datetime(string='Alert Date', compute='_compute_dates', store=True, readonly=False,
+    alert_date = fields.Datetime(compute='_compute_dates', store=True, readonly=False,
         help='Date to determine the expired lots and serial numbers using the filter "Expiration Alerts".')
     product_expiry_alert = fields.Boolean(compute='_compute_product_expiry_alert', help="The Expiration Date has been reached.")
     product_expiry_reminded = fields.Boolean(string="Expiry has been reminded")
@@ -99,8 +99,8 @@ class StockLot(models.Model):
             lot.activity_schedule(
                 'mail.mail_activity_data_todo',
                 user_id=lot.product_id.with_company(lot.company_id).responsible_id.id or lot.product_id.responsible_id.id or SUPERUSER_ID,
-                note=_("The alert date has been reached for this lot/serial number"),
-                summary=_("Alert Date Reached"),
+                note=self.env._("The alert date has been reached for this lot/serial number"),
+                summary=self.env._("Alert Date Reached"),
             )
         alert_lots.write({
             'product_expiry_reminded': True

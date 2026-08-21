@@ -36,17 +36,17 @@ class SnailmailLetter(models.Model):
     _description = 'Snailmail Letter'
 
     user_id = fields.Many2one('res.users', 'Sent by')
-    model = fields.Char('Model', required=True)
+    model = fields.Char(required=True)
     res_id = fields.Integer('Document ID', required=True)
     partner_id = fields.Many2one('res.partner', string='Recipient', required=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
+    company_id = fields.Many2one('res.company', required=True, readonly=True,
         default=lambda self: self.env.company.id)
     report_template = fields.Many2one('ir.actions.report', 'Optional report to print and attach')
 
-    attachment_id = fields.Many2one('ir.attachment', string='Attachment', ondelete='cascade', index='btree_not_null')
+    attachment_id = fields.Many2one('ir.attachment', ondelete='cascade', index='btree_not_null')
     attachment_raw = fields.Binary('Document', related='attachment_id.raw')
     attachment_fname = fields.Char('Attachment Filename', related='attachment_id.name')
-    color = fields.Boolean(string='Color', default=lambda self: self.env.company.snailmail_color)
+    color = fields.Boolean(default=lambda self: self.env.company.snailmail_color)
     cover = fields.Boolean(string='Cover Page', default=lambda self: self.env.company.snailmail_cover)
     duplex = fields.Boolean(string='Both side', default=lambda self: self.env.company.snailmail_duplex)
     state = fields.Selection([
@@ -66,12 +66,12 @@ class SnailmailLetter(models.Model):
     message_id = fields.Many2one('mail.message', string="Snailmail Status Message", index='btree_not_null')
     notification_ids = fields.One2many('mail.notification', 'letter_id', "Notifications")
 
-    street = fields.Char('Street')
-    street2 = fields.Char('Street2')
-    zip = fields.Char('Zip')
-    city = fields.Char('City')
-    state_id = fields.Many2one("res.country.state", string='State')
-    country_id = fields.Many2one('res.country', string='Country')
+    street = fields.Char()
+    street2 = fields.Char()
+    zip = fields.Char()
+    city = fields.Char()
+    state_id = fields.Many2one("res.country.state")
+    country_id = fields.Many2one('res.country')
 
     @api.depends('attachment_id', 'partner_id')
     def _compute_display_name(self):
@@ -90,7 +90,7 @@ class SnailmailLetter(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             msg_id = self.env[vals['model']].browse(vals['res_id']).message_post(
-                body=_("Letter sent by post with Snailmail"),
+                body=self.env._("Letter sent by post with Snailmail"),
                 message_type='snailmail',
             )
 
@@ -162,7 +162,7 @@ class SnailmailLetter(models.Model):
                     self.write({'report_template': report.id})
             paperformat = report.get_paperformat()
             if (paperformat.format == 'custom' and paperformat.page_width != 210 and paperformat.page_height != 297) or paperformat.format != 'A4':
-                raise UserError(_("Please use an A4 Paper format."))
+                raise UserError(self.env._("Please use an A4 Paper format."))
             # The external_report_layout_id is changed just for the snailmail pdf generation if the layout is not supported
             prev = self.company_id.external_report_layout_id
             if prev in {
@@ -242,7 +242,7 @@ class SnailmailLetter(models.Model):
             recipient_name = letter.partner_id.name or letter.partner_id.parent_id and letter.partner_id.parent_id.name
             if not recipient_name:
                 letter.write({
-                    'info_msg': _('Invalid recipient name.'),
+                    'info_msg': self.env._('Invalid recipient name.'),
                     'state': 'error',
                     'error_code': 'MISSING_REQUIRED_FIELDS'
                     })
@@ -318,20 +318,20 @@ class SnailmailLetter(models.Model):
     def _get_error_message(self, error):
         if error == 'CREDIT_ERROR':
             link = self.env['iap.account'].get_credits_url(service_name='snailmail')
-            return _('You don\'t have enough credits to perform this operation.<br>Please go to your <a href=%s target="new">iap account</a>.', link)
+            return self.env._('You don\'t have enough credits to perform this operation.<br>Please go to your <a href=%s target="new">iap account</a>.', link)
         if error == 'TRIAL_ERROR':
             link = self.env['iap.account'].get_credits_url(service_name='snailmail')
-            return _('You don\'t have an IAP account registered for this service.<br>Please go to <a href=%s target="new">iap.odoo.com</a> to claim your free credits.', link)
+            return self.env._('You don\'t have an IAP account registered for this service.<br>Please go to <a href=%s target="new">iap.odoo.com</a> to claim your free credits.', link)
         if error == 'NO_PRICE_AVAILABLE':
-            return _('The country of the partner is not covered by Snailmail.')
+            return self.env._('The country of the partner is not covered by Snailmail.')
         if error == 'MISSING_REQUIRED_FIELDS':
-            return _('One or more required fields are empty.')
+            return self.env._('One or more required fields are empty.')
         if error == 'FORMAT_ERROR':
-            return _('The attachment of the letter could not be sent. Please check its content and contact the support if the problem persists.')
+            return self.env._('The attachment of the letter could not be sent. Please check its content and contact the support if the problem persists.')
         if error == 'TOO_MANY_PAGES':
-            return _('The document to be sent exceeds the maximum allowed limit of 8 pages.')
+            return self.env._('The document to be sent exceeds the maximum allowed limit of 8 pages.')
         else:
-            return _('An unknown error happened. Please contact the support.')
+            return self.env._('An unknown error happened. Please contact the support.')
         return error
 
     def _get_failure_type(self, error):
@@ -359,7 +359,7 @@ class SnailmailLetter(models.Model):
 
     def _snailmail_print_invalid_address(self):
         error = 'MISSING_REQUIRED_FIELDS'
-        error_message = _("The address of the recipient is not complete")
+        error_message = self.env._("The address of the recipient is not complete")
         self.write({
             'state': 'error',
             'error_code': error,
@@ -400,8 +400,8 @@ class SnailmailLetter(models.Model):
         for doc in response['request']['documents']:
             if doc.get('sent') and response['request_code'] == 200:
                 self.env['iap.account']._send_success_notification(
-                    message=_("Snail Mails are successfully sent"))
-                note = _('The document was correctly sent by post.<br>The tracking id is %s', doc['send_id'])
+                    message=self.env._("Snail Mails are successfully sent"))
+                note = self.env._('The document was correctly sent by post.<br>The tracking id is %s', doc['send_id'])
                 letter_data = {'info_msg': note, 'state': 'sent', 'error_code': False}
                 notification_data = {
                     'notification_status': 'sent',
@@ -414,8 +414,8 @@ class SnailmailLetter(models.Model):
                 if error == 'CREDIT_ERROR':
                     self.env['iap.account']._send_no_credit_notification(
                         service_name='snailmail',
-                        title=_("Not enough credits for Snail Mail"))
-                note = _('An error occurred when sending the document by post.<br>Error: %s', self._get_error_message(error))
+                        title=self.env._("Not enough credits for Snail Mail"))
+                note = self.env._('An error occurred when sending the document by post.<br>Error: %s', self._get_error_message(error))
                 letter_data = {
                     'info_msg': note,
                     'state': 'error',

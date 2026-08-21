@@ -6,7 +6,7 @@ from odoo import fields, models
 class Website(models.Model):
     _inherit = "website"
 
-    warehouse_id = fields.Many2one("stock.warehouse", string="Warehouse")
+    warehouse_id = fields.Many2one("stock.warehouse")
 
     def _get_product_available_qty(self, product, *, warehouse_id=None, **kwargs):
         """Override of `website_sale` to pass the default warehouse_id.

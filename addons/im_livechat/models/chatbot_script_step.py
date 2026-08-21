@@ -16,9 +16,9 @@ class ChatbotScriptStep(models.Model):
     _description = 'Chatbot Script Step'
     _order = 'sequence, id'
 
-    name = fields.Char(string="Name", compute="_compute_name")
-    message = fields.Html(string="Message", translate=True)
-    sequence = fields.Integer(string='Sequence')
+    name = fields.Char(compute="_compute_name")
+    message = fields.Html(translate=True)
+    sequence = fields.Integer()
     chatbot_script_id = fields.Many2one(
         'chatbot.script', string='Chatbot', required=True, index=True, ondelete='cascade')
     step_type = fields.Selection([
@@ -43,7 +43,6 @@ class ChatbotScriptStep(models.Model):
     is_forward_operator_child = fields.Boolean(compute='_compute_is_forward_operator_child')
     operator_expertise_ids = fields.Many2many(
         "im_livechat.expertise",
-        string="Operator Expertise",
         help="When forwarding live chat conversations, the chatbot will prioritize users with matching expertise.",
     )
 
@@ -199,9 +198,9 @@ class ChatbotScriptStep(models.Model):
 
         description = Markup('')
         if input_email:
-            description += Markup("%s<strong>%s</strong><br>") % (_("Email: "), input_email)
+            description += Markup("%s<strong>%s</strong><br>") % (self.env._("Email: "), input_email)
         if input_phone:
-            description += Markup("%s<strong>%s</strong><br>") % (_("Phone: "), input_phone)
+            description += Markup("%s<strong>%s</strong><br>") % (self.env._("Phone: "), input_phone)
         if description:
             description += Markup('<br>')
 
@@ -320,7 +319,7 @@ class ChatbotScriptStep(models.Model):
         user_text_answer = html2plaintext(message_body)
         if self.step_type == 'question_email' and not email_normalize(user_text_answer):
             # if this error is raised, display an error message but do not go to next step
-            raise ValidationError(_('"%s" is not a valid email.', user_text_answer))
+            raise ValidationError(self.env._('"%s" is not a valid email.', user_text_answer))
         if self.step_type == "question_phone":
             try:
                 phone_validation.phone_parse(user_text_answer, discuss_channel.country_id.code)

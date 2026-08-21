@@ -29,15 +29,15 @@ class Im_LivechatChannel(models.Model):
         return [(6, 0, [self.env.uid])]
 
     def _default_button_text(self):
-        return _('Need help? Chat with us.')
+        return self.env._('Need help? Chat with us.')
 
     def _default_default_message(self):
-        return _('How may I help you?')
+        return self.env._('How may I help you?')
 
     # attribute fields
     name = fields.Char('Channel Name', required=True)
-    button_text = fields.Char('Text of the Button', default=_default_button_text, translate=True)
-    default_message = fields.Char('Welcome Message', default=_default_default_message,
+    button_text = fields.Char('Text of the Button', default=lambda self: self._default_button_text(), translate=True)
+    default_message = fields.Char('Welcome Message', default=lambda self: self._default_default_message(),
         help="This is an automated 'welcome' message that your visitor will see when they initiate a new conversation.", translate=True)
     header_background_color = fields.Char(default="#875A7B", help="Default background color of the channel header once open")
     title_color = fields.Char(default="#FFFFFF", help="Default title color of the channel once open")
@@ -55,10 +55,10 @@ class Im_LivechatChannel(models.Model):
         help="Maximum number of concurrent sessions per operator.",
     )
     block_assignment_during_call = fields.Boolean("No Chats During Call", help="While on a call, agents will not receive new conversations.")
-    review_link = fields.Char("Review Link", help="Visitors who leave a positive review will be redirected to this optional link.")
+    review_link = fields.Char(help="Visitors who leave a positive review will be redirected to this optional link.")
 
     # computed fields
-    web_page = fields.Char('Web Page', compute='_compute_web_page_link', store=False, readonly=True,
+    web_page = fields.Char(compute='_compute_web_page_link', store=False, readonly=True,
         help="URL to a static page where you client can discuss with the operator of the channel.")
     are_you_inside = fields.Boolean(string='Are you inside the matrix?',
         compute='_are_you_inside', store=False, readonly=True)
@@ -73,7 +73,7 @@ class Im_LivechatChannel(models.Model):
     rating_count = fields.Integer(string='# Ratings', compute="_compute_rating_percentage_satisfaction")
 
     # relationnal fields
-    user_ids = fields.Many2many('res.users', 'im_livechat_channel_im_user', 'channel_id', 'user_id', string='Agents', default=_default_user_ids)
+    user_ids = fields.Many2many('res.users', 'im_livechat_channel_im_user', 'channel_id', 'user_id', string='Agents', default=lambda self: self._default_user_ids())
     channel_ids = fields.One2many('discuss.channel', 'livechat_channel_id', 'Sessions')
     chatbot_script_count = fields.Integer(string='Number of Chatbot', compute='_compute_chatbot_script_count')
     rule_ids = fields.One2many('im_livechat.channel.rule', 'channel_id', 'Rules')
@@ -81,7 +81,7 @@ class Im_LivechatChannel(models.Model):
         "Number of Ongoing Sessions", compute="_compute_ongoing_sessions_count"
     )
     remaining_session_capacity = fields.Integer(
-        "Remaining Session Capacity", compute="_compute_remaining_session_capacity"
+        compute="_compute_remaining_session_capacity"
     )
 
     _max_sessions_mode_greater_than_zero = models.Constraint(
@@ -145,7 +145,7 @@ class Im_LivechatChannel(models.Model):
             url = urlparse(record.review_link)
             if url.scheme not in ("http", "https") or not url.netloc:
                 raise ValidationError(
-                    self.env._("Invalid URL '%s'. The Review Link must start with 'http://' or 'https://'.") % record.review_link
+                    self.env._("Invalid URL '%s'. The Review Link must start with 'http://' or 'https://'.", record.review_link)
                 )
 
     def _get_available_operators_by_livechat_channel(self, users=None):
@@ -290,7 +290,7 @@ class Im_LivechatChannel(models.Model):
     def action_join(self):
         self.ensure_one()
         if not self.env.user.has_group("im_livechat.im_livechat_group_user"):
-            raise AccessError(_("Only Live Chat operators can join Live Chat channels"))
+            raise AccessError(self.env._("Only Live Chat operators can join Live Chat channels"))
         # sudo: im_livechat.channel - operators can join channels
         self.sudo().user_ids = [Command.link(self.env.user.id)]
         Store(bus_channel=self.env.user).add(self, ["are_you_inside", "name"])
@@ -619,7 +619,7 @@ class Im_LivechatChannel(models.Model):
     def get_livechat_info(self, username=None):
         self.ensure_one()
         if username is None:
-            username = _('Visitor')
+            username = self.env._('Visitor')
         info = {}
         info['available'] = self._is_livechat_available()
         info['server_url'] = self.get_base_url()
@@ -671,7 +671,7 @@ class Im_LivechatChannelRule(models.Model):
         required=True,
         default="always",
     )
-    channel_id = fields.Many2one('im_livechat.channel', 'Channel', index='btree_not_null',
+    channel_id = fields.Many2one('im_livechat.channel', index='btree_not_null',
         help="The channel of the rule")
     country_ids = fields.Many2many('res.country', 'im_livechat_channel_country_rel', 'channel_id', 'country_id', 'Countries',
         help="The rule will only be applied for these countries. Example: if you select 'Belgium' and 'United States' and that you set the action to 'Hide', the chat button will be hidden on the specified URL from the visitors located in these 2 countries. This feature requires GeoIP installed on your server.")

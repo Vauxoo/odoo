@@ -10,8 +10,8 @@ from odoo.tests.common import HttpCase, new_test_user, tagged, users
 from odoo.tools.misc import mute_logger
 
 from odoo.addons.bus.tests.common import BusResult
-from odoo.addons.mail.tests.common import MailCommon
-from odoo.addons.mail.tools.discuss import Store
+from ..common import MailCommon
+from ...tools.discuss import Store
 
 
 @tagged("RTC")

@@ -4,9 +4,6 @@
     'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations.html',
     'icon': '/account/static/description/l10n.png',
     'countries': ['mr'],
-    'description': """
-Mauritania basic package that contains the chart of accounts, the taxes, tax reports, etc.
-    """,
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [
         'account',

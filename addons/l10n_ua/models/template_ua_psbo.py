@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('ua_psbo')
     def _get_ua_psbo_template_data(self):
         return {
-            'name': _('IFRS Chart of Accounts'),
+            'name': self.env._('IFRS Chart of Accounts'),
             'code_digits': '6',
         }
 

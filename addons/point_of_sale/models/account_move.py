@@ -83,7 +83,7 @@ class AccountMove(models.Model):
         if self.sudo().pos_order_ids.filtered(lambda o: o.session_id.state != 'closed'):
             self.env.user._bus_send("simple_notification", {
                 'type': 'danger',
-                'message': _("You can't reset this invoice to draft because the POS session is still open. Please close the ongoing session first, then try again."),
+                'message': self.env._("You can't reset this invoice to draft because the POS session is still open. Please close the ongoing session first, then try again."),
                 'sticky': True,
             })
             return False

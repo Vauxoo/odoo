@@ -41,9 +41,9 @@ class HrEmployeeCV(Controller):
             raise UserError(error)
 
         if len(employees) == 1:
-            report_name = _('Resume %s', employees.name)
+            report_name = self.env._('Resume %s', employees.name)
         else:
-            report_name = _('Resumes')
+            report_name = self.env._('Resumes')
 
         pdfhttpheaders = [
             ('Content-Type', 'application/pdf'),

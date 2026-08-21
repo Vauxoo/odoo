@@ -35,12 +35,12 @@ class L10n_ChQr_InvoiceWizard(models.TransientModel):
             return _("%(amount)s invoices could be printed in the %(format)s format.", amount=nb_inv, format=inv_format)
 
         if not self.env.context.get('active_ids'):
-            raise UserError(_("No invoice was found to be printed."))
+            raise UserError(self.env._("No invoice was found to be printed."))
 
         invoices = self.env['account.move'].browse(self.env.context['active_ids'])
         companies = invoices.company_id
         if len(companies) != 1 or companies[0].country_code != 'CH':
-            raise UserError(_("All selected invoices must belong to the same Switzerland company"))
+            raise UserError(self.env._("All selected invoices must belong to the same Switzerland company"))
 
         results = super().default_get(fields)
         dispatched_invoices = invoices._l10n_ch_dispatch_invoices_to_print()
@@ -74,7 +74,7 @@ class L10n_ChQr_InvoiceWizard(models.TransientModel):
             if error_msg:
                 inv.message_post(body=error_msg, message_type="comment")
         action_vals = {
-            'name': _("Invalid Invoices"),
+            'name': self.env._("Invalid Invoices"),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'context': {'create': False},

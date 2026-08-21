@@ -7,4 +7,4 @@ class TestUtmMailing(models.Model):
     _name = 'test.utm.mailing'
     _description = 'Fake Mailing to test UTMs'
 
-    subject = fields.Char('Subject')
+    subject = fields.Char()

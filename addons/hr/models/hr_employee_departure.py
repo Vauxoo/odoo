@@ -19,8 +19,8 @@ class HrEmployeeDeparture(models.Model):
         return [('active', '=', True), ('company_id', 'in', self.env.companies.ids)]
 
     employee_id = fields.Many2one(
-        'hr.employee', string='Employee', required=True,
-        default=_get_default_employee_id,
+        'hr.employee', required=True,
+        default=lambda self: self._get_default_employee_id(),
         domain=lambda self: self._get_domain_employee_id(),
         index=True,
         ondelete="cascade",
@@ -32,9 +32,9 @@ class HrEmployeeDeparture(models.Model):
         default=lambda self: self.env['hr.departure.reason'].search([], limit=1),
         required=True, index=True, ondelete='restrict')
     departure_description = fields.Html(string="Additional Information")
-    dismissal_date = fields.Date(string="Dismissal Date", default=fields.Date.today, required=True,
+    dismissal_date = fields.Date(default=fields.Date.today, required=True,
         help="Date at which the departure process starts. Differs from the actual departure date in case of a notice period.")
-    departure_date = fields.Date(string="Departure Date", compute="_compute_departure_date",
+    departure_date = fields.Date(compute="_compute_departure_date",
         store=True, readonly=False, help="Date at which the departure actually takes place.")
     action_date = fields.Date(string="Archive Employee On", compute="_compute_action_date",
         store=True, help="Date at which the departure actually takes place.")

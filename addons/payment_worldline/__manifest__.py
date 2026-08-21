@@ -5,7 +5,7 @@
     "category": "Accounting/Payment Providers",
     "sequence": 350,
     "summary": "A French payment provider covering several European countries.",
-    "description": " ",  # Non-empty string to avoid loading the README file.
+    # Non-empty string to avoid loading the README file.
     "depends": ["payment"],
     "data": [
         "data/payment_method_data.xml",

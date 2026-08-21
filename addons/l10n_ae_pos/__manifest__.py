@@ -1,10 +1,6 @@
 {
     'name': 'United Arab Emirates - Point of Sale',
     'category': 'Accounting/Localizations/Point of Sale',
-    'description': """
-United Arab Emirates POS Localization
-===========================================================
-    """,
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'depends': [

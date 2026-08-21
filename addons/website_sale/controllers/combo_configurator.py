@@ -4,7 +4,7 @@ from odoo.http import request, route
 from odoo.tools.image import image_data_uri
 
 from odoo.addons.sale.controllers.combo_configurator import SaleComboConfiguratorController
-from odoo.addons.website_sale.controllers.main import WebsiteSale
+from .main import WebsiteSale
 
 
 class WebsiteSaleComboConfiguratorController(SaleComboConfiguratorController, WebsiteSale):

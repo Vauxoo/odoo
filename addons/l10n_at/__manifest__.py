@@ -8,19 +8,6 @@
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'category': 'Accounting/Localizations/Account Charts',
     'summary': 'Austrian Standardized Charts & Tax',
-    'description': """
-
-Austrian charts of accounts (Einheitskontenrahmen 2010).
-==========================================================
-
-    * Defines the following chart of account templates:
-        * Austrian General Chart of accounts 2010
-    * Defines templates for VAT on sales and purchases
-    * Defines tax templates
-    * Defines fiscal positions for Austrian fiscal legislation
-    * Defines tax reports U1/U30
-
-    """,
     'depends': [
         'account',
         'account_edi_ubl_cii',

@@ -10,11 +10,11 @@ class MrpAccountWipAccountingLine(models.TransientModel):
     _name = 'mrp.account.wip.accounting.line'
     _description = 'Journal item to be created when posting WIP journal entry'
 
-    account_id = fields.Many2one('account.account', "Account")
-    label = fields.Char("Label")
-    debit = fields.Monetary("Debit", compute='_compute_debit', store=True, readonly=False)
-    credit = fields.Monetary("Credit", compute='_compute_credit', store=True, readonly=False)
-    currency_id = fields.Many2one('res.currency', "Currency", default=lambda self: self.env.company.currency_id)
+    account_id = fields.Many2one('account.account')
+    label = fields.Char()
+    debit = fields.Monetary(compute='_compute_debit', store=True, readonly=False)
+    credit = fields.Monetary(compute='_compute_credit', store=True, readonly=False)
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
     wip_accounting_id = fields.Many2one('mrp.account.wip.accounting', "WIP accounting wizard")
 
     _check_debit_credit = models.Constraint(
@@ -50,17 +50,17 @@ class MrpAccountWipAccounting(models.TransientModel):
             if default:
                 res['journal_id'] = default.id
         if 'reference' in fields:
-            res['reference'] = _("Manufacturing WIP - %(orders_list)s", orders_list=productions.mapped('name') or _("Manual Entry"))
+            res['reference'] = self.env._("Manufacturing WIP - %(orders_list)s", orders_list=productions.mapped('name') or self.env._("Manual Entry"))
         if 'mo_ids' in fields:
             res['mo_ids'] = [Command.set(productions.ids)]
         return res
 
-    date = fields.Date("Date", default=fields.Datetime.now)
+    date = fields.Date(default=fields.Datetime.now)
     reversal_date = fields.Date(
-        "Reversal Date", compute="_compute_reversal_date", required=True,
+        compute="_compute_reversal_date", required=True,
         store=True, readonly=False)
-    journal_id = fields.Many2one('account.journal', "Journal", required=True)
-    reference = fields.Char("Reference")
+    journal_id = fields.Many2one('account.journal', required=True)
+    reference = fields.Char()
     line_ids = fields.One2many(
         'mrp.account.wip.accounting.line', 'wip_accounting_id', "WIP accounting lines",
         compute="_compute_line_ids", store=True, readonly=False)
@@ -86,17 +86,17 @@ class MrpAccountWipAccounting(models.TransientModel):
         sval_acc = self.env['product.category']._fields['property_stock_valuation_account_id'].get_company_dependent_fallback(self.env['product.category']).id
         return [
             Command.create({
-                'label': _("WIP - Component Value"),
+                'label': self.env._("WIP - Component Value"),
                 'credit': compo_value,
                 'account_id': sval_acc,
             }),
             Command.create({
-                'label': _("WIP - Overhead"),
+                'label': self.env._("WIP - Overhead"),
                 'credit': overhead_value,
                 'account_id': self._get_overhead_account(),
             }),
             Command.create({
-                'label': _("Manufacturing WIP - %(orders_list)s", orders_list=productions.mapped('name') or _("Manual Entry")),
+                'label': self.env._("Manufacturing WIP - %(orders_list)s", orders_list=productions.mapped('name') or self.env._("Manual Entry")),
                 'debit': compo_value + overhead_value,
                 'account_id': self.env.company.account_production_wip_account_id.id,
             })
@@ -120,9 +120,9 @@ class MrpAccountWipAccounting(models.TransientModel):
     def confirm(self):
         self.ensure_one()
         if self.env.company.currency_id.compare_amounts(sum(self.line_ids.mapped('credit')), sum(self.line_ids.mapped('debit'))) != 0:
-            raise UserError(_("Please make sure the total credit amount equals the total debit amount."))
+            raise UserError(self.env._("Please make sure the total credit amount equals the total debit amount."))
         if self.date and self.reversal_date <= self.date:
-            raise UserError(_("Reversal date must be after the posting date."))
+            raise UserError(self.env._("Reversal date must be after the posting date."))
         move = self.env['account.move'].sudo().create({
             'journal_id': self.journal_id.id,
             'wip_production_ids': self.mo_ids.ids,
@@ -140,7 +140,7 @@ class MrpAccountWipAccounting(models.TransientModel):
         })
         move._post()
         move._reverse_moves(default_values_list=[{
-            'ref': _("Reversal of: %s", self.reference),
+            'ref': self.env._("Reversal of: %s", self.reference),
             'wip_production_ids': self.mo_ids.ids,
             'date': self.reversal_date,
         }])._post()

@@ -1,9 +1,8 @@
 import logging
 
-from odoo.addons.iot_drivers.tools.system import IS_RPI
+from .system import IS_RPI
 from odoo import http
 
-_logger = logging.getLogger(__name__)
 
 
 def iot_route(route=None, linux_only=False, **kwargs):

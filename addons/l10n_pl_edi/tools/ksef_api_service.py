@@ -14,7 +14,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from odoo.exceptions import UserError
 from odoo.tools import BinaryBytes
 
-from odoo.addons.l10n_pl_edi.exceptions import KSeFRateLimitError
+from ..exceptions import KSeFRateLimitError
 
 
 _logger = logging.getLogger(__name__)

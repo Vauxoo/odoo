@@ -11,9 +11,9 @@ class ProductUom(models.Model):
     _rec_name = 'barcode'
 
     uom_id = fields.Many2one('uom.uom', 'Unit', required=True, index=True, ondelete='cascade')
-    product_id = fields.Many2one('product.product', 'Product', required=True, index=True, ondelete='cascade')
+    product_id = fields.Many2one('product.product', required=True, index=True, ondelete='cascade')
     barcode = fields.Char(index='btree_not_null', required=True, copy=False)
-    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     allowed_uom_ids = fields.Many2many('uom.uom', compute='_compute_allowed_uom_ids')
 
     _barcode_uniq = models.Constraint('unique(barcode)', 'A barcode can only be assigned to one packaging.')
@@ -24,7 +24,7 @@ class ProductUom(models.Model):
         to ensure the uniqueness between products' barcodes and packagings' ones"""
         domain = [('barcode', 'in', [b for b in self.mapped('barcode') if b])]
         if self.env['product.product'].search_count(domain, limit=1):
-            raise ValidationError(_("A product already uses the barcode"))
+            raise ValidationError(self.env._("A product already uses the barcode"))
 
     @api.depends('product_id')
     @api.depends_context('active_model')

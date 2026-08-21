@@ -10,8 +10,8 @@ class HrUserWorkEntryEmployee(models.Model):
     _description = 'Work Entries Employee'
 
     user_id = fields.Many2one('res.users', 'Me', required=True, default=lambda self: self.env.user, ondelete='cascade')
-    employee_id = fields.Many2one('hr.employee', 'Employee', required=True)
-    active = fields.Boolean('Active', default=True)
+    employee_id = fields.Many2one('hr.employee', required=True)
+    active = fields.Boolean(default=True)
     is_checked = fields.Boolean(default=True)
 
     _user_id_employee_id_unique = models.Constraint(

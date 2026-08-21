@@ -3,9 +3,6 @@
 {
     'name': 'Cloudflare Turnstile',
     'category': 'Website/Website',
-    'description': """
-This module implements Cloudflare Turnstile so that you can prevent bot spam on your forms.
-    """,
     'depends': ['website'],
     'data': [
         'views/res_config_settings_view.xml',

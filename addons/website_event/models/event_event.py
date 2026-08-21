@@ -45,40 +45,39 @@ class EventEvent(models.Model):
         help="Displayed on website and used as description when the event is added to a third-party calendar.",
     )
     # registration
-    is_participating = fields.Boolean("Is Participating", compute="_compute_is_participating",
+    is_participating = fields.Boolean(compute="_compute_is_participating",
                                       search="_search_is_participating")
     # website
     is_visible_on_website = fields.Boolean(string="Visible On Website", compute='_compute_is_visible_on_website', search='_search_is_visible_on_website')
     event_register_url = fields.Char('Event Registration Link', compute='_compute_event_register_url')
     website_visibility = fields.Selection(
         [('public', 'Public'), ('link', 'Via a Link'), ('logged_users', 'Logged Users')],
-        string="Website Visibility", required=True, default='public', tracking=True,
+        required=True, default='public', tracking=True,
         help="""Defines the Visibility of the Event on the Website and searches.\n
             Note that the EventEvent is however always available via its link.""")
     website_published = fields.Boolean(tracking=True)
     is_published = fields.Boolean(tracking=True)
     publish_on = fields.Datetime(tracking=True)
     website_menu = fields.Boolean(
-        string='Website Menu',
         compute='_compute_website_menu', precompute=True, readonly=False, store=True,
         help="Allows to display and manage event-specific menus on website.")
     menu_id = fields.Many2one('website.menu', 'Event Menu', copy=False)
     # sub-menus management
     introduction_menu = fields.Boolean(
-        "Introduction Menu", compute="_compute_website_menu_data",
+        compute="_compute_website_menu_data",
         readonly=False, store=True)
     introduction_menu_ids = fields.One2many(
         "website.event.menu", "event_id", string="Introduction Menus",
         domain=[("menu_type", "=", "introduction")])
     address_name = fields.Char(related='address_id.name')
     register_menu = fields.Boolean(
-        "Register Menu", compute="_compute_website_menu_data",
+        compute="_compute_website_menu_data",
         readonly=False, store=True)
     register_menu_ids = fields.One2many(
         "website.event.menu", "event_id", string="Register Menus",
         domain=[("menu_type", "=", "register")])
     community_menu = fields.Boolean(
-        "Community Menu", compute="_compute_community_menu",
+        compute="_compute_community_menu",
         readonly=False, store=True,
         help="Display community tab on website")
     community_menu_ids = fields.One2many(
@@ -89,12 +88,12 @@ class EventEvent(models.Model):
         domain=[("menu_type", "=", "other")])
     # live information
     is_ongoing = fields.Boolean(
-        'Is Ongoing', compute='_compute_time_data', search='_search_is_ongoing',
+        compute='_compute_time_data', search='_search_is_ongoing',
         help="Whether event has begun")
     is_done = fields.Boolean(
-        'Is Done', compute='_compute_time_data')
+        compute='_compute_time_data')
     start_today = fields.Boolean(
-        'Start Today', compute='_compute_time_data',
+        compute='_compute_time_data',
         help="Whether event is going to start today if still not ongoing")
     start_remaining = fields.Integer(
         'Remaining before start', compute='_compute_time_data',
@@ -241,7 +240,7 @@ class EventEvent(models.Model):
     def _check_website_id(self):
         for event in self:
             if event.website_id and event.website_id.company_id != event.company_id:
-                raise ValidationError(_("The website must be from the same company as the event."))
+                raise ValidationError(self.env._("The website must be from the same company as the event."))
 
     # ------------------------------------------------------------
     # CRUD
@@ -356,9 +355,9 @@ class EventEvent(models.Model):
         """
         self.ensure_one()
         return [
-            (_('Home'), False, 'website_event.template_intro', 1, 'introduction', False),
-            (_('Practical'), '/event/%s/register' % self.env['ir.http']._slug(self), False, 100, 'register', False),
-            (_('Rooms'), '/event/%s/community' % self.env['ir.http']._slug(self), False, 80, 'community', False),
+            (self.env._('Home'), False, 'website_event.template_intro', 1, 'introduction', False),
+            (self.env._('Practical'), '/event/%s/register' % self.env['ir.http']._slug(self), False, 100, 'register', False),
+            (self.env._('Rooms'), '/event/%s/community' % self.env['ir.http']._slug(self), False, 80, 'community', False),
         ]
 
     def _update_website_menus(self, menus_update_by_field=None):
@@ -563,16 +562,16 @@ class EventEvent(models.Model):
                 0]
 
         return [
-            ['scheduled', _('Scheduled Events'), [("date_end", ">=", sd(now))], 0],
-            ['today', _('Today'), [
+            ['scheduled', self.env._('Scheduled Events'), [("date_end", ">=", sd(now))], 0],
+            ['today', self.env._('Today'), [
                 ("date_end", ">", sd(now)),
                 ("date_begin", "<", sd(utc_today_end))],
                 0],
             get_month_filter_domain('month', 0),
-            ['old', _('Past Events'), [
+            ['old', self.env._('Past Events'), [
                 ("date_end", "<", sd(now))],
                 0],
-            ['all', _('All Events'), [], 0]
+            ['all', self.env._('All Events'), [], 0]
         ]
 
     @api.model

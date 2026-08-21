@@ -9,7 +9,7 @@ class PurchaseReport(models.Model):
     _inherit = "purchase.report"
 
     picking_type_id = fields.Many2one('stock.warehouse', 'Warehouse', readonly=True)
-    effective_date = fields.Datetime(string="Effective Date")
+    effective_date = fields.Datetime()
     days_to_arrival = fields.Float('Effective Days To Arrival', digits=(16, 2), readonly=True, aggregator='avg')
 
     def _select_list(self, table):

@@ -27,7 +27,7 @@ class AccountPaymentRegisterWithholdingLine(models.TransientModel):
     @api.depends('payment_register_id.amount')
     def _compute_original_amounts(self):
         """ Adds a dependency to the payment amount to ensure recomputation when necessary. """
-        super()._compute_original_amounts()
+        return super()._compute_original_amounts()
 
     @api.depends('payment_register_id.payment_type')
     def _compute_type_tax_use(self):

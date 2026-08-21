@@ -46,13 +46,13 @@ class ProductProduct(models.Model):
     partner_ref = fields.Char('Customer Ref', compute='_compute_partner_ref')
 
     active = fields.Boolean(
-        'Active', default=True,
+        default=True,
         help="If unchecked, it will allow you to hide the product without removing it.")
     product_tmpl_id = fields.Many2one(
         'product.template', 'Product Template',
         bypass_search_access=True, index=True, ondelete="cascade", required=True)
     barcode = fields.Char(
-        'Barcode', copy=False, index='btree_not_null',
+        copy=False, index='btree_not_null',
         help="International Article Number used for product identification.")
     product_uom_ids = fields.One2many('product.uom', 'product_id', 'Unit Barcode', store=True)
     product_template_attribute_value_ids = fields.Many2many(
@@ -89,8 +89,8 @@ class ProductProduct(models.Model):
         help="""Value of the product (automatically computed in AVCO).
         Used to value the product when the purchase cost is not known (e.g. inventory adjustment).
         Used to compute margins on sale orders.""")
-    volume = fields.Float('Volume', digits='Volume')
-    weight = fields.Float('Weight', digits='Stock Weight')
+    volume = fields.Float(digits='Volume')
+    weight = fields.Float(digits='Stock Weight')
     qty_available = fields.Float('Quantity On Hand', company_dependent=True, digits='Product Unit')
     virtual_available = fields.Float(
         'Forecasted Quantity', compute='_compute_quantities', compute_sudo=False, search='_search_virtual_available',
@@ -142,10 +142,10 @@ class ProductProduct(models.Model):
     # Computed fields that are used to create a fallback to the template if
     # necessary, it's recommended to display those fields to the user.
     image_1920 = fields.Image("Image", compute='_compute_image_1920', inverse='_set_image_1920')
-    image_1024 = fields.Image("Image 1024", compute='_compute_image_1024')
-    image_512 = fields.Image("Image 512", compute='_compute_image_512')
-    image_256 = fields.Image("Image 256", compute='_compute_image_256')
-    image_128 = fields.Image("Image 128", compute='_compute_image_128')
+    image_1024 = fields.Image(compute='_compute_image_1024')
+    image_512 = fields.Image(compute='_compute_image_512')
+    image_256 = fields.Image(compute='_compute_image_256')
+    image_128 = fields.Image(compute='_compute_image_128')
     can_image_1024_be_zoomed = fields.Boolean("Can Image 1024 be zoomed", compute='_compute_can_image_1024_be_zoomed')
     write_date = fields.Datetime(compute='_compute_write_date', store=True)
 
@@ -317,7 +317,7 @@ class ProductProduct(models.Model):
 
     def _build_duplicate_barcode_error_string(self, barcode, duplicate_products):
         """Returns a single line for one duplicated barcode. Override to customise the message."""
-        return _(
+        return self.env._(
             "- Barcode \"%(barcode)s\" already assigned to product(s): %(product_list)s",
             barcode=barcode,
             product_list=duplicate_products.mapped('display_name'),
@@ -325,7 +325,7 @@ class ProductProduct(models.Model):
 
     def _build_duplicate_barcode_error_note(self):
         """Returns a note appended once at the end of the error. Override to customise or remove it."""
-        return _("Note: Some products may be hidden due to access restrictions.")
+        return self.env._("Note: Some products may be hidden due to access restrictions.")
 
     def _check_duplicated_product_barcodes(self, barcodes_within_company, company_id):
         domain = self._get_barcode_search_domain(barcodes_within_company, company_id)
@@ -340,12 +340,12 @@ class ProductProduct(models.Model):
 
         if duplicates_as_str:
             duplicates_as_str += "\n\n" + self._build_duplicate_barcode_error_note()
-            raise ValidationError(_("Barcode(s) already assigned:\n\n%s", duplicates_as_str))
+            raise ValidationError(self.env._("Barcode(s) already assigned:\n\n%s", duplicates_as_str))
 
     def _check_duplicated_packaging_barcodes(self, barcodes_within_company, company_id):
         packaging_domain = self._get_barcode_search_domain(barcodes_within_company, company_id)
         if self.env['product.uom'].sudo().search_count(packaging_domain, limit=1):
-            raise ValidationError(_("A packaging already uses the barcode"))
+            raise ValidationError(self.env._("A packaging already uses the barcode"))
 
     @api.constrains('barcode')
     def _check_barcode_uniqueness(self):
@@ -505,7 +505,7 @@ class ProductProduct(models.Model):
     @api.onchange('standard_price')
     def _onchange_standard_price(self):
         if self.standard_price < 0:
-            raise ValidationError(_("The cost of a product can't be negative."))
+            raise ValidationError(self.env._("The cost of a product can't be negative."))
 
     @api.onchange('default_code')
     def _onchange_default_code(self):
@@ -518,8 +518,8 @@ class ProductProduct(models.Model):
 
         if self.env['product.product'].search_count(domain, limit=1):
             return {'warning': {
-                'title': _("Note:"),
-                'message': _("The Reference '%s' already exists.", self.default_code),
+                'title': self.env._("Note:"),
+                'message': self.env._("The Reference '%s' already exists.", self.default_code),
             }}
 
     def _trigger_uom_warning(self):
@@ -529,13 +529,13 @@ class ProductProduct(models.Model):
     def _onchange_uom_id(self):
         if self._origin.uom_id == self.uom_id or not self._trigger_uom_warning():
             return
-        message = _(
+        message = self.env._(
             'Changing the unit of measure for your product will apply a conversion 1 %(old_uom_name)s = 1 %(new_uom_name)s.\n'
             'All existing records (Sales orders, Purchase orders, etc.) using this product will be updated by replacing the unit name.',
             old_uom_name=self._origin.uom_id.display_name, new_uom_name=self.uom_id.display_name)
         return {
             'warning': {
-                'title': _('What to expect ?'),
+                'title': self.env._('What to expect ?'),
                 'message': message,
             }
         }
@@ -571,7 +571,7 @@ class ProductProduct(models.Model):
     @api.constrains('base_unit_count')
     def _check_base_unit_count(self):
         if any(product.base_unit_count < 0 for product in self):
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "The value of Base Unit Count must be greater than 0."
                 " Use 0 to hide the price per unit on this product."
             ))
@@ -818,7 +818,7 @@ class ProductProduct(models.Model):
         combo_items = self.env['product.combo.item'].search([('product_id', 'in', records.ids)])
         if combo_items:
             combo_names = ', '.join(combo_items.combo_id.mapped('name'))
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You cannot archive a product that is part of a combo. "
                 "Please remove it from the following combos first: %s",
                 combo_names,
@@ -1105,7 +1105,7 @@ class ProductProduct(models.Model):
     @api.model
     def view_header_get(self, view_id, view_type):
         if self.env.context.get('categ_id'):
-            return _(
+            return self.env._(
                 'Products: %(category)s',
                 category=self.env['product.category'].browse(self.env.context['categ_id']).name,
             )
@@ -1116,7 +1116,7 @@ class ProductProduct(models.Model):
     @api.readonly
     def action_open_label_layout(self):
         if any(product.type == 'service' for product in self):
-            raise ValidationError(_('Labels cannot be printed for products of service type'))
+            raise ValidationError(self.env._('Labels cannot be printed for products of service type'))
         action = self.env['ir.actions.act_window']._for_xml_id('product.action_open_label_layout')
         action['context'] = {'default_product_ids': self.ids}
         return action
@@ -1273,7 +1273,7 @@ class ProductProduct(models.Model):
     @api.model
     def get_empty_list_help(self, help_message):
         self = self.with_context(
-            empty_list_help_document_name=_("product"),
+            empty_list_help_document_name=self.env._("product"),
         )
         return super().get_empty_list_help(help_message)
 

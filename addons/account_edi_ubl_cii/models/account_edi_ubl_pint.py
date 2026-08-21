@@ -1,7 +1,7 @@
 from odoo import _, models
 from odoo.tools import formatLang, html2plaintext
 from odoo.tools.misc import NON_BREAKING_SPACE
-from odoo.addons.account_edi_ubl_cii.models.account_edi_common import FloatFmt
+from .account_edi_common import FloatFmt
 
 
 class AccountEdiUBLPint(models.AbstractModel):
@@ -59,7 +59,7 @@ class AccountEdiUBLPint(models.AbstractModel):
             ubl_values['tax_withholding_amount'] -= tax_amount
 
         if not currency.is_zero(ubl_values['tax_withholding_amount']):
-            notes.append(_(
+            notes.append(self.env._(
                 "The prepaid amount of %s corresponds to the withholding tax applied.",
                 formatLang(self.env, ubl_values['tax_withholding_amount'], currency_obj=currency).replace(NON_BREAKING_SPACE, ''),
             ))

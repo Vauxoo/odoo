@@ -125,7 +125,7 @@ class IrActionsReport(models.Model):
             ]
         )
         return {
-            "name": _("Select Printers for %s", self.name),
+            "name": self.env._("Select Printers for %s", self.name),
             "res_id": wizard.id,
             "type": "ir.actions.act_window",
             "res_model": "select.printers.wizard",

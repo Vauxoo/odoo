@@ -5,7 +5,7 @@ from stdnum.be import vat as be_vat
 
 from odoo import _, api, models
 
-from odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20 import UBL_NAMESPACES
+from .account_edi_xml_ubl_20 import UBL_NAMESPACES
 
 CHORUS_PRO_SIRET = "11000201100044"
 
@@ -381,7 +381,7 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                 # NO-R-001: For Norwegian suppliers, a VAT number MUST be the country code prefix NO followed by a
                 # valid Norwegian organization number (nine numbers) followed by the letters MVA.
                 # Note: mva.is_valid("179728982MVA") is True while it lacks the NO prefix
-                'no_r_001': _(
+                'no_r_001': self.env._(
                     "The VAT number of the supplier does not seem to be valid. It should be of the form: NO179728982MVA."
                 ) if not mva.is_valid(vat) or len(vat) != 14 or vat[:2] != 'NO' or vat[-3:] != 'MVA' else "",
             })
@@ -389,13 +389,13 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
         if vals['supplier'].country_id.code == 'BE' and (be_en := vals['supplier']._get_additional_identifier('BE_EN')):
             if not be_vat.is_valid(be_en):
                 constraints.update({
-                    'PEPPOL-COMMON-R043_supplier': _('%s should have a valid KBO/BCE number set as additional identifier (BE_EN).', vals['supplier'].display_name),
+                    'PEPPOL-COMMON-R043_supplier': self.env._('%s should have a valid KBO/BCE number set as additional identifier (BE_EN).', vals['supplier'].display_name),
                 })
 
         if vals['customer'].country_id.code == 'BE' and (be_en := vals['customer']._get_additional_identifier('BE_EN')):
             if not be_vat.is_valid(be_en):
                 constraints.update({
-                    'PEPPOL-COMMON-R043_customer': _('%s should have a valid KBO/BCE number set as additional identifier (BE_EN).', vals['customer'].display_name),
+                    'PEPPOL-COMMON-R043_customer': self.env._('%s should have a valid KBO/BCE number set as additional identifier (BE_EN).', vals['customer'].display_name),
                 })
         return constraints
 
@@ -462,7 +462,7 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
         order_vals, logs = self._retrieve_order_vals(order, tree)
         if order:
             order.write(order_vals)
-            order.message_post(body=Markup("<strong>%s</strong>") % _("Format used to import the document: %s", self._description))
+            order.message_post(body=Markup("<strong>%s</strong>") % self.env._("Format used to import the document: %s", self._description))
             if logs:
                 order._create_activity_set_details(Markup("<ul>%s</ul>") % Markup().join(Markup("<li>%s</li>") % l for l in logs))
 

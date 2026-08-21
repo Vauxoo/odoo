@@ -6,9 +6,6 @@
     'countries': ['hu'],
     'version': '3.1',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Accounting chart and localization for Hungary
-    """,
     'depends': [
         'account',
     ],

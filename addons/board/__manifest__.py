@@ -5,12 +5,6 @@
     'category': 'Productivity',
     'sequence': 225,
     'summary': 'Build your own dashboards',
-    'description': """
-Lets the user create a custom dashboard.
-========================================
-
-Allows users to create custom dashboard.
-    """,
     'depends': ['spreadsheet_dashboard'],
     'data': [
         'views/board_views.xml',

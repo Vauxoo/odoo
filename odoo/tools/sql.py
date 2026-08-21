@@ -1,5 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-# pylint: disable=sql-injection
+# ruff: disable[sql-injection]
 from __future__ import annotations
 
 import enum
@@ -769,4 +769,4 @@ def quoted_identifier(cr, name: str) -> SQL:
     Use instead of `SQL.identifier` to accept all kinds of identifiers.
     """
     name = quote_ident(name, cr._cnx)
-    return SQL(name)  # pylint: disable=sql-injection
+    return SQL(name)  # ruff: ignore[sql-injection]

@@ -15,4 +15,4 @@ class PosPrinter(models.Model):
     def _constrains_imin_printer(self):
         for record in self:
             if record.printer_type == 'imin' and record.use_type != 'receipt':
-                raise ValidationError(_("iMin printers can only be used as Receipt printers."))
+                raise ValidationError(self.env._("iMin printers can only be used as Receipt printers."))

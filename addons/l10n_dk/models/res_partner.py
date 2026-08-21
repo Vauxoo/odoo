@@ -8,7 +8,7 @@ from odoo.exceptions import ValidationError
 from odoo.tools.business_data import split_vat
 from odoo.tools.sql import SQL, table_columns
 
-from odoo.addons.l10n_dk.tools.demo_utils import handle_demo
+from ..tools.demo_utils import handle_demo
 
 APPLICATION_RESPONSE_CUSTOMISATION_ID = "busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##OIOUBL-2.1::2.1"
 TIMEOUT = 10
@@ -124,7 +124,7 @@ class ResPartner(models.Model):
     @api.constrains('invoice_edi_format', 'invoice_sending_method')
     def _check_nemhandel_send_oioubl(self):
         if self.filtered(lambda partner: partner.invoice_edi_format != 'oioubl_21' and partner.invoice_sending_method == 'nemhandel'):
-            raise ValidationError(_('On Nemhandel, only OIOUBL 2.1 is supported.'))
+            raise ValidationError(self.env._('On Nemhandel, only OIOUBL 2.1 is supported.'))
 
     # -------------------------------------------------------------------------
     # OVERRIDE AND HELPERS

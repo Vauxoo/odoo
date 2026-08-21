@@ -13,7 +13,7 @@ class ProductImage(models.Model):
     _inherit = ["image.mixin"]
     _order = "sequence, id"
 
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(required=True)
     sequence = fields.Integer(default=10)
 
     image_1920 = fields.Image()
@@ -22,7 +22,7 @@ class ProductImage(models.Model):
         string="Product Template", comodel_name="product.template", ondelete="cascade", index=True
     )
     product_variant_id = fields.Many2one(
-        string="Product Variant", comodel_name="product.product", ondelete="cascade", index=True
+        comodel_name="product.product", ondelete="cascade", index=True
     )
     video_url = fields.Char(string="Video URL", help="URL of a video for showcasing your product.")
 

@@ -7,13 +7,13 @@ class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
     payment_id = fields.Many2one(
-        string="Payment", comodel_name='account.payment', readonly=True)
+        comodel_name='account.payment', readonly=True)
 
     invoice_ids = fields.Many2many(
         string="Invoices", comodel_name='account.move', relation='account_invoice_transaction_rel',
         column1='transaction_id', column2='invoice_id', readonly=True, copy=False,
         domain=[('move_type', 'in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))])
-    invoices_count = fields.Integer(string="Invoices Count", compute='_compute_invoices_count')
+    invoices_count = fields.Integer(compute='_compute_invoices_count')
 
     #=== COMPUTE METHODS ===#
 
@@ -47,7 +47,7 @@ class PaymentTransaction(models.Model):
         self.ensure_one()
 
         action = {
-            'name': _("Invoices"),
+            'name': self.env._("Invoices"),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'target': 'current',
@@ -112,7 +112,7 @@ class PaymentTransaction(models.Model):
                 tx.with_company(tx.company_id)._create_payment()
 
             if tx.payment_id:
-                message = _(
+                message = self.env._(
                     "The payment related to transaction %(ref)s has been posted: %(link)s",
                     ref=tx._get_html_link(),
                     link=tx.payment_id._get_html_link(),

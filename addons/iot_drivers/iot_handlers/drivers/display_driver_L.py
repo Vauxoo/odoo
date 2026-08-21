@@ -9,13 +9,13 @@ import time
 import werkzeug
 
 from odoo import http
-from odoo.addons.iot_drivers.iot_handlers.interfaces.display_interface_L import DisplayInterface
-from odoo.addons.iot_drivers.browser import Browser, BrowserState
-from odoo.addons.iot_drivers.driver import Driver
-from odoo.addons.iot_drivers.main import iot_devices
-from odoo.addons.iot_drivers.tools import helpers, route, system
-from odoo.addons.iot_drivers.tools.helpers import Orientation
-from odoo.addons.iot_drivers.tools.system import IOT_IDENTIFIER
+from ..interfaces.display_interface_L import DisplayInterface
+from ...browser import Browser, BrowserState
+from ...driver import Driver
+from ...main import iot_devices
+from ...tools import helpers, route, system
+from ...tools.helpers import Orientation
+from ...tools.system import IOT_IDENTIFIER
 
 _logger = logging.getLogger(__name__)
 

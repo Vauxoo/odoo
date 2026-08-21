@@ -50,7 +50,7 @@ class StockMove(models.Model):
     byproduct_id = fields.Many2one(
         'mrp.bom.byproduct', 'By-products', check_company=True,
         help="By-product line that generated the move in a manufacturing order")
-    unit_factor = fields.Float('Unit Factor', compute='_compute_unit_factor', store=True,
+    unit_factor = fields.Float(compute='_compute_unit_factor', store=True,
         init_storage=lambda self: self.env.cr.execute("UPDATE stock_move SET unit_factor = 1 WHERE unit_factor IS NULL"))
     should_consume_qty = fields.Float('Quantity To Consume', compute='_compute_should_consume_qty', digits='Product Unit')
     cost_share = fields.Float(
@@ -162,7 +162,7 @@ class StockMove(models.Model):
             if move.unbuild_id and move.unbuild_id.name:
                 move.reference = move.unbuild_id.name
                 moves_with_reference |= move
-        super(StockMove, self - moves_with_reference)._compute_reference()
+        return super(StockMove, self - moves_with_reference)._compute_reference()
 
     def _set_references(self):
         super()._set_references()
@@ -220,7 +220,7 @@ class StockMove(models.Model):
     def _check_negative_quantity(self):
         for move in self:
             if move.raw_material_production_id and move.uom_id.compare(move.quantity, 0) < 0:
-                raise ValidationError(_("Please enter a positive quantity."))
+                raise ValidationError(self.env._("Please enter a positive quantity."))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -416,12 +416,12 @@ class StockMove(models.Model):
         self.ensure_one()
         action = super().action_show_details()
         if self.raw_material_production_id:
-            action['name'] = _("Components")
+            action['name'] = self.env._("Components")
             action['context']['show_destination_location'] = False
             action['context']['force_move_picked'] = True
             action['context']['active_mo_id'] = self.raw_material_production_id.id
         elif self.production_id:
-            action['name'] = _("Move Byproduct")
+            action['name'] = self.env._("Move Byproduct")
             action['context']['show_source_location'] = False
             action['context']['show_reserved_quantity'] = False
         return action
@@ -689,7 +689,7 @@ class StockMove(models.Model):
             values.update({
                 'production_group_id': group.id,
             })
-        super()._action_replenish(values)
+        return super()._action_replenish(values)
 
     def _prepare_scrap_move_vals(self):
         self.ensure_one()

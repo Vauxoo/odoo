@@ -19,7 +19,7 @@ class MailingFilter(models.Model):
     create_uid = fields.Many2one('res.users', 'Saved by', index=True, readonly=True, default=lambda self: self.env.user)
     name = fields.Char(string='List Name', required=True)
     active = fields.Boolean(default=True)
-    color = fields.Integer(string='Color', default=0)
+    color = fields.Integer(default=0)
     mailing_domain = fields.Char(string='Filter Domain', required=True, default="[]")
     mailing_model_id = fields.Many2one('ir.model', string='Recipients Model', required=True, ondelete='cascade', domain=[('is_mailing_enabled', '=', True)])
     mailing_model_name = fields.Char(string='Recipients Model Name', related='mailing_model_id.model')
@@ -34,7 +34,7 @@ class MailingFilter(models.Model):
                     self.env[mailing_filter.mailing_model_id.model].search_count(literal_eval(mailing_filter.mailing_domain))
                 except:
                     raise ValidationError(
-                        _("The filter domain is not valid for this recipients.")
+                        self.env._("The filter domain is not valid for this recipients.")
                     )
 
     # ------------------------------------------------------
@@ -87,7 +87,7 @@ class MailingFilter(models.Model):
         """Open the mailing form view, with the current model & domain set as the mailing model & mailing domain.
         respectively"""
         if not self.mailing_model_id.is_mailing_enabled:
-            raise UserError(_("Cannot use the model %s to send a mailing. Only mailing models can be used.", self.mailing_model_id.name))
+            raise UserError(self.env._("Cannot use the model %s to send a mailing. Only mailing models can be used.", self.mailing_model_id.name))
         action = self.env["ir.actions.actions"]._for_xml_id('mass_mailing.mailing_mailing_action_mail')
         action.update({
             'context': {

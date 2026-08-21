@@ -13,14 +13,14 @@ class ProjectTemplateCreateWizard(models.TransientModel):
             res = [Command.create({'role_id': role.id}) for role in template.task_ids.role_ids]
         return res
 
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(required=True)
     date_start = fields.Date(string="Start Date")
     date = fields.Date(string='Expiration Date')
-    alias_name = fields.Char(string="Alias Name")
-    alias_domain_id = fields.Many2one("mail.alias.domain", string="Alias Domain")
+    alias_name = fields.Char()
+    alias_domain_id = fields.Many2one("mail.alias.domain")
     template_id = fields.Many2one("project.project", default=lambda self: self.env.context.get('template_id'))
     template_has_dates = fields.Boolean(compute="_compute_template_has_dates")
-    role_to_users_ids = fields.One2many('project.template.role.to.users.map', 'wizard_id', default=_default_role_to_users_ids)
+    role_to_users_ids = fields.One2many('project.template.role.to.users.map', 'wizard_id', default=lambda self: self._default_role_to_users_ids())
 
     @api.depends("template_id")
     def _compute_template_has_dates(self):

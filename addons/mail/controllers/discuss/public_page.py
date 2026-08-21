@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools import consteq, email_normalize, replace_exceptions
 from odoo.tools.misc import verify_hash_signed
-from odoo.addons.mail.tools.discuss import mail_route, Store
+from ...tools.discuss import mail_route, Store
 
 
 class PublicPageController(http.Controller):

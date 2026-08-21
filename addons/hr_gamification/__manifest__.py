@@ -3,12 +3,6 @@
     'name': 'HR Gamification',
     'category': 'Human Resources',
     'depends': ['gamification', 'hr'],
-    'description': """Use the HR resources for the gamification process.
-
-The HR officer can now manage challenges and badges.
-This allow the user to send badges to employees instead of simple users.
-Badge received are displayed on the user profile.
-""",
     'data': [
         'security/gamification_security.xml',
         'wizard/gamification_badge_user_wizard_views.xml',

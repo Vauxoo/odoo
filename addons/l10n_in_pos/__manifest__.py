@@ -2,7 +2,6 @@
 
 {
     'name': 'Indian - Point of Sale',
-    'description': """GST Point of Sale""",
     'category': 'Accounting/Localizations/Point of Sale',
     'depends': [
         'l10n_in',

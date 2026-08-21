@@ -19,8 +19,7 @@ class IrModelFields(models.Model):
     ttype = fields.Selection(selection_add=[
         ('serialized', 'serialized'),
     ], ondelete={'serialized': 'cascade'})
-    serialization_field_id = fields.Many2one('ir.model.fields', string='Serialization Field',
-        ondelete='cascade', domain="[('ttype','=','serialized'), ('model_id', '=', model_id)]",
+    serialization_field_id = fields.Many2one('ir.model.fields', ondelete='cascade', domain="[('ttype','=','serialized'), ('model_id', '=', model_id)]",
         help="If set, this field will be stored in the sparse structure of the "
              "serialization field, instead of having its own database column. "
              "This cannot be changed after creation.",
@@ -32,9 +31,9 @@ class IrModelFields(models.Model):
         if 'serialization_field_id' in vals or 'name' in vals:
             for field in self:
                 if 'serialization_field_id' in vals and field.serialization_field_id.id != vals['serialization_field_id']:
-                    raise UserError(_('Changing the storing system for field "%s" is not allowed.', field.name))
+                    raise UserError(self.env._('Changing the storing system for field "%s" is not allowed.', field.name))
                 if field.serialization_field_id and (field.name != vals['name']):
-                    raise UserError(_('Renaming sparse field "%s" is not allowed', field.name))
+                    raise UserError(self.env._('Renaming sparse field "%s" is not allowed', field.name))
 
         return super(IrModelFields, self).write(vals)
 
@@ -62,7 +61,7 @@ class IrModelFields(models.Model):
                 try:
                     value = existing[(model_name, field.sparse)][0] if field.sparse else None
                 except KeyError:
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         'Serialization field "%(serialization_field)s" not found for sparse field %(sparse_field)s!',
                         serialization_field=field.sparse,
                         sparse_field=field,

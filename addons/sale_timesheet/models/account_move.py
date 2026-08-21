@@ -20,8 +20,7 @@ class AccountMove(models.Model):
     )
     timesheet_count = fields.Integer("Number of timesheets", compute='_compute_timesheet_count', compute_sudo=True, export_string_translation=False)
     timesheet_encode_uom_id = fields.Many2one('uom.uom', related='company_id.timesheet_encode_uom_id', export_string_translation=False)
-    timesheet_total_duration = fields.Integer("Timesheet Total Duration",
-        compute='_compute_timesheet_total_duration', compute_sudo=True,
+    timesheet_total_duration = fields.Integer(compute='_compute_timesheet_total_duration', compute_sudo=True,
         help="Total recorded duration, expressed in the encoding UoM, and rounded to the unit")
     display_timesheet_portal_link = fields.Boolean(compute='_compute_display_timesheet_portal_link')
 
@@ -71,12 +70,12 @@ class AccountMove(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Timesheets'),
+            'name': self.env._('Timesheets'),
             'domain': [('project_id', '!=', False)],
             'res_model': 'account.analytic.line',
             'view_id': False,
             'view_mode': 'list,form',
-            'help': _("""
+            'help': self.env._("""
                 <p class="o_view_nocontent_smiling_face">
                     Record timesheets
                 </p><p>

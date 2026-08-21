@@ -3,14 +3,6 @@
 {
     'name': 'Web Hierarchy',
     'category': 'Hidden',
-    'description':
-        """
-Odoo Web Hierarchy view
-=======================
-
-This module adds a new view called to be able to define a view to display
-an organization such as an Organization Chart for employees for instance.
-        """,
     'depends': ['web'],
     'assets': {
         'web.assets_backend_lazy': [

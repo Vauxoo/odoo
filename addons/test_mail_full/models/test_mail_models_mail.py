@@ -14,7 +14,7 @@ class MailTestPortal(models.Model):
         'mail.thread',
     ]
 
-    name = fields.Char('Name')
+    name = fields.Char()
     partner_id = fields.Many2one('res.partner', 'Customer')
     user_id = fields.Many2one(comodel_name='res.users', string="Salesperson")
 
@@ -78,10 +78,10 @@ class MailTestRating(models.Model):
     _mailing_enabled = True
     _order = 'id asc'
 
-    name = fields.Char('Name')
-    subject = fields.Char('Subject')
-    company_id = fields.Many2one('res.company', 'Company')
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    name = fields.Char()
+    subject = fields.Char()
+    company_id = fields.Many2one('res.company')
+    customer_id = fields.Many2one('res.partner')
     email_from = fields.Char('From', compute='_compute_email_from', precompute=True, readonly=False, store=True)
     phone_nbr = fields.Char('Phone Number', compute='_compute_phone_nbr', precompute=True, readonly=False, store=True)
     user_id = fields.Many2one('res.users', 'Responsible', tracking=1)
@@ -131,8 +131,8 @@ class MailTestRatingThread(models.Model):
     _inherit = ['mail.thread']
     _order = 'name asc, id asc'
 
-    name = fields.Char('Name')
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    name = fields.Char()
+    customer_id = fields.Many2one('res.partner')
     user_id = fields.Many2one('res.users', 'Responsible', tracking=1)
 
     def _mail_get_partner_fields(self, introspect_fields=False):

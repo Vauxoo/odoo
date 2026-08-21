@@ -11,11 +11,6 @@
         "stock",
     ],
     "summary": "Delivery E-invoicing using SInvoice by Viettel",
-    "description": """
-Vietnam - Delivery E-invoicing
-==============================
-Using SInvoice by Viettel
-    """,
     "data": [
         "views/res_config_settings_views.xml",
         "views/stock_warehouse_views.xml",

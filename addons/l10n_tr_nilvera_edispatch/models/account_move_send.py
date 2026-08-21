@@ -12,12 +12,12 @@ class AccountMoveSend(models.AbstractModel):
         if moves_with_unlinked_dispatches := tr_nilvera_moves.filtered(lambda m: m._has_unlinked_dispatches()):
             alerts['tr_moves_with_unlinked_dispatches'] = {
                 'level': 'danger',
-                'message': _(
+                'message': self.env._(
                     "Please ensure the e-Dispatch Order field has all related orders "
                     "before sending the invoice to Nilvera.",
                 ),
-                'action_text': _("View Invoice(s)"),
-                'action': moves_with_unlinked_dispatches._get_records_action(name=_("Check data on Invoice(s)")),
+                'action_text': self.env._("View Invoice(s)"),
+                'action': moves_with_unlinked_dispatches._get_records_action(name=self.env._("Check data on Invoice(s)")),
             }
 
         return alerts

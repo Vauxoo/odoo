@@ -18,7 +18,7 @@ class ProductProduct(models.Model):
             ('paid', 'Paid'),
             ('open_paid', 'Open and Paid'),
             ('draft_open_paid', 'Draft, Open and Paid')
-        ], string='Invoice State', readonly=True)
+        ], readonly=True)
     sale_avg_price = fields.Float(compute='_compute_product_margin_fields_values', string='Avg. Sale Unit Price',
         help="Avg. Price in Customer Invoices.")
     purchase_avg_price = fields.Float(compute='_compute_product_margin_fields_values', string='Avg. Purchase Unit Price',
@@ -27,22 +27,15 @@ class ProductProduct(models.Model):
         help="Sum of Quantity in Customer Invoices")
     purchase_num_invoiced = fields.Float(compute='_compute_product_margin_fields_values', string='# Invoiced in Purchase',
         help="Sum of Quantity in Vendor Bills")
-    sales_gap = fields.Float(compute='_compute_product_margin_fields_values', string='Sales Gap',
-        help="Expected Sale - Turn Over")
-    purchase_gap = fields.Float(compute='_compute_product_margin_fields_values', string='Purchase Gap',
-        help="Normal Cost - Total Cost")
-    turnover = fields.Float(compute='_compute_product_margin_fields_values', string='Turnover',
-        help="Sum of Multiplication of Invoice price and quantity of Customer Invoices")
-    total_cost = fields.Float(compute='_compute_product_margin_fields_values', string='Total Cost',
-        help="Sum of Multiplication of Invoice price and quantity of Vendor Bills ")
+    sales_gap = fields.Float(compute='_compute_product_margin_fields_values', help="Expected Sale - Turn Over")
+    purchase_gap = fields.Float(compute='_compute_product_margin_fields_values', help="Normal Cost - Total Cost")
+    turnover = fields.Float(compute='_compute_product_margin_fields_values', help="Sum of Multiplication of Invoice price and quantity of Customer Invoices")
+    total_cost = fields.Float(compute='_compute_product_margin_fields_values', help="Sum of Multiplication of Invoice price and quantity of Vendor Bills ")
     sale_expected = fields.Float(compute='_compute_product_margin_fields_values', string='Expected Sale',
         help="Sum of Multiplication of Sale Catalog price and quantity of Customer Invoices")
-    normal_cost = fields.Float(compute='_compute_product_margin_fields_values', string='Normal Cost',
-        help="Sum of Multiplication of Cost price and quantity of Vendor Bills")
-    total_margin = fields.Float(compute='_compute_product_margin_fields_values', string='Total Margin',
-        help="Turnover - Total cost")
-    expected_margin = fields.Float(compute='_compute_product_margin_fields_values', string='Expected Margin',
-        help="Expected Sale - Normal Cost")
+    normal_cost = fields.Float(compute='_compute_product_margin_fields_values', help="Sum of Multiplication of Cost price and quantity of Vendor Bills")
+    total_margin = fields.Float(compute='_compute_product_margin_fields_values', help="Turnover - Total cost")
+    expected_margin = fields.Float(compute='_compute_product_margin_fields_values', help="Expected Sale - Normal Cost")
     total_margin_rate = fields.Float(compute='_compute_product_margin_fields_values', string='Total Margin Rate(%)',
         help="Total margin * 100 / Turnover")
     expected_margin_rate = fields.Float(compute='_compute_product_margin_fields_values', string='Expected Margin (%)',

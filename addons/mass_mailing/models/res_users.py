@@ -15,6 +15,6 @@ class ResUsers(models.Model):
         activities = super()._get_activity_groups()
         for activity in activities:
             if activity.get('model') == 'mailing.mailing':
-                activity['name'] = _('Email Marketing')
+                activity['name'] = self.env._('Email Marketing')
                 break
         return activities

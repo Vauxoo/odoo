@@ -144,7 +144,7 @@ class AuthPasskeyKey(models.Model):
 
     def action_rename_passkey(self):
         return {
-            'name': _('Rename Passkey'),
+            'name': self.env._('Rename Passkey'),
             'type': 'ir.actions.act_window',
             'res_model': 'auth.passkey.key',
             'view_id': self.env.ref('auth_passkey.auth_passkey_key_rename').id,
@@ -161,7 +161,7 @@ class AuthPasskeyKeyCreate(models.TransientModel):
     _name = 'auth.passkey.key.create'
     _description = 'Create a Passkey'
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char(required=True)
 
     @check_identity
     def make_key(self, registration=None):

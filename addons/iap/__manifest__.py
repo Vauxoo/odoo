@@ -5,9 +5,6 @@
     'category': 'Hidden/Tools',
     'version': '1.1',
     'summary': 'Basic models and helpers to support In-App Purchase.',
-    'description': """
-This module provides standard tools (account model, context manager and helpers)
-to support In-App Purchase inside Odoo. """,
     'depends': [
         'web',
         'base_setup'

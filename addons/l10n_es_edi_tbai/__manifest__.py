@@ -7,18 +7,6 @@
     'name': "Spain - TicketBAI",
     'version': '1.1',
     'category': 'Accounting/Localizations/EDI',
-    'description': """
-This module sends invoices and vendor bills to the "Diputaciones
-Forales" of Araba/Álava, Bizkaia and Gipuzkoa.
-
-Invoices and bills get converted to XML and regularly sent to the
-Basque government servers which provides them with a unique identifier.
-A hash chain ensures the continuous nature of the invoice/bill
-sequences. QR codes are added to emitted (sent/printed) invoices,
-bills and tickets to allow anyone to check they have been declared.
-
-You need to configure your certificate and the tax agency.
-    """,
     'depends': [
         'l10n_es',
         'certificate',

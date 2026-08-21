@@ -4,7 +4,6 @@
     'name': 'Maintenance - Fleet',
     'sequence': 125,
     'category': 'Human Resources',
-    'description': "Bridge between Fleet and Maintenance.",
     'depends': ['fleet', 'maintenance'],
     'summary': 'Integrates Fleet and Maintenance',
     'data': [

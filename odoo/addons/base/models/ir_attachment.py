@@ -112,7 +112,7 @@ class IrAttachment(models.Model):
     def force_storage(self):
         """Force all attachments to be stored in the currently configured storage"""
         if not self.env.is_admin():
-            raise AccessError(_('Only administrators can execute this action.'))
+            raise AccessError(self.env._('Only administrators can execute this action.'))
 
         # Migrate only binary attachments and bypass the res_field automatic
         # filter added in _search override
@@ -582,18 +582,18 @@ class IrAttachment(models.Model):
         """
         return ['base.group_system']
 
-    name = fields.Char('Name', required=True)
-    description = fields.Text('Description')
+    name = fields.Char(required=True)
+    description = fields.Text()
     res_name = fields.Char('Resource Name', compute='_compute_res_name')
     res_model = fields.Char('Resource Model')
     res_field = fields.Char('Resource Field')
     res_id = fields.Many2oneReference('Resource ID', model_field='res_model')
-    company_id = fields.Many2one('res.company', string='Company', change_default=True,
+    company_id = fields.Many2one('res.company', change_default=True,
                                  default=lambda self: self.env.company)
     type = fields.Selection([('url', 'URL'), ('binary', 'File')],
-                            string='Type', required=True, default='binary', change_default=True,
+                            required=True, default='binary', change_default=True,
                             help="You can either upload a file from your computer or copy/paste an internet link to your file.")
-    url = fields.Char('Url', index='btree_not_null', size=1024)
+    url = fields.Char(index='btree_not_null', size=1024)
     public = fields.Boolean('Is public document')
     res_access_read = fields.Boolean(
         groups=fields.NO_ACCESS,
@@ -607,12 +607,12 @@ class IrAttachment(models.Model):
         compute_sudo=True, depends_context=('uid',))
 
     # for external access
-    access_token = fields.Char('Access Token', groups="base.group_user")
+    access_token = fields.Char(groups="base.group_user")
 
     raw = fields.Binary(string="File Content (raw)", compute='_compute_raw', inverse='_inverse_raw')
     db_datas = fields.Binary('Database Data', attachment=False)
     store_fname = fields.Char('Stored Filename', index=True)
-    file_size = fields.Integer('File Size', readonly=True)
+    file_size = fields.Integer(readonly=True)
     checksum = fields.Char("Checksum/SHA1", size=40, readonly=True)
     mimetype = fields.Char('Mime Type', readonly=True)
     index_content = fields.Text('Indexed Content', readonly=True, prefetch=False)
@@ -629,13 +629,13 @@ class IrAttachment(models.Model):
             if attachment.type == 'binary' and attachment.url:
                 has_group = self.env.user.has_group
                 if not any(has_group(g) for g in attachment.get_serving_groups()):
-                    raise ValidationError(_("Sorry, you are not allowed to write on this document"))
+                    raise ValidationError(self.env._("Sorry, you are not allowed to write on this document"))
 
     @api.constrains('res_model', 'res_id')
     def _check_circular_attachment(self):
         for record in self.sudo():
             if record.res_model == 'ir.attachment' and record.id == record.res_id:
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "You cannot attach an attachment to itself.\n"
                     "Attachment %(record)s cannot have res_id: %(res_id)s",
                     record=record, res_id=record))
@@ -646,10 +646,10 @@ class IrAttachment(models.Model):
         warnings.warn("Since 19.0, use check_access", DeprecationWarning, stacklevel=2)
         # Always require an internal user (aka, employee) to access to a attachment
         if not (self.env.is_admin() or self.env.user._is_internal()):
-            raise AccessError(_("Sorry, you are not allowed to access this document."))
+            raise AccessError(self.env._("Sorry, you are not allowed to access this document."))
         self.check_access(mode)
         if values and any(self._inaccessible_comodel_records({values.get('res_model'): [values.get('res_id')]}, mode)):
-            raise AccessError(_("Sorry, you are not allowed to access this document."))
+            raise AccessError(self.env._("Sorry, you are not allowed to access this document."))
 
     def _make_access_error_message(self, operation, domain):
         if not domain.is_false():
@@ -865,7 +865,7 @@ class IrAttachment(models.Model):
                 for record in self:
                     model_and_ids[vals.get('res_model', record.res_model)].add(vals.get('res_id', record.res_id))
             if any(self._inaccessible_comodel_records(model_and_ids, 'write')):
-                raise AccessError(_("Sorry, you are not allowed to access this document."))
+                raise AccessError(self.env._("Sorry, you are not allowed to access this document."))
         # remove computed field depending of raw
         for field in ('file_size', 'checksum', 'store_fname'):
             vals.pop(field, False)
@@ -929,7 +929,7 @@ class IrAttachment(models.Model):
         for res_model, res_id in record_tuple_set:
             model_and_ids[res_model].add(res_id)
         if any(self._inaccessible_comodel_records(model_and_ids, 'write')):
-            raise AccessError(_("Sorry, you are not allowed to access this document."))
+            raise AccessError(self.env._("Sorry, you are not allowed to access this document."))
         records = super().create(vals_list)
         for fname, raw in raw_map.items():
             with raw.open() as f:
@@ -968,7 +968,7 @@ class IrAttachment(models.Model):
             try:
                 vals = self._check_contents(vals)
             except ValueError:
-                raise UserError(_("Attachment is not encoded in base64."))
+                raise UserError(self.env._("Attachment is not encoded in base64."))
             checksum = self._compute_checksum(vals['raw'] or b'')
             # Create only if record does not already exist for checksum and mimetype
             result += self.sudo().search([
@@ -1025,7 +1025,7 @@ class IrAttachment(models.Model):
             model_and_ids={create_vals.get('res_model'): [create_vals.get('res_id')]},
             operation='write',
         )):
-            raise AccessError(_("Sorry, you are not allowed to access this document."))
+            raise AccessError(self.env._("Sorry, you are not allowed to access this document."))
 
         with contextlib.ExitStack() as exit_stack:
 
@@ -1153,7 +1153,7 @@ class IrAttachment(models.Model):
         if self.type == 'binary':
             return
         if self.type == 'url':
-            raise ValidationError(_("URL attachment (%s) shouldn't be migrated to local.", self.id))
+            raise ValidationError(self.env._("URL attachment (%s) shouldn't be migrated to local.", self.id))
 
 
 class LocalBinaryFile(BinaryValue):

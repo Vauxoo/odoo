@@ -129,7 +129,7 @@ class MicrosoftService(models.AbstractModel):
             ttl = response.get('expires_in')
             return access_token, refresh_token, ttl
         except requests.HTTPError:
-            error_msg = _("Something went wrong during your token generation. Maybe your Authorization Code is invalid")
+            error_msg = self.env._("Something went wrong during your token generation. Maybe your Authorization Code is invalid")
             raise self.env['res.config.settings'].get_config_warning(error_msg)
 
     @api.model
@@ -159,7 +159,7 @@ class MicrosoftService(models.AbstractModel):
             elif method.upper() in ('POST', 'PATCH', 'PUT'):
                 res = requests.request(method.lower(), preuri + uri, data=params, headers=headers, timeout=timeout)
             else:
-                raise Exception(_('Method not supported [%s] not in [GET, POST, PUT, PATCH or DELETE]!', method))
+                raise Exception(self.env._('Method not supported [%s] not in [GET, POST, PUT, PATCH or DELETE]!', method))
             res.raise_for_status()
             status = res.status_code
 

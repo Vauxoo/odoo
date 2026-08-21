@@ -16,7 +16,7 @@ class DeliveryNoteWizard(models.TransientModel):
     )
     tracking_ref = fields.Char(string="Tracking Reference")
     tracking_url = fields.Char(string="Tracking URL", compute="_compute_tracking_url")
-    shipping_date = fields.Date(string="Shipping Date", default=fields.Date.today)
+    shipping_date = fields.Date(default=fields.Date.today)
     so_id = fields.Many2one(string="Sales Order", comodel_name="sale.order")
     so_reference = fields.Char(string="Order reference", related="so_id.name")
     company_id = fields.Many2one(related="so_id.company_id")

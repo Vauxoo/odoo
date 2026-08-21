@@ -49,10 +49,10 @@ class ProductTemplate(models.Model):
     def _domain_fixed_pricelist_rule_ids(self):
         return self._domain_pricelist_rule_ids() & Domain('compute_price', '=', 'fixed')
 
-    name = fields.Char('Name', index='trigram', required=True, translate=True)
-    sequence = fields.Integer('Sequence', default=1, help='Gives the sequence order when displaying a product list')
+    name = fields.Char(index='trigram', required=True, translate=True)
+    sequence = fields.Integer(default=1, help='Gives the sequence order when displaying a product list')
     description = fields.Html(
-        'Description', translate=True)
+        translate=True)
     description_purchase = fields.Text(
         'Purchase Description', translate=True)
     description_sale = fields.Text(
@@ -96,14 +96,12 @@ class ProductTemplate(models.Model):
     )
 
     currency_id = fields.Many2one(
-        'res.currency', 'Currency',
-        compute='_compute_currency_id',
+        'res.currency', compute='_compute_currency_id',
         compute_sql='_compute_sql_currency_id',
         compute_sudo=True,
     )
     cost_currency_id = fields.Many2one(
-        'res.currency', 'Cost Currency',
-        compute='_compute_cost_currency_id',
+        'res.currency', compute='_compute_cost_currency_id',
         compute_sql='_compute_sql_cost_currency_id',
         compute_sudo=True,
     )
@@ -143,10 +141,10 @@ class ProductTemplate(models.Model):
         'Free To Use', compute='_compute_quantities', compute_sudo=False, digits='Product Unit',
         help="Quantity on hand minus outgoing quantity.")
     volume = fields.Float(
-        'Volume', compute='_compute_volume', inverse='_set_volume', digits='Volume', store=True)
+        compute='_compute_volume', inverse='_set_volume', digits='Volume', store=True)
     volume_uom_name = fields.Char(string='Volume unit of measure label', compute='_compute_volume_uom_name')
     weight = fields.Float(
-        'Weight', compute='_compute_weight', digits='Stock Weight',
+        compute='_compute_weight', digits='Stock Weight',
         inverse='_set_weight', store=True)
     weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name')
 
@@ -154,16 +152,16 @@ class ProductTemplate(models.Model):
     purchase_ok = fields.Boolean('Purchase', default=True, compute='_compute_purchase_ok', store=True, readonly=False)
     uom_id = fields.Many2one(
         'uom.uom', 'Unit', tracking=True,
-        default=_default_uom_id, required=True, index=True,
+        default=lambda self: self._default_uom_id(), required=True, index=True,
         help="Default unit of measure used for all stock operations.")
     uom_ids = fields.Many2many('uom.uom', string='Packagings', help="Additional packagings for this product which can be used for sales", domain="[('id', '!=', uom_id)]")
     uom_name = fields.Char(string='Unit Name', related='uom_id.name', readonly=True)
     company_id = fields.Many2one(
-        'res.company', 'Company', index=True)
+        'res.company', index=True)
     seller_ids = fields.One2many('product.supplierinfo', 'product_tmpl_id', 'Vendors')
     variant_seller_ids = fields.One2many('product.supplierinfo', 'product_tmpl_id')
 
-    active = fields.Boolean('Active', default=True, help="If unchecked, it will allow you to hide the product without removing it.")
+    active = fields.Boolean(default=True, help="If unchecked, it will allow you to hide the product without removing it.")
     color = fields.Integer('Color Index')
 
     is_product_variant = fields.Boolean(string='Is a product variant', compute='_compute_is_product_variant')
@@ -188,7 +186,7 @@ class ProductTemplate(models.Model):
     show_qty_update_button = fields.Boolean(compute='_compute_show_qty_update_button')
 
     # related to display product product information if is_product_variant
-    barcode = fields.Char('Barcode', compute='_compute_barcode', inverse='_set_barcode', search='_search_barcode')
+    barcode = fields.Char(compute='_compute_barcode', inverse='_set_barcode', search='_search_barcode')
     default_code = fields.Char(
         'Internal Reference', compute='_compute_default_code',
         inverse='_set_default_code', store=True)
@@ -197,12 +195,12 @@ class ProductTemplate(models.Model):
         string="Pricelist Rules",
         comodel_name="product.pricelist.item",
         inverse_name="product_tmpl_id",
-        domain=_domain_pricelist_rule_ids,
+        domain=lambda self: self._domain_pricelist_rule_ids(),
     )
     fixed_pricelist_rule_ids = fields.One2many(
         comodel_name="product.pricelist.item",
         inverse_name="product_tmpl_id",
-        domain=_domain_fixed_pricelist_rule_ids,
+        domain=lambda self: self._domain_fixed_pricelist_rule_ids(),
         copy=False,
     )
 
@@ -217,7 +215,7 @@ class ProductTemplate(models.Model):
     can_image_1024_be_zoomed = fields.Boolean("Can Image 1024 be zoomed", compute='_compute_can_image_1024_be_zoomed', store=True)
     has_configurable_attributes = fields.Boolean("Is a configurable product", compute='_compute_has_configurable_attributes', store=True)
 
-    is_dynamically_created = fields.Boolean("Is Dynamically Created", compute='_compute_is_dynamically_created')
+    is_dynamically_created = fields.Boolean(compute='_compute_is_dynamically_created')
 
     product_tooltip = fields.Char(compute='_compute_product_tooltip')
 
@@ -551,7 +549,7 @@ class ProductTemplate(models.Model):
     @api.onchange('standard_price')
     def _onchange_standard_price(self):
         if self.standard_price < 0:
-            raise ValidationError(_("The cost of a product can't be negative."))
+            raise ValidationError(self.env._("The cost of a product can't be negative."))
 
     @api.onchange('default_code')
     def _onchange_default_code(self):
@@ -564,8 +562,8 @@ class ProductTemplate(models.Model):
 
         if self.env['product.template'].search_count(domain, limit=1):
             return {'warning': {
-                'title': _("Note:"),
-                'message': _("The Internal Reference '%s' already exists.", self.default_code),
+                'title': self.env._("Note:"),
+                'message': self.env._("The Internal Reference '%s' already exists.", self.default_code),
             }}
 
     @api.depends('product_variant_ids.default_code')
@@ -585,7 +583,7 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         tooltip = ""
         if self.type == 'combo':
-            tooltip = _(
+            tooltip = self.env._(
                 "Combos allow to choose one product amongst a selection of choices per category."
             )
         return tooltip
@@ -594,12 +592,12 @@ class ProductTemplate(models.Model):
     def _onchange_type(self):
         if self.type == 'combo':
             if self.attribute_line_ids:
-                raise UserError(_("Combo products can't have attributes."))
+                raise UserError(self.env._("Combo products can't have attributes."))
             combo_items = self.env['product.combo.item'].sudo().search([
                 ('product_id', 'in', self.product_variant_ids.ids)
             ])
             if combo_items:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "This product is part of a combo, so its type can't be changed to \"combo\"."
                 ))
             self.purchase_ok = False
@@ -609,13 +607,13 @@ class ProductTemplate(models.Model):
     def _onchange_uom_id(self):
         if self._origin.uom_id == self.uom_id or not self.with_context(active_test=False).product_variant_ids._trigger_uom_warning():
             return
-        message = _(
+        message = self.env._(
             'Changing the unit of measure for your product will apply a conversion 1 %(old_uom_name)s = 1 %(new_uom_name)s.\n'
             'All existing records (Sales orders, Purchase orders, etc.) using this product will be updated by replacing the unit name.',
             old_uom_name=self._origin.uom_id.display_name, new_uom_name=self.uom_id.display_name)
         return {
             'warning': {
-                'title': _('What to expect ?'),
+                'title': self.env._('What to expect ?'),
                 'message': message,
             }
         }
@@ -624,7 +622,7 @@ class ProductTemplate(models.Model):
     def _check_combo_ids_not_empty(self):
         for template in self:
             if template.type == 'combo' and not template.combo_ids:
-                raise ValidationError(_("A combo product must contain at least 1 combo choice."))
+                raise ValidationError(self.env._("A combo product must contain at least 1 combo choice."))
 
     @api.constrains('type', 'combo_ids', 'sale_ok')
     def _check_sale_combo_ids(self):
@@ -637,7 +635,7 @@ class ProductTemplate(models.Model):
                 )
             ):
                 raise ValidationError(
-                    _("A sellable combo product can only contain sellable products.")
+                    self.env._("A sellable combo product can only contain sellable products.")
                 )
 
     def _get_related_fields_variant_template(self):
@@ -779,7 +777,7 @@ class ProductTemplate(models.Model):
         combo_items = self.env['product.combo.item'].search([('product_id', 'in', self.product_variant_ids.ids)])
         if combo_items:
             combo_names = ', '.join(combo_items.combo_id.mapped('name'))
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You cannot archive a product that is part of a combo. "
                 "Please remove it from the following combos first: %s",
                 combo_names,
@@ -791,7 +789,7 @@ class ProductTemplate(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for template, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", template.name)
+                vals['name'] = self.env._("%s (copy)", template.name)
         return vals_list
 
     def copy(self, default=None):
@@ -913,7 +911,7 @@ class ProductTemplate(models.Model):
 
     def action_open_label_layout(self):
         if any(product_tmpl.type == 'service' for product_tmpl in self):
-            raise ValidationError(_('Labels cannot be printed for products of service type'))
+            raise ValidationError(self.env._('Labels cannot be printed for products of service type'))
         action = self.env['ir.actions.act_window']._for_xml_id('product.action_open_label_layout')
         action['context'] = {'default_product_tmpl_ids': self.ids}
         return action
@@ -922,7 +920,7 @@ class ProductTemplate(models.Model):
     def action_open_documents(self):
         self.ensure_one()
         return {
-            'name': _('Documents'),
+            'name': self.env._('Documents'),
             'type': 'ir.actions.act_window',
             'res_model': 'product.document',
             'view_mode': 'kanban,list,form',
@@ -943,9 +941,9 @@ class ProductTemplate(models.Model):
                     %s
                 </p>
             """ % (
-                _("Upload files to your product"),
-                _("Use this feature to store any files you would like to share with your customers"),
-                _("(e.g: product description, ebook, legal notice, ...)."),
+                self.env._("Upload files to your product"),
+                self.env._("Use this feature to store any files you would like to share with your customers"),
+                self.env._("(e.g: product description, ebook, legal notice, ...)."),
             )
         }
 
@@ -1088,7 +1086,7 @@ class ProductTemplate(models.Model):
                         current_variants_to_create.append(tmpl_id._prepare_variant_values(combination))
                         variant_limit = self.env['ir.config_parameter'].sudo().get_int('product.dynamic_variant_limit') or 1000
                         if len(current_variants_to_create) > variant_limit:
-                            raise UserError(_(
+                            raise UserError(self.env._(
                                 'The number of variants to generate is above allowed limit. '
                                 'You should either not generate variants for each combination or generate them on demand from the sales order. '
                                 'To do so, open the form view of attributes and change the mode of *Create Variants*.'))
@@ -1132,7 +1130,7 @@ class ProductTemplate(models.Model):
             variants_to_unlink._unlink_or_archive()
             # prevent change if exclusion deleted template by deleting last variant
             if self.exists() != self:
-                raise UserError(_("This configuration of product attributes, values, and exclusions would lead to no possible variant. Please archive or delete your product directly if intended."))
+                raise UserError(self.env._("This configuration of product attributes, values, and exclusions would lead to no possible variant. Please archive or delete your product directly if intended."))
         for variant in variants_to_unlink:
             combo_items_to_unlink = self.env['product.combo.item'].search([
                 ('product_id', '=', variant.id)
@@ -1611,7 +1609,7 @@ class ProductTemplate(models.Model):
         self.ensure_one()
 
         if not self.active:
-            return _("The product template is archived so no combination is possible.")
+            return self.env._("The product template is archived so no combination is possible.")
 
         necessary_values = necessary_values or self.env['product.template.attribute.value']
         necessary_attribute_lines = necessary_values.mapped('attribute_line_id')
@@ -1634,7 +1632,7 @@ class ProductTemplate(models.Model):
             if self._is_combination_possible(combination):
                 yield combination
 
-        return _("There are no remaining possible combination.")
+        return self.env._("There are no remaining possible combination.")
 
     def _get_closest_possible_combination(self, combination):
         """See `_get_closest_possible_combinations` (one iteration).
@@ -1674,12 +1672,12 @@ class ProductTemplate(models.Model):
                 yield(next(res))
                 for cur in res:
                     yield(cur)
-                return _("There are no remaining closest combination.")
+                return self.env._("There are no remaining closest combination.")
             except StopIteration:
                 # There are no results for the given combination, we try to
                 # progressively remove values from it.
                 if not combination:
-                    return _("There are no possible combination.")
+                    return self.env._("There are no possible combination.")
                 combination = combination[:-1]
 
     def _get_placeholder_filename(self, field):
@@ -1711,14 +1709,14 @@ class ProductTemplate(models.Model):
     @api.model
     def get_empty_list_help(self, help_message):
         self = self.with_context(
-            empty_list_help_document_name=_("product"),
+            empty_list_help_document_name=self.env._("product"),
         )
         return super().get_empty_list_help(help_message)
 
     @api.model
     def get_import_templates(self):
         return [{
-            'label': _('Template for Products'),
+            'label': self.env._('Template for Products'),
             'template': '/product/static/xls/products_import_template.xlsx'
         }]
 

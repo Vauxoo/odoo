@@ -9,4 +9,4 @@ class PosPaymentMethod(models.Model):
     def _check_unsupported_kiosks(self):
         for record in self:
             if record.payment_provider == "bancontact_pay" and record.bancontact_usage == "sticker" and any(config.self_ordering_mode == "kiosk" for config in record.config_ids):
-                raise ValidationError(_("Bancontact Pay stickers are not supported for kiosks."))
+                raise ValidationError(self.env._("Bancontact Pay stickers are not supported for kiosks."))

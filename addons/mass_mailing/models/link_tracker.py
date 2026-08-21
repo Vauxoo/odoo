@@ -9,14 +9,14 @@ from odoo import api, fields, models, _
 class LinkTracker(models.Model):
     _inherit = "link.tracker"
 
-    mass_mailing_id = fields.Many2one('mailing.mailing', string='Mass Mailing')
+    mass_mailing_id = fields.Many2one('mailing.mailing')
 
 
 class LinkTrackerClick(models.Model):
     _inherit = "link.tracker.click"
 
     mailing_trace_id = fields.Many2one('mailing.trace', string='Mail Statistics', index='btree_not_null')
-    mass_mailing_id = fields.Many2one('mailing.mailing', string='Mass Mailing', index='btree_not_null')
+    mass_mailing_id = fields.Many2one('mailing.mailing', index='btree_not_null')
     email = fields.Char(string="Email", related="mailing_trace_id.email", help="The email address of the entity that clicked the link")
     url = fields.Char(string='URL', related='link_id.url')
 
@@ -62,11 +62,11 @@ class LinkTrackerClick(models.Model):
         if group_by_field:
             group_by = f'search_default_groupby_{group_by_field}'
             context = {**self.env.context, f'{group_by}': True}
-        helper_header = _("No Recipient clicked your mailing yet!")
-        helper_message = _(
+        helper_header = self.env._("No Recipient clicked your mailing yet!")
+        helper_message = self.env._(
             "Come back once your mailing has been sent to track who clicked on the embedded links.")
         action = {
-            'name': _('Link Clicks'),
+            'name': self.env._('Link Clicks'),
             'type': 'ir.actions.act_window',
             'res_model': 'link.tracker.click',
             'view_mode': view_mode,

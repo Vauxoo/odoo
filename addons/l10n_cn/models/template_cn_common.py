@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('cn_common')
     def _get_cn_common_template_data(self):
         return {
-            'name': _('Common'),
+            'name': self.env._('Common'),
             'visible': 0,
             'code_digits': 4,
         }
@@ -35,7 +35,7 @@ class AccountChartTemplate(models.AbstractModel):
     def _get_cn_account_journal(self):
         return {
             'cash': {
-                'name': _("Cash"),
+                'name': self.env._("Cash"),
                 'type': 'cash',
                 'default_account_id': 'l10n_cn_common_account_1001',
             },

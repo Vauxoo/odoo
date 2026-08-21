@@ -20,7 +20,7 @@ class AccountMove(models.Model):
         compute='_compute_authorized_transaction_ids', readonly=True, copy=False,
         compute_sudo=True)
     transaction_count = fields.Integer(
-        string="Transaction Count", compute='_compute_transaction_count'
+        compute='_compute_transaction_count'
     )
     amount_paid = fields.Monetary(
         string="Amount paid",

@@ -4,7 +4,6 @@
     "name": "Google Gmail",
     "version": "1.2",
     "category": "Hidden",
-    "description": "Gmail support for incoming / outgoing mail servers",
     "depends": [
         "mail",
     ],

@@ -13,7 +13,6 @@ from odoo.fields import Domain
 from odoo.http import request
 from odoo.tools import SQL
 
-_logger = logging.getLogger(__name__)
 
 
 class IrUiView(models.Model):
@@ -21,11 +20,11 @@ class IrUiView(models.Model):
 
     _inherit = ["ir.ui.view", "website.seo.metadata"]
 
-    website_id = fields.Many2one('website', ondelete='cascade', string="Website")
+    website_id = fields.Many2one('website', ondelete='cascade')
     page_ids = fields.One2many('website.page', 'view_id')
     controller_page_ids = fields.One2many('website.controller.page', 'view_id')
     first_page_id = fields.Many2one('website.page', string='Website Page', help='First page linked to this view', compute='_compute_first_page_id')
-    track = fields.Boolean(string='Track', default=False, help="Allow to specify for one page of the website to be trackable or not")
+    track = fields.Boolean(default=False, help="Allow to specify for one page of the website to be trackable or not")
     visibility = fields.Selection(
         [
             ('public', 'Public'),
@@ -41,7 +40,7 @@ class IrUiView(models.Model):
 
     @api.depends_context('website_id')
     def _compute_arch(self):
-        super()._compute_arch()
+        return super()._compute_arch()
 
     @api.depends('visibility_password')
     def _get_pwd(self):
@@ -217,7 +216,7 @@ class IrUiView(models.Model):
                 record.with_context(website_id=website_id).write({
                     'inherit_id': specific_parent_view_id,
                 })
-        super()._create_all_specific_views(processed_modules)
+        return super()._create_all_specific_views(processed_modules)
 
     def unlink(self):
         '''This implements COU (copy-on-unlink). When deleting a generic page
@@ -501,7 +500,7 @@ class IrUiView(models.Model):
                     self._copy_custom_snippet_translations(record, field)
 
         except (ValueError, TypeError):
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "Invalid field value for %(field_name)s: %(value)s",
                 field_name=Model._fields[field].string,
                 value=el.text_content().strip(),

@@ -7,7 +7,7 @@ from odoo import api, fields, models, _
 class EventEvent(models.Model):
     _inherit = 'event.event'
 
-    exhibition_map = fields.Image(string='Exhibition Map', max_width=1024, max_height=1024)
+    exhibition_map = fields.Image(max_width=1024, max_height=1024)
     # frontend menu management
     booth_menu = fields.Boolean(
         string='Booth Register', compute='_compute_booth_menu',
@@ -55,5 +55,5 @@ class EventEvent(models.Model):
     def _get_website_menu_entries(self):
         self.ensure_one()
         return super()._get_website_menu_entries() + [
-            (_('Become exhibitor'), '/event/%s/booth' % self.env['ir.http']._slug(self), False, 90, 'booth', False)
+            (self.env._('Become exhibitor'), '/event/%s/booth' % self.env['ir.http']._slug(self), False, 90, 'booth', False)
         ]

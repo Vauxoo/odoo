@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for accounting",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'spreadsheet_account'],
     'data': [
         "data/dashboards.xml",

@@ -32,7 +32,7 @@ class VerifactuIssuer(models.Model):
         self.ensure_one()
         if not self.chain_sequence_id:
             sequence = self.env['ir.sequence'].sudo().create({
-                'name': _(
+                'name': self.env._(
                     "Veri*Factu Chain Sequence for %(company)s / %(partner)s (%(pid)s)",
                     company=self.company_id.name,
                     partner=self.obligado_partner_id.name,
@@ -62,7 +62,7 @@ class VerifactuIssuer(models.Model):
                 ('chain_index', '!=', False),
             ], limit=1)
             if has_documents:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Cannot delete the Veri*Factu SIF for '%(partner)s': "
                     "it has chained documents that must be preserved for audit purposes.",
                     partner=issuer.obligado_partner_id.display_name,

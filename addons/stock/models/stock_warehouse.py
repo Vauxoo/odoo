@@ -32,16 +32,15 @@ class StockWarehouse(models.Model):
         count = self.env['stock.warehouse'].with_context(active_test=False).search_count([('company_id', '=', self.env.company.id)])
         return "%s - warehouse # %s" % (self.env.company.name, count + 1) if count else self.env.company.name
 
-    name = fields.Char('Warehouse', required=True, default=_default_name)
-    active = fields.Boolean('Active', default=True)
+    name = fields.Char('Warehouse', required=True, default=lambda self: self._default_name())
+    active = fields.Boolean(default=True)
     company_id = fields.Many2one(
-        'res.company', 'Company', default=lambda self: self.env.company,
+        'res.company', default=lambda self: self.env.company,
         readonly=True, required=True,
         help='The company is automatically set from your user preferences.')
     partner_id = fields.Many2one('res.partner', 'Address', default=lambda self: self.env.company.partner_id, check_company=True)
     view_location_id = fields.Many2one(
-        'stock.location', 'View Location',
-        domain="[('usage', '=', 'view'), ('company_id', '=', company_id)]",
+        'stock.location', domain="[('usage', '=', 'view'), ('company_id', '=', company_id)]",
         required=True, check_company=True, index=True)
     lot_stock_id = fields.Many2one(
         'stock.location', 'Location Stock',
@@ -70,16 +69,16 @@ class StockWarehouse(models.Model):
     wh_output_stock_loc_id = fields.Many2one('stock.location', 'Output Location', check_company=True)
     wh_pack_stock_loc_id = fields.Many2one('stock.location', 'Packing Location', check_company=True)
     mto_pull_id = fields.Many2one('stock.rule', 'MTO rule', copy=False)
-    pick_type_id = fields.Many2one('stock.picking.type', 'Pick Type', check_company=True, copy=False)
-    pack_type_id = fields.Many2one('stock.picking.type', 'Pack Type', check_company=True, copy=False)
-    out_type_id = fields.Many2one('stock.picking.type', 'Out Type', check_company=True, copy=False)
-    in_type_id = fields.Many2one('stock.picking.type', 'In Type', check_company=True, copy=False)
+    pick_type_id = fields.Many2one('stock.picking.type', check_company=True, copy=False)
+    pack_type_id = fields.Many2one('stock.picking.type', check_company=True, copy=False)
+    out_type_id = fields.Many2one('stock.picking.type', check_company=True, copy=False)
+    in_type_id = fields.Many2one('stock.picking.type', check_company=True, copy=False)
     int_type_id = fields.Many2one('stock.picking.type', 'Internal Type', check_company=True, copy=False)
     qc_type_id = fields.Many2one('stock.picking.type', 'Quality Control Type', check_company=True, copy=False)
     store_type_id = fields.Many2one('stock.picking.type', 'Storage Type', check_company=True, copy=False)
     xdock_type_id = fields.Many2one('stock.picking.type', 'Cross Dock Type', check_company=True, copy=False)
     reception_route_id = fields.Many2one('stock.route', 'Receipt Route', ondelete='restrict', copy=False)
-    delivery_route_id = fields.Many2one('stock.route', 'Delivery Route', ondelete='restrict', copy=False)
+    delivery_route_id = fields.Many2one('stock.route', ondelete='restrict', copy=False)
     resupply_wh_ids = fields.Many2many(
         'stock.warehouse', 'stock_wh_resupply_table', 'supplied_wh_id', 'supplier_wh_id',
         'Resupply From', help="Routes will be created automatically to resupply this warehouse from the warehouses ticked")

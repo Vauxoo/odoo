@@ -10,7 +10,7 @@ class MailingContactImport(models.TransientModel):
     _description = 'Mailing Contact Import'
 
     mailing_list_ids = fields.Many2many('mailing.list', string='Lists')
-    contact_list = fields.Text('Contact List', help='Contact list that will be imported, one contact per line')
+    contact_list = fields.Text(help='Contact list that will be imported, one contact per line')
 
     def action_import(self):
         """Import each lines of "contact_list" as a new contact."""
@@ -21,7 +21,7 @@ class MailingContactImport(models.TransientModel):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'message': _('No valid email address found.'),
+                    'message': self.env._('No valid email address found.'),
                     'next': {'type': 'ir.actions.act_window_close'},
                     'sticky': False,
                     'type': 'warning',
@@ -33,7 +33,7 @@ class MailingContactImport(models.TransientModel):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'message': _('You have to much emails, please upload a file.'),
+                    'message': self.env._('You have to much emails, please upload a file.'),
                     'type': 'warning',
                     'sticky': False,
                     'next': self.action_open_base_import(),
@@ -74,7 +74,7 @@ class MailingContactImport(models.TransientModel):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'message': _('No contacts were imported. All email addresses are already in the mailing list.'),
+                    'message': self.env._('No contacts were imported. All email addresses are already in the mailing list.'),
                     'next': {'type': 'ir.actions.act_window_close'},
                     'sticky': False,
                     'type': 'warning',
@@ -90,13 +90,13 @@ class MailingContactImport(models.TransientModel):
         ])
 
         if ignored := len(contacts) - len(unique_contacts):
-            message = _(
+            message = self.env._(
                 "%(imported_count)s contacts have been imported. %(duplicate_count)s contacts are duplicates and have been ignored.",
                 imported_count=len(unique_contacts),
                 duplicate_count=ignored,
             )
         else:
-            message = _("%(imported_count)s contacts have been imported.", imported_count=len(unique_contacts))
+            message = self.env._("%(imported_count)s contacts have been imported.", imported_count=len(unique_contacts))
 
         if self.env.context.get('no_redirect'):
             next_action = {'type': 'ir.actions.act_window_close'}
@@ -104,7 +104,7 @@ class MailingContactImport(models.TransientModel):
             next_action = {
                 'context': self.env.context,
                 'domain': [('id', 'in', new_contacts.ids)],
-                'name': _('New contacts imported'),
+                'name': self.env._('New contacts imported'),
                 'res_model': 'mailing.contact',
                 'type': 'ir.actions.act_window',
                 'view_mode': 'list',

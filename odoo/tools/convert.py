@@ -724,7 +724,7 @@ def convert_file(
 
 
 def convert_sql_import(env, fp):
-    env.cr.execute(fp.read()) # pylint: disable=sql-injection
+    env.cr.execute(fp.read()) # ruff: ignore[sql-injection]
 
 
 def convert_csv_import(

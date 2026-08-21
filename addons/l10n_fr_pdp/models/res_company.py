@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 from odoo.tools.sql import SQL
 
 from odoo.addons.iap.tools import iap_tools
-from odoo.addons.l10n_fr_pdp.tools.demo_utils import handle_demo
+from ..tools.demo_utils import handle_demo
 
 PDP_identifier_re = re.compile(r'^([0-9]{9})(_[0-9]{14})?(_.+)?$')
 
@@ -180,7 +180,7 @@ class ResCompany(models.Model):
             'l10n_fr_pdp_annuaire_start_date': False,
             'l10n_fr_pdp_pilot_phase': False,
         })
-        super()._reset_peppol_configuration()
+        return super()._reset_peppol_configuration()
 
     def _peppol_supported_document_types(self):
         """Returns a flattened dictionary of all supported document types."""

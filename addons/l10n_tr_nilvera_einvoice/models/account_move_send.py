@@ -6,7 +6,6 @@ from collections import defaultdict
 from odoo import _, api, models
 from odoo.tools.float_utils import float_compare
 
-_logger = logging.getLogger(__name__)
 
 
 class AccountMoveSend(models.AbstractModel):
@@ -19,7 +18,7 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        label = _("by Nilvera (Demo)") if self.env.company.l10n_tr_nilvera_use_test_env else _("by Nilvera")
+        label = self.env._("by Nilvera (Demo)") if self.env.company.l10n_tr_nilvera_use_test_env else self.env._("by Nilvera")
         res.update({'tr_nilvera': {'label': label, 'is_applicable': self._is_tr_nilvera_applicable}})
         return res
 
@@ -63,9 +62,9 @@ class AccountMoveSend(models.AbstractModel):
             and not c.partner_id._get_additional_identifier('TR_TICARET_SICIL')
         ):
             alerts["tr_companies_missing_required_codes"] = {
-                "message": _("Please ensure that your company contact has either the 'Mersis Number' or 'Trade Registry Number' has a value."),
-                "action_text": _("View Company(s)"),
-                "action": tr_companies_missing_required_codes.partner_id._get_records_action(name=_("Check company(s)")),
+                "message": self.env._("Please ensure that your company contact has either the 'Mersis Number' or 'Trade Registry Number' has a value."),
+                "action_text": self.env._("View Company(s)"),
+                "action": tr_companies_missing_required_codes.partner_id._get_records_action(name=self.env._("Check company(s)")),
                 "level": "danger",
             }
 
@@ -81,12 +80,12 @@ class AccountMoveSend(models.AbstractModel):
         ).company_id:
             alerts["tr_companies_missing_required_fields"] = {
                 'level': 'danger',
-                "message": _(
+                "message": self.env._(
                     "The following company(s) either do not have their country set as Türkiye "
                     "or are missing at least one of these fields: Tax ID, Street, City, or State"
                 ),
-                "action_text": _("View Company(s)"),
-                "action": tr_companies_missing_required_fields._get_records_action(name=_(
+                "action_text": self.env._("View Company(s)"),
+                "action": tr_companies_missing_required_fields._get_records_action(name=self.env._(
                     "Check Tax ID, City, Street, State, and Country or Company(s)"
                 )),
             }
@@ -112,13 +111,13 @@ class AccountMoveSend(models.AbstractModel):
         ).partner_id:
             alerts["tr_partners_invalid_edi_or_status"] = {
                 'level': 'danger',
-                "message": _(
+                "message": self.env._(
                     "The following partner(s) either do not have the e-invoice format UBL TR 1.2 "
                     "or have not checked their Nilvera Status"
                 ),
-                "action_text": _("View Partner(s)"),
+                "action_text": self.env._("View Partner(s)"),
                 "action": tr_partners_invalid_edi_or_status._get_records_action(
-                    name=_("Check e-Invoice Format or Nilvera Status on Partner(s)"
+                    name=self.env._("Check e-Invoice Format or Nilvera Status on Partner(s)"
                 )),
             }
 
@@ -127,20 +126,20 @@ class AccountMoveSend(models.AbstractModel):
         ):
             alerts["critical_invalid_negative_lines"] = {
                 "level": "danger",
-                "message": _("Nilvera portal cannot process negative quantity nor negative price on invoice lines"),
-                "action_text": _("View Invoice(s)"),
-                "action": invalid_negative_lines._get_records_action(name=_("Check data on Invoice(s)")),
+                "message": self.env._("Nilvera portal cannot process negative quantity nor negative price on invoice lines"),
+                "action_text": self.env._("View Invoice(s)"),
+                "action": invalid_negative_lines._get_records_action(name=self.env._("Check data on Invoice(s)")),
             }
 
         if moves_with_invalid_name := tr_nilvera_moves.filtered(lambda move: not _is_valid_nilvera_name(move)):
             alerts['tr_moves_with_invalid_name'] = {
                 'level': 'danger',
-                'message': _(
+                'message': self.env._(
                     "The invoice name must follow the format when sending to Nilvera: 3 alphanumeric characters, "
                     "followed by the year, and then a sequential number. Example: INV/2025/000001",
                 ),
-                'action_text': _("View Invoice(s)"),
-                'action': moves_with_invalid_name._get_records_action(name=_("Check name on Invoice(s)")),
+                'action_text': self.env._("View Invoice(s)"),
+                'action': moves_with_invalid_name._get_records_action(name=self.env._("Check name on Invoice(s)")),
             }
 
         if public_spending_units_missing_vat := tr_nilvera_moves.l10n_tr_public_spending_unit_id.filtered(lambda rec:
@@ -181,14 +180,14 @@ class AccountMoveSend(models.AbstractModel):
             lambda ml: ml.move_id.l10n_tr_exemption_code_id == exemption_702 and not ml.l10n_tr_customer_line_code,
         ):
             alerts['l10n_tr_moves_with_missing_line_codes'] = {
-                'message': _(
+                'message': self.env._(
                     "For Registered for Export type invoices with a 702 reason code, the Customer "
                     "Line Code must be filled in per product in the invoice lines.",
                 ),
                 'level': 'danger',
-                'action_text': _("View Invoice(s)"),
+                'action_text': self.env._("View Invoice(s)"),
                 'action': moves_with_missing_line_codes.move_id._get_records_action(
-                    name=_("Check Invoice(s)"),
+                    name=self.env._("Check Invoice(s)"),
                 ),
             }
 
@@ -198,12 +197,12 @@ class AccountMoveSend(models.AbstractModel):
         ):
             alerts["tr_moves_with_invalid_invoice_reference"] = {
                 "level": "danger",
-                "message": _(
+                "message": self.env._(
                     "The credit notes must have a valid reference to the original invoice in the reference field"
                 ),
-                "action_text": _("Check reference on Invoice(s)"),
+                "action_text": self.env._("Check reference on Invoice(s)"),
                 "action": invalid_invoice_references._get_records_action(
-                    name=_("Check reference on Credit Note(s)")
+                    name=self.env._("Check reference on Credit Note(s)")
                 ),
             }
 
@@ -213,12 +212,12 @@ class AccountMoveSend(models.AbstractModel):
         ):
             alerts["tr_moves_with_invalid_type"] = {
                 "level": "danger",
-                "message": _(
+                "message": self.env._(
                     "Type 'Return' and 'Withholding Return' should only be used for Credit Notes"
                 ),
-                "action_text": _("Check invoice type"),
+                "action_text": self.env._("Check invoice type"),
                 "action": invalid_type_invoices._get_records_action(
-                    name=_("Check Invoice Type")
+                    name=self.env._("Check Invoice Type")
                 ),
             }
 
@@ -238,12 +237,12 @@ class AccountMoveSend(models.AbstractModel):
         ):
             alerts["tr_credit_note_invoice_not_sent"] = {
                 "level": "danger",
-                "message": _(
+                "message": self.env._(
                     "Return invoices can only be sent if the original invoice has already been successfully sent to Nilvera"
                 ),
-                "action_text": _("View Invoice(s)"),
+                "action_text": self.env._("View Invoice(s)"),
                 "action": tr_credit_note_invoice_not_sent.reversed_entry_id._get_records_action(
-                    name=_("View Invoice(s)")
+                    name=self.env._("View Invoice(s)")
                 ),
             }
         return alerts
@@ -265,18 +264,18 @@ class AccountMoveSend(models.AbstractModel):
         if not errors:
             return ""
 
-        error_message = _("For withholding return invoices, the tax amount is expected to be the same percentage as the returned quantity.\n"
+        error_message = self.env._("For withholding return invoices, the tax amount is expected to be the same percentage as the returned quantity.\n"
                             "The following mismatch was found:\n")
         for invoice, lines in errors.items():
             for line, error in lines.items():
                 error_message += "- [%s] - %s: %s\n" % (invoice, line, error)
 
-        error_message += _("Make sure the price and taxes match the original invoice.")
+        error_message += self.env._("Make sure the price and taxes match the original invoice.")
         return {
             'level': 'danger',
             'message': error_message,
-            'action_text': _("Check Tax Amounts on Credit Note(s)"),
-            'action': moves._get_records_action(name=_("Check Tax Amounts on Credit Note(s)")),
+            'action_text': self.env._("Check Tax Amounts on Credit Note(s)"),
+            'action': moves._get_records_action(name=self.env._("Check Tax Amounts on Credit Note(s)")),
         }
 
 
@@ -294,9 +293,9 @@ class AccountMoveSend(models.AbstractModel):
             ),
         ).partner_id:
             return {
-                "message": _("The following partner(s) are missing at least one of these fields: Tax ID, Street, City, State or Country"),
-                "action_text": _("View Partner(s)"),
-                "action": tr_partners_missing_required_fields._get_records_action(name=_("Check Tax ID, City, Street, State, and Country or Partner(s)")),
+                "message": self.env._("The following partner(s) are missing at least one of these fields: Tax ID, Street, City, State or Country"),
+                "action_text": self.env._("View Partner(s)"),
+                "action": tr_partners_missing_required_fields._get_records_action(name=self.env._("Check Tax ID, City, Street, State, and Country or Partner(s)")),
                 "level": "danger",
             }
         return {}

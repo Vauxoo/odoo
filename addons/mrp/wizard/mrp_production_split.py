@@ -26,7 +26,7 @@ class MrpProductionSplit(models.TransientModel):
         'mrp.production.split.line', 'mrp_production_split_id',
         'Split Details', compute="_compute_details", store=True, readonly=False)
     valid_details = fields.Boolean("Valid", compute="_compute_valid_details")
-    max_batch_size = fields.Float("Max Batch Size", compute="_compute_max_batch_size", digits='Product Unit', readonly=False)
+    max_batch_size = fields.Float(compute="_compute_max_batch_size", digits='Product Unit', readonly=False)
     num_splits = fields.Integer("# Splits", compute="_compute_num_splits", readonly=True)
 
     @api.depends('production_id')

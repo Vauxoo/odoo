@@ -38,7 +38,7 @@ class AccountMove(models.Model):
             })
         else:
             action.update({
-                'name': _("WIP MOs of %s", self.name),
+                'name': self.env._("WIP MOs of %s", self.name),
                 'domain': [('id', 'in', self.wip_production_ids.ids)],
                 'view_mode': 'list,form',
             })

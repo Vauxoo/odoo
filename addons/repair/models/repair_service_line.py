@@ -18,12 +18,12 @@ class RepairServiceLine(models.Model):
         readonly=False, required=True, compute='_compute_uom_id', store=True, copy=True, precompute=True)
     allowed_uom_ids = fields.Many2many('uom.uom', compute='_compute_allowed_uom_ids')
     quantity = fields.Float(
-        'Quantity', digits='Product Unit', required=True, default=1.0)
+        digits='Product Unit', required=True, default=1.0)
     company_id = fields.Many2one(related='repair_id.company_id')
-    sale_line_id = fields.One2many('sale.order.line', 'repair_service_line_id', 'Sale Line', index='btree_not_null')
-    invoice_line_ids = fields.One2many('account.move.line', 'repair_service_line_id', string='Invoice Line', index='btree_not_null')
-    sequence = fields.Integer('Sequence', default=0)
-    description = fields.Text(string="Description", translate=True)
+    sale_line_id = fields.One2many('sale.order.line', 'repair_service_line_id', index='btree_not_null')
+    invoice_line_ids = fields.One2many('account.move.line', 'repair_service_line_id', index='btree_not_null')
+    sequence = fields.Integer(default=0)
+    description = fields.Text(translate=True)
 
     @api.depends('product_id')
     def _compute_uom_id(self):

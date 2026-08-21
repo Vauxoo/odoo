@@ -5,14 +5,6 @@
     'version': '1.2',
     'category': 'Accounting/Accounting',
     'depends' : ['base', 'mail', 'uom'],
-    'description': """
-Module for defining analytic accounting object.
-===============================================
-
-In Odoo, analytic accounts are linked to general accounts but are treated
-totally independently. So, you can enter various different analytic operations
-that have no counterpart in the general financial accounts.
-    """,
     'data': [
         'security/analytic_security.xml',
         'views/analytic_line_views.xml',

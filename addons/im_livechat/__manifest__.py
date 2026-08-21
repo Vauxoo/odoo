@@ -4,17 +4,6 @@
     'summary': 'Chat with your website visitors',
     'category': 'Website/Live Chat',
     'website': 'https://www.odoo.com/app/live-chat',
-    'description':
-        """
-Live Chat Support
-==========================
-
-Allow to drop instant messaging widgets on any web page that will communicate
-with the current server and dispatch visitors request amongst several live
-chat operators.
-Help your customers with this chat, and analyse their feedback.
-
-        """,
     'data': [
         "security/im_livechat_channel_security.xml",
         "data/mail_templates.xml",

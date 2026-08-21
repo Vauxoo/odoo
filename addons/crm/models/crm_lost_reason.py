@@ -10,8 +10,8 @@ class CrmLostReason(models.Model):
     _explanation = "Defines the standard reasons why a sales opportunity or lead was marked as lost. Used for reporting and analyzing sales failures."
 
     name = fields.Char('Description', required=True, translate=True)
-    active = fields.Boolean('Active', default=True)
-    leads_count = fields.Integer('Leads Count', compute='_compute_leads_count')
+    active = fields.Boolean(default=True)
+    leads_count = fields.Integer(compute='_compute_leads_count')
 
     def _compute_leads_count(self):
         lead_data = self.env['crm.lead'].with_context(active_test=False)._read_group(
@@ -25,7 +25,7 @@ class CrmLostReason(models.Model):
 
     def action_lost_leads(self):
         return {
-            'name': _('Leads'),
+            'name': self.env._('Leads'),
             'view_mode': 'list,form',
             'domain': [('lost_reason_id', 'in', self.ids)],
             'res_model': 'crm.lead',

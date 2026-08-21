@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class StockPutInPack(models.TransientModel):
     _inherit = 'stock.put.in.pack'
 
-    shipping_weight = fields.Float('Shipping Weight', compute='_compute_shipping_weight', store=True, readonly=False)
+    shipping_weight = fields.Float(compute='_compute_shipping_weight', store=True, readonly=False)
     weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name')
     package_carrier_type = fields.Char('Carrier Type')
 

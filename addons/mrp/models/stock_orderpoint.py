@@ -24,7 +24,7 @@ class StockWarehouseOrderpoint(models.Model):
     def _inverse_route_id(self):
         orderpoints_to_update = self.filtered(lambda o: o.bom_id and not o.route_id)
         orderpoints_to_update.bom_id = False
-        super()._inverse_route_id()
+        return super()._inverse_route_id()
 
     def _get_replenishment_order_notification(self, written_after=None):
         self.ensure_one()
@@ -37,7 +37,7 @@ class StockWarehouseOrderpoint(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _('The following replenishment order has been generated'),
+                    'title': self.env._('The following replenishment order has been generated'),
                     'message': '%s',
                     'links': [{
                         'label': production.name,
@@ -52,7 +52,7 @@ class StockWarehouseOrderpoint(models.Model):
     @api.depends('bom_id', 'product_id.bom_ids.produce_delay')
     def _compute_deadline_date(self):
         """ Extend to add more depends values """
-        super()._compute_deadline_date()
+        return super()._compute_deadline_date()
 
     def _get_lead_days_values(self):
         values = super()._get_lead_days_values()
@@ -63,7 +63,7 @@ class StockWarehouseOrderpoint(models.Model):
     @api.depends('bom_id', 'bom_id.uom_id', 'product_id.bom_ids', 'product_id.bom_ids.uom_id')
     def _compute_qty_to_order_computed(self):
         """ Extend to add more depends values """
-        super()._compute_qty_to_order_computed()
+        return super()._compute_qty_to_order_computed()
 
     def _compute_allowed_replenishment_uom_ids(self):
         super()._compute_allowed_replenishment_uom_ids()

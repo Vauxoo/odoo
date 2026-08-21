@@ -48,11 +48,11 @@ class AccountPayment(models.Model):
         tracking=True,
         copy=False,
     )
-    is_reconciled = fields.Boolean(string="Is Reconciled", store=True,
+    is_reconciled = fields.Boolean(store=True,
         compute='_compute_reconciliation_status')
     is_matched = fields.Boolean(string="Is Matched With a Bank Statement", store=True,
         compute='_compute_reconciliation_status')
-    is_sent = fields.Boolean(string="Is Sent", readonly=True, copy=False)
+    is_sent = fields.Boolean(readonly=True, copy=False)
     available_partner_bank_ids = fields.Many2many(
         comodel_name='res.partner.bank',
         compute='_compute_available_partner_bank_ids',
@@ -109,17 +109,16 @@ class AccountPayment(models.Model):
     payment_type = fields.Selection([
         ('outbound', 'Send'),
         ('inbound', 'Receive'),
-    ], string='Payment Type', default='inbound', required=True, tracking=True)
+    ], default='inbound', required=True, tracking=True)
     partner_type = fields.Selection([
         ('customer', 'Customer'),
         ('supplier', 'Vendor'),
     ], default='customer', tracking=True, required=True)
-    memo = fields.Char(string="Memo", tracking=True, inverse='_inverse_memo')
-    payment_reference = fields.Char(string="Payment Reference", copy=False, tracking=True,
+    memo = fields.Char(tracking=True, inverse='_inverse_memo')
+    payment_reference = fields.Char(copy=False, tracking=True,
         help="Reference of the document used to issue this payment. Eg. check number, file name, etc.")
     currency_id = fields.Many2one(
         comodel_name='res.currency',
-        string='Currency',
         compute='_compute_currency_id', store=True, readonly=False, precompute=True,
         help="The payment's currency.")
     company_currency_id = fields.Many2one(string="Company Currency", related='company_id.currency_id')
@@ -141,7 +140,6 @@ class AccountPayment(models.Model):
     )
     outstanding_account_id = fields.Many2one(
         comodel_name='account.account',
-        string="Outstanding Account",
         store=True,
         index='btree_not_null',
         compute='_compute_outstanding_account_id',
@@ -150,7 +148,6 @@ class AccountPayment(models.Model):
         related='outstanding_account_id.account_type')
     destination_account_id = fields.Many2one(
         comodel_name='account.account',
-        string='Destination Account',
         store=True, readonly=False,
         compute='_compute_destination_account_id',
         domain="[('account_type', 'in', ('asset_receivable', 'liability_payable'))]",
@@ -289,7 +286,7 @@ class AccountPayment(models.Model):
             ]
         """
         self.ensure_one()
-        label = self.payment_method_line_id.name if self.payment_method_line_id else _("No Payment Method")
+        label = self.payment_method_line_id.name if self.payment_method_line_id else self.env._("No Payment Method")
 
         if self.memo:
             return [
@@ -309,7 +306,7 @@ class AccountPayment(models.Model):
         self.ensure_one()
 
         if not self.outstanding_account_id:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You can't create a new payment without an outstanding payments/receipts account set either on the company or the %(payment_method)s payment method in the %(journal)s journal.",
                 payment_method=self.payment_method_line_id.name, journal=self.journal_id.display_name))
 
@@ -543,7 +540,7 @@ class AccountPayment(models.Model):
 
     def action_open_business_doc(self):
         return {
-            'name': _("Payment"),
+            'name': self.env._("Payment"),
             'type': 'ir.actions.act_window',
             'views': [(False, 'form')],
             'res_model': 'account.payment',
@@ -704,7 +701,7 @@ class AccountPayment(models.Model):
                         <img class="border border-dark rounded" src="{qr_code}"/>
                         <br/>
                         <strong class="text-center">{txt}</strong>
-                        '''.format(txt = _('Scan me with your banking app.'),
+                        '''.format(txt = self.env._('Scan me with your banking app.'),
                                    qr_code = qr_code)
                     continue
 
@@ -909,9 +906,9 @@ class AccountPayment(models.Model):
         '''
         for pay in self:
             if not pay.payment_method_line_id:
-                raise ValidationError(_("Please define a payment method line on your payment."))
+                raise ValidationError(self.env._("Please define a payment method line on your payment."))
             elif pay.payment_method_line_id.journal_id and pay.payment_method_line_id.journal_id != pay.journal_id:
-                raise ValidationError(_("The selected payment method is not available for this payment, please select the payment method again."))
+                raise ValidationError(self.env._("The selected payment method is not available for this payment, please select the payment method again."))
 
     @api.constrains('state', 'move_id')
     def _check_move_id(self):
@@ -921,7 +918,7 @@ class AccountPayment(models.Model):
                 and not payment.move_id
                 and payment.outstanding_account_id
             ):
-                raise ValidationError(_("A payment with an outstanding account cannot be confirmed without having a journal entry."))
+                raise ValidationError(self.env._("A payment with an outstanding account cannot be confirmed without having a journal entry."))
 
     # -------------------------------------------------------------------------
     # LOW-LEVEL METHODS
@@ -983,7 +980,7 @@ class AccountPayment(models.Model):
             or self.company_id.transfer_account_id
         )
         if not outstanding_account:
-            raise UserError(_("No outstanding account could be found to make the payment"))
+            raise UserError(self.env._("No outstanding account could be found to make the payment"))
         return outstanding_account
 
     def write(self, vals):
@@ -1008,7 +1005,7 @@ class AccountPayment(models.Model):
     @api.depends('move_id.name')
     def _compute_display_name(self):
         for payment in self:
-            payment.display_name = payment.name or _('Draft Payment')
+            payment.display_name = payment.name or self.env._('Draft Payment')
 
     def copy_data(self, default=None):
         default = dict(default or {})
@@ -1048,7 +1045,7 @@ class AccountPayment(models.Model):
             liquidity_lines, counterpart_lines, writeoff_lines = pay._seek_for_lines()
 
             if 'amount' in changed_fields and len(liquidity_lines) > 1:
-                raise UserError(_("You cannot change the amount of a payment with multiple liquidity lines."))
+                raise UserError(self.env._("You cannot change the amount of a payment with multiple liquidity lines."))
 
             # Make sure to preserve the write-off amount.
             # This allows to create a new payment with custom 'line_ids'.
@@ -1174,7 +1171,7 @@ class AccountPayment(models.Model):
                 and not payment.partner_bank_id.allow_out_payment
                 and payment.payment_type == 'outbound'
             ):
-                raise UserError(_(
+                raise UserError(self.env._(
                     "To record payments with %(method_name)s, the recipient bank account must be manually validated. "
                     "You should go on the partner bank account of %(partner)s in order to validate it.",
                     method_name=self.payment_method_line_id.name,
@@ -1187,9 +1184,9 @@ class AccountPayment(models.Model):
     def action_validate(self):
         for payment in self:
             if payment.outstanding_account_type == 'asset_cash':
-                raise UserError(_("Payments linked to an Asset Cash account cannot be reconciled."))
+                raise UserError(self.env._("Payments linked to an Asset Cash account cannot be reconciled."))
             if payment.state != 'paid':
-                raise UserError(_("Payment must be in paid state to be reconciled."))
+                raise UserError(self.env._("Payment must be in paid state to be reconciled."))
             payment.state = 'reconciled'
 
     def action_reject(self):
@@ -1220,7 +1217,7 @@ class AccountPayment(models.Model):
         return self.reconciled_invoice_ids.with_context(
             create=False
         )._get_records_action(
-            name=_("Paid Invoices"),
+            name=self.env._("Paid Invoices"),
         )
 
     def button_open_bills(self):
@@ -1230,7 +1227,7 @@ class AccountPayment(models.Model):
         self.ensure_one()
 
         action = {
-            'name': _("Paid Bills"),
+            'name': self.env._("Paid Bills"),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'context': {'create': False},
@@ -1254,7 +1251,7 @@ class AccountPayment(models.Model):
         self.ensure_one()
 
         action = {
-            'name': _("Matched Transactions"),
+            'name': self.env._("Matched Transactions"),
             'type': 'ir.actions.act_window',
             'res_model': 'account.bank.statement.line',
             'context': {'create': False},
@@ -1277,7 +1274,7 @@ class AccountPayment(models.Model):
         '''
         self.ensure_one()
         return {
-            'name': _("Journal Entry"),
+            'name': self.env._("Journal Entry"),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'context': {'create': False},

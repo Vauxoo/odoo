@@ -5,18 +5,6 @@
     'countries': ['pk'],
     'version': '1.1',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Pakistan Accounting Module
-=======================================================
-Pakistan accounting basic charts and localization.
-
-Activates:
-
-- Chart of Accounts
-- Taxes
-- Tax Report
-- Withholding Tax Report
-    """,
     'depends': [
         'account',
         'account_tax_python',

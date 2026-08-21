@@ -5,16 +5,6 @@
     'countries': ['nz'],
     'version': '1.2',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-New Zealand Accounting Module
-=============================
-
-New Zealand accounting basic charts and localizations.
-
-Also:
-    - activates a number of regional currencies.
-    - sets up New Zealand taxes.
-    """,
     'author': 'Odoo S.A., Richard deMeester - Willow IT',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'depends': [

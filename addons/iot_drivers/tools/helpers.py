@@ -22,8 +22,8 @@ from werkzeug.exceptions import Locked
 
 from odoo import service
 
-from odoo.addons.iot_drivers.tools import system
-from odoo.addons.iot_drivers.tools.system import (
+from . import system
+from .system import (
     IOT_IDENTIFIER,
     IOT_RPI_CHAR,
     IOT_WINDOWS_CHAR,

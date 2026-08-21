@@ -4,10 +4,6 @@
     'name': 'Units of measure',
     'category': 'Sales/Sales',
     'depends': ['base'],
-    'description': """
-This is the base module for managing Units of measure.
-========================================================================
-    """,
     'data': [
         'data/uom_data.xml',
         'security/uom_security.xml',

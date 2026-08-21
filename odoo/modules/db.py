@@ -64,7 +64,7 @@ def initialize(cr: Cursor) -> None:
     """
     try:
         with odoo.tools.misc.file_open('base/data/base_data.sql') as base_sql_file:
-            cr.execute(base_sql_file.read())  # pylint: disable=sql-injection
+            cr.execute(base_sql_file.read())  # ruff: ignore[sql-injection]
     except FileNotFoundError:
         m = "File not found: 'base.sql' (provided by module 'base')."
         _logger.critical(m)
@@ -72,7 +72,7 @@ def initialize(cr: Cursor) -> None:
     if RANDOM_SERIAL:
         _logger.info("Initializing tables with random ids")
         with odoo.tools.misc.file_open('base/data/base_data_test.sql') as base_sql_file:
-            cr.execute(base_sql_file.read())  # pylint: disable=sql-injection
+            cr.execute(base_sql_file.read())  # ruff: ignore[sql-injection]
 
     for info in odoo.modules.Manifest.all_addon_manifests():
         module_name = info.name

@@ -11,10 +11,10 @@ class SlideQuestion(models.Model):
     _description = "Content Quiz Question"
     _order = "sequence"
 
-    sequence = fields.Integer("Sequence")
+    sequence = fields.Integer()
     question = fields.Char("Question Name", required=True, translate=True)
     slide_id = fields.Many2one('slide.slide', string="Content", required=True, index=True, ondelete='cascade')
-    answer_ids = fields.One2many('slide.answer', 'question_id', string="Answer", copy=True)
+    answer_ids = fields.One2many('slide.answer', 'question_id', copy=True)
     answers_validation_error = fields.Char("Error on Answers", compute='_compute_answers_validation_error')
     # statistics
     attempts_count = fields.Integer(compute='_compute_statistics', groups='website_slides.group_website_slides_officer')
@@ -29,7 +29,7 @@ class SlideQuestion(models.Model):
             if question.answers_validation_error
         ]
         if questions_to_fix:
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 'All questions must have at least one correct answer and one incorrect answer: \n%s\n',
                 '\n'.join(questions_to_fix)))
 
@@ -54,7 +54,7 @@ class SlideQuestion(models.Model):
     def _compute_answers_validation_error(self):
         for question in self:
             correct = question.answer_ids.filtered('is_correct')
-            question.answers_validation_error = _(
+            question.answers_validation_error = self.env._(
                 'This question must have at least one correct answer and one incorrect answer.'
             ) if not correct or correct == question.answer_ids else ''
 
@@ -65,8 +65,8 @@ class SlideAnswer(models.Model):
     _description = "Slide Question's Answer"
     _order = 'question_id, sequence, id'
 
-    sequence = fields.Integer("Sequence")
-    question_id = fields.Many2one('slide.question', string="Question", required=True, index=True, ondelete='cascade')
+    sequence = fields.Integer()
+    question_id = fields.Many2one('slide.question', required=True, index=True, ondelete='cascade')
     text_value = fields.Char("Answer", required=True, translate=True)
     is_correct = fields.Boolean("Is correct answer")
-    comment = fields.Text("Comment", translate=True, help='This comment will be displayed to the user if they select this answer')
+    comment = fields.Text(translate=True, help='This comment will be displayed to the user if they select this answer')

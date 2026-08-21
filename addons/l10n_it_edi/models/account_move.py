@@ -16,8 +16,8 @@ from stdnum.it import codicefiscale, iva
 
 from odoo import _, api, Command, fields, models, modules
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
-from odoo.addons.l10n_it_edi.models.account_payment_method_line import L10N_IT_PAYMENT_METHOD_SELECTION
-from odoo.addons.l10n_it_edi.tools.remove_signature import remove_signature
+from .account_payment_method_line import L10N_IT_PAYMENT_METHOD_SELECTION
+from ..tools.remove_signature import remove_signature
 from odoo.tools.mimetypes import guess_mimetype
 
 _logger = logging.getLogger(__name__)
@@ -197,11 +197,11 @@ class AccountMove(models.Model):
     def _compute_l10n_it_edi_button_label(self):
         for move in self:
             if move.country_code == 'IT' and move.l10n_it_edi_proxy_mode in (False, 'demo'):
-                move.l10n_it_edi_button_label = _("Send (Demo)")
+                move.l10n_it_edi_button_label = self.env._("Send (Demo)")
             elif move.country_code == 'IT' and move.l10n_it_edi_proxy_mode == 'test':
-                move.l10n_it_edi_button_label = _("Send (Test)")
+                move.l10n_it_edi_button_label = self.env._("Send (Test)")
             else:
-                move.l10n_it_edi_button_label = _("Send")
+                move.l10n_it_edi_button_label = self.env._("Send")
 
     @api.depends('move_type', 'line_ids.tax_tag_ids')
     def _compute_l10n_it_edi_is_self_invoice(self):
@@ -426,7 +426,7 @@ class AccountMove(models.Model):
             self.l10n_it_edi_state == 'forwarded'
             and not self.l10n_it_partner_is_public_administration
         ):
-            raise UserError(_("This move is not waiting for updates from the SdI."))
+            raise UserError(self.env._("This move is not waiting for updates from the SdI."))
         if self.l10n_it_edi_state == 'being_sent':
             return {'type': 'ir.actions.client', 'tag': 'reload'}
         self._l10n_it_edi_update_send_state()
@@ -455,7 +455,7 @@ class AccountMove(models.Model):
         if self.filtered('l10n_it_edi_attachment_file'):
             print_items.append({
                 'key': 'download_xml_fatturapa',
-                'description': _('XML FatturaPA'),
+                'description': self.env._('XML FatturaPA'),
                 **self.action_invoice_download_fatturapa(),
             })
         return print_items
@@ -1384,7 +1384,7 @@ class AccountMove(models.Model):
 
             # Post the attachment in the chatter
             move.message_post(
-                body=_("This invoice was retrieved from the SdI."),
+                body=self.env._("This invoice was retrieved from the SdI."),
                 attachment_ids=attachment_ids
             )
             move._extend_with_attachments([file_data], new=True)
@@ -1470,7 +1470,7 @@ class AccountMove(models.Model):
                     ('l10n_it_withholding_type', '=', withholding_type),
                     *type_tax_use_domain
                 ],
-                _("ENASARCO tax (type %(wtype)s) has wrong reason %(reason)s",
+                self.env._("ENASARCO tax (type %(wtype)s) has wrong reason %(reason)s",
                   wtype=withholding_type, reason=withholding_reason))
             ]):
                 if withholding_tax := self._l10n_it_edi_search_tax_for_import(
@@ -1479,7 +1479,7 @@ class AccountMove(models.Model):
                     withholding_taxes.append(withholding_tax)
                     break
             else:
-                message = _("Withholding tax not found")
+                message = self.env._("Withholding tax not found")
             if message:
                 message_to_log.append(Markup("%s<br/>%s") % (message, self._compose_info_message(body_tree, '.')))
 
@@ -1507,7 +1507,7 @@ class AccountMove(models.Model):
                 pension_fund_taxes[key] |= pension_fund_tax
             else:
                 message_to_log.append(Markup("%s<br/>%s") % (
-                    _("Pension Fund tax not found"),
+                    self.env._("Pension Fund tax not found"),
                     self.env['account.move']._compose_info_message(body_tree, '.'),
                 ))
         extra_info["pension_fund_taxes"] = pension_fund_taxes
@@ -1654,7 +1654,7 @@ class AccountMove(models.Model):
                 if codice_fiscale and codice_fiscale.casefold() in (company.l10n_it_codice_fiscale or '').casefold():
                     break
             else:
-                invoice.message_post(body=_("Your company's VAT number and Fiscal Code haven't been found in the buyer and/or seller sections inside the document."))
+                invoice.message_post(body=self.env._("Your company's VAT number and Fiscal Code haven't been found in the buyer and/or seller sections inside the document."))
                 return
 
             # For unsupported document types, just assume in_invoice, and log that the type is unsupported
@@ -1721,7 +1721,7 @@ class AccountMove(models.Model):
             if document_date := get_date(tree, './/DatiGeneraliDocumento/Data'):
                 self.invoice_date = document_date
             else:
-                message_to_log.append(_("Document date invalid in XML file: %s", document_date))
+                message_to_log.append(self.env._("Document date invalid in XML file: %s", document_date))
 
             # Stamp Duty
             if stamp_duty := get_text(tree, './/DatiGeneraliDocumento/DatiBollo/ImportoBollo'):
@@ -1736,13 +1736,13 @@ class AccountMove(models.Model):
             # <2.1.2> - <2.1.6>
             for document_type in ['DatiOrdineAcquisto', 'DatiContratto', 'DatiConvenzione', 'DatiRicezione', 'DatiFattureCollegate']:
                 for element in tree.xpath('.//DatiGenerali/' + document_type):
-                    message = Markup("{} {}<br/>{}").format(document_type, _("from XML file:"), self._compose_info_message(element, '.'))
+                    message = Markup("{} {}<br/>{}").format(document_type, self.env._("from XML file:"), self._compose_info_message(element, '.'))
                     message_to_log.append(message)
 
             #  Dati DDT. <2.1.8>
             if elements := tree.xpath('.//DatiGenerali/DatiDDT'):
                 message = Markup("<br/>").join((
-                    _("Transport informations from XML file:"),
+                    self.env._("Transport informations from XML file:"),
                     self._compose_info_message(tree, './/DatiGenerali/DatiDDT')
                 ))
                 message_to_log.append(message)
@@ -1754,7 +1754,7 @@ class AccountMove(models.Model):
             # Payment / Bank --------------------------------------
             payments_info = self._l10n_it_edi_get_payment_info(tree)
             if payments_info['info']:
-                message_to_log.append(_("Total amount from the XML File: %s", payments_info['amount_total']))
+                message_to_log.append(self.env._("Total amount from the XML File: %s", payments_info['amount_total']))
                 payment_due_dates = []
                 self.l10n_it_payment_method = False
                 for payment_info in payments_info['info']:
@@ -1792,7 +1792,7 @@ class AccountMove(models.Model):
                 ))
             if attachment_vals:
                 self.sudo().message_post(
-                    body=(_("Attachments from XML")),
+                    body=(self.env._("Attachments from XML")),
                     attachments=attachment_vals,
                 )
 
@@ -1928,7 +1928,7 @@ class AccountMove(models.Model):
                 move_line.tax_ids |= self.fiscal_position_id.map_tax(tax)
             else:
                 message = Markup("<br/>").join((
-                    _("Tax not found for line with description '%s'", move_line.name),
+                    self.env._("Tax not found for line with description '%s'", move_line.name),
                     self._compose_info_message(element, '.')
                 ))
                 message_to_log.append(message)
@@ -1958,7 +1958,7 @@ class AccountMove(models.Model):
             current_total = current_unit_price * move_line.quantity
             if float_compare(expected_total, current_total, precision_rounding=move_line.currency_id.rounding) != 0:
                 message = Markup("<br/>").join((
-                    _("The amount_total %(current_total)s is different than PrezzoTotale %(expected_total)s for '%(move_name)s'", current_total=current_total, expected_total=expected_total, move_name=move_line.name),
+                    self.env._("The amount_total %(current_total)s is different than PrezzoTotale %(expected_total)s for '%(move_name)s'", current_total=current_total, expected_total=expected_total, move_name=move_line.name),
                     self._compose_info_message(element, '.')
                 ))
                 message_to_log.append(message)
@@ -2004,7 +2004,7 @@ class AccountMove(models.Model):
                     move_line.tax_ids |= enasarco_tax
                 else:
                     message_to_log.append(Markup("%s<br/>%s") % (
-                        _("Enasarco tax not found for line with description '%s'", move_line.name),
+                        self.env._("Enasarco tax not found for line with description '%s'", move_line.name),
                         self.env['account.move']._compose_info_message(other_data_element, '.'),
                     ))
 
@@ -2063,34 +2063,34 @@ class AccountMove(models.Model):
 
         errors = {}
         if pdf_moves := self.filtered(lambda move: move.invoice_pdf_report_id and not move.l10n_it_edi_attachment_file):
-            message = _("Please delete the PDF attachment before sending to the SDI. Odoo will regenerate the PDF, making sure everything is consistent with the XML.")
+            message = self.env._("Please delete the PDF attachment before sending to the SDI. Odoo will regenerate the PDF, making sure everything is consistent with the XML.")
             errors['l10n_it_edi_pdf_already_generated'] = build_error(message=message, records=pdf_moves)
 
         if moves := self.filtered(lambda move: move.l10n_it_edi_is_self_invoice and move._l10n_it_edi_services_or_goods() == 'both'):
             errors['l10n_it_edi_move_rc_mixed_product_types'] = build_error(
-                message=_("Cannot apply Reverse Charge to bills which contains both services and goods."),
+                message=self.env._("Cannot apply Reverse Charge to bills which contains both services and goods."),
                 records=moves)
 
         if pa_moves := self.filtered(lambda move: move.commercial_partner_id._l10n_it_edi_is_public_administration()):
             if moves := pa_moves.filtered(lambda move: not move.l10n_it_origin_document_type):
-                message = _("Partner(s) belongs to the Public Administration, please fill out Origin Document Type field in the Electronic Invoicing tab.")
+                message = self.env._("Partner(s) belongs to the Public Administration, please fill out Origin Document Type field in the Electronic Invoicing tab.")
                 errors['move_missing_origin_document'] = build_error(message=message, records=moves)
             today = fields.Date.context_today(self)
             if moves := pa_moves.filtered(lambda move: move.l10n_it_origin_document_date and move.l10n_it_origin_document_date > today):
-                message = _("The Origin Document Date cannot be in the future.")
+                message = self.env._("The Origin Document Date cannot be in the future.")
                 errors['l10n_it_edi_move_future_origin_document_date'] = build_error(message=message, records=moves)
         if pa_moves := self.filtered(lambda move: len(move.commercial_partner_id.l10n_it_pa_index or '') == 7):
             if moves := pa_moves.filtered(lambda move: not move.l10n_it_origin_document_type and (move.l10n_it_cig or move.l10n_it_cup)):
-                message = _("CIG/CUP fields of partner(s) are present, please fill out Origin Document Type field in the Electronic Invoicing tab.")
+                message = self.env._("CIG/CUP fields of partner(s) are present, please fill out Origin Document Type field in the Electronic Invoicing tab.")
                 errors['move_missing_origin_document_field'] = build_error(message=message, records=moves)
         return errors
 
     def _l10n_it_edi_export_taxes_check(self):
         errors = {}
         for kind_code, kind_desc, min_len, max_len in (
-            ('vat', _('VAT'), 1, 1),
-            ('withholding_no_enasarco', _('Withholding'), 0, 1),
-            ('pension_fund', _('Pension Fund'), 0, 2),
+            ('vat', self.env._('VAT'), 1, 1),
+            ('withholding_no_enasarco', self.env._('Withholding'), 0, 1),
+            ('pension_fund', self.env._('Pension Fund'), 0, 2),
         ):
             errors.update(self._l10n_it_edi_check_lines_for_tax_kind(kind_code, kind_desc, min_len, max_len))
         return errors
@@ -2104,14 +2104,14 @@ class AccountMove(models.Model):
         ):
             return {
                 f'l10n_it_edi_move_{kind_code}_tax_per_line': {
-                    'message': _(
+                    'message': self.env._(
                         "Invoices must have %(number)s one %(kind)s tax set per line.",
-                        number=_("exactly") if min_len == 1 else _("at most"),
+                        number=self.env._("exactly") if min_len == 1 else self.env._("at most"),
                         kind=kind_desc,
                     ),
                     **({
-                        'action_text': _("View invoice(s)"),
-                        'action': self._get_records_action(name=_("Check taxes on invoice lines")),
+                        'action_text': self.env._("View invoice(s)"),
+                        'action': self._get_records_action(name=self.env._("Check taxes on invoice lines")),
                     } if len(self) > 1 else {}),
                 },
             }
@@ -2211,7 +2211,7 @@ class AccountMove(models.Model):
             'name': self._l10n_it_edi_generate_filename(),
             'type': 'binary',
             'mimetype': 'application/xml',
-            'description': _('IT EDI e-move: %s', self.move_type),
+            'description': self.env._('IT EDI e-move: %s', self.move_type),
             'company_id': self.company_id.id,
             'res_id': self.id,
             'res_model': self._name,
@@ -2254,7 +2254,7 @@ class AccountMove(models.Model):
         try:
             self.lock_for_update()
         except LockError:
-            raise UserError(_('This document is being sent by another process already.')) from None
+            raise UserError(self.env._('This document is being sent by another process already.')) from None
         results = {}
 
         for move in self:
@@ -2277,17 +2277,17 @@ class AccountMove(models.Model):
                     error_code, error_description = response.get('error'), response.get('error_description')
                     error_message = self._l10n_it_edi_upload_error_message(error_code, error_description)
                     response['error_message'] = error_message
-                    header = nl2br(_("Error uploading the e-invoice file %(file)s.\n%(error)s", file=filename, error=error_message))
+                    header = nl2br(self.env._("Error uploading the e-invoice file %(file)s.\n%(error)s", file=filename, error=error_message))
                 else:
                     move.l10n_it_edi_state = "processing"
                     move.l10n_it_edi_transaction = response.get('id_transaction')
 
                     if response.get('id_transaction') == 'demo':
-                        message = _("We are simulating the sending of the e-invoice file %s, as we are in demo mode.", filename)
+                        message = self.env._("We are simulating the sending of the e-invoice file %s, as we are in demo mode.", filename)
                     elif response.get('signed'):
-                        message = _("The e-invoice file %s was signed and sent to the SdI for processing.", filename)
+                        message = self.env._("The e-invoice file %s was signed and sent to the SdI for processing.", filename)
                     else:
-                        message = _("The e-invoice file %s was sent to the SdI for processing.", filename)
+                        message = self.env._("The e-invoice file %s was sent to the SdI for processing.", filename)
 
                     header = nl2br(message)
                 move.sudo().message_post(body=header)
@@ -2296,7 +2296,7 @@ class AccountMove(models.Model):
 
             except AccountEdiProxyError as e:
                 move.l10n_it_edi_state = False
-                error_message = _("Error uploading the e-invoice file %(file)s.\n%(error)s", file=filename, error=e.message)
+                error_message = self.env._("Error uploading the e-invoice file %(file)s.\n%(error)s", file=filename, error=e.message)
                 header = nl2br(error_message)
                 move.sudo().message_post(body=header)
                 results[filename] = {'error_message': error_message}
@@ -2315,14 +2315,14 @@ class AccountMove(models.Model):
     def _l10n_it_edi_upload_error_message(self, error_code, error_description):
         """ Translate server errors with the client user's language. """
         errors_map = {
-            'EI01': _('Attached file is empty'),
-            'EI02': _('Service momentarily unavailable'),
-            'EI03': _('Unauthorized user'),
-            'OOGE': _('Error sending file from the Proxy Server to SdI'),
-            'OOSE': _('Error signing the XML'),
-            'OOCE': _('Proxy Server configuration error'),
+            'EI01': self.env._('Attached file is empty'),
+            'EI02': self.env._('Service momentarily unavailable'),
+            'EI03': self.env._('Unauthorized user'),
+            'OOGE': self.env._('Error sending file from the Proxy Server to SdI'),
+            'OOSE': self.env._('Error signing the XML'),
+            'OOCE': self.env._('Proxy Server configuration error'),
         }
-        error_message = errors_map.get(error_code, _("Unknown error"))
+        error_message = errors_map.get(error_code, self.env._("Unknown error"))
         if error_description:
             error_message = f'{error_message}: {error_description}'
         return error_message
@@ -2369,7 +2369,7 @@ class AccountMove(models.Model):
                         'send_ack_to_edi_proxy': False,
                         'date': today,
                         'filename': filename},
-                    message=_("The e-invoice file %s has been sent in Demo EDI mode.", filename))
+                    message=self.env._("The e-invoice file %s has been sent in Demo EDI mode.", filename))
             return
 
         server_url = proxy_user._get_server_url()
@@ -2378,7 +2378,7 @@ class AccountMove(models.Model):
                 f'{server_url}/api/l10n_it_edi/1/in/TrasmissioneFatture',
                 params={'ids_transaction': self.mapped("l10n_it_edi_transaction")})
         except AccountEdiProxyError as pe:
-            raise UserError(_("An error occurred while downloading updates from the Proxy Server: (%(code)s) %(message)s", code=pe.code, message=pe.message)) from pe
+            raise UserError(self.env._("An error occurred while downloading updates from the Proxy Server: (%(code)s) %(message)s", code=pe.code, message=pe.message)) from pe
 
         for notification in notifications.values():
             encrypted_update_content = notification.get('file')
@@ -2409,7 +2409,7 @@ class AccountMove(models.Model):
                     f'{server_url}/api/l10n_it_edi/1/ack',
                     params={'transaction_ids': transaction_ids, 'states': states})
             except AccountEdiProxyError as pe:
-                raise UserError(_("An error occurred while downloading updates from the Proxy Server: (%(code)s) %(message)s", code=pe.code, message=pe.message)) from pe
+                raise UserError(self.env._("An error occurred while downloading updates from the Proxy Server: (%(code)s) %(message)s", code=pe.code, message=pe.message)) from pe
 
     def _l10n_it_edi_parse_notification(self, notification):
         sdi_state = notification.get('state', '')
@@ -2512,43 +2512,43 @@ class AccountMove(models.Model):
             for error_code, error_description in transformed_notification['errors']:
                 error_description_copy = error_description
                 if error_code == DUPLICATE_MOVE:
-                    error_description_copy = _(
+                    error_description_copy = self.env._(
                         "The e-invoice file %(file)s is duplicated.\n"
                         "Original message from the SdI: %(message)s",
                         file=filename, message=error_description_copy)
                 elif error_code == DUPLICATE_FILENAME:
-                    error_description_copy = _(
+                    error_description_copy = self.env._(
                         "The e-invoice filename %(file)s is duplicated. Please check the FatturaPA Filename sequence.\n"
                         "Original message from the SdI: %(message)s",
                         file=filename, message=error_description_copy)
                 error_descriptions.append(error_description_copy)
 
-            return self._l10n_it_edi_format_errors(_('The e-invoice has been refused by the SdI.'), error_descriptions)
+            return self._l10n_it_edi_format_errors(self.env._('The e-invoice has been refused by the SdI.'), error_descriptions)
 
         elif partner._l10n_it_edi_is_public_administration():
             pa_specific_map = {
-                'forwarded': nl2br(_(
+                'forwarded': nl2br(self.env._(
                     "The e-invoice file %(file)s was succesfully sent to the SdI.\n"
                     "%(partner)s has 15 days to accept or reject it.",
                     file=filename, partner=partner_name)),
-                'forward_attempt': nl2br(_(
+                'forward_attempt': nl2br(self.env._(
                     "The e-invoice file %(file)s can't be forward to %(partner)s (Public Administration) by the SdI at the moment.\n"
                     "It will try again for 10 days, after which it will be considered accepted, but "
                     "you will still have to send it by post or e-mail.",
                     file=filename, partner=partner_name)),
-                'accepted_by_pa_partner_after_expiry': nl2br(_(
+                'accepted_by_pa_partner_after_expiry': nl2br(self.env._(
                     "The e-invoice file %(file)s is succesfully sent to the SdI. The invoice is now considered fiscally relevant.\n"
                     "The %(partner)s (Public Administration) had 15 days to either accept or refused this document,"
                     "but since they did not reply, it's now considered accepted.",
                     file=filename, partner=partner_name)),
-                'rejected_by_pa_partner': nl2br(_(
+                'rejected_by_pa_partner': nl2br(self.env._(
                     "The e-invoice file %(file)s has been refused by %(partner)s (Public Administration).\n"
                     "You have 5 days from now to issue a full refund for this invoice, "
                     "then contact the PA partner to create a new one according to their "
                     "requests and submit it.\n%(outcome_description)s",
                     file=filename, partner=partner_name,
                     outcome_description=transformed_notification.get('outcome_description', ''))),
-                'accepted_by_pa_partner': _(
+                'accepted_by_pa_partner': self.env._(
                     "The e-invoice file %(file)s has been accepted by %(partner)s (Public Administration), a payment will be issued soon",
                     file=filename, partner=partner_name),
             }
@@ -2556,22 +2556,22 @@ class AccountMove(models.Model):
                 return pa_specific_message
 
         new_state_messages_map = {
-            False: _(
+            False: self.env._(
                 "The e-invoice file %s has not been found on the EDI Proxy server.", filename),
-            'processing': nl2br(_(
+            'processing': nl2br(self.env._(
                 "The e-invoice file %s was sent to the SdI for validation.\n"
                 "It is not yet considered accepted, please wait further notifications.",
                 filename)),
-            'forwarded': _(
+            'forwarded': self.env._(
                 "The e-invoice file %(file)s was accepted and succesfully forwarded it to %(partner)s by the SdI.",
                 file=filename, partner=partner_name),
-            'forward_attempt': nl2br(_(
+            'forward_attempt': nl2br(self.env._(
                 "The e-invoice file %(file)s has been accepted by the SdI.\n"
                 "The SdI is trying to forward it to %(partner)s.\n"
                 "It will try for up to 2 days, after which you'll eventually "
                 "need to send it the invoice to the partner by post or e-mail.",
                 file=filename, partner=partner_name)),
-            'forward_failed': nl2br(_(
+            'forward_failed': nl2br(self.env._(
                 "The e-invoice file %(file)s couldn't be forwarded to %(partner)s.\n"
                 "Please remember to send it via post or e-mail.",
                 file=filename, partner=partner_name))

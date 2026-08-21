@@ -94,7 +94,6 @@ class L10nEsEdiSiiDocument(models.Model):
             ('to_cancel', "To Cancel"),
             ('cancelled', "Cancelled"),
         ],
-        string="State",
         default='to_send',
         required=True,
     )

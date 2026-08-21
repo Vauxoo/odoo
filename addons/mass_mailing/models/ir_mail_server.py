@@ -29,7 +29,7 @@ class IrMail_Server(models.Model):
         for record in self:
             usages = []
             if default_mail_server_id == record.id:
-                usages.append(_('Email Marketing uses it as its default mail server to send mass mailings'))
+                usages.append(self.env._('Email Marketing uses it as its default mail server to send mass mailings'))
             usages.extend(map(format_usage, record.active_mailing_ids))
             if usages:
                 usages_super.setdefault(record.id, []).extend(usages)
@@ -43,7 +43,7 @@ class IrMail_Server(models.Model):
 
         default_id = self.env['mailing.mailing']._get_default_mail_server_id()
         if default_id and default_id in servers_with_owner.ids:
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "Cannot set an owner on '%(server)s': it is configured as the dedicated Email Marketing server.",
                 server=self.browse(default_id).display_name,
             ))
@@ -53,7 +53,7 @@ class IrMail_Server(models.Model):
             ('state', '!=', 'done'),
         ], limit=1)
         if used:
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "Cannot set an owner on '%(server)s': it is used by mailing '%(mailing)s'.",
                 server=used.mail_server_id.display_name,
                 mailing=used.display_name,

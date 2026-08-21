@@ -3,10 +3,6 @@
 {
     'name': 'Portal Rating',
     'category': 'Services',
-    'description': """
-Bridge module adding rating capabilities on portal. It includes notably
-inclusion of rating directly within the customer portal discuss widget.
-        """,
     'depends': [
         'portal',
         'rating',

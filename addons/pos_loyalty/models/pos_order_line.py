@@ -10,10 +10,10 @@ class PosOrderLine(models.Model):
     is_reward_line = fields.Boolean(
         help="Whether this line is part of a reward or not.")
     reward_id = fields.Many2one(
-        'loyalty.reward', "Reward", ondelete='restrict',
+        'loyalty.reward', ondelete='restrict',
         help="The reward associated with this line.", index='btree_not_null')
     coupon_id = fields.Many2one(
-        'loyalty.card', "Coupon", ondelete='restrict',
+        'loyalty.card', ondelete='restrict',
         help="The coupon used to claim that reward.", index='btree_not_null')
     reward_identifier_code = fields.Char(help="""
         Technical field used to link multiple reward lines from the same reward together.

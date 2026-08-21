@@ -22,13 +22,13 @@ class PurchaseOrder(models.Model):
             subcontractor_ids = order.picking_type_id.default_location_dest_id.subcontractor_ids
             if len(subcontractor_ids) == 1:
                 order.dest_address_id = subcontractor_ids
-        super(PurchaseOrder, self - dropship_subcontract_pos)._compute_dest_address_id()
+        return super(PurchaseOrder, self - dropship_subcontract_pos)._compute_dest_address_id()
 
     @api.onchange('picking_type_id')
     def onchange_picking_type_id(self):
         if self.default_location_dest_id_is_subcontracting_loc:
             return {
-                'warning': {'title': _('Warning'), 'message': _('Please note this purchase order is for subcontracting purposes.')}
+                'warning': {'title': self.env._('Warning'), 'message': self.env._('Please note this purchase order is for subcontracting purposes.')}
             }
 
     def _get_destination_location(self):

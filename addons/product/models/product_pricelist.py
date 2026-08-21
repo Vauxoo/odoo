@@ -26,14 +26,13 @@ class ProductPricelist(models.Model):
     name = fields.Char(string="Pricelist Name", required=True, translate=True)
 
     active = fields.Boolean(
-        string="Active",
         default=True,
         help="If unchecked, it will allow you to hide the pricelist without removing it.")
     sequence = fields.Integer(default=16)
 
     currency_id = fields.Many2one(
         comodel_name='res.currency',
-        default=_default_currency_id,
+        default=lambda self: self._default_currency_id(),
         required=True,
         tracking=1,
     )

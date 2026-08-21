@@ -14,9 +14,8 @@ class ProductCategory(models.Model):
     _rec_name = 'complete_name'
     _order = 'parent_id desc, name asc'
 
-    name = fields.Char('Name', index='trigram', required=True, translate=True)
+    name = fields.Char(index='trigram', required=True, translate=True)
     complete_name = fields.Char(
-        string='Complete Name',
         compute='_compute_complete_name',
         search='_search_complete_name',
         recursive=True,
@@ -108,5 +107,5 @@ class ProductCategory(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for category, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", category.name)
+                vals['name'] = self.env._("%s (copy)", category.name)
         return vals_list

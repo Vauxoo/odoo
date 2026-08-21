@@ -11,7 +11,6 @@ from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.addons.website.tests.common import HttpCaseWithWebsiteUser
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged("post_install", "-at_install")

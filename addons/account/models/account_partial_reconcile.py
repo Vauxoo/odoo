@@ -20,7 +20,7 @@ class AccountPartialReconcile(models.Model):
         index=True, required=True)
     full_reconcile_id = fields.Many2one(
         comodel_name='account.full.reconcile',
-        string="Full Reconcile", copy=False, index='btree_not_null')
+        copy=False, index='btree_not_null')
     exchange_move_id = fields.Many2one(comodel_name='account.move', index='btree_not_null')
 
     # this field will be used upon the posting of the invoice, to know if we can keep the partial or if the
@@ -58,7 +58,7 @@ class AccountPartialReconcile(models.Model):
     # ==== Other fields ====
     company_id = fields.Many2one(
         comodel_name='res.company',
-        string="Company", store=True, readonly=False, index=True,
+        store=True, readonly=False, index=True,
         precompute=True,
         compute='_compute_company_id')
     max_date = fields.Date(
@@ -75,7 +75,7 @@ class AccountPartialReconcile(models.Model):
     def _check_required_computed_currencies(self):
         bad_partials = self.filtered(lambda partial: not partial.debit_currency_id or not partial.credit_currency_id)
         if bad_partials:
-            raise ValidationError(_("Missing foreign currencies on partials having ids: %s", bad_partials.ids))
+            raise ValidationError(self.env._("Missing foreign currencies on partials having ids: %s", bad_partials.ids))
 
     # -------------------------------------------------------------------------
     # COMPUTE METHODS
@@ -268,7 +268,7 @@ class AccountPartialReconcile(models.Model):
                 journal = partial.company_id.tax_cash_basis_journal_id
 
                 if not journal:
-                    raise UserError(_("There is no tax cash basis journal defined for the '%s' company.\n"
+                    raise UserError(self.env._("There is no tax cash basis journal defined for the '%s' company.\n"
                                       "Configure it in Accounting/Configuration/Settings",
                                       partial.company_id.display_name))
 

@@ -51,12 +51,12 @@ class WebsiteProfile(http.Controller):
 
         # Profile being published is more specific than general karma requirement (check it first!)
         if not user_sudo.website_published:
-            return False, _('This profile is private!')
+            return False, self.env._('This profile is private!')
         elif not user_sudo.exists():
             raise request.not_found()
 
         elif request.env.user.karma < self.env.website.karma_profile_min:
-            return False, _("Not have enough karma to view other users' profile.")
+            return False, self.env._("Not have enough karma to view other users' profile.")
         return user_sudo, False
 
     def _prepare_user_values(self, **kwargs):
@@ -106,7 +106,7 @@ class WebsiteProfile(http.Controller):
             return next(
                 (
                     {'url_from_label': label, 'url_from': url_from}
-                    for prefix, label in (('forum', _('Forum')), ('slides', _('All Courses')))
+                    for prefix, label in (('forum', self.env._('Forum')), ('slides', self.env._('All Courses')))
                     if path == f'/{prefix}' or path.startswith(f'/{prefix}/')
                 ), void_from_url)
         return void_from_url
@@ -146,13 +146,13 @@ class WebsiteProfile(http.Controller):
             qcontext['website_published'] = kwargs.get('website_published')
 
         if not user.partner_id._can_edit_country() and qcontext.get('country_id') != user.partner_id.country_id.id:
-            raise UserError(_("Changing the country is not allowed once document(s) have been issued for your account. Please contact us directly for this operation."))
+            raise UserError(self.env._("Changing the country is not allowed once document(s) have been issued for your account. Please contact us directly for this operation."))
         if not user.has_access('write'):
             # no write access, grant it if we can edit the partner
             if user.partner_id._can_be_edited_by_current_customer(**kwargs):
                 user = user.sudo()
             else:
-                raise UserError(_("You are not allowed to edit this user"))
+                raise UserError(self.env._("You are not allowed to edit this user"))
         user.write(qcontext)
 
     # Ranks and Badges

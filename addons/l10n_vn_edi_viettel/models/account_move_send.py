@@ -15,7 +15,7 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        res.update({'vn_sinvoice_send': {'label': _("Send to SInvoice"), 'is_applicable': self._is_vn_edi_applicable}})
+        res.update({'vn_sinvoice_send': {'label': self.env._("Send to SInvoice"), 'is_applicable': self._is_vn_edi_applicable}})
         return res
 
     # -------------------------------------------------------------------------
@@ -77,7 +77,7 @@ class AccountMoveSend(models.AbstractModel):
                 }]
             else:
                 invoice_data['error'] = {
-                    'error_title': _('Error when generating SInvoice file.'),
+                    'error_title': self.env._('Error when generating SInvoice file.'),
                     'errors': errors,
                 }
 
@@ -110,7 +110,7 @@ class AccountMoveSend(models.AbstractModel):
 
                 if errors:
                     invoice_data['error'] = {
-                        'error_title': _('Error when sending to SInvoice'),
+                        'error_title': self.env._('Error when sending to SInvoice'),
                         'errors': errors,
                     }
 

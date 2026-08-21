@@ -10,8 +10,8 @@ class ForumPostMessage(models.Model):
 
     _order = 'create_date ASC, id ASC'
 
-    body = fields.Html(string="Body")
-    post_id = fields.Many2one("forum.post", "Post", required=True, ondelete="cascade", index=True)
+    body = fields.Html()
+    post_id = fields.Many2one("forum.post", required=True, ondelete="cascade", index=True)
     forum_id = fields.Many2one("forum.forum", "Forum", related="post_id.forum_id")
 
     @api.model_create_multi
@@ -19,23 +19,23 @@ class ForumPostMessage(models.Model):
         records = super().create(vals_list)
 
         if not self.env.is_admin() and (message := next((record for record in records if not record.post_id.can_comment), None)):
-            raise AccessError(_('%i karma required to comment.', message.post_id.karma_comment))
+            raise AccessError(self.env._('%i karma required to comment.', message.post_id.karma_comment))
 
         return records
 
     def write(self, vals):
         if 'post_id' in vals:
-            raise AccessError(_('Cannot change the post of a comment.'))
+            raise AccessError(self.env._('Cannot change the post of a comment.'))
 
         if not self.env.is_admin() and (message := next((record for record in self if not record.post_id.can_edit), None)):
-            raise AccessError(_('%i karma required to edit a comment.', message.post_id.karma_edit))
+            raise AccessError(self.env._('%i karma required to edit a comment.', message.post_id.karma_edit))
 
         return super().write(vals)
 
     @api.ondelete(at_uninstall=False)
     def _unlink_if_enough_karma(self):
         if not self.env.is_admin() and (message := next((record for record in self if not record.post_id.can_edit), None)):
-            raise AccessError(_('%i karma required to delete a comment.', message.post_id.karma_edit))
+            raise AccessError(self.env._('%i karma required to delete a comment.', message.post_id.karma_edit))
 
     def _convert_to_answer(self):
         """Convert a `forum.post.comment` into an answer (`forum.post`).
@@ -55,8 +55,8 @@ class ForumPostMessage(models.Model):
         can_convert = self.env.user.karma >= karma_convert
         if not can_convert:
             if is_author and karma_own < karma_all:
-                raise AccessError(_('%d karma required to convert your comment to an answer.', karma_own))
-            raise AccessError(_('%d karma required to convert a comment to an answer.', karma_all))
+                raise AccessError(self.env._('%d karma required to convert your comment to an answer.', karma_own))
+            raise AccessError(self.env._('%d karma required to convert a comment to an answer.', karma_all))
 
         # check the message's author has not already an answer
         question = post.parent_id if post.parent_id else post
@@ -69,7 +69,7 @@ class ForumPostMessage(models.Model):
             'forum_id': question.forum_id.id,
             'content': comment_sudo.body,
             'parent_id': question.id,
-            'name': _('Re: %s', question.name or ''),
+            'name': self.env._('Re: %s', question.name or ''),
         }
         # done with the author user to have create_uid correctly set
         new_post = self.env['forum.post'].with_user(post_create_uid).sudo().create(post_values).sudo(False)
@@ -85,7 +85,7 @@ class ForumPostMessage(models.Model):
 
         question = self.post_id.parent_id or self.post_id
         question._post_notification(
-            subject=subject or _("New comment in %s", question.name),
+            subject=subject or self.env._("New comment in %s", question.name),
             body=self.body,
             subtype_xmlid='website_forum.mt_comment_new',
             partners=self.post_id.sudo().follower_ids,

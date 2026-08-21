@@ -25,7 +25,7 @@ class BaseLanguageExport(models.TransientModel):
     format = fields.Selection([('csv','CSV File'), ('po','PO File'), ('tgz', 'TGZ Archive')],
                               string='File Format', required=True, default='po')
     export_type = fields.Selection([('module', 'Module'), ('model', 'Model')],
-                                   string='Export Type', required=True, default='module')
+                                   required=True, default='module')
     modules = fields.Many2many('ir.module.module', 'rel_modules_langexport', 'wiz_id', 'module_id',
                                string='Apps To Export', domain=[('state','=','installed')])
     model_id = fields.Many2one('ir.model', string='Model to Export', domain=[('transient', '=', False)])

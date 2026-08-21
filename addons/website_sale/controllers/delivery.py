@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.http import request, route
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.addons.website_sale.controllers.main import WebsiteSale
+from .main import WebsiteSale
 
 
 class Delivery(WebsiteSale):

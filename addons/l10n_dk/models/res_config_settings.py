@@ -1,7 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.l10n_dk.tools.demo_utils import handle_demo
+from ..tools.demo_utils import handle_demo
 
 
 class ResConfigSettings(models.TransientModel):
@@ -45,7 +45,7 @@ class ResConfigSettings(models.TransientModel):
         self.ensure_one()
 
         if not self.nemhandel_contact_email:
-            raise ValidationError(_("Contact email is required"))
+            raise ValidationError(self.env._("Contact email is required"))
 
         self.nemhandel_edi_user._call_nemhandel_proxy(
             endpoint='/api/nemhandel/1/update_user',

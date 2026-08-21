@@ -3,10 +3,6 @@
     'name': 'Partners Geolocation',
     'version': '2.1',
     'category': 'Sales/Sales',
-    'description': """
-Partners Geolocation
-========================
-    """,
     'depends': ['base_setup'],
     'data': [
         'views/geo_provider_view.xml',

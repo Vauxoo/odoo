@@ -8,9 +8,9 @@ from odoo.exceptions import AccessError
 from odoo.fields import Domain
 from odoo.http import request
 
-from odoo.addons.mail.controllers.webclient import WebclientController
-from odoo.addons.mail.tools.discuss import Store, mail_route
-from odoo.addons.mail.tools.store_handler import store_handler
+from ..webclient import WebclientController
+from ...tools.discuss import Store, mail_route
+from ...tools.store_handler import store_handler
 
 
 class DiscussChannelWebclientController(WebclientController):

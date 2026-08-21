@@ -7,7 +7,7 @@ import uuid
 from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError
 from odoo.tools import float_round, float_repr
-from odoo.addons.l10n_vn_edi_viettel.models.sinvoice_service import SInvoiceService
+from .sinvoice_service import SInvoiceService
 
 
 class AccountMove(models.Model):
@@ -178,7 +178,7 @@ class AccountMove(models.Model):
         """
         self.ensure_one()
         if not self._l10n_vn_edi_is_sent():
-            return {}, _("In order to download the invoice's XML file, you must first send it to SInvoice")
+            return {}, self.env._("In order to download the invoice's XML file, you must first send it to SInvoice")
 
         access_token, error = self.company_id._l10n_vn_edi_get_access_token()
         if error:
@@ -193,7 +193,7 @@ class AccountMove(models.Model):
             if error:
                 return {}, error
             if not (file_bytes := zip_data.get('fileToBytes')):
-                return {}, _('XML file not yet available from Viettel.')
+                return {}, self.env._('XML file not yet available from Viettel.')
             xml_data, error = sinvoice.extract_xml_from_zip(base64.b64decode(file_bytes))
             if xml_data:
                 xml_data['res_field'] = 'l10n_vn_edi_sinvoice_xml_file'
@@ -207,7 +207,7 @@ class AccountMove(models.Model):
         """
         self.ensure_one()
         if not self._l10n_vn_edi_is_sent():
-            return {}, _("In order to download the invoice's PDF file, you must first send it to SInvoice")
+            return {}, self.env._("In order to download the invoice's PDF file, you must first send it to SInvoice")
 
         access_token, error = self.company_id._l10n_vn_edi_get_access_token()
         if error:
@@ -235,7 +235,7 @@ class AccountMove(models.Model):
         """
 
         if self.l10n_vn_edi_invoice_state != 'sent':
-            raise UserError(_("Please send the invoice to SInvoice before fetching the tax invoice files."))
+            raise UserError(self.env._("Please send the invoice to SInvoice before fetching the tax invoice files."))
 
         xml_data, xml_error_message = self._l10n_vn_edi_fetch_invoice_xml_file_data()
         pdf_data, pdf_error_message = self._l10n_vn_edi_fetch_invoice_pdf_file_data()
@@ -266,13 +266,13 @@ class AccountMove(models.Model):
 
             # Log the new attachment in the chatter for reference. Make sure to add the JSON file.
             self.with_context(no_new_invoice=True).message_post(
-                body=_('Invoice sent to SInvoice'),
+                body=self.env._('Invoice sent to SInvoice'),
                 attachment_ids=attachments.ids + self.l10n_vn_edi_sinvoice_file_id.ids,
             )
 
         if xml_error_message or pdf_error_message:
             return {
-                'error_title': _('Error when receiving SInvoice files.'),
+                'error_title': self.env._('Error when receiving SInvoice files.'),
                 'errors': [e for e in [xml_error_message, pdf_error_message] if e],
             }
 
@@ -353,28 +353,28 @@ class AccountMove(models.Model):
         commercial_partner = self.commercial_partner_id
         errors = []
         if not company.l10n_vn_edi_username or not company.l10n_vn_edi_password:
-            errors.append(_('SInvoice credentials are missing on company %s.', company.display_name))
+            errors.append(self.env._('SInvoice credentials are missing on company %s.', company.display_name))
         if not company.vat:
-            errors.append(_('VAT number is missing on company %s.', company.display_name))
+            errors.append(self.env._('VAT number is missing on company %s.', company.display_name))
         company_phone = company.phone and SInvoiceService.format_phone_number(company.phone)
         if company_phone and not company_phone.isdecimal():
-            errors.append(_('Phone number for company %s must only contain digits or +.', company.display_name))
+            errors.append(self.env._('Phone number for company %s must only contain digits or +.', company.display_name))
         commercial_partner_phone = commercial_partner.phone and SInvoiceService.format_phone_number(commercial_partner.phone)
         if commercial_partner_phone and not commercial_partner_phone.isdecimal():
-            errors.append(_('Phone number for partner %s must only contain digits or +.', commercial_partner.display_name))
+            errors.append(self.env._('Phone number for partner %s must only contain digits or +.', commercial_partner.display_name))
         if not self.l10n_vn_edi_invoice_symbol:
-            errors.append(_('The invoice symbol must be provided.'))
+            errors.append(self.env._('The invoice symbol must be provided.'))
         if self.l10n_vn_edi_invoice_symbol and not self.l10n_vn_edi_invoice_symbol.invoice_template_code:
-            errors.append(_("The invoice symbol's template must be provided."))
+            errors.append(self.env._("The invoice symbol's template must be provided."))
         if self.move_type == 'out_refund' and (not self.reversed_entry_id or not self.reversed_entry_id._l10n_vn_edi_is_sent()):
-            errors.append(_('You can only send a credit note linked to a previously sent invoice.'))
+            errors.append(self.env._('You can only send a credit note linked to a previously sent invoice.'))
         if not company.street or not company.state_id or not company.country_id:
-            errors.append(_('The street, state and country of company %s must be provided.', company.display_name))
+            errors.append(self.env._('The street, state and country of company %s must be provided.', company.display_name))
         if self.company_currency_id.name != 'VND':
             vnd = self.env.ref('base.VND')
             rate = vnd.with_context(date=self.invoice_date or self.date).rate
             if not vnd.active or rate == 1:
-                errors.append(_('Please make sure that the VND currency is enabled, and that the exchange rates are set.'))
+                errors.append(self.env._('Please make sure that the VND currency is enabled, and that the exchange rates are set.'))
         return errors
 
     def _l10n_vn_edi_send_invoice(self, invoice_json_data):
@@ -635,7 +635,7 @@ class AccountMove(models.Model):
         self.ensure_one()
 
         if not self.l10n_vn_edi_invoice_number.startswith('C'):
-            raise UserError(_("This invoice uses a symbol without the tax authority's code. There is no code to be fetched."))
+            raise UserError(self.env._("This invoice uses a symbol without the tax authority's code. There is no code to be fetched."))
 
         access_token, error = self.company_id._l10n_vn_edi_get_access_token()
         if error:
@@ -649,7 +649,7 @@ class AccountMove(models.Model):
         if 'result' in invoice_lookup:
             tax_code = invoice_lookup['result'][0]['codeOfTax']
             if not tax_code:
-                raise UserError(_("The Code Of Tax is not available for this invoice. Please make sure it has been processed on SInvoice side."))
+                raise UserError(self.env._("The Code Of Tax is not available for this invoice. Please make sure it has been processed on SInvoice side."))
             self._l10n_vn_edi_fetch_invoice_files()
 
     # -------------------------------------------------------------------------

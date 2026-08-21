@@ -38,7 +38,7 @@ class ResCompanyLdap(models.Model):
     _rec_name = 'ldap_server'
 
     sequence = fields.Integer(default=10)
-    company = fields.Many2one('res.company', string='Company', required=True, ondelete='cascade')
+    company = fields.Many2one('res.company', required=True, ondelete='cascade')
     ldap_server = fields.Char(string='LDAP Server address', required=True, default='127.0.0.1')
     ldap_server_port = fields.Integer(string='LDAP Server port', required=True, default=389)
     ldap_binddn = fields.Char('LDAP binddn',
@@ -246,7 +246,7 @@ class ResCompanyLdap(models.Model):
             else:
                 return SudoUser.create(values).id
 
-        raise AccessDenied(_("No local user found for LDAP login and not configured to create one"))
+        raise AccessDenied(self.env._("No local user found for LDAP login and not configured to create one"))
 
     def _change_password(self, conf, login, new_passwd):
         changed = False
@@ -294,8 +294,8 @@ class ResCompanyLdap(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'success',
-                    'title': _('Connection Test Successful!'),
-                    'message': _("Successfully connected to LDAP server at %(server)s:%(port)d",
+                    'title': self.env._('Connection Test Successful!'),
+                    'message': self.env._("Successfully connected to LDAP server at %(server)s:%(port)d",
                                  server=self.ldap_server, port=self.ldap_server_port),
                     'sticky': False,
                 }
@@ -307,8 +307,8 @@ class ResCompanyLdap(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'title': _('Connection Test Failed!'),
-                    'message': _("Cannot contact LDAP server at %(server)s:%(port)d",
+                    'title': self.env._('Connection Test Failed!'),
+                    'message': self.env._("Cannot contact LDAP server at %(server)s:%(port)d",
                                  server=self.ldap_server, port=self.ldap_server_port),
                     'sticky': False,
                 }
@@ -320,8 +320,8 @@ class ResCompanyLdap(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'title': _('Connection Test Failed!'),
-                    'message': _("Invalid credentials for bind DN %(binddn)s",
+                    'title': self.env._('Connection Test Failed!'),
+                    'message': self.env._("Invalid credentials for bind DN %(binddn)s",
                                  binddn=self.ldap_binddn),
                     'sticky': False,
                 }
@@ -333,8 +333,8 @@ class ResCompanyLdap(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'title': _('Connection Test Failed!'),
-                    'message': _("Connection to LDAP server at %(server)s:%(port)d timed out",
+                    'title': self.env._('Connection Test Failed!'),
+                    'message': self.env._("Connection to LDAP server at %(server)s:%(port)d timed out",
                                  server=self.ldap_server, port=self.ldap_server_port),
                     'sticky': False,
                 }
@@ -346,8 +346,8 @@ class ResCompanyLdap(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'title': _('Connection Test Failed!'),
-                    'message': _("An error occurred: %(error)s",
+                    'title': self.env._('Connection Test Failed!'),
+                    'message': self.env._("An error occurred: %(error)s",
                                  error=e),
                     'sticky': False,
                 }

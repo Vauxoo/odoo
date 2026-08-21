@@ -17,7 +17,7 @@ class HrWorkLocation(models.Model):
     location_type = fields.Selection([
         ('home', 'Home'),
         ('office', 'Office'),
-        ('other', 'Other')], string='Location Type', default='office', required=True)
+        ('other', 'Other')], default='office', required=True)
     icon = fields.Char(compute='_compute_icon')
     address_id = fields.Many2one('res.partner', string="Work Address", check_company=True)
     location_number = fields.Char()

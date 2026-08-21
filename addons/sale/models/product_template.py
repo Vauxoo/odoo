@@ -5,7 +5,7 @@ from collections import defaultdict
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.sale.models.res_company import SALE_INVOICE_POLICY
+from .res_company import SALE_INVOICE_POLICY
 
 
 class ProductTemplate(models.Model):
@@ -73,7 +73,7 @@ class ProductTemplate(models.Model):
 
     @api.depends("invoice_policy", "sale_ok", "service_tracking")
     def _compute_product_tooltip(self):
-        super()._compute_product_tooltip()
+        return super()._compute_product_tooltip()
 
     def _prepare_tooltip(self):
         tooltip = super()._prepare_tooltip()

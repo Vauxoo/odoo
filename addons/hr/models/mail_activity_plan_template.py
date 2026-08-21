@@ -18,7 +18,7 @@ class MailActivityPlanTemplate(models.Model):
         """ Ensure that hr types are used only on employee model """
         for template in self.filtered(lambda tpl: tpl.plan_id.res_model != 'hr.employee'):
             if template.responsible_type in {'manager', 'employee'}:
-                raise ValidationError(_('Those responsible types are limited to Employee plans.'))
+                raise ValidationError(self.env._('Those responsible types are limited to Employee plans.'))
 
     def _get_closest_parent_user(self, employee, responsible, error_message):
         responsible_parent = responsible
@@ -38,7 +38,7 @@ class MailActivityPlanTemplate(models.Model):
                 }
             if responsible_parent in viewed_responsible:
                 return {
-                    "error": _(
+                    "error": self.env._(
                         "Oops! It seems there is a problem with your team structure.\
                         We found a circular reporting loop and no one in that loop is linked to a user.\
                         Please double-check that everyone reports to the correct manager."

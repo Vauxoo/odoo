@@ -8,7 +8,6 @@ class ResPartner(models.Model):
     _inherit = "res.partner"
 
     wishlist_ids = fields.One2many(
-        string="Wishlist",
         comodel_name="product.wishlist",
         inverse_name="partner_id",
         domain=[("active", "=", True)],

@@ -34,7 +34,7 @@ class MailTemplate(models.Model):
         return [('model', 'not in', abstract_models)]
 
     # description
-    name = fields.Char('Name', translate=True)
+    name = fields.Char(translate=True)
     description = fields.Text(
         'Template Description', translate=True,
         help="This field is used for internal description of the template's usage.")
@@ -44,9 +44,9 @@ class MailTemplate(models.Model):
          ('hidden_template', 'Hidden Template'),
          ('custom_template', 'Custom Template')],
          compute="_compute_template_category", search="_search_template_category")
-    model_id = fields.Many2one('ir.model', 'Applies to', ondelete='cascade', domain=_get_non_abstract_models_domain)
+    model_id = fields.Many2one('ir.model', 'Applies to', ondelete='cascade', domain=lambda self: self._get_non_abstract_models_domain())
     model = fields.Char('Related Document Model', related='model_id.model', index=True, store=True, readonly=True)
-    subject = fields.Char('Subject', translate=True, prefetch=True, help="Subject (placeholders may be used here)")
+    subject = fields.Char(translate=True, prefetch=True, help="Subject (placeholders may be used here)")
     email_from = fields.Char('Send From',
                              help="Sender address (placeholders may be used here). If not set, the default "
                                   "value will be the author's email alias if configured, or email address.")
@@ -93,9 +93,9 @@ class MailTemplate(models.Model):
     mail_server_id = fields.Many2one('ir.mail_server', 'Outgoing Mail Server', readonly=False, index='btree_not_null',
                                      help="Optional preferred server for outgoing mails. If not set, the highest "
                                           "priority one will be used.")
-    scheduled_date = fields.Char('Scheduled Date', help="If set, the queue manager will send the email after the date. If not set, the email will be send as soon as possible. You can use dynamic expression.")
+    scheduled_date = fields.Char(help="If set, the queue manager will send the email after the date. If not set, the email will be send as soon as possible. You can use dynamic expression.")
     auto_delete = fields.Boolean(
-        'Auto Delete', default=True,
+        default=True,
         help="This option permanently removes any track of email after it's been sent, including from the Technical menu in the Settings, in order to preserve storage space of your Odoo database.")
     # contextual action
     ref_ir_act_window = fields.Many2one('ir.actions.act_window', 'Sidebar action', readonly=True, copy=False,
@@ -213,7 +213,7 @@ class MailTemplate(models.Model):
         ))).mapped('model')
         for model in model_names:
             if self.env[model]._abstract:
-                raise ValidationError(_('You may not define a template on an abstract model: %s', model))
+                raise ValidationError(self.env._('You may not define a template on an abstract model: %s', model))
 
     def _check_can_be_rendered(self, fnames=None, render_options=None):
         dynamic_fnames = self._get_dynamic_field_names()
@@ -236,7 +236,7 @@ class MailTemplate(models.Model):
                     error_details = str(e)
 
                     raise ValidationError(
-                        _("Oops! We couldn't save your template due to an issue.\n\n"
+                        self.env._("Oops! We couldn't save your template due to an issue.\n\n"
                           "Error: %(error_details)s\n\n"
                           "Correct it and try again.",
                         error_details=error_details)
@@ -318,7 +318,7 @@ class MailTemplate(models.Model):
                 'default_model': template.model,
                 'default_template_id' : template.id,
             }
-            button_name = _('Send Mail (%s)', template.name)
+            button_name = self.env._('Send Mail (%s)', template.name)
             action = ActWindow.create({
                 'name': button_name,
                 'type': 'ir.actions.act_window',
@@ -335,7 +335,7 @@ class MailTemplate(models.Model):
 
     def action_open_mail_preview(self):
         action = self.env.ref('mail.mail_template_preview_action')._get_action_dict()
-        action.update({'name': _('Template Preview: "%(template_name)s"', template_name=self.name)})
+        action.update({'name': self.env._('Template Preview: "%(template_name)s"', template_name=self.name)})
         return action
 
     # ------------------------------------------------------------
@@ -381,7 +381,7 @@ class MailTemplate(models.Model):
                     else:
                         render_res = self.env['ir.actions.report']._render(report, [res_id])
                         if not render_res:
-                            raise UserError(_('Unsupported report type %s found.', report.report_type))
+                            raise UserError(self.env._('Unsupported report type %s found.', report.report_type))
                         report_content, report_format = render_res
                     report_content = BinaryBytes(report_content)
                     # generate name
@@ -394,7 +394,7 @@ class MailTemplate(models.Model):
                             }
                         )
                     else:
-                        report_name = _('Report')
+                        report_name = self.env._('Report')
                     extension = "." + report_format
                     if not report_name.endswith(extension):
                         report_name += extension

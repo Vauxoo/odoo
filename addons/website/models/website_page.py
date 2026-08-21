@@ -13,7 +13,7 @@ from odoo.http import Response
 from odoo.tools.sql import SQL, escape_like_value
 
 from odoo.addons.base.models.ir_http import EXTENSION_TO_WEB_MIMETYPES
-from odoo.addons.website.tools import text_from_html
+from ..tools import text_from_html
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class WebsitePage(models.Model):
         translate=True,
     )
     url = fields.Char('Page URL', required=True)
-    view_id = fields.Many2one('ir.ui.view', string='View', required=True, index=True, ondelete="cascade")
+    view_id = fields.Many2one('ir.ui.view', required=True, index=True, ondelete="cascade")
 
     view_write_uid = fields.Many2one('res.users', "Last Content Update by",
         related='view_id.write_uid')
@@ -54,7 +54,7 @@ class WebsitePage(models.Model):
     menu_ids = fields.One2many('website.menu', 'page_id', 'Related Menus')
     is_in_menu = fields.Boolean(compute='_compute_website_menu')
     is_homepage = fields.Boolean(compute='_compute_is_homepage', string='Homepage')
-    is_visible = fields.Boolean(compute='_compute_visible', string='Is Visible')
+    is_visible = fields.Boolean(compute='_compute_visible')
     is_new_page_template = fields.Boolean(string="New Page Template", help='Add this page to the "+New" page templates. It will be added to the "Custom" category.')
     parent_id = fields.Many2one('website.page', string="Parent Page")
     parent_ids = fields.Many2many('website.page', compute='_compute_parent_ids')

@@ -45,8 +45,8 @@ class HrLeave(models.Model):
         for leave in leaves.filtered('overtime_deductible'):
             if hours[leave.employee_id] < 0:
                 if leave.employee_id.user_id == self.env.user:
-                    raise ValidationError(_('You do not have enough extra hours to request this leave'))
-                raise ValidationError(_('The employee does not have enough extra hours to request this leave.'))
+                    raise ValidationError(self.env._('You do not have enough extra hours to request this leave'))
+                raise ValidationError(self.env._('The employee does not have enough extra hours to request this leave.'))
 
     def action_reset_confirm(self):
         self._check_overtime_deductible(self)
@@ -68,4 +68,4 @@ class HrLeave(models.Model):
             ])._update_overtime()
 
     def _force_cancel(self, *args, **kwargs):
-        super()._force_cancel(*args, **kwargs)
+        return super()._force_cancel(*args, **kwargs)

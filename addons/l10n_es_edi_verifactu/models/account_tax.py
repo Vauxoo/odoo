@@ -23,7 +23,7 @@ class AccountTax(models.Model):
             '01': applicability_string['01'],
             '02': applicability_string['02'],
             '03': applicability_string['03'],
-            '05': _("Other"),
+            '05': self.env._("Other"),
         }
 
     def _l10n_es_edi_verifactu_get_applicability(self):

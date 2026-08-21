@@ -14,7 +14,6 @@ from odoo.tools.misc import file_path
 
 from .utils import _local_web_translations
 
-_logger = logging.getLogger(__name__)
 
 
 class WebClient(http.Controller):

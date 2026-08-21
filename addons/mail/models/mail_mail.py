@@ -15,7 +15,7 @@ from dateutil.parser import parse
 
 from odoo import _, api, fields, models, modules, SUPERUSER_ID, tools
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
-from odoo.addons.mail.tools.attachment import extract_attachment_ids_from_html
+from ..tools.attachment import extract_attachment_ids_from_html
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.modules.registry import Registry
@@ -55,8 +55,8 @@ class MailMail(models.Model):
     message_type = fields.Selection(related='mail_message_id.message_type', inherited=True, default='email_outgoing')
     body_html = fields.Text('Text Contents', help="Rich-text/HTML message")
     body_content = fields.Html('Rich-text Contents', sanitize=True, compute='_compute_body_content', search="_search_body_content")
-    references = fields.Text('References', help='Message references, such as identifiers of previous messages', readonly=True)
-    headers = fields.Text('Headers', copy=False)
+    references = fields.Text(help='Message references, such as identifiers of previous messages', readonly=True)
+    headers = fields.Text(copy=False)
     restricted_attachment_count = fields.Integer('Restricted attachments', compute='_compute_restricted_attachments')
     unrestricted_attachment_ids = fields.Many2many('ir.attachment', string='Unrestricted Attachments',
         compute='_compute_restricted_attachments', inverse='_inverse_unrestricted_attachment_ids')
@@ -98,10 +98,9 @@ class MailMail(models.Model):
         ("mail_dup", "Duplicated Email"),
         ], string='Failure type')
     failure_reason = fields.Text(
-        'Failure Reason', readonly=True, copy=False,
+        readonly=True, copy=False,
         help="Failure reason. This is usually the exception thrown by the email server, stored to ease the debugging of mailing issues.")
     auto_delete = fields.Boolean(
-        'Auto Delete',
         help="This option permanently removes any track of email after it's been sent, including from the Technical menu in the Settings, in order to preserve storage space of your Odoo database.")
     scheduled_date = fields.Datetime('Scheduled Send Date',
         help="If set, the queue manager will send the email after the date. If not set, the email will be send as soon as possible. Unless a timezone is specified, it is considered as being in UTC timezone.")
@@ -119,7 +118,7 @@ class MailMail(models.Model):
     def _check_mail_server_id(self):
         for mail in self:
             if mail.mail_server_id and not mail._filter_mail_mail_servers(mail.mail_server_id):
-                raise ValidationError(_("You may not create a message using another user's mail server."))
+                raise ValidationError(self.env._("You may not create a message using another user's mail server."))
 
     def _compute_body_content(self):
         for mail in self:
@@ -757,7 +756,7 @@ class MailMail(models.Model):
                 if raise_exception:
                     # To be consistent and backward compatible with mail_mail.send() raised
                     # exceptions, it is encapsulated into an Odoo MailDeliveryException
-                    raise MailDeliveryException(_('Unable to connect to SMTP Server'), exc)
+                    raise MailDeliveryException(self.env._('Unable to connect to SMTP Server'), exc)
                 else:
                     batch = self.browse(batch_ids)
                     batch.write({'state': 'exception', 'failure_reason': tools.exception_to_unicode(exc)})
@@ -788,7 +787,7 @@ class MailMail(models.Model):
         """ An action sending the selected mail and redirecting to mail.mail list view. """
         self.send()
         return {
-            'name': _('Emails'),
+            'name': self.env._('Emails'),
             'res_model': 'mail.mail',
             'view_mode': 'list',
             'views': [[False, 'list'], [False, 'form']],
@@ -804,7 +803,7 @@ class MailMail(models.Model):
             return True
         # check that every email is allowed on this mail server
         if mail_server and not self._filter_mail_mail_servers(mail_server):
-            raise UserError(_('Unauthorized server for some of the sending mails.'))
+            raise UserError(self.env._('Unauthorized server for some of the sending mails.'))
         # Only retrieve recipient followers of the mails if needed
         mails_with_unfollow_link = self.filtered(lambda m: m.body_html and '/mail/unfollow' in m.body_html)
         doc_to_followers = self.env['mail.followers']._get_mail_doc_to_followers(mails_with_unfollow_link.ids)
@@ -827,7 +826,7 @@ class MailMail(models.Model):
                 # To avoid sending twice the same email, provoke the failure earlier
                 mail.write({
                     'state': 'exception',
-                    'failure_reason': IrMailServer.NO_VALID_RECIPIENT if no_recipients else _('Error without exception. Probably due to sending an email without computed recipients.'),
+                    'failure_reason': IrMailServer.NO_VALID_RECIPIENT if no_recipients else self.env._('Error without exception. Probably due to sending an email without computed recipients.'),
                     'failure_type': 'mail_email_missing' if no_recipients else 'unknown',
                 })
                 # Update notification in a transient exception state to avoid concurrent
@@ -839,7 +838,7 @@ class MailMail(models.Model):
                     ('notification_status', 'not in', ('sent', 'canceled'))
                 ])
                 if notifs:
-                    notif_msg = _('Error without exception. Probably due to concurrent access update of notification records. Please see with an administrator.')
+                    notif_msg = self.env._('Error without exception. Probably due to concurrent access update of notification records. Please see with an administrator.')
                     notifs.sudo().write({
                         'notification_status': 'exception',
                         'failure_type': 'unknown',

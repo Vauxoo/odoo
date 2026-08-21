@@ -19,7 +19,7 @@ class MailTestSms(models.Model):
     guest_ids = fields.Many2many('res.partner')
     phone_nbr = fields.Char()
     mobile_nbr = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
     country_id = fields.Many2one('res.country')
 
     def _phone_get_number_fields(self):
@@ -43,7 +43,7 @@ class MailTestSmsBl(models.Model):
     email_from = fields.Char()
     phone_nbr = fields.Char(compute='_compute_phone_nbr', readonly=False, store=True)
     mobile_nbr = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
 
     @api.depends('customer_id')
     def _compute_phone_nbr(self):
@@ -84,7 +84,7 @@ class MailTestSmsBlOptout(models.Model):
     email_from = fields.Char()
     phone_nbr = fields.Char()
     mobile_nbr = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
     opt_out = fields.Boolean()
 
     def _phone_get_number_fields(self):
@@ -110,7 +110,7 @@ class MailTestSmsPartner(models.Model):
     _mailing_enabled = True
 
     name = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
     opt_out = fields.Boolean()
 
     def _mail_get_partner_fields(self, introspect_fields=False):

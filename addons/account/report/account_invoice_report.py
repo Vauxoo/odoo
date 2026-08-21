@@ -2,7 +2,7 @@ from odoo import api, fields, models
 from odoo.models import TableSQL
 from odoo.tools import SQL
 
-from odoo.addons.account.models.account_move import PAYMENT_STATE_SELECTION
+from ..models.account_move import PAYMENT_STATE_SELECTION
 
 
 class AccountInvoiceReport(models.Model):
@@ -14,12 +14,12 @@ class AccountInvoiceReport(models.Model):
 
     # ==== Invoice fields ====
     move_id = fields.Many2one('account.move', readonly=True)
-    journal_id = fields.Many2one('account.journal', string='Journal', readonly=True)
-    company_id = fields.Many2one('res.company', string='Company', readonly=True)
-    company_currency_id = fields.Many2one('res.currency', string='Company Currency', readonly=True)
-    partner_id = fields.Many2one('res.partner', string='Partner', readonly=True)
+    journal_id = fields.Many2one('account.journal', readonly=True)
+    company_id = fields.Many2one('res.company', readonly=True)
+    company_currency_id = fields.Many2one('res.currency', readonly=True)
+    partner_id = fields.Many2one('res.partner', readonly=True)
     commercial_partner_id = fields.Many2one('res.partner', string='Main Partner')
-    country_id = fields.Many2one('res.country', string="Country")
+    country_id = fields.Many2one('res.country')
     invoice_user_id = fields.Many2one('res.users', string='Salesperson', readonly=True)
     move_type = fields.Selection([
         ('out_invoice', 'Customer Invoice'),
@@ -33,12 +33,12 @@ class AccountInvoiceReport(models.Model):
         ('cancel', 'Cancelled')
         ], string='Invoice Status', readonly=True)
     payment_state = fields.Selection(selection=PAYMENT_STATE_SELECTION, string='Payment Status', readonly=True)
-    fiscal_position_id = fields.Many2one('account.fiscal.position', string='Fiscal Position', readonly=True)
-    invoice_date = fields.Date(readonly=True, string="Invoice Date")
+    fiscal_position_id = fields.Many2one('account.fiscal.position', readonly=True)
+    invoice_date = fields.Date(readonly=True)
 
     # ==== Invoice line fields ====
     quantity = fields.Float(string='Product Quantity', readonly=True)
-    product_id = fields.Many2one('product.product', string='Product', readonly=True)
+    product_id = fields.Many2one('product.product', readonly=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unit', readonly=True)
     product_categ_id = fields.Many2one('product.category', string='Product Category', readonly=True)
     invoice_date_due = fields.Date(string='Due Date', readonly=True)
@@ -70,12 +70,11 @@ class AccountInvoiceReport(models.Model):
         aggregator='sum_currency',
     )
     inventory_value = fields.Monetary(
-        string='Inventory Value',
         readonly=True,
         currency_field='company_currency_id',
         aggregator='sum_currency',
     )
-    currency_id = fields.Many2one('res.currency', string='Currency', readonly=True)
+    currency_id = fields.Many2one('res.currency', readonly=True)
 
     @property
     def _table_sql(self) -> SQL:

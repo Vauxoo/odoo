@@ -3,17 +3,6 @@
     'name': 'Lithuania - Accounting',
     'icon': '/account/static/description/l10n.png',
     'countries': ['lt'],
-    'description': """
-Chart of Accounts (COA) Template for Lithuania's Accounting.
-
-This module also includes:
-
-* List of available banks in Lithuania.
-* Tax groups.
-* Most common Lithuanian Taxes.
-* Fiscal positions.
-* Account Tags.
-    """,
     'license': 'LGPL-3',
     'author': 'Focusate',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',

@@ -23,7 +23,6 @@ from .utils import (
 )
 
 _lt = LazyTranslate(__name__)
-_logger = logging.getLogger(__name__)
 
 
 # Shared parameters for all login/signup flows

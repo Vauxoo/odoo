@@ -7,8 +7,8 @@ from threading import Thread
 import requests
 import schedule
 
-from odoo.addons.iot_drivers.tools import certificate, helpers, system, upgrade, wifi
-from odoo.addons.iot_drivers.websocket_client import WebsocketClient
+from .tools import certificate, helpers, system, upgrade, wifi
+from .websocket_client import WebsocketClient
 
 if system.IS_RPI:
     from dbus.mainloop.glib import DBusGMainLoop

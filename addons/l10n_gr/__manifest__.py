@@ -6,12 +6,6 @@
     'countries': ['gr'],
     'author': 'P. Christeas, Odoo S.A.',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the base module to manage the accounting chart for Greece.
-==================================================================
-
-Greek accounting chart and localization.
-    """,
     'depends': [
         'account',
         'account_edi_ubl_cii',

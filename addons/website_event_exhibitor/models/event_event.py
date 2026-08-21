@@ -9,7 +9,7 @@ class EventEvent(models.Model):
 
     # sponsors
     sponsor_ids = fields.One2many('event.sponsor', 'event_id', 'Sponsors')
-    sponsor_count = fields.Integer('Sponsor Count', compute='_compute_sponsor_count')
+    sponsor_count = fields.Integer(compute='_compute_sponsor_count')
     # frontend menu management
     exhibitor_menu = fields.Boolean(
         string='Showcase Exhibitors', compute='_compute_exhibitor_menu',
@@ -63,5 +63,5 @@ class EventEvent(models.Model):
     def _get_website_menu_entries(self):
         self.ensure_one()
         return super(EventEvent, self)._get_website_menu_entries() + [
-            (_('Exhibitors list'), '/event/%s/exhibitors' % self.env['ir.http']._slug(self), False, 60, 'exhibitor', False)
+            (self.env._('Exhibitors list'), '/event/%s/exhibitors' % self.env['ir.http']._slug(self), False, 60, 'exhibitor', False)
         ]

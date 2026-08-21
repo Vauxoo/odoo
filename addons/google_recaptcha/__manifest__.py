@@ -3,9 +3,6 @@
 {
     'name': 'Google reCAPTCHA integration',
     'category': 'Hidden',
-    'description': """
-This module implements reCaptchaV3 so that you can prevent bot spam on your public modules.
-    """,
     'depends': ['base_setup'],
     'data': [
         'views/res_config_settings_view.xml',

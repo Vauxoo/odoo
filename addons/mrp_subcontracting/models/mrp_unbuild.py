@@ -9,7 +9,7 @@ class MrpProduction(models.Model):
 
     def button_unbuild(self):
         if self.subcontractor_id:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You can't unbuild a subcontracted Manufacturing Order.",
             ))
         return super().button_unbuild()

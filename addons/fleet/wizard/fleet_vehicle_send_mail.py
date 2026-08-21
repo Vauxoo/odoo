@@ -9,7 +9,7 @@ class FleetVehicleSendMail(models.TransientModel):
     _description = 'Send mails to Drivers'
 
     vehicle_ids = fields.Many2many('fleet.vehicle', string='Vehicles', required=True)
-    author_id = fields.Many2one('res.partner', 'Author', required=True, default=lambda self: self.env.user.partner_id.id)
+    author_id = fields.Many2one('res.partner', required=True, default=lambda self: self.env.user.partner_id.id)
     template_id = fields.Many2one(domain=lambda self: [('model_id', '=', self.env['ir.model']._get('fleet.vehicle').id)])
     attachment_ids = fields.Many2many(
         'ir.attachment', 'fleet_vehicle_mail_compose_message_ir_attachments_rel',
@@ -35,7 +35,7 @@ class FleetVehicleSendMail(models.TransientModel):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'message': _("The following vehicle drivers are missing an email address: %s.", ', '.join(without_emails.mapped("name"))),
+                    'message': self.env._("The following vehicle drivers are missing an email address: %s.", ', '.join(without_emails.mapped("name"))),
                 }
             }
 
@@ -58,7 +58,7 @@ class FleetVehicleSendMail(models.TransientModel):
 
     def action_save_as_template(self):
         model = self.env['ir.model']._get('fleet.vehicle')
-        template_name = _("Vehicle: Mass mail drivers")
+        template_name = self.env._("Vehicle: Mass mail drivers")
         template = self.env['mail.template'].create({
             'name': template_name,
             'subject': self.subject or False,

@@ -5,13 +5,6 @@
     'category': 'Human Resources/Employees',
     'sequence': 270,
     'summary': 'Manage skills, knowledge and resume of your employees',
-    'description':
-        """
-Skills and Resume for HR
-========================
-
-This module introduces skills and resume management for employees.
-        """,
     'depends': ['hr'],
     'data': [
         'views/hr_views.xml',

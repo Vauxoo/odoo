@@ -19,13 +19,13 @@ class L10nInEwaybillType(models.Model):
         ],
         string="Allowed for supply type",
     )
-    active = fields.Boolean("Active", default=True)
+    active = fields.Boolean(default=True)
 
     @api.depends('sub_type')
     def _compute_display_name(self):
         """Show name and sub_type in name"""
         for ewaybill_type in self:
-            ewaybill_type.display_name = _(
+            ewaybill_type.display_name = self.env._(
                 "%(name)s (Sub-Type: %(type)s)",
                 name=ewaybill_type.name,
                 type=ewaybill_type.sub_type

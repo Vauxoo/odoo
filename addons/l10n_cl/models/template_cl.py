@@ -59,7 +59,7 @@ class AccountChartTemplate(models.AbstractModel):
     def _get_cl_account_journal(self):
         return {
             'domestic_purchase': {
-                'name': _("Domestic Purchases"),
+                'name': self.env._("Domestic Purchases"),
                 'code': 'DMP',
                 'type': 'purchase',
                 'sequence': 2,

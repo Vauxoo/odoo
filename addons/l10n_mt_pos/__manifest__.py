@@ -2,7 +2,6 @@
 {
     "name": "Malta - Point of Sale",
     "category": "Accounting/Localizations/Point of Sale",
-    "description": """Malta Compliance Letter for EXO Number""",
     "countries": ["mt"],
     "depends": [
         "point_of_sale",

@@ -67,14 +67,14 @@ class AccountAnalyticLine(models.Model):
                 elif timesheet.so_line.product_id.invoice_policy == 'order':
                     invoice_type = '02_billable_fixed'
             timesheet.billable_type = invoice_type
-        super(AccountAnalyticLine, self - timesheets_with_project)._compute_project_billable_type()
+        return super(AccountAnalyticLine, self - timesheets_with_project)._compute_project_billable_type()
 
     @api.depends('billable_type')
     def _compute_category_report(self):
         timesheets = self.filtered(lambda t: t.project_id)
         for timesheet in timesheets:
             timesheet.category_report = 'costs'
-        super(AccountAnalyticLine, self - timesheets)._compute_category_report()
+        return super(AccountAnalyticLine, self - timesheets)._compute_category_report()
 
     @api.depends('task_id.sale_line_id', 'project_id.sale_line_id', 'employee_id', 'project_id.allow_billable')
     def _compute_so_line(self):
@@ -92,11 +92,11 @@ class AccountAnalyticLine(models.Model):
 
     @api.depends('reinvoice_move_id.state')
     def _compute_partner_id(self):
-        super(AccountAnalyticLine, self.filtered(lambda t: t._is_not_billed()))._compute_partner_id()
+        return super(AccountAnalyticLine, self.filtered(lambda t: t._is_not_billed()))._compute_partner_id()
 
     @api.depends('reinvoice_move_id.state')
     def _compute_project_id(self):
-        super(AccountAnalyticLine, self.filtered(lambda t: t._is_not_billed()))._compute_project_id()
+        return super(AccountAnalyticLine, self.filtered(lambda t: t._is_not_billed()))._compute_project_id()
 
     def _is_readonly(self):
         return super()._is_readonly() or not self._is_not_billed()
@@ -207,7 +207,7 @@ class AccountAnalyticLine(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Sales Order'),
+            'name': self.env._('Sales Order'),
             'res_model': 'sale.order',
             'views': [[False, 'form']],
             'context': {'create': False, 'show_sale': True},
@@ -218,7 +218,7 @@ class AccountAnalyticLine(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Invoice'),
+            'name': self.env._('Invoice'),
             'res_model': 'account.move',
             'views': [[False, 'form']],
             'context': {'create': False},
@@ -250,7 +250,7 @@ class AccountAnalyticLine(models.Model):
         mandatory_plans = [plan for plan in self._get_mandatory_plans(company, business_domain='timesheet') if plan['column_name'] != 'account_id']
         missing_plan_names = [plan['name'] for plan in mandatory_plans if plan['column_name'] not in plan_column_names]
         if missing_plan_names:
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "'%(missing_plan_names)s' analytic plan(s) required on the analytic distribution of the sale order item '%(so_line_name)s' linked to the timesheet.",
                 missing_plan_names=missing_plan_names,
                 so_line_name=so_line.name,

@@ -5,7 +5,6 @@
     "category": "Productivity/Discuss",
     "sequence": 9877,
     "summary": "Test of Discuss with all possible overrides installed.",
-    "description": """Test of Discuss with all possible overrides installed, including feature and performance tests.""",
     "depends": [
         "calendar",
         "crm",

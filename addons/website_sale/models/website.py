@@ -13,7 +13,7 @@ from odoo.fields import Domain
 from odoo.http import request
 from odoo.tools import SQL, BinaryBytes, file_open, split_every
 
-from odoo.addons.website_sale import const
+from .. import const
 
 logger = logging.getLogger(__name__)
 
@@ -54,14 +54,14 @@ class Website(models.Model):
     # === FIELDS ===#
 
     salesperson_id = fields.Many2one(
-        string="Salesperson", comodel_name="res.users", domain=[("share", "=", False)]
+        comodel_name="res.users", domain=[("share", "=", False)]
     )
     salesteam_id = fields.Many2one(
         string="Sales Team",
         comodel_name="crm.team",
         index="btree_not_null",
         ondelete="set null",
-        default=_default_salesteam_id,
+        default=lambda self: self._default_salesteam_id(),
     )
     show_line_subtotals_tax_selection = fields.Selection(
         string="Line Subtotals Tax Display",
@@ -85,7 +85,7 @@ class Website(models.Model):
         string="Cart Recovery Email",
         comodel_name="mail.template",
         domain=[("model", "=", "sale.order")],
-        default=_default_recovery_mail_template,
+        default=lambda self: self._default_recovery_mail_template(),
     )
     contact_us_link_url = fields.Char(string="Link URL", translate=True, default="/contactus")
     cart_abandoned_delay = fields.Float(string="Abandoned Delay", default=10.0)
@@ -228,13 +228,11 @@ class Website(models.Model):
     )
 
     wishlist_grid_columns = fields.Integer(
-        string="Wishlist Grid Columns",
         help="Number of columns to display on the wishlist page",
         default=5,
     )
 
     wishlist_mobile_columns = fields.Integer(
-        string="Wishlist Mobile Columns",
         help="Number of columns to display on mobile for the wishlist page (1 or 2)",
         default=2,
     )
@@ -246,7 +244,6 @@ class Website(models.Model):
     prevent_sale = fields.Boolean(string="Hide Add To Cart")
 
     prevent_sale_for = fields.Selection(
-        string="Prevent Sale For",
         selection=[
             ("zero_price", "0 price products"),
             ("specific_categories", "Specific categories"),
@@ -273,7 +270,7 @@ class Website(models.Model):
     confirmation_email_template_id = fields.Many2one(
         comodel_name="mail.template",
         domain=[("model", "=", "sale.order")],
-        default=_default_confirmation_email_template,
+        default=lambda self: self._default_confirmation_email_template(),
     )
     restricted_uom_ids = fields.Many2many(string="Restrict Packagings", comodel_name="uom.uom")
     journal_id = fields.Many2one(

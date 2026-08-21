@@ -57,9 +57,9 @@ class ProjectUpdate(models.Model):
     date = fields.Date(default=fields.Date.context_today, tracking=True)
     project_id = fields.Many2one('project.project', required=True, domain=[('is_template', '=', False)], index=True, export_string_translation=False)
     name_cropped = fields.Char(compute="_compute_name_cropped", export_string_translation=False)
-    task_count = fields.Integer("Task Count", readonly=True, export_string_translation=False)
-    closed_task_count = fields.Integer("Closed Task Count", readonly=True, export_string_translation=False)
-    closed_task_percentage = fields.Integer("Closed Task Percentage", compute="_compute_closed_task_percentage", export_string_translation=False)
+    task_count = fields.Integer(readonly=True, export_string_translation=False)
+    closed_task_count = fields.Integer(readonly=True, export_string_translation=False)
+    closed_task_percentage = fields.Integer(compute="_compute_closed_task_percentage", export_string_translation=False)
     label_tasks = fields.Char(related="project_id.label_tasks")
 
     @api.depends('status')

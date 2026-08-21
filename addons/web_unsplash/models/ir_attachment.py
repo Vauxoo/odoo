@@ -6,7 +6,7 @@ import requests
 from odoo import api, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.web_unsplash import utils as unsplash_utils
+from .. import utils as unsplash_utils
 
 
 class IrAttachment(models.Model):

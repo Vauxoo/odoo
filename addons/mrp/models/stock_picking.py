@@ -29,11 +29,10 @@ class StockPickingType(models.Model):
         default=False,
     )
     auto_confirm_production = fields.Boolean(
-        "Auto Confirm Production", default=True,
+        default=True,
         help="Uncheck this option if you want to create a draft production order on replenishment, instead of a confirmed one.")
 
     auto_print_done_production_order = fields.Boolean(
-        "Auto Print Done Production Order",
         help="If this checkbox is ticked, Odoo will automatically print the production order of a MO when it is done.")
     auto_print_done_mrp_product_labels = fields.Boolean(
         "Auto Print Produced Product Labels",
@@ -79,7 +78,7 @@ class StockPickingType(models.Model):
     def _check_default_location(self):
         for record in self:
             if record.code == 'mrp_operation' and record.default_location_dest_id.usage == 'inventory':
-                raise ValidationError(_("You cannot set a scrap location as the destination location for a manufacturing type operation."))
+                raise ValidationError(self.env._("You cannot set a scrap location as the destination location for a manufacturing type operation."))
 
     def _get_mo_count(self):
         mrp_picking_types = self.filtered(lambda picking: picking.code == 'mrp_operation')
@@ -172,7 +171,7 @@ class StockPicking(models.Model):
     def action_view_mrp_production(self):
         self.ensure_one()
         action = {
-            'name': _("Manufacturing Orders"),
+            'name': self.env._("Manufacturing Orders"),
             'res_model': 'mrp.production',
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', self.production_ids.ids)],

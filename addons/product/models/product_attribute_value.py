@@ -17,10 +17,9 @@ class ProductAttributeValue(models.Model):
         return randint(1, 11)
 
     name = fields.Char(string="Value", required=True, translate=True)
-    sequence = fields.Integer(string="Sequence", help="Determine the display order", index=True)
+    sequence = fields.Integer(help="Determine the display order", index=True)
     attribute_id = fields.Many2one(
         comodel_name='product.attribute',
-        string="Attribute",
         help="The attribute cannot be changed once the value is used on at least one product.",
         ondelete='cascade',
         required=True,
@@ -41,9 +40,8 @@ class ProductAttributeValue(models.Model):
         help="Here you can set a specific HTML color index (e.g. #ff0000)"
             " to display the color if the attribute type is 'Color'.")
     display_type = fields.Selection(related='attribute_id.display_type')
-    color = fields.Integer(string="Color Index", default=_get_default_color)
+    color = fields.Integer(string="Color Index", default=lambda self: self._get_default_color())
     image = fields.Image(
-        string="Image",
         help="You can upload an image that will be used as the color of the attribute value.",
         max_width=70,
         max_height=70,
@@ -98,7 +96,7 @@ class ProductAttributeValue(models.Model):
         if 'attribute_id' in vals:
             for pav in self:
                 if pav.attribute_id.id != vals['attribute_id'] and pav.is_used_on_products:
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         "You cannot change the attribute of the value %(value)s because it is used"
                         " on the following products: %(products)s",
                         value=pav.display_name,
@@ -116,7 +114,7 @@ class ProductAttributeValue(models.Model):
 
     def check_is_used_on_products(self):
         for pav in self.filtered('is_used_on_products'):
-            return _(
+            return self.env._(
                 "You cannot delete the value %(value)s because it is used on the following"
                 " products:\n%(products)s\n",
                 value=pav.display_name,
@@ -152,7 +150,7 @@ class ProductAttributeValue(models.Model):
     @api.readonly
     def action_add_to_products(self):
         return {
-            'name': _("Add to all products"),
+            'name': self.env._("Add to all products"),
             'type': 'ir.actions.act_window',
             'res_model': 'update.product.attribute.value',
             'view_mode': 'form',
@@ -167,7 +165,7 @@ class ProductAttributeValue(models.Model):
     @api.readonly
     def action_update_prices(self):
         return {
-            'name': _("Update product extra prices"),
+            'name': self.env._("Update product extra prices"),
             'type': 'ir.actions.act_window',
             'res_model': 'update.product.attribute.value',
             'view_mode': 'form',

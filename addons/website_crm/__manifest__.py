@@ -6,11 +6,6 @@
     'sequence': 54,
     'summary': 'Generate leads from a contact form',
     'version': '2.1',
-    'description': """
-Add capability to your website forms to generate leads or opportunities in the CRM app.
-Forms has to be customized inside the *Website Builder* in order to generate leads.
-
-This module includes contact phone and mobile numbers validation.""",
     'depends': ['website', 'crm'],
     'data': [
         'data/crm_lead_merge_template.xml',

@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('cn_large_bis')
     def _get_cn_large_bis_template_data(self):
         return {
-            'name': _('Accounting Standards for Business Enterprises'),
+            'name': self.env._('Accounting Standards for Business Enterprises'),
             'code_digits': 4,
             'parent': 'cn_common',
         }

@@ -6,10 +6,6 @@
     'author': 'ERP Ukraine (https://erp.co.ua)',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'version': '1.4',
-    'description': """
-Ukraine - Chart of accounts.
-============================
-    """,
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [
         'account',

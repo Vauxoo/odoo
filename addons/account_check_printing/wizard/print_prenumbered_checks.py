@@ -10,13 +10,13 @@ class PrintPrenumberedChecks(models.TransientModel):
     _name = 'print.prenumbered.checks'
     _description = 'Print Pre-numbered Checks'
 
-    next_check_number = fields.Char('Next Check Number', required=True)
+    next_check_number = fields.Char(required=True)
 
     @api.constrains('next_check_number')
     def _check_next_check_number(self):
         for check in self:
             if check.next_check_number and not re.match(r'^[0-9]+$', check.next_check_number):
-                raise ValidationError(_('Next Check Number should only contains numbers.'))
+                raise ValidationError(self.env._('Next Check Number should only contains numbers.'))
 
     def print_checks(self):
         check_number = int(self.next_check_number)

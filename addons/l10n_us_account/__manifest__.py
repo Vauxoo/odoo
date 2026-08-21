@@ -6,8 +6,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['us'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-    """,
     'depends': ['l10n_us', 'account'],
     'data': [
         'views/l10n_us_account_menus.xml',

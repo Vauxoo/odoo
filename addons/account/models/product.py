@@ -119,10 +119,10 @@ class ProductTemplate(models.Model):
         joined = []
         included = res['total_included']
         if currency.compare_amounts(included, price):
-            joined.append(_('%(amount)s Incl. Taxes', amount=format_amount(self.env, included, currency)))
+            joined.append(self.env._('%(amount)s Incl. Taxes', amount=format_amount(self.env, included, currency)))
         excluded = res['total_excluded']
         if currency.compare_amounts(excluded, price):
-            joined.append(_('%(amount)s Excl. Taxes', amount=format_amount(self.env, excluded, currency)))
+            joined.append(self.env._('%(amount)s Excl. Taxes', amount=format_amount(self.env, excluded, currency)))
         if joined:
             tax_string = f"(= {', '.join(joined)})"
         else:
@@ -145,7 +145,7 @@ class ProductTemplate(models.Model):
              LIMIT 1
         """, [tuple(self.ids)])
         if self.env.cr.fetchall():
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "This product is already being used in posted Journal Entries.\n"
                 "If you want to change its Unit of Measure, please archive this product and create a new one."
             ))

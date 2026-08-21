@@ -16,11 +16,9 @@ class MyInvoisConsolidateInvoiceWizard(models.TransientModel):
     # ------------------
 
     date_from = fields.Date(
-        string='Date From',
         required=True,
     )
     date_to = fields.Date(
-        string='Date To',
         required=True,
     )
     consolidation_type = fields.Selection(

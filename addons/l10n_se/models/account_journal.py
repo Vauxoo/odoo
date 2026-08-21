@@ -22,4 +22,4 @@ class AccountJournal(models.Model):
     def _check_l10n_se_invoice_ocr_length(self):
         for journal in self:
             if journal.l10n_se_invoice_ocr_length < 6:
-                raise ValidationError(_('OCR Reference Number length need to be greater than 5. Please correct settings under invoice journal settings.'))
+                raise ValidationError(self.env._('OCR Reference Number length need to be greater than 5. Please correct settings under invoice journal settings.'))

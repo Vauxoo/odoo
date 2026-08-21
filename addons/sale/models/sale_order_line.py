@@ -43,7 +43,7 @@ class SaleOrderLine(models.Model):
         index=True,
         copy=False,
     )
-    sequence = fields.Integer(string="Sequence", default=10)
+    sequence = fields.Integer(default=10)
 
     # Order-related fields
     company_id = fields.Many2one(
@@ -93,7 +93,6 @@ class SaleOrderLine(models.Model):
     # Generic configuration fields
     product_id = fields.Many2one(
         comodel_name="product.product",
-        string="Product",
         change_default=True,
         ondelete="restrict",
         index="btree_not_null",
@@ -101,7 +100,6 @@ class SaleOrderLine(models.Model):
         check_company=True,
     )
     product_template_id = fields.Many2one(
-        string="Product Template",
         comodel_name="product.template",
         compute="_compute_product_template_id",
         readonly=False,
@@ -331,7 +329,6 @@ class SaleOrderLine(models.Model):
         relation="sale_order_line_invoice_rel",
         column1="order_line_id",
         column2="invoice_line_id",
-        string="Invoice Lines",
         copy=False,
     )
     invoice_status = fields.Selection(
@@ -341,7 +338,6 @@ class SaleOrderLine(models.Model):
             ("to invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
         ],
-        string="Invoice Status",
         compute="_compute_invoice_status",
         store=True,
     )
@@ -355,7 +351,7 @@ class SaleOrderLine(models.Model):
         compute_sudo=True,  # ensure same access as `untaxed_amount_invoiced`
     )
     untaxed_amount_to_invoice = fields.Monetary(
-        string="Untaxed Amount To Invoice", compute="_compute_untaxed_amount_to_invoice", store=True
+        compute="_compute_untaxed_amount_to_invoice", store=True
     )
     amount_to_invoice = fields.Monetary(
         string="Un-invoiced Balance",
@@ -399,10 +395,10 @@ class SaleOrderLine(models.Model):
         string="Parent Section Line", comodel_name="sale.order.line", compute="_compute_parent_id"
     )  # The section or subsection this line belongs to.
     collapse_prices = fields.Boolean(
-        string="Collapse Prices", copy=True, default=False
+        copy=True, default=False
     )  # Whether this section's lines' prices will be hidden in reports and in the portal.
     collapse_composition = fields.Boolean(
-        string="Collapse Composition", copy=True, default=False
+        copy=True, default=False
     )  # Whether this section's lines will be hidden in reports and in the portal.
 
     mandatory_product = fields.Boolean(

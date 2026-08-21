@@ -38,7 +38,7 @@ class AccountJournal(models.Model):
     def _check_api_key(self):
         if self.sudo().filtered(lambda j: not j.l10n_tr_nilvera_api_key):
             raise RedirectWarning(
-                _("Please configure your Nilvera API key"),
+                self.env._("Please configure your Nilvera API key"),
                 self.env.ref('account.action_account_config').id,
-                _("Go to the Accounting Settings")
+                self.env._("Go to the Accounting Settings")
             )

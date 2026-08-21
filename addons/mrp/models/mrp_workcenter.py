@@ -30,13 +30,13 @@ class MrpWorkcenter(models.Model):
     time_efficiency = fields.Float('Time Efficiency', related='resource_id.time_efficiency', default=100, store=True, readonly=False)
     active = fields.Boolean('Active', related='resource_id.active', default=True, store=True, readonly=False)
 
-    code = fields.Char('Code', copy=False)
+    code = fields.Char(copy=False)
     note = fields.Html(
         'Description')
     sequence = fields.Integer(
-        'Sequence', default=1, required=True,
+        default=1, required=True,
         help="Gives the sequence order when displaying a list of work centers.")
-    color = fields.Integer('Color')
+    color = fields.Integer()
     currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id', readonly=True, required=True)
     costs_hour = fields.Float(string='Cost per hour', help='Hourly processing cost.', default=0.0, tracking=True)
     time_start = fields.Float('Setup Time')
@@ -56,14 +56,14 @@ class MrpWorkcenter(models.Model):
         ('blocked', 'Blocked'),
         ('done', 'In Progress')], 'Workcenter Status', compute="_compute_working_state", store=True)
     blocked_time = fields.Float(
-        'Blocked Time', compute='_compute_blocked_time',
+        compute='_compute_blocked_time',
         help='Blocked hours over the last month', digits=(16, 2))
     productive_time = fields.Float(
-        'Productive Time', compute='_compute_productive_time',
+        compute='_compute_productive_time',
         help='Productive hours over the last month', digits=(16, 2))
     oee = fields.Float(compute='_compute_oee', help='Overall Equipment Effectiveness, based on the last month')
     oee_target = fields.Float(string='OEE Target', help="Overall Effective Efficiency Target in percentage", default=90)
-    performance = fields.Integer('Performance', compute='_compute_performance', help='Performance over the last month')
+    performance = fields.Integer(compute='_compute_performance', help='Performance over the last month')
     workcenter_load = fields.Float('Work Center Load', compute='_compute_workorder_count')
     alternative_workcenter_ids = fields.Many2many(
         'mrp.workcenter',
@@ -91,7 +91,7 @@ class MrpWorkcenter(models.Model):
     def _check_alternative_workcenter(self):
         for workcenter in self:
             if workcenter in workcenter.alternative_workcenter_ids:
-                raise ValidationError(_("Workcenter %s cannot be an alternative of itself.", workcenter.name))
+                raise ValidationError(self.env._("Workcenter %s cannot be an alternative of itself.", workcenter.name))
 
     def _compute_kanban_dashboard_graph(self):
         week_range, date_start, date_stop = self._get_week_range_and_first_last_days()
@@ -125,7 +125,7 @@ class MrpWorkcenter(models.Model):
             short_name = (format_date(week_start, 'd - ', locale=locale)
                           + format_date(week_end, 'd MMM', locale=locale))
             if not delta:
-                short_name = _('This Week')
+                short_name = self.env._('This Week')
             week_range[week_start] = short_name
         date_start = start_of(today + relativedelta.relativedelta(days=-7 - day_offset), 'day')
         date_stop = end_of(today + relativedelta.relativedelta(days=27 - day_offset), 'day')
@@ -287,7 +287,7 @@ class MrpWorkcenter(models.Model):
     def unblock(self):
         self.ensure_one()
         if self.working_state != 'blocked':
-            raise exceptions.UserError(_("It has already been unblocked."))
+            raise exceptions.UserError(self.env._("It has already been unblocked."))
         times = self.env['mrp.workcenter.productivity'].search([('workcenter_id', '=', self.id), ('date_end', '=', False)])
         times.write({'date_end': datetime.now()})
         return True
@@ -416,7 +416,7 @@ class MrpWorkcenter(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                'title': _("Note that archived work center(s): '%s' is/are still linked to active Bill of Materials, which means that operations can still be planned on it/them. "
+                'title': self.env._("Note that archived work center(s): '%s' is/are still linked to active Bill of Materials, which means that operations can still be planned on it/them. "
                            "To prevent this, deletion of the work center is recommended instead.", filtered_workcenters),
                 'type': 'warning',
                 'sticky': True,  #True/False will display for few seconds if false
@@ -447,7 +447,7 @@ class MrpWorkcenterTag(models.Model):
         return randint(1, 11)
 
     name = fields.Char("Tag Name", required=True)
-    color = fields.Integer("Color Index", default=_get_default_color)
+    color = fields.Integer("Color Index", default=lambda self: self._get_default_color())
 
     _tag_name_unique = models.Constraint(
         'unique(name)',
@@ -481,7 +481,7 @@ class MrpWorkcenterProductivityLoss(models.Model):
     _order = "sequence, id"
 
     name = fields.Char('Blocking Reason', required=True, translate=True)
-    sequence = fields.Integer('Sequence', default=1)
+    sequence = fields.Integer(default=1)
     manual = fields.Boolean('Is a Blocking Reason', default=True)
     loss_id = fields.Many2one('mrp.workcenter.productivity.loss.type', domain=[('loss_type', 'in', ['quality', 'availability'])], string='Category')
     loss_type = fields.Selection(string='Effectiveness Category', related='loss_id.loss_type', readonly=False)
@@ -530,17 +530,16 @@ class MrpWorkcenterProductivity(models.Model):
         default=lambda self: self._get_default_company_id())
     workorder_id = fields.Many2one('mrp.workorder', 'Work Order', check_company=True, index=True)
     user_id = fields.Many2one(
-        'res.users', "User",
-        default=lambda self: self.env.uid)
+        'res.users', default=lambda self: self.env.uid)
     loss_id = fields.Many2one(
         'mrp.workcenter.productivity.loss', "Loss Reason",
         ondelete='restrict', required=True)
     loss_type = fields.Selection(
         string="Effectiveness", related='loss_id.loss_type', readonly=False)
-    description = fields.Text('Description')
+    description = fields.Text()
     date_start = fields.Datetime('Start Date', default=fields.Datetime.now, required=True)
     date_end = fields.Datetime('End Date')
-    duration = fields.Float('Duration', compute='_compute_duration', store=True)
+    duration = fields.Float(compute='_compute_duration', store=True)
 
     @api.depends('date_end', 'date_start')
     def _compute_duration(self):
@@ -579,7 +578,7 @@ class MrpWorkcenterProductivity(models.Model):
                 ["user_id"], having=[("__count", ">", 1)],
             )
             if open_time_ids_by_user:
-                raise ValidationError(_('The Workorder (%s) cannot be started twice!', workorder.display_name))
+                raise ValidationError(self.env._('The Workorder (%s) cannot be started twice!', workorder.display_name))
 
     def button_block(self):
         self.ensure_one()
@@ -607,7 +606,7 @@ class MrpWorkcenterProductivity(models.Model):
         if underperformance_timers:
             underperformance_type = self.env['mrp.workcenter.productivity.loss'].search([('loss_type', '=', 'performance')], limit=1)
             if not underperformance_type:
-                raise UserError(_("You need to define at least one unactive productivity loss in the category 'Performance'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
+                raise UserError(self.env._("You need to define at least one unactive productivity loss in the category 'Performance'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
             underperformance_timers.write({'loss_id': underperformance_type.id})
 
 
@@ -625,12 +624,12 @@ class MrpWorkcenterCapacity(models.Model):
         return self.env['mrp.workcenter'].browse(workcenter_id).time_stop if workcenter_id else 0.0
 
     workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', required=True, index=True)
-    product_id = fields.Many2one('product.product', string='Product')
+    product_id = fields.Many2one('product.product')
     uom_id = fields.Many2one('uom.uom', string='Unit',
         compute="_compute_uom_id", precompute=True, store=True, readonly=False, required=True)
-    capacity = fields.Float('Capacity', help="Number of pieces that can be produced in parallel for this product or for all, depending on the unit.")
-    time_start = fields.Float('Setup Time', default=_default_time_start, help="Time in minutes for the setup.")
-    time_stop = fields.Float('Cleanup Time', default=_default_time_stop, help="Time in minutes for the cleaning.")
+    capacity = fields.Float(help="Number of pieces that can be produced in parallel for this product or for all, depending on the unit.")
+    time_start = fields.Float('Setup Time', default=lambda self: self._default_time_start(), help="Time in minutes for the setup.")
+    time_stop = fields.Float('Cleanup Time', default=lambda self: self._default_time_stop(), help="Time in minutes for the cleaning.")
 
     _positive_capacity = models.Constraint(
         'CHECK(capacity >= 0)',

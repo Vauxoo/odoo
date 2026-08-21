@@ -5,9 +5,6 @@
     'category': 'Website/Website',
     'summary': 'Website Module for Mail',
     'version': '0.1',
-    'description': """
-Module holding mail improvements for website. It holds the follow widget.
-""",
     'depends': ['website', 'mail'],
     'data': [
         'views/website_mail_templates.xml',

@@ -10,10 +10,10 @@ class MailGroupModeration(models.Model):
     _name = 'mail.group.moderation'
     _description = 'Mailing List black/white list'
 
-    email = fields.Char(string='Email', required=True)
+    email = fields.Char(required=True)
     status = fields.Selection(
         [('allow', 'Always Allow'), ('ban', 'Permanent Ban')],
-        string='Status', required=True, default='ban')
+        required=True, default='ban')
     mail_group_id = fields.Many2one('mail.group', string='Group', required=True, index=True, ondelete='cascade')
 
     _mail_group_email_uniq = models.Constraint(
@@ -26,7 +26,7 @@ class MailGroupModeration(models.Model):
         for values in vals_list:
             email_normalized = email_normalize(values.get('email'))
             if not email_normalized:
-                raise UserError(_('Invalid email address “%s”', values.get('email')))
+                raise UserError(self.env._('Invalid email address “%s”', values.get('email')))
             values['email'] = email_normalized
         return super().create(vals_list)
 
@@ -34,6 +34,6 @@ class MailGroupModeration(models.Model):
         if 'email' in vals:
             email_normalized = email_normalize(vals['email'])
             if not email_normalized:
-                raise UserError(_('Invalid email address “%s”', vals.get('email')))
+                raise UserError(self.env._('Invalid email address “%s”', vals.get('email')))
             vals['email'] = email_normalized
         return super().write(vals)

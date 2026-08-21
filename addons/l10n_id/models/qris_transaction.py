@@ -12,7 +12,7 @@ class L10n_IdQrisTransaction(models.Model):
     _name = 'l10n_id.qris.transaction'
     _description = "Record of QRIS transactions"
 
-    model = fields.Char(string="Model")  # payment in respond to which model
+    model = fields.Char()  # payment in respond to which model
     model_id = fields.Char(string="Model ID")  # id/uuid
 
     # Fields that store the QRIS details coming from API request
@@ -31,7 +31,7 @@ class L10n_IdQrisTransaction(models.Model):
     def _constraint_model(self):
         # only allow supported models
         if self.model not in self._get_supported_models():
-            raise ValidationError(_("QRIS capability is not extended to model %s yet!", self.model))
+            raise ValidationError(self.env._("QRIS capability is not extended to model %s yet!", self.model))
 
     def _get_record(self):
         """ Get the backend invoice record that the qris transaction is handling

@@ -36,7 +36,7 @@ class ResUsers(models.Model):
         if todo_activities:
             todo_group = self._format_activity_group('project.task', todo_activities)
             todo_group.update({
-                'name': _('To-Do'),
+                'name': self.env._('To-Do'),
                 'is_todo': True,
                 'icon': modules.module.get_module_icon('project_todo'),
                 'domain': [("active", "in", [True, False]), ("project_id", "=", False)],
@@ -57,6 +57,7 @@ class ResUsers(models.Model):
         res = super()._onboard_users_into_project(users)
         if res:
             res._generate_onboarding_todo()
+        return res
 
     def _generate_onboarding_todo(self):
         create_vals = []

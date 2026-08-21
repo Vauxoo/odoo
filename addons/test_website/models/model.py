@@ -96,7 +96,7 @@ class TestModelMultiWebsite(models.Model):
     # to website 2 (demo website). But some tests are unlinking the website 2,
     # which would fail if the `cascade` is not set. Note that the website 2 is
     # never set on any records in all other modules.
-    website_id = fields.Many2one('website', string='Website', ondelete='cascade')
+    website_id = fields.Many2one('website', ondelete='cascade')
 
 
 class TestModelExposed(models.Model):

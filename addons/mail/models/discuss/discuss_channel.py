@@ -18,8 +18,8 @@ from odoo.tools.sql import SQL
 
 from odoo.addons.base.models.avatar_mixin import generate_text_avatar_svg, get_random_ui_color_from_seed
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
-from odoo.addons.mail.tools.discuss import Store
-from odoo.addons.mail.tools.web_push import PUSH_NOTIFICATION_TYPE
+from ...tools.discuss import Store
+from ...tools.web_push import PUSH_NOTIFICATION_TYPE
 
 group_avatar = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 530.06 530.06">
 <rect width="530.06" height="530.06" fill="#875a7b"/>
@@ -81,10 +81,10 @@ class DiscussChannel(models.Model):
         return ''.join(choice('abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ23456789') for _i in range(10))
 
     # description
-    name = fields.Char('Name', required=True)
+    name = fields.Char(required=True)
     active = fields.Boolean(default=True, help="Set active to false to hide the channel without removing it.")
-    can_join = fields.Boolean("Can Join", compute="_compute_can_join")
-    can_leave = fields.Boolean("Can Leave", compute="_compute_can_leave")
+    can_join = fields.Boolean(compute="_compute_can_join")
+    can_leave = fields.Boolean(compute="_compute_can_leave")
     channel_type = fields.Selection(
         [("chat", "Chat"), ("channel", "Channel"), ("group", "Group Chat")],
         string="Conversation Type",
@@ -93,10 +93,10 @@ class DiscussChannel(models.Model):
         readonly=True,
         help="Chat is private and unique between 2 persons. Group is private among invited persons. Channel can be freely joined (depending on its configuration).",
     )
-    is_editable = fields.Boolean('Is Editable', compute='_compute_is_editable')
+    is_editable = fields.Boolean(compute='_compute_is_editable')
     is_readonly = fields.Boolean('Read-only', help="Only admins are allowed to post messages in a read-only channel.")
-    default_display_mode = fields.Selection(string="Default Display Mode", selection=[('video_full_screen', "Full screen video")], help="Determines how the channel will be displayed by default when opening it from its invitation link. No value means display text (no voice/video).")
-    description = fields.Text('Description')
+    default_display_mode = fields.Selection(selection=[('video_full_screen', "Full screen video")], help="Determines how the channel will be displayed by default when opening it from its invitation link. No value means display text (no voice/video).")
+    description = fields.Text()
     image_128 = fields.Image("Image", max_width=128, max_height=128)
     avatar_128 = fields.Image("Avatar", max_width=128, max_height=128, compute='_compute_avatar_128')
     avatar_cache_key = fields.Char(compute="_compute_avatar_cache_key")
@@ -115,13 +115,13 @@ class DiscussChannel(models.Model):
     sfu_server_url = fields.Char(groups="base.group_system")
     rtc_session_ids = fields.One2many('discuss.channel.rtc.session', 'channel_id', groups="base.group_system")
     call_history_ids = fields.One2many("discuss.call.history", "channel_id")
-    is_member = fields.Boolean("Is Member", compute="_compute_is_member", search="_search_is_member", compute_sudo=True)
+    is_member = fields.Boolean(compute="_compute_is_member", search="_search_is_member", compute_sudo=True)
     # sudo: discuss.channel - sudo for performance, self member can be accessed on accessible channel
     self_member_id = fields.Many2one("discuss.channel.member", compute="_compute_self_member_id", search="_search_self_member_id", compute_sudo=True)
     can_self_edit_readonly_channel = fields.Boolean(compute="_compute_can_self_edit_readonly_channel")
     # sudo: discuss.channel - sudo for performance, invited members can be accessed on accessible channel
     invited_member_ids = fields.One2many("discuss.channel.member", compute="_compute_invited_member_ids", compute_sudo=True)
-    member_count = fields.Integer(string="Member Count", compute='_compute_member_count', compute_sudo=True)
+    member_count = fields.Integer(compute='_compute_member_count', compute_sudo=True)
     message_count = fields.Integer("# Messages", readonly=True, compute="_compute_message_count")
     last_interest_dt = fields.Datetime(
         "Last Activity",
@@ -135,7 +135,7 @@ class DiscussChannel(models.Model):
              "Note that they will be able to manage their subscription manually "
              "if necessary.")
     # access
-    uuid = fields.Char('UUID', size=50, default=_generate_random_token, copy=False)
+    uuid = fields.Char('UUID', size=50, default=lambda self: self._generate_random_token(), copy=False)
     group_public_id = fields.Many2one('res.groups', string='Authorized Group', compute='_compute_group_public_id', recursive=True, readonly=False, store=True)
     invitation_url = fields.Char('Invitation URL', compute='_compute_invitation_url')
     channel_name_member_ids = fields.One2many(
@@ -172,7 +172,7 @@ class DiscussChannel(models.Model):
             )
         ):
             raise ValidationError(
-                _(
+                self.env._(
                     "Cannot create %(channels)s: initial message should belong to parent channel or one of its sub-channels.",
                     channels=failing_channels.mapped("name"),
                 )
@@ -190,7 +190,7 @@ class DiscussChannel(models.Model):
             )
         ):
             raise ValidationError(
-                _(
+                self.env._(
                     "Cannot create %(channels)s: parent should not be a sub-channel and should be of type 'channel' or 'group'. The sub-channel should have the same type as the parent.",
                     channels=failing_channels.mapped("name"),
                 ),
@@ -201,14 +201,14 @@ class DiscussChannel(models.Model):
         # sudo: discuss.channel - skipping ACL for constraint, more performant and no sensitive information is leaked
         for ch in self.sudo().filtered(lambda ch: ch.channel_type == 'chat'):
             if len(ch.channel_member_ids) > 2:
-                raise ValidationError(_("A channel of type 'chat' cannot have more than two users."))
+                raise ValidationError(self.env._("A channel of type 'chat' cannot have more than two users."))
 
     @api.constrains('group_public_id', 'group_ids')
     def _constraint_group_id_channel(self):
         # sudo: discuss.channel - skipping ACL for constraint, more performant and no sensitive information is leaked
         failing_channels = self.sudo().filtered(lambda channel: channel.channel_type != 'channel' and (channel.group_public_id or channel.group_ids))
         if failing_channels:
-            raise ValidationError(_("For %(channels)s, channel_type should be 'channel' to have the group-based authorization or group auto-subscription.", channels=', '.join([ch.name for ch in failing_channels])))
+            raise ValidationError(self.env._("For %(channels)s, channel_type should be 'channel' to have the group-based authorization or group auto-subscription.", channels=', '.join([ch.name for ch in failing_channels])))
 
     # COMPUTE / INVERSE
 
@@ -472,7 +472,7 @@ class DiscussChannel(models.Model):
             # find partners to add from partner_ids
             partner_ids_cmd = vals.get('channel_partner_ids') or []
             if any(cmd[0] not in (4, 6) for cmd in partner_ids_cmd):
-                raise ValidationError(_('Invalid value when creating a channel with members, only 4 or 6 are allowed.'))
+                raise ValidationError(self.env._('Invalid value when creating a channel with members, only 4 or 6 are allowed.'))
             partner_ids = [cmd[1] for cmd in partner_ids_cmd if cmd[0] == 4]
             partner_ids += [cmd[2] for cmd in partner_ids_cmd if cmd[0] == 6]
 
@@ -480,11 +480,11 @@ class DiscussChannel(models.Model):
             membership_ids_cmd = vals.get('channel_member_ids', [])
             for cmd in membership_ids_cmd:
                 if cmd[0] != 0:
-                    raise ValidationError(_('Invalid value when creating a channel with memberships, only 0 is allowed.'))
+                    raise ValidationError(self.env._('Invalid value when creating a channel with memberships, only 0 is allowed.'))
                 for field_name in cmd[2]:
                     if field_name not in self._get_allowed_channel_member_create_params():
                         raise ValidationError(
-                            _(
+                            self.env._(
                                 "Invalid field “%(field_name)s” when creating a channel with members.",
                                 field_name=field_name,
                             )
@@ -544,7 +544,7 @@ class DiscussChannel(models.Model):
         if 'channel_type' in vals:
             failing_channels = self.filtered(lambda channel: channel.channel_type != vals.get('channel_type'))
             if failing_channels:
-                raise UserError(_('Cannot change the channel type of: %(channel_names)s', channel_names=', '.join(failing_channels.mapped('name'))))
+                raise UserError(self.env._('Cannot change the channel type of: %(channel_names)s', channel_names=', '.join(failing_channels.mapped('name'))))
         if (
             "is_readonly" in vals
             and not self.env.is_admin()
@@ -565,7 +565,7 @@ class DiscussChannel(models.Model):
             )
         if {"from_message_id", "parent_channel_id"} & set(vals):
             raise UserError(
-                _(
+                self.env._(
                     "Cannot change initial message nor parent channel of: %(channels)s.",
                     channels=self.mapped("name"),
                 )
@@ -785,7 +785,7 @@ class DiscussChannel(models.Model):
         if not member:
             return
         if self.channel_type != "channel" and post_leave_message:
-            notification = Markup('<div class="o_mail_notification" data-oe-type="channel-left">%s</div>') % _(
+            notification = Markup('<div class="o_mail_notification" data-oe-type="channel-left">%s</div>') % self.env._(
                 "left the channel"
             )
             # sudo: mail.message - post as sudo since the user just unsubscribed from the channel
@@ -939,8 +939,7 @@ class DiscussChannel(models.Model):
             raise AccessError(self.env._("You don't have access to invite users to this channel."))
         if not self._allow_invite_by_email():
             raise UserError(
-                self.env._("Inviting by email is not allowed for this channel type (%s).")
-                % self.channel_type
+                self.env._("Inviting by email is not allowed for this channel type (%s).", self.channel_type)
             )
         eligible_emails = OrderedSet(norm for email in emails if email and (norm := email_normalize(email)))
         # Removing emails linked to members of this channel.
@@ -986,8 +985,7 @@ class DiscussChannel(models.Model):
                     "message_type": "user_notification",
                     "model": "discuss.channel",
                     "res_id": self.id,
-                    "subject": self.env._("%(author_name)s has invited you to a channel")
-                    % {"author_name": self.env.user.name},
+                    "subject": self.env._("%(author_name)s has invited you to a channel", author_name=self.env.user.name),
                 },
             )
         if not to_create:
@@ -1212,7 +1210,7 @@ class DiscussChannel(models.Model):
         # only notify "web_push" recipients in discuss channels.
         # exclude "inbox" recipients in discuss channels as inbox and web push can be mutually exclusive.
         # the user can turn off the web push but receive notifs via inbox if they want to.
-        super()._notify_thread_by_web_push(message, [r for r in recipients_data if r["notif"] == "web_push"], **kwargs)
+        return super()._notify_thread_by_web_push(message, [r for r in recipients_data if r["notif"] == "web_push"], **kwargs)
 
     def _message_receive_bounce(self, email, partner):
         # Override bounce management to unsubscribe bouncing addresses
@@ -1295,12 +1293,12 @@ class DiscussChannel(models.Model):
     def _message_update_content(self, message, /, *, partner_ids=None, **kwargs):
         if partner_ids:
             kwargs["partner_ids"] = self._get_allowed_message_partner_ids(partner_ids)
-        super()._message_update_content(message, **kwargs)
+        return super()._message_update_content(message, **kwargs)
 
     def _check_can_update_message_content(self, message):
         # Don't call super in this override as we want to ignore the mail.thread behavior completely
         if not message.message_type == 'comment':
-            raise UserError(_("Only messages type comment can have their content updated on model 'discuss.channel'"))
+            raise UserError(self.env._("Only messages type comment can have their content updated on model 'discuss.channel'"))
 
     def _mail_get_operation_for_mail_message_operation(self, message_operation):
         """Override to ensure create is not allowed in read-only channels."""
@@ -1330,7 +1328,7 @@ class DiscussChannel(models.Model):
 
     def _message_subscribe(self, partner_ids=None, subtype_ids=None, customer_ids=None):
         # Do not allow follower subscription on channels. Only members are considered
-        raise UserError(_('Adding followers on channels is not possible. Consider adding members instead.'))
+        raise UserError(self.env._('Adding followers on channels is not possible. Consider adding members instead.'))
 
     def _should_invite_members_to_join_call(self):
         self.ensure_one()
@@ -1391,9 +1389,9 @@ class DiscussChannel(models.Model):
             notification = Markup(notification_text) % {
                 'user_pinned_a_message_to_this_channel': Markup('<a href="#" data-oe-type="highlight" data-oe-id="%s">%s</a>') % (
                     message_id,
-                    _('%(user_name)s pinned a message to this channel.', user_name=self.self_member_id._get_html_link_title()),
+                    self.env._('%(user_name)s pinned a message to this channel.', user_name=self.self_member_id._get_html_link_title()),
                 ),
-                'see_all_pins': _('See all pinned messages.'),
+                'see_all_pins': self.env._('See all pinned messages.'),
             }
             self.message_post(body=notification, message_type="notification", subtype_xmlid="mail.mt_comment")
         return result
@@ -1562,7 +1560,7 @@ class DiscussChannel(models.Model):
             .search([("id", "in", partners_to)])
         ) | self.env.user.partner_id
         if len(partners) > 2:
-            raise UserError(_("A chat should not be created with more than 2 persons. Create a group instead."))
+            raise UserError(self.env._("A chat should not be created with more than 2 persons. Create a group instead."))
         # determine type according to the number of partner in the channel
         self.flush_model()
         self.env['discuss.channel.member'].flush_model()
@@ -1683,7 +1681,7 @@ class DiscussChannel(models.Model):
         new_channel = self.create(vals)
         group = self.env['res.groups'].search([('id', '=', group_id)]) if group_id else None
         new_channel.group_public_id = group.id if group else None
-        notification = Markup('<div class="o_mail_notification">%s</div>') % _("created this channel.")
+        notification = Markup('<div class="o_mail_notification">%s</div>') % self.env._("created this channel.")
         new_channel.message_post(body=notification, message_type="notification", subtype_xmlid="mail.mt_comment")
         return new_channel
 
@@ -1821,7 +1819,7 @@ class DiscussChannel(models.Model):
     def execute_command_help(self, **kwargs):
         self.ensure_one()
         if self.channel_type == 'channel':
-            msg = _(
+            msg = self.env._(
                 "You are in %(bold_start)s#%(channel_name)s%(bold_end)s.",
                 bold_start=Markup("<b>"),
                 bold_end=Markup("</b>"),
@@ -1833,17 +1831,17 @@ class DiscussChannel(models.Model):
                     f"member_{member.id}": member._get_member_html_link()
                     for member in members
                 }
-                msg = _(
+                msg = self.env._(
                     "You are in a private conversation with %(member_names)s.",
                     member_names=member_names,
                 )
             else:
-                msg = _("You are alone in a private conversation.")
+                msg = self.env._("You are alone in a private conversation.")
         msg += self._execute_command_help_message_extra()
         self.env.user._bus_send_transient_message(self, msg)
 
     def _execute_command_help_message_extra(self):
-        msg = _(
+        msg = self.env._(
             "%(new_line)s"
             "%(new_line)s%(bold_start)s@username%(bold_end)s to mention someone"
             "%(new_line)s%(bold_start)s@role%(bold_end)s to notify multiple people"
@@ -1861,19 +1859,19 @@ class DiscussChannel(models.Model):
             members = all_other_members[:30]
             list_params = [f"%(member_{member.id})s" for member in members]
             if len(all_other_members) != len(members):
-                list_params.append(_("more"))
+                list_params.append(self.env._("more"))
             else:
-                list_params.append(_("you"))
+                list_params.append(self.env._("you"))
             member_names = html_escape(format_list(self.env, list_params)) % {
                 f"member_{member.id}": member._get_member_html_link()
                 for member in members
             }
-            msg = _(
+            msg = self.env._(
                 "Users in this channel: %(members)s.",
                 members=member_names,
             )
         else:
-            msg = _("You are alone in this channel.")
+            msg = self.env._("You are alone in this channel.")
         self.env.user._bus_send_transient_message(self, msg)
 
     @api.model

@@ -91,9 +91,9 @@ class ResUsers(models.Model):
         return super()._post_model_setup__()
 
     # note: a user can only be linked to one employee per company (see sql constraint in `hr.employee`)
-    employee_ids = fields.One2many('hr.employee', 'user_id', string='Related employee', domain=_employee_ids_domain)
+    employee_ids = fields.One2many('hr.employee', 'user_id', string='Related employee', domain=lambda self: self._employee_ids_domain())
     all_employee_ids = fields.One2many("hr.employee", "user_id", string="Related employees from all companies")
-    employee_public_ids = fields.One2many('hr.employee.public', 'user_id', string='Related employee (public)', domain=_employee_ids_domain, readonly=True)
+    employee_public_ids = fields.One2many('hr.employee.public', 'user_id', string='Related employee (public)', domain=lambda self: self._employee_ids_domain(), readonly=True)
     employee_id = fields.Many2one('hr.employee', string="Company employee",
         compute='_compute_company_employee', search='_search_company_employee', readonly=True)
     department_id = fields.Many2one(related='employee_id.department_id', string='Department')
@@ -200,7 +200,7 @@ class ResUsers(models.Model):
     def _get_personal_info_partner_ids_to_notify(self, employee):
         if employee.version_id.hr_responsible_id:
             return (
-                _("You are receiving this message because you are the HR Responsible of this employee."),
+                self.env._("You are receiving this message because you are the HR Responsible of this employee."),
                 employee.version_id.hr_responsible_id.partner_id.ids,
             )
         return ('', [])
@@ -233,8 +233,8 @@ class ResUsers(models.Model):
                 if partner_ids:
                     employee.message_notify(
                         body=Markup("<p>%s</p><p>%s</p><ul>%s</ul><p><em>%s</em></p>") % (
-                            _('Personal information update.'),
-                            _("The following fields were modified by %s", employee.name),
+                            self.env._('Personal information update.'),
+                            self.env._("The following fields were modified by %s", employee.name),
                             field_names,
                             reason_message,
                         ),
@@ -313,7 +313,7 @@ class ResUsers(models.Model):
     def action_create_employee(self):
         self.ensure_one()
         if self.env.company not in self.company_ids:
-            raise AccessError(_("You are not allowed to create an employee because the user does not have access rights for %s", self.env.company.name))
+            raise AccessError(self.env._("You are not allowed to create an employee because the user does not have access rights for %s", self.env.company.name))
         return self.env['hr.employee'].create(dict(
             name=self.name,
             company_id=self.env.company.id,
@@ -326,14 +326,14 @@ class ResUsers(models.Model):
         model = 'hr.employee' if self.env.user.has_group('hr.group_hr_user') else 'hr.employee.public'
         if len(employees) > 1:
             return {
-                'name': _('Related Employees'),
+                'name': self.env._('Related Employees'),
                 'type': 'ir.actions.act_window',
                 'res_model': model,
                 'view_mode': 'kanban,list,form',
                 'domain': [('id', 'in', employees.ids)],
             }
         return {
-            'name': _('Employee'),
+            'name': self.env._('Employee'),
             'type': 'ir.actions.act_window',
             'res_model': model,
             'res_id': employees.id,
@@ -342,7 +342,7 @@ class ResUsers(models.Model):
 
     def action_related_contact(self):
         return {
-            'name': _("Related Contact"),
+            'name': self.env._("Related Contact"),
             'res_id': self.partner_id.id,
             'type': 'ir.actions.act_window',
             'res_model': 'res.partner',

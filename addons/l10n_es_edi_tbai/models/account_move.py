@@ -131,14 +131,14 @@ class AccountMove(models.Model):
                 # NOTE this last condition (state is cancelled) is there because
                 # button_cancel calls button_draft.
                 # Draft button does not appear for user.
-                raise UserError(_("You cannot reset to draft an entry that has been posted to TicketBAI's chain"))
+                raise UserError(self.env._("You cannot reset to draft an entry that has been posted to TicketBAI's chain"))
         return super().button_draft()
 
     @api.ondelete(at_uninstall=False)
     def _l10n_es_tbai_unlink_except_in_chain(self):
         # Prevent deleting moves that are part of the TicketBAI chain
         if not self.env.context.get('force_delete') and any(m.l10n_es_tbai_chain_index for m in self):
-            raise UserError(_('You cannot delete a move that has a TicketBAI chain id.'))
+            raise UserError(self.env._('You cannot delete a move that has a TicketBAI chain id.'))
 
     # -------------------------------------------------------------------------
     # HELPER METHODS
@@ -147,11 +147,11 @@ class AccountMove(models.Model):
     def _l10n_es_tbai_check_can_send(self):
         # Ensure the move is posted
         if self.state != 'posted':
-            return _("Cannot send an entry that is not posted to TicketBAI.")
+            return self.env._("Cannot send an entry that is not posted to TicketBAI.")
         if self.l10n_es_tbai_state in ('sent', 'cancelled') and not self.env.context.get('batuz_correction'):
-            return _("This entry has already been posted.")
+            return self.env._("This entry has already been posted.")
         if self.company_id.l10n_es_tbai_tax_agency == 'bizkaia' and self.is_purchase_document() and not self.ref:
-            return _("You need to fill in the Reference field as the invoice number from your vendor.")
+            return self.env._("You need to fill in the Reference field as the invoice number from your vendor.")
 
     def _l10n_es_tbai_get_attachment_name(self, cancel=False):
         return self.name + ('_post.xml' if not cancel else '_cancel.xml')
@@ -185,7 +185,7 @@ class AccountMove(models.Model):
         try:
             self.lock_for_update()
         except LockError:
-            raise UserError(_('Cannot send this entry as it is already being processed.'))
+            raise UserError(self.env._('Cannot send this entry as it is already being processed.'))
 
     # -------------------------------------------------------------------------
     # WEB SERVICE CALLS
@@ -195,7 +195,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         self.l10n_es_tbai_post_document_id = False
         if error := self.with_context(batuz_correction=True)._l10n_es_tbai_post():
-            error = error + "\n\n" + _("Be careful if you modified this vendor bill, "
+            error = error + "\n\n" + self.env._("Be careful if you modified this vendor bill, "
                                        "because the official version is still the previous one sent. ")
             raise UserError(error)  # This way, we rollback when rejected and the old accepted document is kept
 
@@ -210,7 +210,7 @@ class AccountMove(models.Model):
     def l10n_es_tbai_cancel(self):
         for invoice in self:
             if invoice.inalterable_hash:
-                raise UserError(_('You cannot reset to draft a locked journal entry.'))
+                raise UserError(self.env._('You cannot reset to draft a locked journal entry.'))
             invoice._l10n_es_tbai_lock_move()
 
             if invoice.l10n_es_tbai_cancel_document_id and invoice.l10n_es_tbai_cancel_document_id.state == 'rejected':
@@ -404,6 +404,6 @@ class AccountMove(models.Model):
                 and not move.l10n_es_tbai_reversed_ids
                 and not move.l10n_es_original_invoice_credited):
                 raise UserError(
-                    _("Please create the credit note from the original invoice. "
+                    self.env._("Please create the credit note from the original invoice. "
                       "If that's not possible, fill in the 'Original Invoice Credited' field."))
         return super().action_post()

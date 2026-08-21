@@ -13,7 +13,6 @@ from .misc import SKIPPED_ELEMENT_TYPES, html_escape
 __all__ = []
 
 _lt = LazyTranslate('base')
-_logger = logging.getLogger(__name__)
 RSTRIP_REGEXP = re.compile(r'\n[ \t]*$')
 
 # attribute names that contain Python expressions

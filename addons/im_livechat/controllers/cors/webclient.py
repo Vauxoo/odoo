@@ -2,7 +2,7 @@
 
 from odoo.http import route
 from odoo.addons.mail.controllers.webclient import WebclientController
-from odoo.addons.im_livechat.tools.misc import force_guest_env
+from ...tools.misc import force_guest_env
 
 
 class WebClient(WebclientController):

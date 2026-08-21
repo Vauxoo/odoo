@@ -2,11 +2,11 @@
 
 import logging
 import subprocess
-from odoo.addons.iot_drivers.tools.helpers import (
+from .helpers import (
     odoo_restart,
     toggleable,
 )
-from odoo.addons.iot_drivers.tools.system import (
+from .system import (
     rpi_only,
     IS_TEST,
     git,

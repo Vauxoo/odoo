@@ -329,6 +329,7 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
         xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
         xml_expected = etree.fromstring(super()._get_sample_xml('xml_cancel.xml'))
         self.assertXmlTreeEqual(xml_doc, xml_expected)
+        return xml_expected
 
     def test_xml_tree_fecha_operacion(self):
         """

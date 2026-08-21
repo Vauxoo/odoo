@@ -34,14 +34,14 @@ class ResourceResource(models.Model):
 
     name = fields.Char(required=True)
     active = fields.Boolean(
-        'Active', default=True,
+        default=True,
         help="If the active field is set to False, it will allow you to hide the resource record without removing it.")
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     resource_type = fields.Selection([
         ('user', 'Human'),
         ('material', 'Material')], string='Type',
         default='user', required=True)
-    user_id = fields.Many2one('res.users', string='User', index='btree_not_null', help='Related user name for the resource to manage its access.')
+    user_id = fields.Many2one('res.users', index='btree_not_null', help='Related user name for the resource to manage its access.')
     avatar_128 = fields.Image(compute='_compute_avatar_128', compute_sudo=True)
     share = fields.Boolean(related='user_id.share')
     email = fields.Char(related='user_id.email')
@@ -60,7 +60,7 @@ class ResourceResource(models.Model):
     tz = fields.Selection(
         _tz_get, string='Timezone', required=True,
         default=lambda self: self.env.context.get('tz') or self.env.user.tz or 'UTC')
-    color = fields.Integer(default=_default_color)
+    color = fields.Integer(default=lambda self: self._default_color())
 
     @api.constrains('calendar_id', 'hours_per_week', 'hours_per_day')
     def _check_hours_per_week_day(self):

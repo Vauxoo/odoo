@@ -108,4 +108,4 @@ class CrmLead(models.Model):
                 and order.currency_id == opportunity.company_id.currency_id
             ):
                 opportunity.expected_revenue = order.amount_untaxed
-                opportunity._track_set_log_message(_('Expected revenue has been updated based on the linked Sales Orders.'))
+                opportunity._track_set_log_message(self.env._('Expected revenue has been updated based on the linked Sales Orders.'))

@@ -11,7 +11,6 @@ from odoo.addons.account.controllers.portal import PortalAccount
 from odoo.exceptions import UserError
 from datetime import timedelta, datetime
 
-_logger = logging.getLogger(__name__)
 
 
 class PosController(PortalAccount):

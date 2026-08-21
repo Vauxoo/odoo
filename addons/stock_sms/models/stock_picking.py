@@ -32,7 +32,7 @@ class StockPicking(models.Model):
         view = self.env.ref('stock_sms.view_confirm_stock_sms')
         wiz = self.env['confirm.stock.sms'].create({'pick_ids': [(4, p.id) for p in self]})
         return {
-            'name': _('SMS'),
+            'name': self.env._('SMS'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'confirm.stock.sms',

@@ -5,9 +5,6 @@
     'countries': ['ie'],
     "icon": '/account/static/description/l10n.png',
     "category": "Accounting/Localizations/Account Charts",
-    "description": """
-This is the base module to manage the accounting chart for Republic of Ireland in Odoo.
-    """,
     "author": "Odoo S.A.",
     "depends": [
         "account",

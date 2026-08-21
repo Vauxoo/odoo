@@ -10,7 +10,7 @@ class LinkTracker(models.Model):
 
     def action_visit_page_statistics(self):
         return {
-            'name': _("Visit Webpage Statistics"),
+            'name': self.env._("Visit Webpage Statistics"),
             'type': 'ir.actions.act_url',
             'url': '%s+' % (self.short_url),
             'target': 'new',

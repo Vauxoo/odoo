@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    company_id = fields.Many2one('res.company', string='Company', required=True,
+    company_id = fields.Many2one('res.company', required=True,
         default=lambda self: self.env.company)
     is_root_company = fields.Boolean(compute='_compute_is_root_company')
     module_base_import = fields.Boolean("Allow users to import data from CSV/XLS/XLSX/ODS files")
@@ -32,7 +32,7 @@ class ResConfigSettings(models.TransientModel):
             implied_group='base.group_multi_currency',
             help="Allows to work in a multi currency environment")
     external_report_layout_id = fields.Many2one(related="company_id.external_report_layout_id")
-    show_effect = fields.Boolean(string="Show Effect", config_parameter='base_setup.show_effect')
+    show_effect = fields.Boolean(config_parameter='base_setup.show_effect')
     company_count = fields.Integer('Number of Companies', compute="_compute_company_count")
     active_user_count = fields.Integer('Number of Active Users', compute="_compute_active_user_count")
     language_count = fields.Integer('Number of Languages', compute="_compute_language_count")
@@ -56,7 +56,7 @@ class ResConfigSettings(models.TransientModel):
         default_group = self.env.ref('base.default_user_regular_group', raise_if_not_found=False)
         if not default_group:
             default_group = self.env['res.groups'].create({
-                'name': _('Default access for new users'),
+                'name': self.env._('Default access for new users'),
             })
             self.env['ir.model.data'].create({
                 'name': 'default_user_regular_group',
@@ -67,7 +67,7 @@ class ResConfigSettings(models.TransientModel):
             })
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Edit new user default group"),
+            'name': self.env._("Edit new user default group"),
             'view_mode': 'form',
             'res_model': 'res.groups',
             'res_id': default_group.id,
@@ -120,7 +120,7 @@ class ResConfigSettings(models.TransientModel):
         informations += '%s\n' % self.company_id.city if self.company_id.city else ''
         informations += '%s\n' % self.company_id.state_id.display_name if self.company_id.state_id else ''
         informations += '%s' % self.company_id.country_id.display_name if self.company_id.country_id else ''
-        vat_display = self.company_id.country_id.vat_label or _('VAT')
+        vat_display = self.company_id.country_id.vat_label or self.env._('VAT')
         vat_display = '\n' + vat_display + ': '
         informations += '%s %s' % (vat_display, self.company_id.vat) if self.company_id.vat else ''
 

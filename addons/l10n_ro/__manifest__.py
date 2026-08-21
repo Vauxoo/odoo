@@ -12,13 +12,6 @@
         'account_edi_ubl_cii',
     ],
     'auto_install': ['account'],
-    'description': """
-This is the module to manage the Accounting Chart, VAT structure, Fiscal Position and Tax Mapping.
-It also adds the Registration Number for Romania in Odoo.
-================================================================================================================
-
-Romanian accounting chart and localization.
-    """,
     'data': [
         'views/res_partner_view.xml',
         'data/account_tax_report_data.xml',

@@ -15,7 +15,7 @@ class AccountJournal(models.Model):
             lambda p: p.journal_id.id in self.ids
         )
         if linked_providers:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You must first uninstall a payment provider before deleting its journal.\n"
                 "Linked providers: %s", ', '.join(p.display_name for p in linked_providers)
             ))

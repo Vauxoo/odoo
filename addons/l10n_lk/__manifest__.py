@@ -4,18 +4,6 @@
     "icon": "/account/static/description/l10n.png",
     "countries": ["lk"],
     "summary": "Provides accounting localizations for Sri Lanka.",
-    "description": """
-Sri Lankan Accounting module
-============================
-- Chart of Accounts
-- Fiscal Position
-- Taxes & Tax Groups
-
-Forms
-=====
-- VAT001
-- WHT001
-    """,
     "author": "Odoo S.A.",
     "category": "Accounting/Localizations/Account Charts",
     "website": "https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html",

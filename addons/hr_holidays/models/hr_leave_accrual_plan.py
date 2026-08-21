@@ -4,7 +4,7 @@ from calendar import monthrange
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
-from odoo.addons.hr_holidays.models.hr_leave_accrual_plan_level import _get_selection_days
+from .hr_leave_accrual_plan_level import _get_selection_days
 
 
 class HrLeaveAccrualPlan(models.Model):
@@ -12,12 +12,12 @@ class HrLeaveAccrualPlan(models.Model):
     _description = "Accrual Plan"
 
     active = fields.Boolean(default=True)
-    name = fields.Char('Name', required=True)
+    name = fields.Char(required=True)
     employees_count = fields.Integer("Employees", compute='_compute_employee_count')
     level_ids = fields.One2many('hr.leave.accrual.level', 'accrual_plan_id', copy=True, string="Milestones")
     allocation_ids = fields.One2many('hr.leave.allocation', 'accrual_plan_id',
         export_string_translation=False)
-    company_id = fields.Many2one('res.company', string='Company', domain=lambda self: [('id', 'in', self.env.companies.ids)])
+    company_id = fields.Many2one('res.company', domain=lambda self: [('id', 'in', self.env.companies.ids)])
     transition_mode = fields.Selection([
         ('immediately', 'Immediately'),
         ('end_of_accrual', "After this accrual's period")],
@@ -102,7 +102,7 @@ class HrLeaveAccrualPlan(models.Model):
     def action_open_accrual_plan_employees(self):
         self.ensure_one()
         return {
-            'name': _("Accrual Plan's Employees"),
+            'name': self.env._("Accrual Plan's Employees"),
             'type': 'ir.actions.act_window',
             'view_mode': 'kanban,list,form',
             'res_model': 'hr.employee',
@@ -150,7 +150,7 @@ class HrLeaveAccrualPlan(models.Model):
             ('state', 'not in', ('cancel', 'refuse')),
         ]
         if self.env['hr.leave.allocation'].search_count(domain):
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "Some of the accrual plans you're trying to delete are linked to an existing allocation. Delete or cancel them first."
             ))
 

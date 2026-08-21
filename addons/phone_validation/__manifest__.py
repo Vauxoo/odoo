@@ -6,18 +6,6 @@
     'summary': 'Validate and format phone numbers',
     'sequence': 9999,
     'category': 'Hidden',
-    'description': """
-Phone Numbers Validation
-========================
-
-This module adds the feature of validation and formatting phone numbers
-according to a destination country.
-
-It also adds phone blacklist management through a specific model storing
-blacklisted phone numbers.
-
-It adds mail.thread.phone mixin that handles sanitation and blacklist of
-records numbers. """,
     'data': [
         'views/phone_blacklist_views.xml',
         'views/res_partner_views.xml',

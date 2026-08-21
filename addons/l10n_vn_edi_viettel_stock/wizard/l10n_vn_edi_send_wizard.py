@@ -23,7 +23,7 @@ class L10nVnEdiViettelStockSendWizard(models.TransientModel):
         # Validate required fields before sending
         missing = self.template_field_ids.filtered(lambda l: l.is_required and not l.value)
         if missing:
-            raise UserError(_(
+            raise UserError(self.env._(
                 'The following required fields must be filled in:\n%s',
                 '\n'.join(f'- {line.key_label}' for line in missing),
             ))

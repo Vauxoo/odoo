@@ -6,18 +6,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['ae'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-United Arab Emirates Accounting Module
-=======================================================
-United Arab Emirates accounting basic charts and localization.
-
-Activates:
-
-- Chart of Accounts
-- Taxes
-- Tax Report
-- Fiscal Positions
-    """,
     'depends': [
         'account',
         'l10n_gcc_invoice',

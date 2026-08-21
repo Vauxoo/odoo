@@ -4,21 +4,6 @@
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/switzerland.html',
     'icon': '/account/static/description/l10n.png',
     'countries': ['ch'],
-    'description': """
-Swiss localization
-==================
-This module defines a chart of account for Switzerland (Swiss PME/KMU 2015), taxes and enables the generation of a QR-bill when you print an invoice or send it by mail.
-The QR bill is attached to the invoice and eases its payment.
-
-A QR-bill will be generated if:
-    - The partner set on your invoice has a complete address (street, city, postal code and country) in Switzerland
-    - The option to generate the Swiss QR-code is selected on the invoice (done by default)
-    - A correct account number/QR IBAN is set on your bank journal
-    - (when using a QR-IBAN): the payment reference of the invoice is a QR-reference
-
-The generation of the QR-bill is automatic if you meet the previous criteria. The QR-bill will be appended after the invoice when printing or sending by mail.
-
-    """,
     'version': '11.3',
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [

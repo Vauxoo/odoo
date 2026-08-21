@@ -16,7 +16,7 @@ class ResUsers(models.Model):
     def _set_password(self):
         self._check_password_policy(self.mapped('password'))
 
-        super(ResUsers, self)._set_password()
+        return super(ResUsers, self)._set_password()
 
     def _check_password_policy(self, passwords):
         failures = []
@@ -27,7 +27,7 @@ class ResUsers(models.Model):
             if not password:
                 continue
             if len(password) < minlength:
-                failures.append(_("Your password must contain at least %(minimal_length)d characters and only has %(current_count)d.", minimal_length=minlength, current_count=len(password)))
+                failures.append(self.env._("Your password must contain at least %(minimal_length)d characters and only has %(current_count)d.", minimal_length=minlength, current_count=len(password)))
 
         if failures:
             raise UserError(u'\n\n '.join(failures))

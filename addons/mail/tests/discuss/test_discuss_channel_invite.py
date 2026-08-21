@@ -2,7 +2,7 @@
 from lxml import html
 from itertools import product
 
-from odoo.addons.mail.tests.common import MailCommon
+from ..common import MailCommon
 from odoo.exceptions import UserError
 from odoo.tests import HttpCase, new_test_user, users
 from odoo.tools.misc import hash_sign

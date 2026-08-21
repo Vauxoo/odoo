@@ -123,7 +123,7 @@ class BrandedFileWriter(PdfWriter):
             '/Creator': "Odoo",
             '/Producer': "Odoo",
         })
-        super().write_stream(*args, **kwargs)
+        return super().write_stream(*args, **kwargs)
 
 
 PdfFileWriter = BrandedFileWriter

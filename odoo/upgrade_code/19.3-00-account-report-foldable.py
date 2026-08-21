@@ -8,7 +8,6 @@ from odoo.upgrade_code.tools_etree import update_etree
 if typing.TYPE_CHECKING:
     from odoo.cli.upgrade_code import FileManager
 
-_logger = logging.getLogger(__name__)
 
 SHORTHAND_FORMULA_ENGINES = {
     'domain_formula': 'domain',

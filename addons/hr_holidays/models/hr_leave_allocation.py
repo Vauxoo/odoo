@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 from odoo.tools import format_date
-from odoo.addons.hr_holidays.models.hr_leave import get_employee_from_context
+from .hr_leave import get_employee_from_context
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tools.float_utils import float_round
@@ -86,15 +86,15 @@ class HrLeaveAllocation(models.Model):
     date_to = fields.Date('End Date', copy=False, tracking=True)
     work_entry_type_id = fields.Many2one(
         "hr.work.entry.type", compute='_compute_work_entry_type_id', store=True, string="Time Type", required=True, index=True, readonly=False,
-        domain=_domain_work_entry_type_id)
+        domain=lambda self: self._domain_work_entry_type_id())
     allowed_work_entry_type_ids = fields.Many2many(
         'hr.work.entry.type', compute='_compute_allowed_work_entry_type_ids')
     employee_id = fields.Many2one(
-        'hr.employee', string='Employee', default=lambda self: self.env.user.employee_id,
-        index=True, ondelete="restrict", required=True, tracking=True, domain=_domain_employee_id)
+        'hr.employee', default=lambda self: self.env.user.employee_id,
+        index=True, ondelete="restrict", required=True, tracking=True, domain=lambda self: self._domain_employee_id())
     employee_company_id = fields.Many2one(related='employee_id.company_id', readonly=True, store=True)
     active_employee = fields.Boolean('Active Employee', related='employee_id.active', readonly=True)
-    manager_id = fields.Many2one('hr.employee', compute='_compute_manager_id', store=True, string='Manager')
+    manager_id = fields.Many2one('hr.employee', compute='_compute_manager_id', store=True)
     notes = fields.Text('Reasons', readonly=False)
     # duration
     number_of_days = fields.Float(
@@ -117,15 +117,15 @@ class HrLeaveAllocation(models.Model):
         'hr.employee', string='Second Approval', readonly=True, copy=False,
         help='This area is automatically filled by the user who validates the allocation with second level (If time type need second validation)')
     validation_type = fields.Selection(string='Validation Type', related='work_entry_type_id.allocation_validation_type', readonly=True)
-    can_approve = fields.Boolean('Can Approve', compute='_compute_can_approve')
-    can_validate = fields.Boolean('Can Validate', compute='_compute_can_validate')
-    can_refuse = fields.Boolean('Can Refuse', compute='_compute_can_refuse')
+    can_approve = fields.Boolean(compute='_compute_can_approve')
+    can_validate = fields.Boolean(compute='_compute_can_validate')
+    can_refuse = fields.Boolean(compute='_compute_can_refuse')
     type_request_unit = fields.Selection([
         ('hour', 'Hours'),
         ('half_day', 'Half-Day'),
         ('day', 'Day'),
     ], compute="_compute_type_request_unit")
-    department_id = fields.Many2one('hr.department', compute='_compute_department_id', store=True, string='Department', readonly=False)
+    department_id = fields.Many2one('hr.department', compute='_compute_department_id', store=True, readonly=False)
     # accrual configuration
     lastcall = fields.Date("Date of the last accrual allocation", readonly=True)
     # lastcall is only updated on accrual date. On other dates such as carryover date,
@@ -145,7 +145,7 @@ class HrLeaveAllocation(models.Model):
     @api.constrains('date_from', 'date_to')
     def _check_date_from_date_to(self):
         if any(allocation.date_to and allocation.date_from > allocation.date_to for allocation in self):
-            raise UserError(_("The Start Date of the Validity Period must be anterior to the End Date."))
+            raise UserError(self.env._("The Start Date of the Validity Period must be anterior to the End Date."))
 
     # The compute does not get triggered without a depends on record creation
     # aka keep the 'useless' depends
@@ -157,14 +157,14 @@ class HrLeaveAllocation(models.Model):
     def _get_title(self):
         self.ensure_one()
         if not self.work_entry_type_id:
-            return _("Allocation Request")
+            return self.env._("Allocation Request")
         if self.type_request_unit == 'hour':
-            return _(
+            return self.env._(
                 '%(name)s (%(duration)s hour(s))',
                 name=self.work_entry_type_id.name,
                 duration=float_round(self.number_of_days * self.employee_id._get_hours_per_day(self.date_from), precision_digits=2),
             )
-        return _(
+        return self.env._(
             '%(name)s (%(duration)s day(s))',
             name=self.work_entry_type_id.name,
             duration=float_round(self.number_of_days, precision_digits=2),
@@ -240,7 +240,7 @@ class HrLeaveAllocation(models.Model):
                 (float_round(allocation.number_of_hours_display, precision_digits=2)
                 if allocation.type_request_unit == 'hour'
                 else float_round(allocation.number_of_days_display, precision_digits=2)),
-                _('hours') if allocation.type_request_unit == 'hour' else _('days'))
+                self.env._('hours') if allocation.type_request_unit == 'hour' else self.env._('days'))
 
     @api.depends('state', 'employee_id')
     def _compute_can_approve(self):
@@ -492,7 +492,7 @@ class HrLeaveAllocation(models.Model):
 
         date_to = date_to or fields.Date.context_today(self)
         already_accrued = {allocation.id: allocation.already_accrued or (allocation.number_of_days != 0 and allocation.accrual_plan_id.accrued_gain_time == 'start') for allocation in self}
-        first_allocation = _("""This allocation have already ran once, any modification won't be effective to the days allocated to the employee. If you need to change the configuration of the allocation, delete and create a new one.""")
+        first_allocation = self.env._("""This allocation have already ran once, any modification won't be effective to the days allocated to the employee. If you need to change the configuration of the allocation, delete and create a new one.""")
         for allocation in self:
             expiration_date = False
             if not allocation.accrual_plan_id:
@@ -784,10 +784,10 @@ class HrLeaveAllocation(models.Model):
     @api.depends('employee_id', 'work_entry_type_id', 'type_request_unit', 'number_of_days')
     def _compute_display_name(self):
         for allocation in self:
-            allocation.display_name = _("Allocation of %(work_entry_type)s: %(amount).2f %(unit)s to %(target)s",
+            allocation.display_name = self.env._("Allocation of %(work_entry_type)s: %(amount).2f %(unit)s to %(target)s",
                 work_entry_type=allocation.work_entry_type_id.sudo().name,
                 amount=allocation.number_of_hours_display if allocation.type_request_unit == 'hour' else allocation.number_of_days,
-                unit=_('hours') if allocation.type_request_unit == 'hour' else _('days'),
+                unit=self.env._('hours') if allocation.type_request_unit == 'hour' else self.env._('days'),
                 target=allocation.employee_id.name,
             )
 
@@ -835,7 +835,7 @@ class HrLeaveAllocation(models.Model):
         """ Override to avoid automatic logging of creation """
         for values in vals_list:
             if 'state' in values and values['state'] != 'confirm':
-                raise UserError(_('Incorrect state for new allocation'))
+                raise UserError(self.env._('Incorrect state for new allocation'))
             employee_id = values.get('employee_id', False)
             if not values.get('department_id'):
                 values.update({'department_id': self.env['hr.employee'].sudo().browse(employee_id).department_id.id})
@@ -896,7 +896,7 @@ class HrLeaveAllocation(models.Model):
             if lt.allows_negative and total_current_excess <= lt.max_allowed_negative:
                 continue
             raise ValidationError(
-                _('You cannot reduce the duration below the duration of leaves already taken by the employee.'))
+                self.env._('You cannot reduce the duration below the duration of leaves already taken by the employee.'))
 
         return result
 
@@ -906,12 +906,12 @@ class HrLeaveAllocation(models.Model):
             return
         state_description_values = {elem[0]: elem[1] for elem in self._fields['state']._description_selection(self.env)}
         for allocation in self.filtered(lambda allocation: allocation.state not in ['confirm', 'refuse']):
-            raise UserError(_('You cannot delete an allocation request which is in %s state.', state_description_values.get(allocation.state)))
+            raise UserError(self.env._('You cannot delete an allocation request which is in %s state.', state_description_values.get(allocation.state)))
 
     @api.ondelete(at_uninstall=False)
     def _unlink_if_no_leaves(self):
         if any(allocation.work_entry_type_id.requires_allocation and allocation.leaves_taken > 0 for allocation in self):
-            raise UserError(_('You cannot delete an allocation request which has some validated leaves.'))
+            raise UserError(self.env._('You cannot delete an allocation request which has some validated leaves.'))
 
     def copy(self, default=None):
         new_allocations = super().copy(default)
@@ -932,7 +932,7 @@ class HrLeaveAllocation(models.Model):
             elif allocation.can_approve:
                 allocation_to_approve += allocation
             else:
-                raise UserError(_('Allocation must be "To Approve" in order to approve it.'))
+                raise UserError(self.env._('Allocation must be "To Approve" in order to approve it.'))
 
         allocation_to_approve.write({'state': 'validate1', 'approver_id': current_employee.id})
         allocation_to_validate._action_validate()
@@ -955,7 +955,7 @@ class HrLeaveAllocation(models.Model):
     def action_refuse(self):
         current_employee = self.env.user.employee_id
         if any(allocation.state not in ['confirm', 'validate', 'validate1'] for allocation in self):
-            raise UserError(_('Allocation request must be confirmed, second approval or validated in order to refuse it.'))
+            raise UserError(self.env._('Allocation request must be confirmed, second approval or validated in order to refuse it.'))
 
         self.write({'state': 'refuse', 'approver_id': current_employee.id})
         self.activity_update()
@@ -972,30 +972,30 @@ class HrLeaveAllocation(models.Model):
             error_message = ""
             dict_all_possible_state = allocation._get_next_states_by_state()
             if allocation.state == state:
-                error_message = _('You can\'t do the same action twice.')
+                error_message = self.env._('You can\'t do the same action twice.')
             elif allocation.employee_id == current_employee and \
                 allocation.work_entry_type_id.allocation_validation_type != 'no_validation' and not is_administrator:
-                error_message = _('Only a time off Administrator can approve/refuse their own requests.')
+                error_message = self.env._('Only a time off Administrator can approve/refuse their own requests.')
             elif state not in dict_all_possible_state.get(allocation.state, {}):
                 if state == 'confirm':
-                    error_message = _('You can\'t reset an allocation. Cancel/delete this one and create an other')
+                    error_message = self.env._('You can\'t reset an allocation. Cancel/delete this one and create an other')
                 elif state == 'validate1':
                     if not is_time_off_manager:
-                        error_message = _('Only a Time Off Officer/Manager can approve an allocation.')
+                        error_message = self.env._('Only a Time Off Officer/Manager can approve an allocation.')
                     else:
-                        error_message = _('You can\'t approve a validated allocation.')
+                        error_message = self.env._('You can\'t approve a validated allocation.')
                 elif state == 'validate':
                     if not is_time_off_manager:
-                        error_message = _('Only a Time Off Officer/Manager can validate an allocation.')
+                        error_message = self.env._('Only a Time Off Officer/Manager can validate an allocation.')
                     elif allocation.state == "refuse":
-                        error_message = _('You can\'t approve this refused allocation.')
+                        error_message = self.env._('You can\'t approve this refused allocation.')
                     else:
-                        error_message = _('You can only validate an allocation with validation by Time Off Manager.')
+                        error_message = self.env._('You can only validate an allocation with validation by Time Off Manager.')
                 elif state == "refuse":
                     if not is_time_off_manager:
-                        error_message = _('Only a Time Off Officer/Manager can refuse an allocation.')
+                        error_message = self.env._('Only a Time Off Officer/Manager can refuse an allocation.')
                     else:
-                        error_message = _('You can\'t refuse an allocation with validation by Time Off Officer.')
+                        error_message = self.env._('You can\'t refuse an allocation with validation by Time Off Officer.')
                 else:
                     try:
                         allocation.check_access('write')
@@ -1077,7 +1077,7 @@ class HrLeaveAllocation(models.Model):
                 if allocation.work_entry_type_id.leave_validation_type != 'no_validation':
                     if allocation.state == 'confirm':
                         activity_type = confirm_activity
-                        note = _(
+                        note = self.env._(
                             'New Allocation Request created by %(user)s: %(count)s Days of %(leave_type)s',
                             user=allocation.create_uid.name,
                             count=float_round(allocation.number_of_days, precision_digits=2),
@@ -1085,7 +1085,7 @@ class HrLeaveAllocation(models.Model):
                         )
                     else:
                         activity_type = approval_activity
-                        note = _(
+                        note = self.env._(
                             'Second approval request for %(leave_type)s',
                             leave_type=allocation.work_entry_type_id.name,
                         )

@@ -5,9 +5,6 @@
     'category': 'Marketing/Events',
     'version': '1.1',
     'summary': "Manage event booths",
-    'description': """
-Create booths for your favorite event.
-    """,
     'depends': ['event'],
     'data': [
         'views/event_booth_category_views.xml',

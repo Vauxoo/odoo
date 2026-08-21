@@ -27,10 +27,9 @@ class ForumPost(models.Model):
     _order = "is_correct DESC, vote_count DESC, last_activity_date DESC"
 
     name = fields.Char('Title')
-    forum_id = fields.Many2one('forum.forum', string='Forum', required=True, index=True)
-    content = fields.Html('Content', strip_style=True)
+    forum_id = fields.Many2one('forum.forum', required=True, index=True)
+    content = fields.Html(strip_style=True)
     plain_content = fields.Text(
-        'Plain Content',
         compute='_compute_plain_content', store=True)
     tag_ids = fields.Many2many('forum.tag', 'forum_tag_rel', 'forum_post_id', 'forum_tag_id', string='Tags')
     state = fields.Selection(
@@ -39,8 +38,8 @@ class ForumPost(models.Model):
             ('close', 'Closed'), ('offensive', 'Offensive'),
             ('flagged', 'Flagged'),
         ], string='Status', default='active')
-    views = fields.Integer('Views', default=0, readonly=True, copy=False)
-    active = fields.Boolean('Active', default=True)
+    views = fields.Integer(default=0, readonly=True, copy=False)
+    active = fields.Boolean(default=True)
 
     comment_ids = fields.One2many('forum.post.comment', 'post_id', string='Comments')
 
@@ -65,7 +64,7 @@ class ForumPost(models.Model):
     vote_count = fields.Integer('Total Votes', compute='_compute_vote_count', store=True)
 
     # favorite
-    favourite_ids = fields.Many2many('res.users', string='Favourite', groups='base.group_erp_manager')
+    favourite_ids = fields.Many2many('res.users', groups='base.group_erp_manager')
     user_favourite = fields.Boolean(
         'Is Favourite',
         compute='_compute_user_favourite',
@@ -122,37 +121,27 @@ class ForumPost(models.Model):
         'Flag a post as offensive',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_ask = fields.Boolean(
-        'Can Ask',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_answer = fields.Boolean(
-        'Can Answer',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_accept = fields.Boolean(
-        'Can Accept',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_edit = fields.Boolean(
-        'Can Edit',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_close = fields.Boolean(
-        'Can Close',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_unlink = fields.Boolean(
-        'Can Unlink',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_upvote = fields.Boolean(
-        'Can Upvote',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_downvote = fields.Boolean(
-        'Can Downvote',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_comment = fields.Boolean(
-        'Can Comment',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_comment_convert = fields.Boolean(
         'Can Convert to Comment',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_view = fields.Boolean(
-        'Can View',
         compute='_compute_post_karma_rights', compute_sudo=False, search='_search_can_view')
     can_display_biography = fields.Boolean(
         "Is the author's biography visible from his post",
@@ -161,13 +150,10 @@ class ForumPost(models.Model):
         'Can Automatically be Validated',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_flag = fields.Boolean(
-        'Can Flag',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_moderate = fields.Boolean(
-        'Can Moderate',
         compute='_compute_post_karma_rights', compute_sudo=False)
     can_use_full_editor = fields.Boolean(  # Editor Features: image and links
-        'Can Use Full Editor',
         compute='_compute_post_karma_rights', compute_sudo=False)
 
     follower_ids = fields.Many2many(
@@ -179,7 +165,6 @@ class ForumPost(models.Model):
     is_follower = fields.Boolean(
         compute="_compute_is_follower",
         inverse="_inverse_is_follower",
-        string="Is Follower",
     )
 
     @api.depends_context('uid')
@@ -210,7 +195,7 @@ class ForumPost(models.Model):
     @api.constrains('parent_id')
     def _check_parent_id(self):
         if self._has_cycle():
-            raise ValidationError(_('You cannot create recursive forum posts.'))
+            raise ValidationError(self.env._('You cannot create recursive forum posts.'))
 
     @api.depends('content')
     def _compute_plain_content(self):
@@ -373,10 +358,10 @@ class ForumPost(models.Model):
                 continue
             # parent-based check
             if post.parent_id.state == 'flagged':
-                raise UserError(_('Posting answer on a [Flagged] question is not possible.'))
+                raise UserError(self.env._('Posting answer on a [Flagged] question is not possible.'))
             if post.forum_id.mode == 'questions' and \
                 post.create_uid in (post.parent_id.child_ids - post).create_uid:
-                raise UserError(_('You can post only one answer.'))
+                raise UserError(self.env._('You can post only one answer.'))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -394,18 +379,18 @@ class ForumPost(models.Model):
         for post in posts:
             # deleted or closed questions
             if post.parent_id and (post.parent_id.state == 'close' or post.parent_id.active is False):
-                raise UserError(_('Posting answer on a [Deleted] or [Closed] question is not possible.'))
+                raise UserError(self.env._('Posting answer on a [Deleted] or [Closed] question is not possible.'))
             # karma-based access
             if not post.parent_id and not post.can_ask:
-                raise AccessError(_('%d karma required to create a new question.', post.forum_id.karma_ask))
+                raise AccessError(self.env._('%d karma required to create a new question.', post.forum_id.karma_ask))
             elif post.parent_id and not post.can_answer:
-                raise AccessError(_('%d karma required to answer a question.', post.forum_id.karma_answer))
+                raise AccessError(self.env._('%d karma required to answer a question.', post.forum_id.karma_answer))
             if not post.parent_id and not post.can_post:
                 post.sudo().state = 'pending'
 
             # add karma for posting new questions
             if not post.parent_id and post.state == 'active':
-                post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_question_new, post, _('Ask a new question'))
+                post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_question_new, post, self.env._('Ask a new question'))
         posts.sudo()._notify_state_update()
         return posts
 
@@ -413,8 +398,8 @@ class ForumPost(models.Model):
         # if unlinking an answer with accepted answer: remove provided karma
         for post in self:
             if post.is_correct:
-                post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post, _('The accepted answer is deleted'))
-                self.env.user.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post, _('Delete the accepted answer'))
+                post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post, self.env._('The accepted answer is deleted'))
+                self.env.user.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post, self.env._('Delete the accepted answer'))
         return super().unlink()
 
     def write(self, vals):
@@ -435,34 +420,34 @@ class ForumPost(models.Model):
 
         for post in self:
             if post.state == 'flagged' and not post.can_moderate:
-                raise AccessError(_('%d karma required to update a flagged post.', post.forum_id.karma_moderate))
+                raise AccessError(self.env._('%d karma required to update a flagged post.', post.forum_id.karma_moderate))
             if 'state' in vals:
                 if vals['state'] in ['active', 'close']:
                     if not post.can_close:
-                        raise AccessError(_('%d karma required to close or reopen a post.', post.karma_close))
+                        raise AccessError(self.env._('%d karma required to close or reopen a post.', post.karma_close))
                     trusted_keys += ['state', 'closed_uid', 'closed_date', 'closed_reason_id']
                 elif vals['state'] == 'flagged':
                     if not post.can_flag:
-                        raise AccessError(_('%d karma required to flag a post.', post.forum_id.karma_flag))
+                        raise AccessError(self.env._('%d karma required to flag a post.', post.forum_id.karma_flag))
                     trusted_keys += ['state', 'flag_user_id']
             if 'active' in vals:
                 if not post.can_unlink:
-                    raise AccessError(_('%d karma required to delete or reactivate a post.', post.karma_unlink))
+                    raise AccessError(self.env._('%d karma required to delete or reactivate a post.', post.karma_unlink))
             if 'is_correct' in vals:
                 if not post.can_accept:
-                    raise AccessError(_('%d karma required to accept or refuse an answer.', post.karma_accept))
+                    raise AccessError(self.env._('%d karma required to accept or refuse an answer.', post.karma_accept))
                 # update karma except for self-acceptance
                 mult = 1 if vals['is_correct'] else -1
                 if vals['is_correct'] != post.is_correct and post.create_uid.id != self.env.uid:
                     post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * mult, post,
-                                                      _('User answer accepted') if mult > 0 else _('Accepted answer removed'))
+                                                      self.env._('User answer accepted') if mult > 0 else self.env._('Accepted answer removed'))
                     self.env.user.sudo()._add_karma(post.forum_id.karma_gen_answer_accept * mult, post,
-                                                    _('Validate an answer') if mult > 0 else _('Remove validated answer'))
+                                                    self.env._('Validate an answer') if mult > 0 else self.env._('Remove validated answer'))
             if tag_ids:
                 if set(post.tag_ids.ids) != tag_ids and self.env.user.karma < post.forum_id.karma_edit_retag:
-                    raise AccessError(_('%d karma required to retag.', post.forum_id.karma_edit_retag))
+                    raise AccessError(self.env._('%d karma required to retag.', post.forum_id.karma_edit_retag))
             if any(key not in trusted_keys for key in vals) and not post.can_edit:
-                raise AccessError(_('%d karma required to edit a post.', post.karma_edit))
+                raise AccessError(self.env._('%d karma required to edit a post.', post.karma_edit))
 
         res = super().write(vals)
 
@@ -495,7 +480,7 @@ class ForumPost(models.Model):
     def _unlink_if_enough_karma(self):
         for post in self:
             if not post.can_unlink:
-                raise AccessError(_('%d karma required to unlink a post.', post.karma_unlink))
+                raise AccessError(self.env._('%d karma required to unlink a post.', post.karma_unlink))
 
     def _update_content(self, content, forum_id):
         forum = self.env['forum.forum'].browse(forum_id)
@@ -510,7 +495,7 @@ class ForumPost(models.Model):
             filter_regexp = r'(<img.*?>)|(<a[^>]*?href[^>]*?>)|(<[a-z|A-Z]+[^>]*style\s*=\s*[\'"][^\'"]*\s*background[^:]*:[^url;]*url)'
             content_match = re.search(filter_regexp, content, re.I)
             if content_match:
-                raise AccessError(_('%d karma required to post an image or link.', forum.karma_editor))
+                raise AccessError(self.env._('%d karma required to post an image or link.', forum.karma_editor))
         return content
 
     # ----------------------------------------------------------------------
@@ -565,10 +550,10 @@ class ForumPost(models.Model):
     def _notify_content_update(self):
         for post in self:
             if post.parent_id:
-                body, subtype_xmlid = _('Answer Edited'), 'website_forum.mt_answer_edit'
+                body, subtype_xmlid = self.env._('Answer Edited'), 'website_forum.mt_answer_edit'
                 partner_ids_sudo = post.sudo().follower_ids | post.sudo().parent_id.follower_ids
             else:
-                body, subtype_xmlid = _('Question Edited'), 'website_forum.mt_question_edit'
+                body, subtype_xmlid = self.env._('Question Edited'), 'website_forum.mt_question_edit'
                 partner_ids_sudo = post.sudo().follower_ids
 
             post._post_notification(
@@ -642,7 +627,7 @@ class ForumPost(models.Model):
                     count_post = post.search_count([('parent_id', '=', False), ('forum_id', '=', post.forum_id.id), ('create_uid', '=', post.create_uid.id)])
                     if count_post == 1:
                         karma *= 10
-                post.create_uid.sudo()._add_karma(karma * -1, post, _('Reopen a banned question'))
+                post.create_uid.sudo()._add_karma(karma * -1, post, self.env._('Reopen a banned question'))
 
         self.sudo().write({'state': 'active'})
 
@@ -663,9 +648,9 @@ class ForumPost(models.Model):
                     if count_post == 1:
                         karma *= 10
                 message = (
-                    _('Post is closed and marked as spam')
+                    self.env._('Post is closed and marked as spam')
                     if reason_id == reason_spam else
-                    _('Post is closed and marked as offensive content')
+                    self.env._('Post is closed and marked as offensive content')
                 )
                 post.create_uid.sudo()._add_karma(karma, post, message)
 
@@ -680,13 +665,13 @@ class ForumPost(models.Model):
     def validate(self):
         for post in self:
             if not post.can_moderate:
-                raise AccessError(_('%d karma required to validate a post.', post.forum_id.karma_moderate))
+                raise AccessError(self.env._('%d karma required to validate a post.', post.forum_id.karma_moderate))
             # if state == pending, no karma previously added for the new question
             if post.state == 'pending':
                 post.create_uid.sudo()._add_karma(
                     post.forum_id.karma_gen_question_new,
                     post,
-                    _('Ask a question'),
+                    self.env._('Ask a question'),
                 )
             post.write({
                 'state': 'active',
@@ -699,7 +684,7 @@ class ForumPost(models.Model):
     def _refuse(self):
         for post in self:
             if not post.can_moderate:
-                raise AccessError(_('%d karma required to refuse a post.', post.forum_id.karma_moderate))
+                raise AccessError(self.env._('%d karma required to refuse a post.', post.forum_id.karma_moderate))
             post.moderator_id = self.env.user
         return True
 
@@ -708,7 +693,7 @@ class ForumPost(models.Model):
         to_flag = self.browse()
         for post in self:
             if not post.can_flag:
-                raise AccessError(_('%d karma required to flag a post.', post.forum_id.karma_flag))
+                raise AccessError(self.env._('%d karma required to flag a post.', post.forum_id.karma_flag))
             if post.state == 'flagged':
                 res.append({'error': 'post_already_flagged'})
             elif post.state == 'active':
@@ -729,10 +714,10 @@ class ForumPost(models.Model):
     def _mark_as_offensive(self, reason_id):
         for post in self:
             if not post.can_moderate:
-                raise AccessError(_('%d karma required to mark a post as offensive.', post.forum_id.karma_moderate))
+                raise AccessError(self.env._('%d karma required to mark a post as offensive.', post.forum_id.karma_moderate))
             # remove some karma
             _logger.info('Downvoting user <%s> for posting spam/offensive contents', post.create_uid)
-            post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_flagged, post, _('Downvote for posting offensive contents'))
+            post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_flagged, post, self.env._('Downvote for posting offensive contents'))
             # TODO: potential bottleneck, could be done in batch
             post.write({
                 'state': 'offensive',
@@ -775,17 +760,17 @@ class ForumPost(models.Model):
         """Convert an answer to a comment."""
         self.ensure_one()
         if not self.parent_id:
-            raise UserError(_("Cannot convert a question to a comment"))
+            raise UserError(self.env._("Cannot convert a question to a comment"))
 
         # karma-based action check: use the post field that computed own/all value
         if not self.can_comment_convert:
-            raise AccessError(_('%d karma required to convert an answer to a comment.', self.karma_comment_convert))
+            raise AccessError(self.env._('%d karma required to convert an answer to a comment.', self.karma_comment_convert))
 
         message = self.env['forum.post.comment'].with_user(self.sudo().create_uid).sudo().create({
             'body': tools.html_sanitize(self.content, sanitize_attributes=True, strip_style=True, strip_classes=True),
             'post_id': self.parent_id.id,
         })
-        message._notify_followers(subject=_('Answer converted to comment in "%s"', self.parent_id.name))
+        message._notify_followers(subject=self.env._('Answer converted to comment in "%s"', self.parent_id.name))
 
         # unlink the original answer, using SUPERUSER_ID to avoid karma issues
         self.sudo().unlink()
@@ -805,7 +790,7 @@ class ForumPost(models.Model):
             else self.forum_id.karma_comment_unlink_all
         )
         if user_karma < karma_required:
-            raise AccessError(_('%d karma required to delete a comment.', karma_required))
+            raise AccessError(self.env._('%d karma required to delete a comment.', karma_required))
         comment.sudo().unlink()
 
     def _set_viewed(self):

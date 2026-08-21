@@ -4,11 +4,6 @@
     'name': 'Website Partnership',
     'category': 'Website/Website',
     'summary': 'Publish your partners on your website',
-    'description': """
-This module allows to publish your members/partners on your website.
-
-To publish a member, set a *Level* in their contact form and click the *Publish* button.
-    """,
     'depends': ['partnership', 'website_partner'],
     'data': [
         'views/res_partner_grade_views.xml',

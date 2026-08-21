@@ -2,6 +2,7 @@
 import itertools
 
 from odoo import api, fields, models
+from odoo.tools import groupby
 
 
 class MyInvoisDocumentPoS(models.Model):
@@ -182,7 +183,7 @@ class MyInvoisDocumentPoS(models.Model):
         # During the loop, we want to gather "lines".
         # One line can be comprised of any number of orders as long as they are continuous.
         continuous_orders = []
-        for config, orders in itertools.groupby(sorted_session_orders, key=lambda o: o["config_id"]):
+        for config, orders in groupby(sorted_session_orders, key=lambda o: o["config_id"]):
             config_lines = []
             for order in orders:
                 if continuous_orders and order not in pos_order_ids:

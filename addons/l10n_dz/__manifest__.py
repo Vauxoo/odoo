@@ -5,11 +5,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['dz'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the module to manage the accounting chart for Algeria in Odoo.
-======================================================================
-This module applies to companies based in Algeria.
-""",
     'author': 'Osis',
     'depends': [
         'account',

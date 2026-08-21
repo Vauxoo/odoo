@@ -35,7 +35,7 @@ class SaleOrder(models.Model):
     project_id = fields.Many2one('project.project', domain=[('allow_billable', '=', True), ('is_template', '=', False)], copy=False, index='btree_not_null',
                                  help="A task will be created for the project upon sales order confirmation. The analytic distribution of this project will also serve as a reference for newly created sales order items.")
     project_account_id = fields.Many2one('account.analytic.account', related='project_id.account_id')
-    project_required = fields.Boolean(string="Project Required", compute="_compute_project_required")
+    project_required = fields.Boolean(compute="_compute_project_required")
 
     @api.depends('order_line.product_id')
     def _compute_project_required(self):
@@ -261,12 +261,12 @@ class SaleOrder(models.Model):
         ), self.env['sale.order.line'])
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Milestones'),
+            'name': self.env._('Milestones'),
             'domain': [('sale_line_id', 'in', self.order_line.ids)],
             'res_model': 'project.milestone',
             'views': [(self.env.ref('sale_project.project_milestone_view_tree').id, 'list')],
             'view_mode': 'list',
-            'help': _("""
+            'help': self.env._("""
                 <p class="o_view_nocontent_smiling_face">
                     No milestones found. Let's create one!
                 </p><p>

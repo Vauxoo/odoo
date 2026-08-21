@@ -4,7 +4,7 @@ from odoo.tools import SQL
 
 class ReportPosOrder(models.Model):
     _inherit = "report.pos.order"
-    employee_id = fields.Many2one('hr.employee', string='Employee', readonly=True)
+    employee_id = fields.Many2one('hr.employee', readonly=True)
 
     def _select(self):
         return SQL('%s,s.employee_id AS employee_id', super()._select())

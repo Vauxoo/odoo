@@ -23,10 +23,9 @@ class ProductPricelist(models.Model):
     # === FIELDS ===#
 
     website_id = fields.Many2one(
-        string="Website",
         comodel_name="website",
         ondelete="restrict",
-        default=_default_website,
+        default=lambda self: self._default_website(),
         domain="[('company_id', '=?', company_id)]",
         tracking=20,
         help="If you want a pricelist to be available on a website,"

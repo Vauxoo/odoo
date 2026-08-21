@@ -1,15 +1,6 @@
 {
     'name': 'API Documentation',
     'category': 'Hidden',
-    'description': """
-Odoo Dynamic API Documentation
-==============================
-
-This module provides a dynamic documentation page for developpers at the
-/doc URL. The documentation is generated using the database to list the
-models and their fields and methods. It also provides a playground to run
-the methods over HTTP, with examples in various programming languages.
-""",
     'depends': ['web'],
     'auto_install': True,
     'data': [

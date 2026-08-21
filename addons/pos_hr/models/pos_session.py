@@ -37,7 +37,7 @@ class PosSession(models.Model):
     def _set_opening_control_data(self, cashbox_value: int, notes: str):
         super()._set_opening_control_data(cashbox_value, notes)
         if self.employee_id:
-            self.message_post(body=plaintext2html(_('Opened register')), author_id=self._get_message_author().id)
+            self.message_post(body=plaintext2html(self.env._('Opened register')), author_id=self._get_message_author().id)
 
     def _get_message_author(self):
         if self.employee_id:
@@ -52,7 +52,7 @@ class PosSession(models.Model):
         for employee, payments_group in all_payments.grouped('employee_id').items():
             payments_by_employee.append({
                 'id': employee.id if employee else 'others',
-                'name': employee.name if employee else _('Others'),
+                'name': employee.name if employee else self.env._('Others'),
                 'amount': sum(payments_group.mapped('amount')),
             })
 

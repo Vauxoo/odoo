@@ -15,7 +15,6 @@ class AccountTax(models.Model):
         help="If enabled, this tax will not affect the amount due until applied via the Pay button.",
     )
     withholding_sequence_id = fields.Many2one(
-        string='Withholding Sequence',
         help='This sequence will be used to generate default numbers on payment withholding lines.',
         comodel_name='ir.sequence',
         copy=False,
@@ -64,7 +63,7 @@ class AccountTax(models.Model):
         for tax in withholding_taxes:
             tax.tax_label = tax.invoice_label
 
-        super(AccountTax, self - withholding_taxes)._compute_tax_label()
+        return super(AccountTax, self - withholding_taxes)._compute_tax_label()
 
     # -----------------------
     # CRUD, inherited methods
@@ -79,4 +78,4 @@ class AccountTax(models.Model):
         # EXTENDS 'account'
         if not base_line.get('calculate_withholding_taxes'):
             base_line['filter_tax_function'] = lambda t: not t.is_withholding_tax
-        super()._add_tax_details_in_base_line(base_line, company, rounding_method=rounding_method)
+        return super()._add_tax_details_in_base_line(base_line, company, rounding_method=rounding_method)

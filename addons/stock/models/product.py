@@ -111,7 +111,7 @@ class ProductProduct(models.Model):
     reordering_max_qty = fields.Float(
         compute='_compute_nbr_reordering_rules', compute_sudo=False)
     putaway_rule_ids = fields.One2many('stock.putaway.rule', 'product_id', 'Putaway Rules')
-    storage_category_capacity_ids = fields.One2many('stock.storage.category.capacity', 'product_id', 'Storage Category Capacity')
+    storage_category_capacity_ids = fields.One2many('stock.storage.category.capacity', 'product_id')
     show_on_hand_qty_status_button = fields.Boolean(compute='_compute_show_qty_status_button')
     show_forecasted_qty_status_button = fields.Boolean(compute='_compute_show_qty_status_button')
     show_qty_update_button = fields.Boolean(compute='_compute_show_qty_update_button')
@@ -536,14 +536,14 @@ class ProductProduct(models.Model):
         if any(product.tracking in ['lot', 'serial'] and product.qty_available > 0 for product in self):
             return {
                 'warning': {
-                    'title': _('Warning!'),
-                    'message': _("You have product(s) in stock that have no lot/serial number. You can assign lot/serial numbers by doing an inventory adjustment.")}}
+                    'title': self.env._('Warning!'),
+                    'message': self.env._("You have product(s) in stock that have no lot/serial number. You can assign lot/serial numbers by doing an inventory adjustment.")}}
 
     @api.model
     def view_header_get(self, view_id, view_type):
         res = super().view_header_get(view_id, view_type)
         if not res and self.env.context.get('active_id') and self.env.context.get('active_model') == 'stock.location':
-            return _(
+            return self.env._(
                 'Products: %(location)s',
                 location=self.env['stock.location'].browse(self.env.context['active_id']).name,
             )
@@ -557,27 +557,27 @@ class ProductProduct(models.Model):
             location = self.env['stock.location'].browse(context_location)
             if location.usage == 'supplier':
                 if res.get('virtual_available'):
-                    res['virtual_available']['string'] = _('Future Receipts')
+                    res['virtual_available']['string'] = self.env._('Future Receipts')
                 if res.get('qty_available'):
-                    res['qty_available']['string'] = _('Received Qty')
+                    res['qty_available']['string'] = self.env._('Received Qty')
             elif location.usage == 'internal':
                 if res.get('virtual_available'):
-                    res['virtual_available']['string'] = _('Forecasted Quantity')
+                    res['virtual_available']['string'] = self.env._('Forecasted Quantity')
             elif location.usage == 'customer':
                 if res.get('virtual_available'):
-                    res['virtual_available']['string'] = _('Future Deliveries')
+                    res['virtual_available']['string'] = self.env._('Future Deliveries')
                 if res.get('qty_available'):
-                    res['qty_available']['string'] = _('Delivered Qty')
+                    res['qty_available']['string'] = self.env._('Delivered Qty')
             elif location.usage == 'inventory':
                 if res.get('virtual_available'):
-                    res['virtual_available']['string'] = _('Future P&L')
+                    res['virtual_available']['string'] = self.env._('Future P&L')
                 if res.get('qty_available'):
-                    res['qty_available']['string'] = _('P&L Qty')
+                    res['qty_available']['string'] = self.env._('P&L Qty')
             elif location.usage == 'production':
                 if res.get('virtual_available'):
-                    res['virtual_available']['string'] = _('Future Productions')
+                    res['virtual_available']['string'] = self.env._('Future Productions')
                 if res.get('qty_available'):
-                    res['qty_available']['string'] = _('Produced Qty')
+                    res['qty_available']['string'] = self.env._('Produced Qty')
         return res
 
     def action_view_orderpoints(self):
@@ -672,7 +672,7 @@ class ProductProduct(models.Model):
         # note that this action is used by different views w/varying customizations
         if not self.env.context.get('is_stock_report'):
             action['domain'] = [('product_id', 'in', self.ids)]
-            action["name"] = _('Update Quantity')
+            action["name"] = self.env._('Update Quantity')
         return action
 
     def action_product_forecast_report(self):
@@ -701,7 +701,7 @@ class ProductProduct(models.Model):
             'warehouse_id': warehouse,
         })
         if rule in seen_rules:
-            raise UserError(_("Invalid rule's configuration, the following rule causes an endless loop: %s", rule.display_name))
+            raise UserError(self.env._("Invalid rule's configuration, the following rule causes an endless loop: %s", rule.display_name))
         if not rule:
             return seen_rules
         if rule.procure_method == 'make_to_stock' or rule.action not in ('pull_push', 'pull'):
@@ -761,7 +761,7 @@ class ProductProduct(models.Model):
             ['id:recordset'],
         ):
             if uom != product.product_tmpl_id.uom_id:
-                raise UserError(_('As other units of measure (ex : %(problem_uom)s) '
+                raise UserError(self.env._('As other units of measure (ex : %(problem_uom)s) '
                 'than %(uom)s have already been used for this product, the change of unit of measure can not be done.'
                 'If you want to change it, please archive the product and create a new one.',
                 problem_uom=uom.name, uom=product.product_tmpl_id.uom_id.name))
@@ -773,7 +773,7 @@ class ProductProduct(models.Model):
             ['id:recordset'],
         ):
             if uom != product.product_tmpl_id.uom_id:
-                raise UserError(_('As other units of measure (ex : %(problem_uom)s) '
+                raise UserError(self.env._('As other units of measure (ex : %(problem_uom)s) '
                 'than %(uom)s have already been used for this product, the change of unit of measure can not be done.'
                 'If you want to change it, please archive the product and create a new one.',
                 problem_uom=uom.name, uom=product.product_tmpl_id.uom_id.name))
@@ -810,7 +810,7 @@ class ProductTemplate(models.Model):
         return not self.env.user._is_superuser() and self.env.uid
 
     responsible_id = fields.Many2one(
-        'res.users', string='Responsible', default=lambda self: self._default_responsible_id(), company_dependent=True, check_company=True,
+        'res.users', default=lambda self: self._default_responsible_id(), company_dependent=True, check_company=True,
         help="This user will be responsible of the next activities related to logistic operations for this product.")
     property_stock_production = fields.Many2one(
         'stock.location', "Production",
@@ -824,7 +824,6 @@ class ProductTemplate(models.Model):
         ('none', 'By Quantity'),
         ('lot', 'By Lots'),
         ('serial', 'By Unique Serial Number')],
-        string="Tracking",
         compute='_compute_tracking', inverse='_set_tracking', store=True, readonly=False, precompute=True,
         help="Ensure the traceability of a storable product in your warehouse.")
     lot_sequence_id = fields.Many2one(
@@ -842,8 +841,8 @@ class ProductTemplate(models.Model):
         inverse='_inverse_qty_available', compute_sudo=False, digits='Product Unit')
     # The goal of these fields is to be able to put some keys in context from search view in order
     # to influence computed field.
-    location_id = fields.Many2one('stock.location', 'Location', store=False)
-    warehouse_id = fields.Many2one('stock.warehouse', 'Warehouse', store=False)
+    location_id = fields.Many2one('stock.location', store=False)
+    warehouse_id = fields.Many2one('stock.warehouse', store=False)
     has_available_route_ids = fields.Boolean(
         'Routes can be selected on this product', compute='_compute_has_available_route_ids',
         default=lambda self: self.env['stock.route'].search_count([('product_selectable', '=', True)]))
@@ -962,14 +961,14 @@ class ProductTemplate(models.Model):
             return
         for template in self:
             if template.qty_available and not template.product_variant_id:
-                raise UserError(_("Save the product form before updating the Quantity On Hand."))
+                raise UserError(self.env._("Save the product form before updating the Quantity On Hand."))
             else:
                 template.product_variant_id.qty_available = template.qty_available
 
     @api.model
     def _get_action_view_related_putaway_rules(self, domain):
         return {
-            'name': _('Putaway Rules'),
+            'name': self.env._('Putaway Rules'),
             'type': 'ir.actions.act_window',
             'res_model': 'stock.putaway.rule',
             'view_mode': 'list',
@@ -1039,8 +1038,8 @@ class ProductTemplate(models.Model):
             ('product_id', 'in', self.product_variant_ids.ids), ('state', '!=', 'cancel')
         ]):
             res['warning'] = {
-                'title': _('Warning!'),
-                'message': _(
+                'title': self.env._('Warning!'),
+                'message': self.env._(
                     'This product has been used in at least one inventory movement. '
                     'It is not advised to change the Product Type since it can lead to inconsistencies. '
                     'A better solution could be to archive the product and create a new one instead.'
@@ -1071,7 +1070,7 @@ class ProductTemplate(models.Model):
                     ('company_id', 'not in', [vals['company_id'], False]),
                 ], order=None, limit=1)
                 if move:
-                    raise UserError(_("This product's company cannot be changed as long as there are stock moves of it belonging to another company."))
+                    raise UserError(self.env._("This product's company cannot be changed as long as there are stock moves of it belonging to another company."))
 
                 # Forbid changing a product's company when quant(s) exist in another company.
                 quant = self.env['stock.quant'].sudo().search([
@@ -1080,7 +1079,7 @@ class ProductTemplate(models.Model):
                     ('quantity', '!=', 0),
                 ], order=None, limit=1)
                 if quant:
-                    raise UserError(_("This product's company cannot be changed as long as there are quantities of it belonging to another company."))
+                    raise UserError(self.env._("This product's company cannot be changed as long as there are quantities of it belonging to another company."))
 
         clean_inventory = False
         templates_to_reset = self.env['product.template']
@@ -1303,7 +1302,7 @@ class ProductCategory(models.Model):
 class UomUom(models.Model):
     _inherit = 'uom.uom'
 
-    package_type_id = fields.Many2one('stock.package.type', string='Package Type')
+    package_type_id = fields.Many2one('stock.package.type')
     route_ids = fields.Many2many(related='package_type_id.route_ids', string='Routes', help='Routes propagated from the package type')
 
     def write(self, vals):
@@ -1317,7 +1316,7 @@ class UomUom(models.Model):
                 ) or ('relative_uom_id' in vals and u.relative_uom_id.id != int(vals['relative_uom_id']))
             )
             if changed:
-                error_msg = _(
+                error_msg = self.env._(
                     "You cannot change the ratio of this unit of measure"
                     " as some products with this UoM have already been moved"
                     " or are currently reserved."

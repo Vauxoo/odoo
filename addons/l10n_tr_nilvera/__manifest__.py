@@ -1,9 +1,6 @@
 {
     'name': 'Türkiye - Nilvera',
     'category': 'Accounting/Accounting',
-    'description': """
-Base module containing core functionalities required by other Nilvera modules.
-    """,
     'depends': ['l10n_tr'],
     'data': [
         'views/res_config_settings_views.xml',

@@ -15,12 +15,12 @@ class GamificationBadgeUser(models.Model):
     _order = "create_date desc"
     _rec_name = "badge_name"
 
-    user_id = fields.Many2one('res.users', string="User", required=True, ondelete="cascade", index=True)
+    user_id = fields.Many2one('res.users', required=True, ondelete="cascade", index=True)
     user_partner_id = fields.Many2one('res.partner', related='user_id.partner_id')
-    sender_id = fields.Many2one('res.users', string="Sender")
-    badge_id = fields.Many2one('gamification.badge', string='Badge', required=True, ondelete="cascade", index=True)
-    challenge_id = fields.Many2one('gamification.challenge', string='Challenge')
-    comment = fields.Text('Comment')
+    sender_id = fields.Many2one('res.users')
+    badge_id = fields.Many2one('gamification.badge', required=True, ondelete="cascade", index=True)
+    challenge_id = fields.Many2one('gamification.challenge')
+    comment = fields.Text()
     badge_name = fields.Char(related='badge_id.name', string="Badge Name", readonly=False)
     level = fields.Selection(
         string='Badge Level', related="badge_id.level", store=True, readonly=True)
@@ -44,7 +44,7 @@ class GamificationBadgeUser(models.Model):
                 res_id=badge_user.id,
                 body=body_html,
                 partner_ids=[badge_user.user_partner_id.id],
-                subject=_("🎉 You've earned the %(badge)s badge!", badge=badge_user.badge_name),
+                subject=self.env._("🎉 You've earned the %(badge)s badge!", badge=badge_user.badge_name),
                 subtype_xmlid='mail.mt_comment',
                 email_layout_xmlid='mail.mail_notification_layout',
                 subtitles=[_lt('Your Badge'), badge_user.badge_id.name or ''],

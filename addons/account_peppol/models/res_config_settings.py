@@ -126,9 +126,9 @@ class ResConfigSettings(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _('Peppol Disconnected'),
+                'title': self.env._('Peppol Disconnected'),
                 'type': 'success',
-                'message': _("Disconnected this branch company peppol configuration from %s.", previous_parent_company_name),
+                'message': self.env._("Disconnected this branch company peppol configuration from %s.", previous_parent_company_name),
                 'next': {'type': 'ir.actions.act_window_close'},
             }
         }

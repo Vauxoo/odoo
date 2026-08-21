@@ -10,7 +10,7 @@ class MaintenanceEquipment(models.Model):
     equipment_assign_to = fields.Selection(selection_add=[('vehicle', 'Vehicle')], required=True,
         ondelete={'vehicle': 'set other'}, default='vehicle')
     vehicle_id = fields.Many2one('fleet.vehicle', compute='_compute_equipment_assignment_fields',
-        store=True, readonly=False, string="Vehicle", index='btree_not_null', tracking=True)
+        store=True, readonly=False, index='btree_not_null', tracking=True)
 
     @api.depends(lambda self: self._get_assign_fields())
     def _compute_is_assigned(self):

@@ -9,7 +9,7 @@ class SaleOrder(models.Model):
 
     repair_order_ids = fields.One2many(
         comodel_name='repair.order', inverse_name='sale_order_id',
-        string='Repair Order', groups='stock.group_stock_user')
+        groups='stock.group_stock_user')
     repair_count = fields.Integer(
         "Repair Order(s)", compute='_compute_repair_count', groups='stock.group_stock_user')
 
@@ -39,7 +39,7 @@ class SaleOrder(models.Model):
             }
         elif self.repair_count > 1:
             return {
-                "name": _("Repair Orders"),
+                "name": self.env._("Repair Orders"),
                 "type": "ir.actions.act_window",
                 "res_model": "repair.order",
                 "view_mode": "list,form",

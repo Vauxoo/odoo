@@ -5,9 +5,6 @@
     'category': 'Marketing/Events',
     'version': '1.2',
     'summary': "Manage event booths sale",
-    'description': """
-Sell your event booths and track payments on sale orders.
-    """,
     'depends': ['event_booth', 'event_sale'],
     'data': [
         'data/product_data.xml',

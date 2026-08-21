@@ -3,9 +3,6 @@
 {
     "name": "Click & Collect",
     "category": "Website/Website",
-    "description": """
-Allows customers to check in-store stock, pay on site, and pick up their orders at the shop.
-""",
     "depends": ["base_geolocalize", "payment_custom", "website_sale_stock"],
     "data": [
         "data/payment_provider_data.xml",

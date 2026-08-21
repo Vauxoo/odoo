@@ -5,10 +5,10 @@ import os
 import logging
 import subprocess
 
-from odoo.addons.iot_drivers.interface import Interface
-from odoo.addons.iot_drivers.tools import helpers, system
-from odoo.addons.iot_drivers.tools.system import IS_WINDOWS, IS_RPI, path_file
-from odoo.addons.iot_drivers.iot_handlers.drivers.ctypes_terminal_driver import CTYPES_BUFFER_SIZE, import_ctypes_library
+from ...interface import Interface
+from ...tools import helpers, system
+from ...tools.system import IS_WINDOWS, IS_RPI, path_file
+from ..drivers.ctypes_terminal_driver import CTYPES_BUFFER_SIZE, import_ctypes_library
 
 _logger = logging.getLogger(__name__)
 

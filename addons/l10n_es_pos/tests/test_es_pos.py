@@ -14,4 +14,4 @@ class TestGenericES(TestGenericLocalization):
         cls.main_pos_config.l10n_es_simplified_invoice_journal_id = cls.main_pos_config.journal_id
 
     def test_generic_localization(self):
-        super().test_generic_localization()
+        return super().test_generic_localization()

@@ -4,10 +4,10 @@ from collections import defaultdict
 from odoo.fields import Domain
 from odoo.http import request
 
-from odoo.addons.mail.controllers.thread import ThreadController
-from odoo.addons.mail.models.mail_message import SHARE_DOMAIN
-from odoo.addons.mail.tools.discuss import Store
-from odoo.addons.mail.tools.store_handler import store_handler
+from .thread import ThreadController
+from ..models.mail_message import SHARE_DOMAIN
+from ..tools.discuss import Store
+from ..tools.store_handler import store_handler
 
 
 class WebclientController(ThreadController):

@@ -102,7 +102,7 @@ class AccountAnalyticLine(models.Model):
             if any(field_name in vals for field_name in self._restricted_fields_when_invoiced()):
                 raise UserError(self._get_invoiced_line_write_error())
 
-        super()._check_can_write(vals)
+        return super()._check_can_write(vals)
 
     def _restricted_fields_when_invoiced(self):
         return ["unit_amount", "order_id", "product_id", "so_line", "date", "partner_id"]

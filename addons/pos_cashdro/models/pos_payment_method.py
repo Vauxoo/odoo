@@ -5,8 +5,8 @@ class PosPaymentMethod(models.Model):
     _inherit = 'pos.payment.method'
 
     cashdro_ip = fields.Char('Cashdro IP')
-    cashdro_username = fields.Char('Cashdro Username')
-    cashdro_password = fields.Char('Cashdro Password')
+    cashdro_username = fields.Char()
+    cashdro_password = fields.Char()
     cashdro_use_lna = fields.Boolean('Cashdro Local Network Access')
 
     def _get_cash_machine_selection(self):

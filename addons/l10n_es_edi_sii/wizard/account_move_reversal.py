@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.addons.l10n_es_edi_sii.models.account_move import SII_REFUND_REASONS
+from ..models.account_move import SII_REFUND_REASONS
 from odoo.exceptions import UserError
 
 

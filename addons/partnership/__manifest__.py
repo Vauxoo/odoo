@@ -2,12 +2,6 @@
 {
     'name': 'Partnership / Membership',
     'category': 'Sales/CRM',
-    'description': """
-This module allows you to manage all operations for managing memberships and partnerships.
-==========================================================================================
-
-You can easily assign grade to members/partners, with a specific pricelist.
-    """,
     'depends': ['crm', 'sale'],
     'data': [
         'data/res_partner_grade_data.xml',

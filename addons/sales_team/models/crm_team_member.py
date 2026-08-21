@@ -26,7 +26,7 @@ class CrmTeamMember(models.Model):
     user_company_ids = fields.Many2many(
         'res.company', compute='_compute_user_company_ids',
         help='UX: Limit to team company or all if no company')
-    active = fields.Boolean(string='Active', default=True)
+    active = fields.Boolean(default=True)
     is_membership_multi = fields.Boolean(
         'Multiple Memberships Allowed', compute='_compute_is_membership_multi',
         help='If True, users may belong to several sales teams. Otherwise membership is limited to a single sales team.')
@@ -71,7 +71,7 @@ class CrmTeamMember(models.Model):
 
         if duplicates:
             raise exceptions.ValidationError(
-                _("You are trying to create duplicate membership(s). We found that %(duplicates)s already exist(s).",
+                self.env._("You are trying to create duplicate membership(s). We found that %(duplicates)s already exist(s).",
                   duplicates=", ".join("%s (%s)" % (m.user_id.name, m.crm_team_id.name) for m in duplicates)
                  ))
 
@@ -79,7 +79,7 @@ class CrmTeamMember(models.Model):
     def _constrains_company_membership(self):
         for membership in self.filtered(lambda m: m.crm_team_id.company_id):
             if membership.crm_team_id.company_id not in membership.user_id.company_ids:
-                raise exceptions.UserError(_("User '%(user)s' is not allowed in the company '%(company)s' of the Sales Team '%(team)s'.",
+                raise exceptions.UserError(self.env._("User '%(user)s' is not allowed in the company '%(company)s' of the Sales Team '%(team)s'.",
                     user=membership.user_id.name,
                     company=membership.crm_team_id.company_id.display_name,
                     team=membership.crm_team_id.name
@@ -139,7 +139,7 @@ class CrmTeamMember(models.Model):
                 teams = user_mapping.get(member.user_id, self.env['crm.team'])
                 remaining = teams - (member.crm_team_id | member._origin.crm_team_id)
                 if remaining:
-                    member.member_warning = _("%(user_name)s already in other teams (%(team_names)s).",
+                    member.member_warning = self.env._("%(user_name)s already in other teams (%(team_names)s).",
                                               user_name=member.user_id.name,
                                               team_names=", ".join(remaining.mapped('name'))
                                              )

@@ -9,7 +9,7 @@ class CalendarFilters(models.Model):
 
     user_id = fields.Many2one('res.users', 'Me', required=True, default=lambda self: self.env.user, index=True, ondelete='cascade')
     partner_id = fields.Many2one('res.partner', 'Employee', required=True, index=True)
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     partner_checked = fields.Boolean('Checked', default=True)  # used to know if the partner is checked in the filter of the calendar view for the user_id.
 
     _user_id_partner_id_unique = models.Constraint(

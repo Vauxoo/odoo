@@ -15,7 +15,7 @@ class SaleOrderTemplate(models.Model):
         help="If unchecked, it will allow you to hide the Order template without removing it.",
     )
     company_id = fields.Many2one(comodel_name="res.company", default=lambda self: self.env.company)
-    currency_id = fields.Many2one(string="Currency", comodel_name="res.currency")
+    currency_id = fields.Many2one(comodel_name="res.currency")
 
     name = fields.Char(string="Template", required=True)
     note = fields.Html(string="Terms and conditions", translate=True)
@@ -60,7 +60,6 @@ class SaleOrderTemplate(models.Model):
         copy=True,
     )
     journal_id = fields.Many2one(
-        string="Journal",
         comodel_name="account.journal",
         domain=[("type", "=", "sale")],
         company_dependent=True,

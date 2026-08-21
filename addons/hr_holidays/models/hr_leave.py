@@ -21,7 +21,6 @@ from odoo.tools.intervals import Intervals
 from odoo.tools.misc import clean_context, format_date, format_duration
 from odoo.tools.translate import _
 
-_logger = logging.getLogger(__name__)
 
 
 def get_employee_from_context(values, context, user_employee_id):
@@ -162,7 +161,7 @@ class HrLeave(models.Model):
     # HR data
 
     employee_id = fields.Many2one(
-        'hr.employee', string='Employee', index=True, ondelete="restrict", required=True,
+        'hr.employee', index=True, ondelete="restrict", required=True,
         tracking=True, domain=lambda self: self._get_employee_domain(), default=lambda self: self.env.user.employee_id)
     employee_company_id = fields.Many2one(related='employee_id.company_id', string="Employee Company", store=True)
     company_id = fields.Many2one('res.company', compute='_compute_company_id', store=True, index=True)
@@ -170,8 +169,7 @@ class HrLeave(models.Model):
     tz_mismatch = fields.Boolean(compute='_compute_tz_mismatch')
     tz = fields.Selection(_tz_get, compute='_compute_tz')
     department_id = fields.Many2one(
-        'hr.department', compute='_compute_department_id', store=True, string='Department',
-        readonly=False)
+        'hr.department', compute='_compute_department_id', store=True, readonly=False)
     notes = fields.Text('Reasons', readonly=False)
     # duration
     resource_calendar_id = fields.Many2one('resource.calendar', compute='_compute_resource_calendar_id', store=True, readonly=False, copy=False)
@@ -193,7 +191,7 @@ class HrLeave(models.Model):
     last_several_days = fields.Boolean("All day", compute="_compute_last_several_days")
     duration_display = fields.Char('Requested', compute='_compute_duration_display')
     # details
-    meeting_id = fields.Many2one('calendar.event', string='Meeting', copy=False)
+    meeting_id = fields.Many2one('calendar.event', copy=False)
     first_approver_id = fields.Many2one(
         'hr.employee', string='First Approval', readonly=True, copy=False,
         help='This area is automatically filled by the user who validate the time off')
@@ -513,12 +511,7 @@ class HrLeave(models.Model):
                 msg = self.env._('An employee already booked time off which overlaps with this period:')
 
             holiday.dashboard_warning_message = msg + "".join(
-                ('\n' + (self.env._('%(employee_name)s from %(date_from)s to %(date_to)s - %(state)s') % {
-                    'employee_name': conflicting_holiday_data['employee_name'] if not holidays_only_have_uid else "",
-                    'date_from': conflicting_holiday_data['date_from'],
-                    'date_to': conflicting_holiday_data['date_to'],
-                    'state': conflicting_holiday_data['state']
-                }).lstrip()) for conflicting_holiday_data in conflicting_holidays_list
+                ('\n' + (self.env._('%(employee_name)s from %(date_from)s to %(date_to)s - %(state)s', employee_name=conflicting_holiday_data['employee_name'] if not holidays_only_have_uid else "", date_from=conflicting_holiday_data['date_from'], date_to=conflicting_holiday_data['date_to'], state=conflicting_holiday_data['state'])).lstrip()) for conflicting_holiday_data in conflicting_holidays_list
             )
 
     @api.depends_context('uid')
@@ -1678,7 +1671,7 @@ class HrLeave(models.Model):
         if check_state and any(not holiday.can_validate for holiday in self):
             raise UserError(_('You can\'t validate this leave.'))
         if leaves:
-            raise ValidationError(_('The following employees are not supposed to work during that period:\n %s') % ','.join(leaves.mapped('employee_id.name')))
+            raise ValidationError(_('The following employees are not supposed to work during that period:\n %s', ','.join(leaves.mapped('employee_id.name'))))
 
         self.write({'state': 'validate'})
 

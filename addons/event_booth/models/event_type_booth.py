@@ -14,13 +14,13 @@ class EventTypeBooth(models.Model):
         if category_id and len(category_id) == 1:
             return category_id
 
-    name = fields.Char(string='Name', required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     event_type_id = fields.Many2one(
         'event.type', string='Event Category',
         ondelete='cascade', required=True, index=True)
     booth_category_id = fields.Many2one(
-        'event.booth.category', string='Booth Category', index=True,
-        default=_get_default_booth_category, ondelete='restrict', required=True)
+        'event.booth.category', index=True,
+        default=lambda self: self._get_default_booth_category(), ondelete='restrict', required=True)
 
     @api.model
     def _get_event_booth_fields_whitelist(self):

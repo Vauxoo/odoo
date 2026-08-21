@@ -13,7 +13,6 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import file_open
 
-_logger = logging.getLogger(__name__)
 
 
 # Used to patch the computation of `is_valid` so that a certificate is

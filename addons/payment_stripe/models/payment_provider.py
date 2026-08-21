@@ -10,10 +10,10 @@ from odoo.tools.urls import urljoin as url_join
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_stripe import const
-from odoo.addons.payment_stripe import utils as stripe_utils
-from odoo.addons.payment_stripe.controllers.main import StripeController
-from odoo.addons.payment_stripe.controllers.onboarding import OnboardingController
+from .. import const
+from .. import utils as stripe_utils
+from ..controllers.main import StripeController
+from ..controllers.onboarding import OnboardingController
 
 _logger = get_payment_logger(__name__, const.SENSITIVE_KEYS)
 

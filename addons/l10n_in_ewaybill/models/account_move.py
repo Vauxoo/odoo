@@ -26,7 +26,7 @@ class AccountMove(models.Model):
     def action_l10n_in_ewaybill_create(self):
         self.ensure_one()
         if self.l10n_in_ewaybill_ids:
-            raise UserError(_("Ewaybill already created for this move."))
+            raise UserError(self.env._("Ewaybill already created for this move."))
         action = self._get_l10n_in_ewaybill_form_action()
         action['context'] = {'default_account_move_id': self.id}
         return action

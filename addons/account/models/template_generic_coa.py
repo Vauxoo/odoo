@@ -1,5 +1,5 @@
 from odoo import models, _
-from odoo.addons.account.models.chart_template import template
+from .chart_template import template
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -17,7 +17,7 @@ class AccountChartTemplate(models.AbstractModel):
         :rtype: dict
         """
         return {
-            'name': _("Generic (Minimal) Chart of Accounts"),
+            'name': self.env._("Generic (Minimal) Chart of Accounts"),
             'country': None,
         }
 

@@ -23,4 +23,4 @@ class IrHttp(models.AbstractModel):
     @classmethod
     def _post_dispatch(cls, response):
         cls._set_utm(response)
-        super()._post_dispatch(response)
+        return super()._post_dispatch(response)

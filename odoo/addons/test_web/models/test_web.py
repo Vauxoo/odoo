@@ -15,7 +15,7 @@ class TestWebPartner(models.Model):
         ('delivery', 'Delivery'),
         ('other', 'Other'),
     ], default='contact')
-    category_id = fields.Many2many('test_web.partner.category', column1='partner_id', column2='category_id', string='Tags', default=_default_category)
+    category_id = fields.Many2many('test_web.partner.category', column1='partner_id', column2='category_id', string='Tags', default=lambda self: self._default_category())
 
 
 class TestWebPartnerCategory(models.Model):

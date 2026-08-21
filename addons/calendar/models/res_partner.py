@@ -83,7 +83,7 @@ class ResPartner(models.Model):
     def _creation_message(self):
         self.ensure_one()
         if self.env.context.get('mail_create_log_from_calendar_sync'):
-            return _('Contact created through Calendar sync.')
+            return self.env._('Contact created through Calendar sync.')
         return super()._creation_message()
 
     @api.model

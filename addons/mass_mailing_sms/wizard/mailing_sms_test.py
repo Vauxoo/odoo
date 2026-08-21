@@ -17,8 +17,8 @@ class MailingSmsTest(models.TransientModel):
         return previous_numbers or self.env.user.partner_id.phone_sanitized or ""
 
     numbers = fields.Text(string='Number(s)', required=True,
-                          default=_default_numbers, help='Carriage-return-separated list of phone numbers')
-    mailing_id = fields.Many2one('mailing.mailing', string='Mailing', required=True, ondelete='cascade')
+                          default=lambda self: self._default_numbers(), help='Carriage-return-separated list of phone numbers')
+    mailing_id = fields.Many2one('mailing.mailing', required=True, ondelete='cascade')
 
     def _prepare_test_trace_values(self, record, sms_number, sms_uuid, body):
         trace_code = self.env['mailing.trace']._get_random_code()
@@ -90,19 +90,19 @@ class MailingSmsTest(models.TransientModel):
             # (= send for Odoo) via IAP_TO_SMS_STATE_SUCCESS
             if sent_sms.get('state') in ('success', 'sent'):
                 notification_messages.append(
-                    _('Test SMS successfully sent to %s', recipient)
+                    self.env._('Test SMS successfully sent to %s', recipient)
                 )
             else:
                 failure_explanation = sms_api._get_sms_api_error_messages().get(sent_sms['state'])
                 failure_reason = sent_sms.get('failure_reason')
-                notification_messages.append(_(
+                notification_messages.append(self.env._(
                     "Test SMS could not be sent to %(destination)s: %(state)s",
                     destination=recipient,
-                    state=failure_explanation or failure_reason or _("An error occurred."),
+                    state=failure_explanation or failure_reason or self.env._("An error occurred."),
                 ))
         if invalid_numbers:
             notification_messages.append(
-                _(
+                self.env._(
                     "Test SMS skipped those numbers as they appear invalid: %(numbers)s",
                     numbers=', '.join(invalid_numbers)
                 )

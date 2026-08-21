@@ -9,7 +9,7 @@ from odoo.tools import str2bool
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_xendit import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 

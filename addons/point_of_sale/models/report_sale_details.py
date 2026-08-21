@@ -196,7 +196,7 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
 
                     slist = []
                     if session.opening_balance:
-                        slist.append({'name': _('Cash Opening'), 'amount': session.opening_balance})
+                        slist.append({'name': self.env._('Cash Opening'), 'amount': session.opening_balance})
 
                     in_count = 0
                     out_count = 0
@@ -243,7 +243,7 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
                         p['cash_moves'] = [{'name': f"Difference observed during the counting ({name})", 'amount': p['money_difference']}]
                     p['count'] = True
             if not is_cash_method:
-                cash_name = _('Cash %(session_name)s', session_name=session.name)
+                cash_name = self.env._('Cash %(session_name)s', session_name=session.name)
                 previous_session = PosSession.search([('id', '<', session.id), ('state', '=', 'closed'), ('config_id', '=', session.config_id.id)], limit=1)
                 final_count = previous_session.closing_balance
                 cash_difference = session.closing_balance - final_count
@@ -252,7 +252,7 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
 
                 if previous_session.closing_balance > 0:
                     cash_in_out_list.append({
-                        'name': _('Cash Opening'),
+                        'name': self.env._('Cash Opening'),
                         'amount': previous_session.closing_balance,
                     })
 
@@ -451,7 +451,7 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
 
     def _get_products_and_taxes_dict(self, line, products, taxes, currency):
         key2 = (line.product_id, line.price_unit, line.discount)
-        key1 = line.product_id.product_tmpl_id.pos_categ_ids[0].name if len(line.product_id.product_tmpl_id.pos_categ_ids) else _('Not Categorized')
+        key1 = line.product_id.product_tmpl_id.pos_categ_ids[0].name if len(line.product_id.product_tmpl_id.pos_categ_ids) else self.env._('Not Categorized')
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         products.setdefault(key1, {})
         products[key1].setdefault(key2, [0.0, 0.0, 0.0, ''])
@@ -475,7 +475,7 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
             for tax_id, base_amount in base_amounts.items():
                 taxes['taxes'][tax_id]['base_amount'] += currency.round(base_amount)
         else:
-            taxes['taxes'].setdefault(0, {'name': _('No Taxes'), 'tax_amount': 0.0, 'base_amount': 0.0})
+            taxes['taxes'].setdefault(0, {'name': self.env._('No Taxes'), 'tax_amount': 0.0, 'base_amount': 0.0})
             taxes['taxes'][0]['base_amount'] += line.price_subtotal_incl
 
         refund_sign = -1 if line.order_id.is_refund_or_negative() else 1

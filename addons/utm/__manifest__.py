@@ -3,9 +3,6 @@
 {
     'name': 'UTM Trackers',
     'category': 'Marketing',
-    'description': """
-Enable management of UTM trackers: campaign, medium, source.
-""",
     'version': '1.2',
     'depends': ['base', 'web'],
     'data': [

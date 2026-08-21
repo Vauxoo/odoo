@@ -6,7 +6,6 @@ from odoo import api, fields, models
 from odoo.addons.product.models.product_template import PRICE_CONTEXT_KEYS
 from odoo.tools import SQL
 
-_logger = logging.getLogger(__name__)
 
 
 class EventTypeTicket(models.Model):
@@ -19,8 +18,8 @@ class EventTypeTicket(models.Model):
     description = fields.Text(compute='_compute_description', readonly=False, store=True)
     # product
     product_id = fields.Many2one(
-        'product.product', string='Product', required=True, index=True,
-        domain=[("service_tracking", "=", "event")], default=_default_product_id,
+        'product.product', required=True, index=True,
+        domain=[("service_tracking", "=", "event")], default=lambda self: self._default_product_id(),
         init_storage='_init_column_product_id',
     )
     currency_id = fields.Many2one(related="product_id.currency_id", string="Currency")
@@ -28,14 +27,14 @@ class EventTypeTicket(models.Model):
         string='Ticket Price', compute='_compute_price',
         min_display_digits='Product Price', readonly=False, store=True)
     price_reduce = fields.Float(
-        string="Price Reduce", compute="_compute_price_reduce",
+        compute="_compute_price_reduce",
         compute_sudo=True, min_display_digits='Product Price')
     additional_product_ids = fields.Many2many('product.product', string='Additional Products',
             domain=[('service_tracking', '!=', 'event')],
             help="Select products to include with each registration. They will also show up separately on Sale Orders.")
-    total_price = fields.Float(string='Total Price', compute='_compute_total_price', min_display_digits='Product Price',
+    total_price = fields.Float(compute='_compute_total_price', min_display_digits='Product Price',
         help="Price at which this ticket will be sold, which takes into account the Ticket Price and the price of every Additional Product")
-    total_price_reduce = fields.Float(string='Total Price Reduce', compute='_compute_price_reduce',
+    total_price_reduce = fields.Float(compute='_compute_price_reduce',
         compute_sudo=True, min_display_digits='Product Price')
 
     @api.depends('product_id')

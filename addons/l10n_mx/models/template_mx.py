@@ -59,13 +59,13 @@ class AccountChartTemplate(models.AbstractModel):
         return {
             "cbmx": {
                 'type': 'general',
-                'name': _('Effectively Paid'),
+                'name': self.env._('Effectively Paid'),
                 'code': 'CBMX',
                 'default_account_id': "cuenta118_01",
                 'show_on_dashboard': True,
             },
             'cash': {
-                'name': _("Cash"),
+                'name': self.env._("Cash"),
                 'type': 'cash',
             },
         }
@@ -75,7 +75,7 @@ class AccountChartTemplate(models.AbstractModel):
         if company.account_fiscal_country_id.code == 'MX':
             accounts_data.update({
                 'default_cash_difference_income_account_id': {
-                    'name': _('Other Income'),
+                    'name': self.env._('Other Income'),
                     'parent_id': self._get_account_parent_id('403.01'),
                     'code': '403.01.01'
                 },

@@ -3,9 +3,8 @@ from time import sleep
 
 from odoo import fields, models
 
-from odoo.addons.l10n_pl_edi.tools.ksef_api_service import KsefApiService
+from ..tools.ksef_api_service import KsefApiService
 
-_logger = logging.getLogger(__name__)
 
 
 class AccountMoveSend(models.AbstractModel):

@@ -12,7 +12,7 @@ class AccountChartTemplate(models.AbstractModel):
     def _get_stock_account_journal(self, template_code):
         return {
             'inventory_valuation': {
-                'name': _('Inventory Valuation'),
+                'name': self.env._('Inventory Valuation'),
                 'code': 'STJ',
                 'type': 'general',
                 'sequence': 10,

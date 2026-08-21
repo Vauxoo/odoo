@@ -82,7 +82,7 @@ class PurchaseOrder(models.Model):
                         Therefore, it only raises an Error for now.
                         """
                         if len(order_lines) > 1:
-                            raise ValidationError(_("You cannot change the quantity of a product present in multiple purchase lines."))
+                            raise ValidationError(self.env._("You cannot change the quantity of a product present in multiple purchase lines."))
                         else:
                             order_lines[0].product_qty = qty
                             # If we want to support multiple lines edition:

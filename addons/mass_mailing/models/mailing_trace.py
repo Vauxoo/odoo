@@ -70,7 +70,7 @@ class MailingTrace(models.Model):
              'However the ID is needed for several action and controllers.',
         index='btree_not_null',
     )
-    email = fields.Char(string="Email", help="Normalized email address")
+    email = fields.Char(help="Normalized email address")
     message_id = fields.Char(string='Message-ID') # email Message-ID (RFC 2392)
     medium_id = fields.Many2one(related='mass_mailing_id.medium_id')
     source_id = fields.Many2one(related='mass_mailing_id.source_id')
@@ -261,35 +261,35 @@ class MailingTrace(models.Model):
             'stacked': True,
         }
         if view_filter == 'reply':
-            action_name = _('Mailing Statistics')
+            action_name = self.env._('Mailing Statistics')
             if not self.env.context.get('search_default_filter_replied'):
                 domain &= Domain('trace_status', '=', 'reply')
             context = {**context, 'search_default_group_reply_date': True}
-            helper_header = _("No Recipient replied to your mailing yet!")
-            helper_message = _("To track how many replies this mailing gets, make sure "
+            helper_header = self.env._("No Recipient replied to your mailing yet!")
+            helper_message = self.env._("To track how many replies this mailing gets, make sure "
                                "its reply-to address belongs to this database.")
         elif view_filter == 'bounce':
-            action_name = _('Mailing Statistics')
+            action_name = self.env._('Mailing Statistics')
             if not self.env.context.get('search_default_filter_bounced'):
                 domain &= Domain('trace_status', '=', 'bounce')
-            helper_header = _("No Recipient address bounced yet!")
-            helper_message = _("Bounce happens when a mailing cannot be delivered (fake address, "
+            helper_header = self.env._("No Recipient address bounced yet!")
+            helper_message = self.env._("Bounce happens when a mailing cannot be delivered (fake address, "
                                "server issues, ...). Check each record to see what went wrong.")
         elif view_filter == 'open':
-            action_name = _('Mailing Statistics')
+            action_name = self.env._('Mailing Statistics')
             if not self.env.context.get('search_default_filter_opened'):
                 domain &= Domain('trace_status', 'in', ('open', 'reply'))
             context = {**context, 'search_default_group_open_date': True}
-            helper_header = _("No Recipient opened your mailing yet!")
-            helper_message = _("Come back once your mailing has been sent to track who opened your mailing.")
+            helper_header = self.env._("No Recipient opened your mailing yet!")
+            helper_message = self.env._("Come back once your mailing has been sent to track who opened your mailing.")
         elif view_filter == 'delivered':
-            action_name = _('Mailing Statistics')
+            action_name = self.env._('Mailing Statistics')
             if not self.env.context.get('search_default_filter_delivered'):
                 domain &= Domain('trace_status', 'in', ('sent', 'open', 'reply'))
-            helper_header = _("No Recipient received your mailing yet!")
-            helper_message = _("Wait until your mailing has been sent to check how many recipients you managed to reach.")
+            helper_header = self.env._("No Recipient received your mailing yet!")
+            helper_message = self.env._("Wait until your mailing has been sent to check how many recipients you managed to reach.")
         elif view_filter == 'sent':
-            action_name = _('Mailing Statistics')
+            action_name = self.env._('Mailing Statistics')
             if not self.env.context.get('search_default_filter_sent'):
                 domain &= Domain('sent_datetime', '!=', False)
 

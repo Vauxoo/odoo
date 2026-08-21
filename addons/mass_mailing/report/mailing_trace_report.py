@@ -13,7 +13,7 @@ class MailingTraceReport(models.Model):
     name = fields.Char(string='Mass Mail', readonly=True)
     mailing_type = fields.Selection([('mail', 'Mail')], string='Type', default='mail', required=True)
     campaign = fields.Char(string='Mailing Campaign', readonly=True)
-    scheduled_date = fields.Datetime(string='Scheduled Date', readonly=True)
+    scheduled_date = fields.Datetime(readonly=True)
     state = fields.Selection(
         [('draft', 'Draft'), ('test', 'Tested'), ('done', 'Sent')],
         string='Status', readonly=True)

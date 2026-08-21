@@ -5,9 +5,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['kz'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This provides a base chart of accounts and taxes template for use in Odoo for Kazakhstan.
-    """,
     'depends': [
         'account',
     ],

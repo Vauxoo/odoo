@@ -22,7 +22,7 @@ class PurchaseOrderLine(models.Model):
     name = fields.Text(
         string='Description', required=True, compute='_compute_price_unit_and_date_planned_and_name', store=True, readonly=False)
     translated_product_name = fields.Text(compute='_compute_translated_product_name')
-    sequence = fields.Integer(string='Sequence', default=10)
+    sequence = fields.Integer(default=10)
     product_qty = fields.Float(string='Quantity', digits='Product Unit', required=True)
     product_uom_qty = fields.Float(string='Total Quantity', compute='_compute_product_uom_qty', store=True)
     date_planned = fields.Datetime(
@@ -38,7 +38,7 @@ class PurchaseOrderLine(models.Model):
     document_tax_mode = fields.Selection(related='order_id.document_tax_mode')
     allowed_uom_ids = fields.Many2many('uom.uom', compute='_compute_allowed_uom_ids')
     uom_id = fields.Many2one('uom.uom', string='Unit', domain="[('id', 'in', allowed_uom_ids)]", ondelete='restrict')
-    product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)], change_default=True, index='btree_not_null', ondelete='restrict')
+    product_id = fields.Many2one('product.product', domain=[('purchase_ok', '=', True)], change_default=True, index='btree_not_null', ondelete='restrict')
     product_type = fields.Selection(related='product_id.type', readonly=True)
     price_unit = fields.Float(
         string='Unit Price', required=True, min_display_digits='Product Price', aggregator='avg',
@@ -349,14 +349,14 @@ class PurchaseOrderLine(models.Model):
                     skip_qty_available_update=True
                 ).qty_available += qty_received
             if line.product_id and line.order_id.state == 'purchase':
-                msg = _("Extra line with %s ", line.product_id.display_name)
+                msg = self.env._("Extra line with %s ", line.product_id.display_name)
                 line.order_id.message_post(body=msg)
         return lines
 
     def write(self, vals):
         values = vals
         if 'display_type' in values and self.filtered(lambda line: line.display_type != values.get('display_type')):
-            raise UserError(_("You cannot change the type of a purchase order line. Instead you should delete the current line and create a new line of the proper type."))
+            raise UserError(self.env._("You cannot change the type of a purchase order line. Instead you should delete the current line and create a new line of the proper type."))
 
         if any(field in values for field in ('product_qty', 'price_unit')):
             precision = self.env['decimal.precision'].precision_get('Product Unit')
@@ -397,7 +397,7 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             if line.order_id.state == 'purchase' and line.display_type not in ['line_section', 'line_subsection', 'line_note']:
                 state_description = {state_desc[0]: state_desc[1] for state_desc in self._fields['state']._description_selection(self.env)}
-                raise UserError(_('Cannot delete a purchase order line which is in state “%s”.', state_description.get(line.state)))
+                raise UserError(self.env._('Cannot delete a purchase order line which is in state “%s”.', state_description.get(line.state)))
 
     @api.model
     def _get_date_planned(self, seller, po=False):
@@ -635,7 +635,7 @@ class PurchaseOrderLine(models.Model):
                     self.price_unit, self.uom_id
                 )
 
-        super()._update_catalog_quantity(quantity, uom, **kwargs)
+        return super()._update_catalog_quantity(quantity, uom, **kwargs)
 
     def action_open_invoices(self):
         self.ensure_one()

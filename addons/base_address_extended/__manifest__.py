@@ -5,14 +5,6 @@
     'sequence': 19,
     'version': '1.1',
     'category': 'Sales/Sales',
-    'description': """
-Extended Addresses Management
-=============================
-
-This module provides the ability to choose a city from a list (in specific countries).
-
-It is primarily used for EDIs that might need a special city code.
-        """,
     'data': [
         'views/base_address_extended.xml',
         'views/res_city_view.xml',

@@ -1,7 +1,7 @@
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.pos_bancontact_pay import const
+from .. import const
 
 
 class AccountJournal(models.Model):
@@ -19,7 +19,7 @@ class AccountJournal(models.Model):
             # If unsupported, check if this journal is used by any Bancontact payment method
             if any(pm.payment_provider == "bancontact_pay" for pm in record.pos_payment_method_ids):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The journal '%(journal)s' is used by a Bancontact Pay payment method.\n"
                         "This payment method does not support the journal's currency.\n"
                         "Supported currencies: %(currencies)s.",

@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, Command, fields, models
-from odoo.addons.onboarding.models.onboarding_progress import ONBOARDING_PROGRESS_STATES
+from .onboarding_progress import ONBOARDING_PROGRESS_STATES
 from odoo.exceptions import ValidationError
 
 
@@ -14,16 +14,16 @@ class OnboardingOnboardingStep(models.Model):
 
     onboarding_ids = fields.Many2many('onboarding.onboarding', string='Onboardings')
 
-    title = fields.Char('Title', translate=True)
-    description = fields.Char('Description', translate=True)
+    title = fields.Char(translate=True)
+    description = fields.Char(translate=True)
     button_text = fields.Char(
         'Button text', required=True, default=lambda s: s.env._("Let's do it"), translate=True,
         help="Text on the panel's button to start this step")
     done_icon = fields.Char('Material Symbols Icon when completed', default='star')
     done_text = fields.Char(
         'Text to show when step is completed', default=lambda s: s.env._('Step Completed!'), translate=True)
-    step_image = fields.Binary("Step Image")
-    step_image_filename = fields.Char("Step Image Filename")
+    step_image = fields.Binary()
+    step_image_filename = fields.Char()
     step_image_alt = fields.Char(
         'Alt Text for the Step Image', default='Onboarding Step Image', translate=True,
         help='Show when impossible to load the image')
@@ -65,7 +65,7 @@ class OnboardingOnboardingStep(models.Model):
     @api.constrains('onboarding_ids')
     def check_step_on_onboarding_has_action(self):
         if steps_without_action := self.filtered(lambda step: step.onboarding_ids and not step.panel_step_open_action_name):
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 'An "Opening Action" is required for the following steps to be '
                 'linked to an onboarding panel: %(step_titles)s',
                 step_titles=steps_without_action.mapped('title'),

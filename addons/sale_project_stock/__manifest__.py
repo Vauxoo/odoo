@@ -2,7 +2,6 @@
 
 {
     'name': 'Sale Project - Sale Stock',
-    'description': 'Adds a full traceability of inventory operations on the profitability report.',
     'summary': 'Adds a full traceability of inventory operations on the profitability report.',
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',

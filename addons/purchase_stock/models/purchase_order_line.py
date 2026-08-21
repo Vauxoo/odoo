@@ -26,13 +26,13 @@ class PurchaseOrderLine(models.Model):
                                            ondelete={'stock_moves': _ondelete_stock_moves})
 
     move_ids = fields.One2many('stock.move', 'purchase_line_id', string='Reservation', readonly=True, copy=False)
-    orderpoint_id = fields.Many2one('stock.warehouse.orderpoint', 'Orderpoint', copy=False, index='btree_not_null', ondelete='set null')
+    orderpoint_id = fields.Many2one('stock.warehouse.orderpoint', copy=False, index='btree_not_null', ondelete='set null')
     move_dest_ids = fields.Many2many('stock.move', 'stock_move_created_purchase_line_rel', 'created_purchase_line_id', 'move_id', 'Downstream moves alt')
     product_description_variants = fields.Char('Custom Description')
     propagate_cancel = fields.Boolean('Propagate cancellation', default=True)
     forecasted_issue = fields.Boolean(compute='_compute_forecasted_issue')
     is_storable = fields.Boolean(related='product_id.is_storable')
-    forecasted_location_id = fields.Many2one('stock.location', 'Forecasted Location', help='Location used in the computation of the forecast.')
+    forecasted_location_id = fields.Many2one('stock.location', help='Location used in the computation of the forecast.')
     date_promised = fields.Datetime('Promised Date', help="Delivery Date promised by the vendor. If the vendor delivers products after this date, their On-Time rate will be negatively impacted.")
 
     def _compute_qty_received_method(self):
@@ -55,7 +55,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.depends('move_ids.state', 'move_ids.uom_id', 'move_ids.quantity')
     def _compute_qty_received(self):
-        super()._compute_qty_received()
+        return super()._compute_qty_received()
 
     def _prepare_qty_received(self):
         from_stock_lines = self.filtered(lambda order_line: order_line.qty_received_method == 'stock_moves')
@@ -191,7 +191,7 @@ class PurchaseOrderLine(models.Model):
                     # inviting the user to create a refund.
                     line.invoice_lines[0].move_id.activity_schedule(
                         'mail.mail_activity_data_warning',
-                        note=_('The quantities on your purchase order indicate less than billed. You should ask for a refund.'),
+                        note=self.env._('The quantities on your purchase order indicate less than billed. You should ask for a refund.'),
                         user_id=self.env.uid,
                     )
 
@@ -303,7 +303,7 @@ class PurchaseOrderLine(models.Model):
         warehouse_loc = self.order_id.picking_type_id.warehouse_id.view_location_id
         dest_loc = self.move_dest_ids.location_id or self.orderpoint_id.location_id
         if warehouse_loc and dest_loc and dest_loc.warehouse_id and not warehouse_loc.parent_path in dest_loc[0].parent_path:
-            raise UserError(_('The warehouse of operation type (%(operation_type)s) is inconsistent with location (%(location)s) of reordering rule (%(reordering_rule)s) for product %(product)s. Change the operation type or cancel the request for quotation.',
+            raise UserError(self.env._('The warehouse of operation type (%(operation_type)s) is inconsistent with location (%(location)s) of reordering rule (%(reordering_rule)s) for product %(product)s. Change the operation type or cancel the request for quotation.',
                               product=self.product_id.display_name, operation_type=self.order_id.picking_type_id.display_name, location=self.orderpoint_id.location_id.display_name, reordering_rule=self.orderpoint_id.display_name))
 
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
@@ -312,7 +312,7 @@ class PurchaseOrderLine(models.Model):
         if not self.order_id.reference_ids:
             self.order_id.reference_ids = self.order_id.reference_ids.create(self.order_id._prepare_reference_vals())
         if not self.order_id.partner_id.property_stock_supplier.id:
-            raise UserError(_("You must set a Vendor Location for partner %(partner_name)s", partner_name=self.partner_id.name))
+            raise UserError(self.env._("You must set a Vendor Location for partner %(partner_name)s", partner_name=self.partner_id.name))
         location_dest = picking.location_dest_id if picking else self.env['stock.location'].browse(self.order_id._get_destination_location())
         location_final = self.forecasted_location_id or self.order_id._get_final_location_record()
         if location_final and location_final._child_of(location_dest):

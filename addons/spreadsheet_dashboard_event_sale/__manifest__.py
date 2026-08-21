@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for events",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'event_sale'],
     'data': [
         "data/dashboards.xml",

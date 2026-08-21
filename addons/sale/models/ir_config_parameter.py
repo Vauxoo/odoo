@@ -3,7 +3,7 @@
 from odoo import api, models
 from odoo.tools.misc import str2bool
 
-from odoo.addons.sale import const
+from .. import const
 
 
 class IrConfigParameter(models.Model):

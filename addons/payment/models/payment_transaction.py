@@ -13,9 +13,9 @@ from odoo.exceptions import LockError, UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tools import email_normalize_all, float_round
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.const import CURRENCY_MINOR_UNITS, SENSITIVE_KEYS
-from odoo.addons.payment.logging import get_payment_logger
+from .. import utils as payment_utils
+from ..const import CURRENCY_MINOR_UNITS, SENSITIVE_KEYS
+from ..logging import get_payment_logger
 
 _logger = get_payment_logger(__name__, sensitive_keys=SENSITIVE_KEYS)
 
@@ -32,7 +32,7 @@ class PaymentTransaction(models.Model):
         return self.env["res.lang"].get_installed()
 
     provider_id = fields.Many2one(
-        string="Provider", comodel_name="payment.provider", readonly=True, required=True, index=True
+        comodel_name="payment.provider", readonly=True, required=True, index=True
     )
     provider_code = fields.Selection(string="Provider Code", related="provider_id.code")
     capture_manually = fields.Boolean(related="provider_id.capture_manually")
@@ -40,7 +40,6 @@ class PaymentTransaction(models.Model):
         related="provider_id.company_id", store=True, index=True
     )  # Indexed to speed-up ORM searches (from ir_access or others)
     payment_method_id = fields.Many2one(
-        string="Payment Method",
         comodel_name="payment.method",
         readonly=True,
         required=True,
@@ -50,24 +49,22 @@ class PaymentTransaction(models.Model):
         string="Payment Method Code", related="payment_method_id.code"
     )
     primary_payment_method_id = fields.Many2one(
-        string="Primary Payment Method",
         comodel_name="payment.method",
         compute="_compute_primary_payment_method_id",
     )
     reference = fields.Char(
-        string="Reference",
         help="The internal reference of the transaction",
         readonly=True,
         required=True,
     )  # Already has an index from the UNIQUE SQL constraint.
     provider_reference = fields.Char(
-        string="Provider Reference", help="The provider reference of the transaction", readonly=True
+        help="The provider reference of the transaction", readonly=True
     )  # This is not the same thing as the provider reference of the token.
     amount = fields.Monetary(
-        string="Amount", currency_field="currency_id", readonly=True, required=True
+        currency_field="currency_id", readonly=True, required=True
     )
     currency_id = fields.Many2one(
-        string="Currency", comodel_name="res.currency", readonly=True, required=True
+        comodel_name="res.currency", readonly=True, required=True
     )
     token_id = fields.Many2one(
         string="Payment Token",
@@ -104,7 +101,6 @@ class PaymentTransaction(models.Model):
 
     # Fields used for traceability.
     operation = fields.Selection(  # This should not be trusted if the state is draft or pending.
-        string="Operation",
         selection=[
             ("online_redirect", "Online payment with redirection"),
             ("online_direct", "Online direct payment"),
@@ -126,7 +122,6 @@ class PaymentTransaction(models.Model):
     )
     payment_data_count = fields.Integer(compute="_compute_payment_data_count")
     source_transaction_id = fields.Many2one(
-        string="Source Transaction",
         comodel_name="payment.transaction",
         index="btree_not_null",
         help="The source transaction of the related child transactions",
@@ -139,7 +134,7 @@ class PaymentTransaction(models.Model):
         inverse_name="source_transaction_id",
         readonly=True,
     )
-    refunds_count = fields.Integer(string="Refunds Count", compute="_compute_refunds_count")
+    refunds_count = fields.Integer(compute="_compute_refunds_count")
     child_transaction_count = fields.Integer(compute="_compute_child_transaction_count")
 
     # Fields used for user redirection & payment post-processing
@@ -151,7 +146,7 @@ class PaymentTransaction(models.Model):
         help="Whether a payment token should be created when post-processing the transaction",
     )
     landing_route = fields.Char(
-        string="Landing Route", help="The route the user is redirected to after the transaction"
+        help="The route the user is redirected to after the transaction"
     )
 
     # Duplicated partner values allowing to keep a record of them, should they be later updated.
@@ -162,7 +157,7 @@ class PaymentTransaction(models.Model):
         readonly=True,
         required=True,
     )
-    partner_name = fields.Char(string="Partner Name")
+    partner_name = fields.Char()
     partner_lang = fields.Selection(string="Language", selection=_lang_get)
     partner_email = fields.Char(string="Email")
     partner_address = fields.Char(string="Address")

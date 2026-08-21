@@ -2,7 +2,7 @@
 
 from odoo import models
 from odoo.http import request
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 
 
 class IrHttp(models.AbstractModel):

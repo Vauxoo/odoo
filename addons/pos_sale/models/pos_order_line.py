@@ -8,7 +8,7 @@ class PosOrderLine(models.Model):
 
     sale_order_origin_id = fields.Many2one('sale.order', string="Linked Sale Order", index='btree_not_null')
     sale_order_line_id = fields.Many2one('sale.order.line', string="Source Sale Order Line", index='btree_not_null')
-    down_payment_details = fields.Text(string="Down Payment Details")
+    down_payment_details = fields.Text()
     qty_delivered = fields.Float(
         string="Delivery Quantity",
         compute='_compute_qty_delivered',

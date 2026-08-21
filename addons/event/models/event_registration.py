@@ -33,7 +33,7 @@ class EventRegistration(models.Model):
 
     # event
     event_id = fields.Many2one(
-        'event.event', string='Event', required=True, tracking=True, index=True)
+        'event.event', required=True, tracking=True, index=True)
     is_multi_slots = fields.Boolean(string="Is Event Multi Slots", related="event_id.is_multi_slots")
     event_slot_id = fields.Many2one(
         "event.slot", string="Slot", ondelete='restrict', tracking=True, index="btree_not_null",
@@ -41,7 +41,7 @@ class EventRegistration(models.Model):
     event_ticket_id = fields.Many2one(
         'event.event.ticket', string='Ticket Type', ondelete='restrict', tracking=True, index='btree_not_null')
     active = fields.Boolean(default=True)
-    barcode = fields.Char(string='Barcode', default=lambda self: self._get_random_barcode(), readonly=True, copy=False)
+    barcode = fields.Char(default=lambda self: self._get_random_barcode(), readonly=True, copy=False)
     # utm informations
     utm_campaign_id = fields.Many2one('utm.campaign', 'Campaign', index=True, ondelete='set null')
     utm_source_id = fields.Many2one('utm.source', 'Source', index=True, ondelete='set null')
@@ -51,16 +51,16 @@ class EventRegistration(models.Model):
     name = fields.Char(
         string='Attendee Name', index='trigram',
         compute='_compute_name', readonly=False, store=True, tracking=2)
-    email = fields.Char(string='Email', compute='_compute_email', readonly=False, store=True, tracking=3)
-    phone = fields.Char(string='Phone', compute='_compute_phone', readonly=False, store=True, tracking=4)
+    email = fields.Char(compute='_compute_email', readonly=False, store=True, tracking=3)
+    phone = fields.Char(compute='_compute_phone', readonly=False, store=True, tracking=4)
     company_name = fields.Char(
-        string='Company Name', compute='_compute_company_name', readonly=False, store=True, tracking=5)
+        compute='_compute_company_name', readonly=False, store=True, tracking=5)
     # organization
     date_closed = fields.Datetime(
         string='Attended Date', compute='_compute_date_closed',
         readonly=False, store=True)
     event_begin_date = fields.Datetime("Event Start Date", compute="_compute_event_begin_date", search="_search_event_begin_date")
-    event_end_date = fields.Datetime("Event End Date", compute="_compute_event_end_date", search="_search_event_end_date")
+    event_end_date = fields.Datetime(compute="_compute_event_end_date", search="_search_event_end_date")
     event_date_range = fields.Char("Date Range", compute="_compute_date_range")
     event_organizer_id = fields.Many2one(string='Event Organizer', related='event_id.organizer_id', readonly=True)
     event_user_id = fields.Many2one(string='Event Responsible', related='event_id.user_id', readonly=True)
@@ -78,9 +78,9 @@ class EventRegistration(models.Model):
              'Registered: registrations considered taken by a client\n'
              'Attended: registrations for which the attendee attended the event\n'
              'Cancelled: registrations cancelled manually')
-    remaining_entries = fields.Integer(string="Remaining Entries", compute="_compute_remaining_entries", tracking=True)
+    remaining_entries = fields.Integer(compute="_compute_remaining_entries", tracking=True)
     ticket_entry_limit = fields.Integer(string="Initial Entry Limit", related="event_ticket_id.entry_limit", tracking=True)
-    main_registration_id = fields.Many2one('event.registration', string='Main Registration', ondelete='restrict', index="btree_not_null")
+    main_registration_id = fields.Many2one('event.registration', ondelete='restrict', index="btree_not_null")
     # questions
     registration_answer_ids = fields.One2many('event.registration.answer', 'registration_id', string='Attendee Answers')
     registration_answer_choice_ids = fields.One2many('event.registration.answer', 'registration_id', string='Attendee Selection Answers',
@@ -217,14 +217,14 @@ class EventRegistration(models.Model):
     @api.constrains('event_id', 'event_slot_id')
     def _check_event_slot(self):
         if any(registration.event_id != registration.event_slot_id.event_id for registration in self if registration.event_slot_id):
-            raise ValidationError(_('Invalid event / slot choice'))
+            raise ValidationError(self.env._('Invalid event / slot choice'))
         if any(not registration.event_slot_id for registration in self if registration.is_multi_slots):
-            raise ValidationError(_('Slot choice is mandatory on multi-slots events.'))
+            raise ValidationError(self.env._('Slot choice is mandatory on multi-slots events.'))
 
     @api.constrains('event_id', 'event_ticket_id')
     def _check_event_ticket(self):
         if any(registration.event_id != registration.event_ticket_id.event_id for registration in self if registration.event_ticket_id):
-            raise ValidationError(_('Invalid event / ticket choice'))
+            raise ValidationError(self.env._('Invalid event / ticket choice'))
 
     def _synchronize_partner_values(self, partner, fnames=None):
         if fnames is None:
@@ -307,7 +307,7 @@ class EventRegistration(models.Model):
             to_confirm._update_mail_schedulers()
 
         if vals.get('state') == 'done':
-            message = _("Attended on %(attended_date)s", attended_date=format_date(env=self.env, value=fields.Datetime.now(), date_format='short'))
+            message = self.env._("Attended on %(attended_date)s", attended_date=format_date(env=self.env, value=fields.Datetime.now(), date_format='short'))
             self._message_log_batch(bodies={registration.id: message for registration in self})
 
         return ret
@@ -315,7 +315,7 @@ class EventRegistration(models.Model):
     def _compute_display_name(self):
         """Custom display_name when a registration is not linked to an attendee."""
         for registration in self:
-            registration.display_name = registration.name or (f"#{registration.id}" if registration.id else _("New"))
+            registration.display_name = registration.name or (f"#{registration.id}" if registration.id else self.env._("New"))
 
     # ------------------------------------------------------------
     # ACTIONS / BUSINESS
@@ -340,7 +340,7 @@ class EventRegistration(models.Model):
                 new_registration.action_set_done()
                 new_registration_link = new_registration._get_html_link(title=f"{new_registration.name}")
                 record._message_log(
-                    body=_(
+                    body=self.env._(
                         "New attendance by this attendee created at %(attendance_datetime)s, see %(attendance_link)s",
                         attendance_datetime=fields.Datetime.to_string(new_registration.create_date),
                         attendance_link=new_registration_link
@@ -363,7 +363,7 @@ class EventRegistration(models.Model):
         :raises: UserError if one of the registrations is a sub-registrations, this method is meant to be used only on main registrations. """
         if self.mapped("main_registration_id"):
             raise UserError(
-                _("You cannot cancel the last attendance of the sub-registration with id: %(registration_id)s."
+                self.env._("You cannot cancel the last attendance of the sub-registration with id: %(registration_id)s."
                 " Please try again from the original registration of this attendee.",
                 registration_id=self.filtered(lambda r: r.main_registration_id).ids)
             )
@@ -391,7 +391,7 @@ class EventRegistration(models.Model):
             default_composition_mode='comment',
         )
         return {
-            'name': _('Compose Email'),
+            'name': self.env._('Compose Email'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'mail.compose.message',
@@ -454,12 +454,12 @@ class EventRegistration(models.Model):
 
     def _message_compute_subject(self):
         if self.name:
-            return _(
+            return self.env._(
                 "%(event_name)s - Registration for %(attendee_name)s",
                 event_name=self.event_id.name,
                 attendee_name=self.name,
             )
-        return _(
+        return self.env._(
             "%(event_name)s - Registration #%(registration_id)s",
             event_name=self.event_id.name,
             registration_id=self.id,

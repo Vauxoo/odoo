@@ -49,7 +49,7 @@ class ResPartnerBank(models.Model):
             for account in account_employee:
                 account.sudo(self.env.su).display_name = \
                     account.account_number[:2] + "*" * len(account.account_number[2:-4]) + account.account_number[-4:]
-        super(ResPartnerBank, self - account_employee)._compute_display_name()
+        return super(ResPartnerBank, self - account_employee)._compute_display_name()
 
     @api.model
     def _is_iban_valid(self, iban):

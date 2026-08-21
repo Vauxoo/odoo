@@ -10,7 +10,7 @@ class L10n_KeItemCode(models.Model):
     _rec_names_search = ('code', 'description')
 
     code = fields.Char(string='KRA Item Code')
-    description = fields.Char(string='Description')
+    description = fields.Char()
     tax_rate = fields.Selection([('C', 'Zero Rated'), ('E', 'Exempted'), ('B', 'Taxable at 8%')])
 
     @api.depends('code', 'description')

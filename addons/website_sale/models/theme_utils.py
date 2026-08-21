@@ -21,7 +21,7 @@ class ThemeUtils(models.AbstractModel):
         if xml_id in self.category_style_templates:
             for template in self.category_style_templates:
                 self.disable_view(template)
-        super().enable_view(xml_id)
+        return super().enable_view(xml_id)
 
     @property
     def _footer_templates(self):

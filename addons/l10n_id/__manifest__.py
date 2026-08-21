@@ -5,11 +5,6 @@
     'countries': ['id'],
     'version': '1.3',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the latest Indonesian Odoo localisation necessary to run Odoo accounting for SMEs with:
-=================================================================================================
-    - generic Indonesian chart of accounts
-    - tax structure""",
     'author': 'vitraining.com',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/indonesia.html',
     'depends': [

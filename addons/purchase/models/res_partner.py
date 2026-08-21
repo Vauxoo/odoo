@@ -32,7 +32,6 @@ class ResPartner(models.Model):
         'res.currency', string="Supplier Currency", company_dependent=True,
         help="This currency will be used for purchases from the current partner")
     purchase_order_count = fields.Integer(
-        string="Purchase Order Count",
         groups='purchase.group_purchase_user',
         compute='_compute_purchase_order_count',
     )
@@ -42,7 +41,7 @@ class ResPartner(models.Model):
         help="Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him to confirm the exact date.")
     reminder_date_before_receipt = fields.Integer('Days Before Receipt', company_dependent=True,
         help="Number of days to send reminder email before the promised receipt date")
-    buyer_id = fields.Many2one('res.users', string='Buyer')
+    buyer_id = fields.Many2one('res.users')
 
     purchase_incoterm_location = fields.Char("Vendor Incoterm Location")
     purchase_incoterm_id = fields.Many2one(
@@ -56,7 +55,7 @@ class ResPartner(models.Model):
         if not self.env.user.has_group('purchase.group_purchase_user'):
             return data_list
         for partner in self.filtered(lambda partner: partner.purchase_order_count):
-            stat_info = {'icon': 'credit_card', 'value': partner.purchase_order_count, 'label': _('Purchases')}
+            stat_info = {'icon': 'credit_card', 'value': partner.purchase_order_count, 'label': self.env._('Purchases')}
             data_list[partner.id].append(stat_info)
         return data_list
 

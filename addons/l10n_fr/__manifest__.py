@@ -5,8 +5,6 @@
     'countries': ['fr'],
     'version': '2.1',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-""",
     'depends': [
         'base',
     ],

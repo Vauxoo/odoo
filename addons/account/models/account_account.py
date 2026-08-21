@@ -10,7 +10,7 @@ from odoo import api, fields, models, _, Command
 from odoo.fields import Domain
 from odoo.exceptions import UserError, ValidationError, RedirectWarning
 from odoo.models import Query, TableSQL
-from odoo.tools import SQL
+from odoo.tools import SQL, groupby
 
 
 ACCOUNT_REGEX = re.compile(r'(?:(\S*\d+\S*))?(.*)')
@@ -35,7 +35,7 @@ class AccountAccount(models.Model):
     def _check_reconcile(self):
         for account in self:
             if account.account_type in ('asset_receivable', 'liability_payable') and not account.reconcile:
-                raise ValidationError(_('You cannot have a receivable/payable account that is not reconcilable. (account code: %s)', account.code))
+                raise ValidationError(self.env._('You cannot have a receivable/payable account that is not reconcilable. (account code: %s)', account.code))
 
     name = fields.Char(string="Account Name", required=True, index='trigram', tracking=True, translate=True)
     description = fields.Text(translate=True)
@@ -43,7 +43,7 @@ class AccountAccount(models.Model):
         help="Forces all journal items in this account to have a specific currency (i.e. bank journals). If no currency is set, entries can use any currency.")
     company_currency_id = fields.Many2one('res.currency', compute='_compute_company_currency_id', compute_sql='_compute_sql_company_currency_id', compute_sudo=True)
     company_fiscal_country_code = fields.Char(compute='_compute_company_fiscal_country_code')
-    code = fields.Char(string="Code", size=64, tracking=True, compute='_compute_code', inverse='_inverse_code', compute_sql='_compute_sql_code', compute_sudo=True)
+    code = fields.Char(size=64, tracking=True, compute='_compute_code', inverse='_inverse_code', compute_sql='_compute_sql_code', compute_sudo=True)
     code_store = fields.Char(company_dependent=True)
     placeholder_code = fields.Char(string="Display code", compute='_compute_placeholder_code', search='_search_placeholder_code', compute_sql='_compute_sql_placeholder_code', compute_sudo=True)
     code_path = fields.Char(
@@ -104,7 +104,6 @@ class AccountAccount(models.Model):
             ('expense', 'Expense'),
             ('off', 'Off Balance'),
         ],
-        string="Internal Group",
         compute="_compute_internal_group",
         compute_sql='_compute_sql_internal_group',
         compute_sudo=True,
@@ -140,9 +139,9 @@ class AccountAccount(models.Model):
     )
     parent_path = fields.Char(index=True)
     parent_ids = fields.Many2many('account.account', compute='_compute_parent_ids', compute_sudo=True, context={'active_test': False})
-    opening_debit = fields.Monetary(string="Opening Debit", compute='_compute_opening_debit_credit', inverse='_set_opening_debit', currency_field='company_currency_id')
-    opening_credit = fields.Monetary(string="Opening Credit", compute='_compute_opening_debit_credit', inverse='_set_opening_credit', currency_field='company_currency_id')
-    opening_balance = fields.Monetary(string="Opening Balance", compute='_compute_opening_debit_credit', inverse='_set_opening_balance', currency_field='company_currency_id')
+    opening_debit = fields.Monetary(compute='_compute_opening_debit_credit', inverse='_set_opening_debit', currency_field='company_currency_id')
+    opening_credit = fields.Monetary(compute='_compute_opening_debit_credit', inverse='_set_opening_credit', currency_field='company_currency_id')
+    opening_balance = fields.Monetary(compute='_compute_opening_debit_credit', inverse='_set_opening_balance', currency_field='company_currency_id')
 
     current_balance = fields.Float(compute='_compute_current_balance')
     related_taxes_amount = fields.Integer(compute='_compute_related_taxes_amount')
@@ -159,9 +158,9 @@ class AccountAccount(models.Model):
         for record in self:
             if record.account_type == 'off_balance':
                 if record.reconcile:
-                    raise UserError(_('An Off-Balance account can not be reconcilable'))
+                    raise UserError(self.env._('An Off-Balance account can not be reconcilable'))
                 if record.tax_ids:
-                    raise UserError(_('An Off-Balance account can not have taxes'))
+                    raise UserError(self.env._('An Off-Balance account can not have taxes'))
 
     @api.constrains('currency_id')
     def _check_journal_consistency(self):
@@ -230,7 +229,7 @@ class AccountAccount(models.Model):
         if res:
             account = self.env['account.account'].browse(res[0])
             journal = self.env['account.journal'].browse(res[1])
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "The foreign currency set on the journal '%(journal)s' and the account '%(account)s' must be the same.",
                 journal=journal.display_name,
                 account=account.display_name
@@ -248,14 +247,14 @@ class AccountAccount(models.Model):
             )
 
         if self.filtered(lambda a: a.account_type == 'asset_cash' and len(a.sudo().company_ids) > 1):
-            raise ValidationError(_("Bank & Cash accounts cannot be shared between companies."))
+            raise ValidationError(self.env._("Bank & Cash accounts cannot be shared between companies."))
 
         for companies, accounts in self.grouped(lambda a: a.sudo().company_ids).items():
             if self.env['account.move.line'].sudo().search_count([
                 ('account_id', 'in', accounts.ids),
                 '!', ('company_id', 'child_of', companies.ids)
             ], limit=1):
-                raise UserError(_("You can't unlink this company from this account since there are some journal items linked to it."))
+                raise UserError(self.env._("You can't unlink this company from this account since there are some journal items linked to it."))
 
     @api.constrains('account_type')
     def _check_account_type_sales_purchase_journal(self):
@@ -275,13 +274,13 @@ class AccountAccount(models.Model):
         ''', [tuple(self.ids)])
 
         if self.env.cr.fetchone():
-            raise ValidationError(_("The account is already in use in a 'sale' or 'purchase' journal. This means that the account's type couldn't be 'receivable' or 'payable'."))
+            raise ValidationError(self.env._("The account is already in use in a 'sale' or 'purchase' journal. This means that the account's type couldn't be 'receivable' or 'payable'."))
 
     @api.constrains('code')
     def _check_account_code(self):
         for account in self:
             if account.code and not re.match(ACCOUNT_CODE_REGEX, account.code):
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "The account code can only contain alphanumeric characters, dots, and dashes."
                 ))
 
@@ -299,7 +298,7 @@ class AccountAccount(models.Model):
         ''', [tuple(self.ids)])
 
         if self.env.cr.fetchone():
-            raise ValidationError(_("You cannot change the type of an account set as Bank Account on a journal to Receivable or Payable."))
+            raise ValidationError(self.env._("You cannot change the type of an account set as Bank Account on a journal to Receivable or Payable."))
 
     @api.depends_context('company')
     @api.depends('code_store')
@@ -573,7 +572,7 @@ class AccountAccount(models.Model):
             if code_is_available(new_code := f'{start_code}.copy{num and num + 1 or ""}'):
                 return new_code
 
-        raise UserError(_('Cannot generate an unused account code.'))
+        raise UserError(self.env._('Cannot generate an unused account code.'))
 
     @api.depends_context('company')
     def _compute_current_balance(self):
@@ -915,8 +914,8 @@ class AccountAccount(models.Model):
             if formatted_display_name:
                 account.display_name = (
                     f"""{(self.env.user.has_group('account.group_account_readonly') and account.code) or ''} {account.name_path}"""
-                    f"""{f' `{_("Suggested")}`' if account.id in preferred_account_ids else ''}"""
-                    f"""{f' `{_("Asset")}`' if account._should_display_asset_tag() else ''}"""
+                    f"""{f' `{self.env._("Suggested")}`' if account.id in preferred_account_ids else ''}"""
+                    f"""{f' `{self.env._("Asset")}`' if account._should_display_asset_tag() else ''}"""
                     f"""{f'{new_line}--{account.description}--' if account.description else ''}"""
                 )
             else:
@@ -1013,13 +1012,13 @@ class AccountAccount(models.Model):
             code, name = self._split_code_name(name)
             record = self.create({'code': code, 'name': name})
             return record.id, record.display_name
-        raise ValidationError(_("Please create new accounts from the Chart of Accounts menu."))
+        raise ValidationError(self.env._("Please create new accounts from the Chart of Accounts menu."))
 
     @api.model_create_multi
     def create(self, vals_list):
         records_list = []
 
-        for company_ids, vals_list_for_company in itertools.groupby(vals_list, lambda v: v.get('company_ids', [])):
+        for company_ids, vals_list_for_company in groupby(vals_list, lambda v: v.get('company_ids', [])):
             cache = set()
             vals_list_for_company = list(vals_list_for_company)
 
@@ -1068,10 +1067,10 @@ class AccountAccount(models.Model):
         if vals.get('currency_id'):
             for account in self:
                 if self.env['account.move.line'].search_count([('account_id', '=', account.id), ('currency_id', 'not in', (False, vals['currency_id']))]):
-                    raise UserError(_('You cannot set a currency on this account as it already has some journal entries having a different foreign currency.'))
+                    raise UserError(self.env._('You cannot set a currency on this account as it already has some journal entries having a different foreign currency.'))
 
         if vals.get('deprecated') and self.env["account.tax.repartition.line"].search_count([('account_id', 'in', self.ids)], limit=1):
-            raise UserError(_("You cannot deprecate an account that is used in a tax distribution."))
+            raise UserError(self.env._("You cannot deprecate an account that is used in a tax distribution."))
 
         res = super(AccountAccount, self.with_context(defer_account_code_checks=True, prefetch_fields=not any(field in vals for field in ['code', 'account_type']))).write(vals)
 
@@ -1128,7 +1127,7 @@ class AccountAccount(models.Model):
                 duplicate_codes = duplicates.mapped('code')
             if duplicate_codes:
                 raise ValidationError(
-                    _("Account codes must be unique. You can't create accounts with these duplicate codes: %s", ", ".join(duplicate_codes))
+                    self.env._("Account codes must be unique. You can't create accounts with these duplicate codes: %s", ", ".join(duplicate_codes))
                 )
 
     def _create_default_journals(self):
@@ -1157,22 +1156,22 @@ class AccountAccount(models.Model):
         if 'prefix' in values:
             del values['code_digits']
             del values['prefix']
-        super()._load_records_write(values)
+        return super()._load_records_write(values)
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_contains_journal_items(self):
         if self.env['account.move.line'].sudo().search_count([('account_id', 'in', self.ids)], limit=1):
-            raise UserError(_('You cannot perform this action on an account that contains journal items.'))
+            raise UserError(self.env._('You cannot perform this action on an account that contains journal items.'))
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_linked_to_fiscal_position(self):
         if self.env['account.fiscal.position.account'].search_count(['|', ('account_src_id', 'in', self.ids), ('account_dest_id', 'in', self.ids)], limit=1):
-            raise UserError(_('You cannot remove/deactivate the accounts "%s" which are set on the account mapping of a fiscal position.', ', '.join(f"{a.code} - {a.name}" for a in self)))
+            raise UserError(self.env._('You cannot remove/deactivate the accounts "%s" which are set on the account mapping of a fiscal position.', ', '.join(f"{a.code} - {a.name}" for a in self)))
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_linked_to_tax_repartition_line(self):
         if self.env['account.tax.repartition.line'].search_count([('account_id', 'in', self.ids)], limit=1):
-            raise UserError(_('You cannot remove/deactivate the accounts "%s" which are set on a tax repartition line.', ', '.join(f"{a.code} - {a.name}" for a in self)))
+            raise UserError(self.env._('You cannot remove/deactivate the accounts "%s" which are set on a tax repartition line.', ', '.join(f"{a.code} - {a.name}" for a in self)))
 
     def action_open_related_taxes(self):
         related_taxes_ids = self.env['account.tax'].search([
@@ -1180,7 +1179,7 @@ class AccountAccount(models.Model):
         ]).ids
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Taxes'),
+            'name': self.env._('Taxes'),
             'res_model': 'account.tax',
             'views': [[False, 'list'], [False, 'form']],
             'domain': [('id', 'in', related_taxes_ids)],
@@ -1203,7 +1202,7 @@ class AccountAccount(models.Model):
     @api.model
     def get_import_templates(self):
         return [{
-            'label': _('Template for Chart of Accounts'),
+            'label': self.env._('Template for Chart of Accounts'),
             'template': '/account/static/xls/coa_import_template.xlsx'
         }]
 
@@ -1234,13 +1233,13 @@ class AccountAccount(models.Model):
         self.check_access('write')
 
         if forbidden_companies := (self.sudo().company_ids - self.env.user.company_ids):
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You do not have the right to perform this operation as you do not have access to the following companies: %s.",
                 ", ".join(c.name for c in forbidden_companies)
             ))
         for account in self:
             if len(account.company_ids) == 1:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Account %s cannot be unmerged as it already belongs to a single company. "
                     "The unmerge operation only splits an account based on its companies.",
                     account.display_name,
@@ -1251,16 +1250,16 @@ class AccountAccount(models.Model):
         if self.env.context.get('account_unmerge_confirm'):
             return
 
-        msg = _("Are you sure? This will perform the following operations:\n")
+        msg = self.env._("Are you sure? This will perform the following operations:\n")
         for account in self:
-            msg += _(
+            msg += self.env._(
                 "Account %(account)s will be split in %(num_accounts)s, one for each company:\n",
                 account=account.display_name,
                 num_accounts=len(account.company_ids),
             )
             msg += ''.join(f'    - {company.name}: {account.with_company(company).display_name}\n' for company in account.company_ids)
             action = self.env['ir.actions.actions']._for_xml_id('account.action_unmerge_accounts')
-        raise RedirectWarning(msg, action, _("Unmerge"), additional_context={**self.env.context, 'account_unmerge_confirm': True})
+        raise RedirectWarning(msg, action, self.env._("Unmerge"), additional_context={**self.env.context, 'account_unmerge_confirm': True})
 
     def _action_unmerge(self):
         """ Unmerge `self` into one account per company in `self.company_ids`.
@@ -1523,7 +1522,7 @@ class AccountAccount(models.Model):
         self.write(write_vals)
 
         # Step 5: Put a log in the chatter of the newly-created accounts
-        msg_body = _(
+        msg_body = self.env._(
             "This account was split off from %(account_name)s (%(company_name)s).",
             account_name=self._get_html_link(title=self.display_name),
             company_name=base_company.name,

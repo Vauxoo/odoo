@@ -2,7 +2,7 @@
 
 from odoo import api, fields, models
 
-from odoo.addons.mail.tools.discuss import Store
+from ...tools.discuss import Store
 from odoo.tools.misc import limited_field_access_token
 
 
@@ -15,9 +15,9 @@ class DiscussCategory(models.Model):
         return (self.search([], order="sequence desc", limit=1).sequence or 0) + 1
 
     # description
-    name = fields.Char("Name", required=True)
+    name = fields.Char(required=True)
     channel_ids = fields.One2many("discuss.channel", "discuss_category_id", string="Channels")
-    sequence = fields.Integer("Sequence", default=_default_sequence)
+    sequence = fields.Integer(default=lambda self: self._default_sequence())
 
     # constraints
     _name_unique = models.Constraint("UNIQUE(name)", "The category name must be unique")

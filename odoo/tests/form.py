@@ -956,7 +956,7 @@ class M2MProxy(X2MProxy, collections.abc.Sequence):
             self._field_value.add(record.id, {'id': record.id})
             parent._perform_onchange(self._field)
 
-    # pylint: disable=redefined-builtin
+    # ruff: disable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
     def remove(self, id=None, index=None):
         """ Removes a record at a certain index or with a provided id from
         the field.
@@ -987,6 +987,7 @@ class M2MProxy(X2MProxy, collections.abc.Sequence):
         self._assert_editable()
         self._field_value.clear()
         self._form._perform_onchange(self._field)
+    # ruff: enable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
 
 
 def convert_read_to_form(values, model_fields):

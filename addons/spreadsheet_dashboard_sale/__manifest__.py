@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for sales",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'sale'],
     'data': [
         "data/dashboards.xml",

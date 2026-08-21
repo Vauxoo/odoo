@@ -18,7 +18,7 @@ class SaleOrder(models.Model):
     def number2numeric(self, number):
         so_number = re.sub(r'\D', '', number)
         if so_number == '' or so_number is False:
-            raise UserError(_('Reference must contain numeric characters'))
+            raise UserError(self.env._('Reference must contain numeric characters'))
 
         # Make sure the base number is 3...19 characters long
         if len(so_number) < 3:

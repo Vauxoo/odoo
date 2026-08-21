@@ -71,4 +71,4 @@ class SmsSms(models.Model):
             sms = grouped_twilio_sms.get(result.get('uuid'))
             if sms and sms.sms_tracker_id and result.get('sms_twilio_sid'):
                 sms.sms_tracker_id.sms_twilio_sid = result['sms_twilio_sid']
-        super(SmsSms, self - twilio_sms)._handle_call_result_hook(results)
+        return super(SmsSms, self - twilio_sms)._handle_call_result_hook(results)

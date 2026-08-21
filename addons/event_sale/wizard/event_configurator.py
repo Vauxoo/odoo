@@ -9,15 +9,15 @@ class EventEventConfigurator(models.TransientModel):
     _name = 'event.event.configurator'
     _description = 'Event Configurator'
 
-    product_id = fields.Many2one('product.product', string="Product", readonly=True)
-    event_id = fields.Many2one('event.event', string="Event")
+    product_id = fields.Many2one('product.product', readonly=True)
+    event_id = fields.Many2one('event.event')
     event_slot_id = fields.Many2one('event.slot', string="Slot", domain="[('event_id', '=', event_id)]",
         compute="_compute_event_slot_id", readonly=False, store=True)
     event_ticket_id = fields.Many2one('event.event.ticket', string="Ticket Type", domain="[('event_id', '=', event_id)]",
         compute="_compute_event_ticket_id", readonly=False, store=True)
     additional_product_ids = fields.Many2many(related='event_ticket_id.additional_product_ids')
     is_multi_slots = fields.Boolean(related="event_id.is_multi_slots")
-    has_available_tickets = fields.Boolean("Has Available Tickets", compute="_compute_has_available_tickets")
+    has_available_tickets = fields.Boolean(compute="_compute_has_available_tickets")
 
     @api.constrains('event_id', 'event_slot_id', 'event_ticket_id')
     def check_event_id(self):
@@ -25,10 +25,10 @@ class EventEventConfigurator(models.TransientModel):
         for record in self:
             if record.event_id.id != record.event_ticket_id.event_id.id:
                 error_messages.append(
-                    _('Invalid ticket choice "%(ticket_name)s" for event "%(event_name)s".'))
+                    self.env._('Invalid ticket choice "%(ticket_name)s" for event "%(event_name)s".'))
             if record.event_slot_id and record.event_id.id != record.event_slot_id.event_id.id:
                 error_messages.append(
-                    _('Invalid slot choice "%(slot_name)s" for event "%(event_name)s".'))
+                    self.env._('Invalid slot choice "%(slot_name)s" for event "%(event_name)s".'))
         if error_messages:
             raise ValidationError('\n'.join(error_messages))
 

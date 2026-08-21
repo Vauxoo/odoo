@@ -3,8 +3,8 @@ import stdnum.pl.nip
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.l10n_pl_edi.tools.ksef_api_service import KsefApiService
-from odoo.addons.l10n_pl_edi.tools.xades_signer import XadesSigner
+from ..tools.ksef_api_service import KsefApiService
+from ..tools.xades_signer import XadesSigner
 
 
 class ResConfigSettings(models.TransientModel):

@@ -24,7 +24,7 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        res['gr_edi'] = {'label': _("myDATA"), 'is_applicable': self._is_gr_edi_applicable}
+        res['gr_edi'] = {'label': self.env._("myDATA"), 'is_applicable': self._is_gr_edi_applicable}
         return res
 
     # -------------------------------------------------------------------------
@@ -40,10 +40,10 @@ class AccountMoveSend(models.AbstractModel):
             alerts = invoices_with_alert.l10n_gr_edi_alerts
         elif len(invoices_with_alert) > 1:
             alerts['l10n_gr_edi_not_ready_invoice'] = {
-                'message': _("The following invoice(s) are not ready to be sent to myDATA: \n%s",
+                'message': self.env._("The following invoice(s) are not ready to be sent to myDATA: \n%s",
                              '\n'.join(f"- {move.display_name}" for move in invoices_with_alert)),
-                'action_text': _("View Invoice(s)"),
-                'action': invoices_with_alert._get_records_action(name=_("Check Invoice(s)")),
+                'action_text': self.env._("View Invoice(s)"),
+                'action': invoices_with_alert._get_records_action(name=self.env._("Check Invoice(s)")),
             }
 
         # Alert for Greek invoices with Peppol that haven't been sent to myDATA yet
@@ -80,6 +80,6 @@ class AccountMoveSend(models.AbstractModel):
         for invoice, invoice_data in invoices_data.items():
             if invoice in invoices and invoice.l10n_gr_edi_state != 'invoice_sent':
                 invoice_data['error'] = {
-                    'error_title': _("Error when sending invoice to myDATA"),
+                    'error_title': self.env._("Error when sending invoice to myDATA"),
                     'errors': [invoice.l10n_gr_edi_document_ids.sorted()[0].message],
                 }

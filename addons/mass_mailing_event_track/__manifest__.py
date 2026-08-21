@@ -3,13 +3,6 @@
 {
     'name': 'Mass mailing on track speakers',
     'category': 'Marketing/Email Marketing',
-    'description':
-        """
-Mass mail event track speakers
-==============================
-
-Bridge module adding UX requirements to ease mass mailing of event track speakers.
-        """,
     'depends': ['website_event_track', 'mass_mailing'],
     'data': [
         'views/event_views.xml'

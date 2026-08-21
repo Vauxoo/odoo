@@ -19,19 +19,16 @@ class AccountAnalyticDistributionModel(models.Model):
     sequence = fields.Integer(default=10)
     partner_id = fields.Many2one(
         'res.partner',
-        string='Partner',
         ondelete='cascade',
         help="Select a partner for which the analytic distribution will be used (e.g. create new customer invoice or Sales order if we select this partner, it will automatically take this as an analytic account)",
     )
     partner_category_id = fields.Many2one(
         'res.partner.category',
-        string='Partner Category',
         ondelete='cascade',
         help="Select a partner category for which the analytic distribution will be used (e.g. create new customer invoice or Sales order if we select this partner, it will automatically take this as an analytic account)",
     )
     company_id = fields.Many2one(
         'res.company',
-        string='Company',
         default=lambda self: self.env.company,
         ondelete='cascade',
         help="Select a company for which the analytic distribution will be used (e.g. create new customer invoice or Sales order if we select this company, it will automatically take this as an analytic account)",
@@ -55,7 +52,7 @@ class AccountAnalyticDistributionModel(models.Model):
         self.flush_model(['company_id', 'analytic_distribution'])
         self.env.cr.execute(query)
         if self.env.cr.dictfetchone():
-            raise UserError(_('You defined a distribution with analytic account(s) belonging to a specific company but a model shared between companies or with a different company'))
+            raise UserError(self.env._('You defined a distribution with analytic account(s) belonging to a specific company but a model shared between companies or with a different company'))
 
     @api.model
     def _get_distribution(self, vals):

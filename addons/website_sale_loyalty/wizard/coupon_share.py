@@ -23,7 +23,7 @@ class CouponShare(models.TransientModel):
         websites = Website.search([])
         return (len(websites) == 1 and websites) or Website
 
-    website_id = fields.Many2one("website", required=True, default=_get_default_website_id)
+    website_id = fields.Many2one("website", required=True, default=lambda self: self._get_default_website_id())
     coupon_id = fields.Many2one("loyalty.card", domain="[('program_id', '=', program_id)]")
     program_id = fields.Many2one(
         "loyalty.program",

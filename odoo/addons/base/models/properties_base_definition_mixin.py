@@ -12,7 +12,6 @@ class PropertiesBaseDefinitionMixin(models.AbstractModel):
     _description = "Properties Base Definition Mixin"
 
     properties = fields.Properties(
-        string="Properties",
         definition="properties_base_definition_id.properties_definition",
         copy=True,
     )

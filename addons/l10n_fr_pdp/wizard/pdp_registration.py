@@ -4,11 +4,10 @@ from odoo import api, fields, models, modules
 from odoo.exceptions import UserError, ValidationError, RedirectWarning
 from odoo.tools import single_email_re
 
-from odoo.addons.l10n_fr_pdp.models.res_company import PDP_identifier_re
-from odoo.addons.l10n_fr_pdp.tools.demo_utils import handle_demo
+from ..models.res_company import PDP_identifier_re
+from ..tools.demo_utils import handle_demo
 from odoo.addons.iap.tools import iap_tools
 
-_logger = logging.getLogger(__name__)
 
 
 class PdpRegistration(models.TransientModel):
@@ -52,7 +51,6 @@ class PdpRegistration(models.TransientModel):
         related='company_id.account_peppol_proxy_state',
     )
     warnings = fields.Json(
-        string="Warnings",
         compute="_compute_warnings",
     )
     siren_number = fields.Char(

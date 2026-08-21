@@ -11,13 +11,13 @@ from odoo.tools import formatLang, frozendict, html2plaintext, html_escape, uniq
 from odoo.tools.partner_identifiers import get_tin_metadata_of_country
 
 from odoo.addons.base.models.res_partner_bank import sanitize_account_number
-from odoo.addons.account_edi_ubl_cii.models.account_edi_common import (
+from .account_edi_common import (
     FloatFmt,
     GST_COUNTRY_CODES,
 )
-from odoo.addons.account_edi_ubl_cii.tools.ubl_20_optional_fields import PEPPOL_INVOICE_OPTIONAL_FIELDS, PEPPOL_INVOICE_OPTIONAL_LINE_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_LINE_FIELDS
-from odoo.addons.account_edi_ubl_cii.tools import Invoice, CreditNote, DebitNote
-from odoo.addons.account_edi_ubl_cii.tools.partner_identifiers import (
+from ..tools.ubl_20_optional_fields import PEPPOL_INVOICE_OPTIONAL_FIELDS, PEPPOL_INVOICE_OPTIONAL_LINE_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_LINE_FIELDS
+from ..tools import Invoice, CreditNote, DebitNote
+from ..tools.partner_identifiers import (
     ISO_6523_ICD_CODELIST,
     normalize_vat_for_ubl,
 )
@@ -633,7 +633,7 @@ class AccountEdiUBL(models.AbstractModel):
             'cbc:ChargeIndicator': {'_text': 'true' if is_charge else 'false'},
             'cbc:MultiplierFactorNumeric': {'_text': abs(percent)},
             'cbc:AllowanceChargeReasonCode': {'_text': 'ADK' if is_charge else '95'},
-            'cbc:AllowanceChargeReason': {'_text': _("Discount")},
+            'cbc:AllowanceChargeReason': {'_text': self.env._("Discount")},
             'cbc:Amount': {
                 '_text': FloatFmt(abs(amount), max_dp=currency.decimal_places),
                 'currencyID': currency.name,
@@ -1311,7 +1311,7 @@ class AccountEdiUBL(models.AbstractModel):
             '_currency': currency,
             'cbc:ChargeIndicator': {'_text': 'true' if is_charge else 'false'},
             'cbc:AllowanceChargeReasonCode': {'_text': 'ZZZ' if is_charge else '64'},
-            'cbc:AllowanceChargeReason': {'_text': _("Conditional cash/payment discount")},
+            'cbc:AllowanceChargeReason': {'_text': self.env._("Conditional cash/payment discount")},
             'cbc:Amount': {
                 '_text': currency.round(abs(amount)),
                 'currencyID': currency.name,
@@ -1330,7 +1330,7 @@ class AccountEdiUBL(models.AbstractModel):
             '_currency': currency,
             'cbc:ChargeIndicator': {'_text': 'true' if is_charge else 'false'},
             'cbc:AllowanceChargeReasonCode': {'_text': 'ADK' if is_charge else '95'},
-            'cbc:AllowanceChargeReason': {'_text': _("General upsell") if is_charge else _("General discount")},
+            'cbc:AllowanceChargeReason': {'_text': self.env._("General upsell") if is_charge else self.env._("General discount")},
             'cbc:Amount': {
                 '_text': FloatFmt(abs(amount), max_dp=currency.decimal_places),
                 'currencyID': currency.name,
@@ -2010,7 +2010,7 @@ class AccountEdiUBL(models.AbstractModel):
             invoice.move_type = move_type
 
             if is_refund:
-                logs.append(_("The invoice has been converted into a credit note and the quantities have been reverted."))
+                logs.append(self.env._("The invoice has been converted into a credit note and the quantities have been reverted."))
 
     def _import_ubl_invoice_add_customer_values(self, collected_values):
         customer_values = collected_values['customer_values'] = {}
@@ -2165,9 +2165,9 @@ class AccountEdiUBL(models.AbstractModel):
         partner_create_values = self._import_ubl_prepare_missing_customer_create_values(collected_values)
         customer = self.env['res.partner'].create(partner_create_values)
         if vat_mismatch:
-            logs.append(_("Could not retrieve a partner corresponding to '%s' with the same VAT. A new partner was created.", name))
+            logs.append(self.env._("Could not retrieve a partner corresponding to '%s' with the same VAT. A new partner was created.", name))
         else:
-            logs.append(_("Could not retrieve a partner corresponding to '%s'. A new partner was created.", name))
+            logs.append(self.env._("Could not retrieve a partner corresponding to '%s'. A new partner was created.", name))
         customer_values['customer'] = customer
         collected_values['to_write']['partner_id'] = customer.id
 
@@ -2185,9 +2185,9 @@ class AccountEdiUBL(models.AbstractModel):
             currency = currency.with_context(active_test=False).search([('name', '=', currency_code)], limit=1)
             if currency:
                 if not currency.active:
-                    logs.append(_("The currency '%s' is not active.", currency.name))
+                    logs.append(self.env._("The currency '%s' is not active.", currency.name))
             else:
-                logs.append(_(
+                logs.append(self.env._(
                     "Could not retrieve currency: %s. Did you enable the multicurrency option "
                     "and activate the currency?",
                     currency_code,
@@ -2251,7 +2251,7 @@ class AccountEdiUBL(models.AbstractModel):
                     company=company,
                 )
             except UserError as e:
-                logs.append(_("The bank account couldn't be fetched: %s", str(e)))
+                logs.append(self.env._("The bank account couldn't be fetched: %s", str(e)))
 
         partner_bank_values['partner_banks'] = partner_banks
         if partner_banks:
@@ -2341,7 +2341,7 @@ class AccountEdiUBL(models.AbstractModel):
 
         collected_values['prepaid_amount'] = prepaid_amount
         formatted_prepaid_amount = formatLang(self.env, prepaid_amount, currency_obj=currency)
-        collected_values['logs'].append(_("A payment of %s was detected.", formatted_prepaid_amount))
+        collected_values['logs'].append(self.env._("A payment of %s was detected.", formatted_prepaid_amount))
 
     def _import_ubl_invoice_add_tax_total_values(self, collected_values):
         file_document_sign = collected_values['file_document_sign']
@@ -2932,13 +2932,13 @@ class AccountEdiUBL(models.AbstractModel):
                 if tax := tax_values.get('tax'):
                     tax_ids_commands[0][2].append(tax.id)
                 elif reason := tax_values.get('name'):
-                    logs.append(_(
+                    logs.append(self.env._(
                         "Could not retrieve the tax: %(tax_percentage)s %% for line '%(line)s'.",
                         tax_percentage=tax_values['amount'],
                         line=reason,
                     ))
                 else:
-                    logs.append(_(
+                    logs.append(self.env._(
                         "Could not retrieve the tax: %s for the document level allowance/charge.",
                         tax_values['amount'],
                     ))
@@ -2949,13 +2949,13 @@ class AccountEdiUBL(models.AbstractModel):
                 continue
 
             if reason := tax_values.get('name'):
-                logs.append(_(
+                logs.append(self.env._(
                     "Could not retrieve the tax: %(tax_percentage)s %% for line '%(line)s'.",
                     tax_percentage=tax_values['amount'],
                     line=reason,
                 ))
             else:
-                logs.append(_(
+                logs.append(self.env._(
                     "Could not retrieve the tax: %s for the document level allowance/charge.",
                     tax_values['amount'],
                 ))
@@ -3121,7 +3121,7 @@ class AccountEdiUBL(models.AbstractModel):
                     product = line_collected_values['product_values'].get('product')
                     product_uom = product.product_tmpl_id.uom_id if product else self.env['uom.uom']
                     if product and not uom._has_common_reference(product_uom):
-                        logs.append(_(
+                        logs.append(self.env._(
                             "The Unit of Measure '%(uom)s' (from unit code '%(code)s') was "
                             "ignored on the line for product '%(product)s' because it is not "
                             "compatible with the product's Unit of Measure '%(product_uom)s'. "
@@ -3412,7 +3412,7 @@ class AccountEdiUBL(models.AbstractModel):
             invoice.invoice_line_ids = [
                 Command.create({
                     'display_type': 'product',
-                    'name': _("Rounding"),
+                    'name': self.env._("Rounding"),
                     'quantity': 1,
                     'price_unit': difference,
                     'tax_ids': [],
@@ -3444,8 +3444,8 @@ class AccountEdiUBL(models.AbstractModel):
             if pdf_extension != 'pdf':
                 return additional_docs
 
-            invoice_name = invoice.display_name.replace(_('Draft'), '')
-            pdf_filename = _('%(invoice_name)s - Generated by Odoo', invoice_name=invoice_name)
+            invoice_name = invoice.display_name.replace(self.env._('Draft'), '')
+            pdf_filename = self.env._('%(invoice_name)s - Generated by Odoo', invoice_name=invoice_name)
 
             attachment = self.env['ir.attachment'].create({
                 'name': pdf_filename + '.pdf',
@@ -3477,7 +3477,7 @@ class AccountEdiUBL(models.AbstractModel):
         attachments = source_attachment + self._import_attachments(invoice, collected_values['tree'])
 
         # Chatter.
-        body = Markup("<strong>%s</strong>") % _(
+        body = Markup("<strong>%s</strong>") % self.env._(
             "Format used to import the invoice: %s",
             self.env['ir.model']._get(self._name).name,
         )

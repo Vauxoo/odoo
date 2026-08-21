@@ -15,8 +15,8 @@ class MailTestRecipients(models.Model):
     company_id = fields.Many2one('res.company')
     contact_ids = fields.Many2many('res.partner')
     customer_id = fields.Many2one('res.partner')
-    customer_email = fields.Char('Customer Email', compute='_compute_customer_email', readonly=False, store=True)
-    customer_phone = fields.Char('Customer Phone', compute='_compute_customer_phone', readonly=False, store=True)
+    customer_email = fields.Char(compute='_compute_customer_email', readonly=False, store=True)
+    customer_phone = fields.Char(compute='_compute_customer_phone', readonly=False, store=True)
     email_cc = fields.Char('CC emails', help='List of emails to cc by default.')
     name = fields.Char()
 
@@ -51,9 +51,9 @@ class MailTestProperties(models.Model):
     _description = 'Mail Test Properties'
     _inherit = ['mail.thread']
 
-    name = fields.Char('Name')
-    parent_id = fields.Many2one('mail.test.properties', string='Parent')
-    properties = fields.Properties('Properties', definition='parent_id.definition_properties')
+    name = fields.Char()
+    parent_id = fields.Many2one('mail.test.properties')
+    properties = fields.Properties(definition='parent_id.definition_properties')
     definition_properties = fields.PropertiesDefinition('Definitions')
 
 # ------------------------------------------------------------
@@ -79,7 +79,7 @@ class MailTestRottingMixin(models.Model):
     name = fields.Char()
     date_last_stage_update = fields.Datetime(
         'Last Stage Update', compute='_compute_date_last_stage_update', index=True, readonly=True, store=True)
-    stage_id = fields.Many2one('mail.test.rotting.stage', 'Stage')
+    stage_id = fields.Many2one('mail.test.rotting.stage')
     done = fields.Boolean(default=False)
 
     def _get_rotting_depends_fields(self):

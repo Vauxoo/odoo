@@ -11,7 +11,7 @@ class MailMessage(models.Model):
     rating_ids = fields.One2many("rating.rating", "message_id", string="Related ratings")
     rating_id = fields.Many2one("rating.rating", compute="_compute_rating_id")
     rating_value = fields.Float(
-        'Rating Value', compute='_compute_rating_value', compute_sudo=True,
+        compute='_compute_rating_value', compute_sudo=True,
         store=False, search='_search_rating_value')
 
     @api.depends("rating_ids.consumed")

@@ -24,7 +24,7 @@ class MailTestTLead(models.Model):
 
     def _creation_message(self):
         self.ensure_one()
-        return _('A new lead has been created and is assigned to %(user_name)s.', user_name=self.user_id.name or _('nobody'))
+        return self.env._('A new lead has been created and is assigned to %(user_name)s.', user_name=self.user_id.name or self.env._('nobody'))
 
     def _get_customer_information(self):
         email_normalized_to_values = super()._get_customer_information()

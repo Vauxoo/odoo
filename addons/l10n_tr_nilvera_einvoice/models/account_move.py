@@ -296,7 +296,7 @@ class AccountMove(models.Model):
             self.l10n_tr_gib_invoice_scenario = invoice.l10n_tr_gib_invoice_scenario
             self.l10n_tr_gib_invoice_type = invoice.l10n_tr_gib_invoice_type if not self.l10n_tr_is_export_invoice else 'ISTISNA'
 
-        super()._onchange_partner_id()
+        return super()._onchange_partner_id()
 
     def _get_import_file_type(self, file_data):
         """ Identify Nilvera UBL files. """
@@ -337,9 +337,9 @@ class AccountMove(models.Model):
         # EXTENDS account
         for move in self.filtered(lambda move: move.l10n_tr_nilvera_uuid and move.move_type in {'out_invoice', 'in_invoice'}):
             if move.l10n_tr_nilvera_send_status == 'error':
-                move.message_post(body=_("To preserve accounting integrity and comply with legal requirements, invoices cannot be reused once an error occurs. Please create a new invoice to continue."))
+                move.message_post(body=self.env._("To preserve accounting integrity and comply with legal requirements, invoices cannot be reused once an error occurs. Please create a new invoice to continue."))
             elif move.l10n_tr_nilvera_send_status not in {'not_sent', 'draft_sent', 'commercial_rejected'}:
-                raise UserError(_("You cannot reset to draft an entry that has been sent/received from Nilvera."))
+                raise UserError(self.env._("You cannot reset to draft an entry that has been sent/received from Nilvera."))
         return super().button_draft()
 
     def _l10n_tr_nilvera_cancel_earchive(self):
@@ -361,7 +361,7 @@ class AccountMove(models.Model):
 
             self.state = 'cancel'
             self.l10n_tr_nilvera_send_status = 'cancelled'
-            self.message_post(body=_("Cancellation request created on Nilvera."))
+            self.message_post(body=self.env._("Cancellation request created on Nilvera."))
 
     def _l10n_tr_nilvera_einvoice_check_invalid_invoice_reference(self):
         invalid_moves = self.env["account.move"]
@@ -385,7 +385,7 @@ class AccountMove(models.Model):
     def _post(self, soft=True):
         for move in self:
             if move.l10n_tr_nilvera_send_status == 'error' and move.l10n_tr_nilvera_uuid:
-                raise UserError(_("To preserve accounting integrity and comply with legal requirements, invoices cannot be reused once an error occurs. Please create a new invoice to continue."))
+                raise UserError(self.env._("To preserve accounting integrity and comply with legal requirements, invoices cannot be reused once an error occurs. Please create a new invoice to continue."))
             if move.country_code == 'TR' and not move.l10n_tr_nilvera_uuid:
                 move.l10n_tr_nilvera_uuid = str(uuid.uuid4())
         return super()._post(soft=soft)
@@ -542,7 +542,7 @@ class AccountMove(models.Model):
                 else:
                     raise UserError(error_message)
             elif response.status_code != 200:
-                raise UserError(_("Server error from Nilvera, please try again later."))
+                raise UserError(self.env._("Server error from Nilvera, please try again later."))
 
     def _l10n_tr_nilvera_approve_and_send_draft(self, xml_file, customer_alias):
         """Send flow for an invoice already uploaded as a draft.
@@ -622,7 +622,7 @@ class AccountMove(models.Model):
                 self.is_move_sent = True
                 self.l10n_tr_nilvera_send_status = 'sent'
             elif response.status_code in {401, 403}:
-                raise UserError(_("Oops, seems like you're unauthorised to do this. Try another API key with more rights or contact Nilvera."))
+                raise UserError(self.env._("Oops, seems like you're unauthorised to do this. Try another API key with more rights or contact Nilvera."))
             elif 400 <= response.status_code < 500:
                 error_message, error_codes = client._get_error_message_with_codes_from_response(response)
 
@@ -633,9 +633,9 @@ class AccountMove(models.Model):
                     return self._l10n_tr_nilvera_submit_document(xml_file, endpoint, post_series=False)
                 raise UserError(error_message)
             elif response.status_code == 500:
-                raise UserError(_("Server error from Nilvera, please try again later."))
+                raise UserError(self.env._("Server error from Nilvera, please try again later."))
 
-            self.message_post(body=_("The invoice has been successfully sent to Nilvera."))
+            self.message_post(body=self.env._("The invoice has been successfully sent to Nilvera."))
 
     def _l10n_tr_nilvera_post_series(self, endpoint, client):
         """Post the series to Nilvera based on the endpoint."""
@@ -684,7 +684,7 @@ class AccountMove(models.Model):
                                 body=Markup(
                                     "%s<br/>%s - %s<br/>"
                                 ) % (
-                                    _("The invoice couldn't be sent to the recipient."),
+                                    self.env._("The invoice couldn't be sent to the recipient."),
                                     response.get('InvoiceStatus', {}).get('Description') or response.get('StatusDetail'),
                                     response.get('InvoiceStatus', {}).get('DetailDescription') or response.get('ReportStatus'),
                                 )
@@ -697,7 +697,7 @@ class AccountMove(models.Model):
                         else:
                             invoice.l10n_tr_nilvera_send_status = nilvera_status
                     else:
-                        invoice.message_post(body=_("The invoice status couldn't be retrieved from Nilvera."))
+                        invoice.message_post(body=self.env._("The invoice status couldn't be retrieved from Nilvera."))
 
     def l10n_tr_nilvera_fetch_move_status(self):
         self._l10n_tr_nilvera_get_submitted_document_status()
@@ -800,7 +800,7 @@ class AccountMove(models.Model):
             if move.ref:
                 attachment.name = f'{move.ref}.xml'
 
-            move._message_log(body=_("Nilvera document has been received successfully"))
+            move._message_log(body=self.env._("Nilvera document has been received successfully"))
         except Exception:   # noqa: BLE001
             # If the invoice creation fails, create an empty invoice with the attachment. The PDF will be
             # added in a later step as well. Nilvera only returns uuid of the successful attachments.
@@ -965,7 +965,7 @@ class AccountMove(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'message': _("No e-invoice documents found for the selected invoices."),
+                    'message': self.env._("No e-invoice documents found for the selected invoices."),
                     'type': 'warning',
                 },
             }

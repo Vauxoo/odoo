@@ -23,12 +23,10 @@ class ResConfigSettings(models.TransientModel):
     module_google_gmail = fields.Boolean('Support Gmail Authentication')
     module_microsoft_outlook = fields.Boolean('Support Outlook Authentication')
     restrict_template_rendering = fields.Boolean(
-        'Restrict Template Rendering',
         config_parameter='mail.restrict.template.rendering',
         help='Users will still be able to render templates.\n'
         'However only Mail Template Editors will be able to create new dynamic templates or modify existing ones.')
     use_call_server = fields.Boolean(
-        "Use Call Server",
         help="If you want to use your own SFU or ICE servers for video calls.",
         config_parameter="mail.use_call_server",
     )
@@ -87,10 +85,10 @@ class ResConfigSettings(models.TransientModel):
     def open_email_layout(self):
         layout = self.env.ref('mail.mail_notification_layout', raise_if_not_found=False)
         if not layout:
-            raise UserError(_("This layout seems to no longer exist."))
+            raise UserError(self.env._("This layout seems to no longer exist."))
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Mail Layout'),
+            'name': self.env._('Mail Layout'),
             'view_mode': 'form',
             'res_id': layout.id,
             'res_model': 'ir.ui.view',

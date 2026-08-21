@@ -9,7 +9,7 @@ class PosPackOperationLot(models.Model):
 
     pos_order_line_id = fields.Many2one('pos.order.line', index='btree_not_null')
     order_id = fields.Many2one('pos.order', related="pos_order_line_id.order_id", readonly=False)
-    lot_name = fields.Char('Lot Name')
+    lot_name = fields.Char()
     product_id = fields.Many2one('product.product', related='pos_order_line_id.product_id', readonly=False)
 
     @api.model

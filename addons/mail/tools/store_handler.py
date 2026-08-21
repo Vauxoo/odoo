@@ -5,7 +5,7 @@ from typing import Literal, NamedTuple, get_args
 
 from odoo.http.routing_map import Controller
 
-from odoo.addons.mail.tools.discuss import Store
+from .discuss import Store
 
 _logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class StoreHandlerRegistry:
                 ):
                     # local import: store_handler is imported by the controller module, so
                     # importing the controller at module level would create a cycle.
-                    from odoo.addons.mail.controllers.store import StoreController  # noqa: PLC0415
+                    from ..controllers.store import StoreController  # noqa: PLC0415
 
                     assert isinstance(controller, StoreController), (
                         f'Store handler "{name}" must run on a StoreController subclass, '
@@ -119,7 +119,7 @@ class StoreHandlerMethod:
     def __set_name__(self, owner, attr_name):
         # local import: store_handler is imported by the controller module, so importing
         # the controller at module level would create a cycle.
-        from odoo.addons.mail.controllers.store import StoreController  # noqa: PLC0415
+        from ..controllers.store import StoreController  # noqa: PLC0415
 
         assert owner is not StoreController and issubclass(owner, StoreController), (
             f'Store handler "{self.name}" must be registered on a StoreController subclass'

@@ -60,14 +60,14 @@ class StockValuationReport(models.AbstractModel):
         account_ids = {acc.id for acc in accounts}
 
         initial_balance = {
-            'label': _("Initial Balance"),
+            'label': self.env._("Initial Balance"),
             'value': 0,
             'lines_by_account_id': defaultdict(lambda: {
                 'value': 0,
             }),
         }
         ending_stock = {
-            'label': _("Ending Stock"),
+            'label': self.env._("Ending Stock"),
             'value': 0,
             'lines_by_account_id': defaultdict(lambda: {
                 'value': 0,
@@ -103,7 +103,7 @@ class StockValuationReport(models.AbstractModel):
         if self._must_include_inventory_loss():
             # Compute Inventory Loss values.
             inventory_loss = {
-                'label': _("Inventory Loss"),
+                'label': self.env._("Inventory Loss"),
                 'value': 0,
             }
             lines_by_account_id = defaultdict(lambda: {
@@ -124,7 +124,7 @@ class StockValuationReport(models.AbstractModel):
 
         # Compute Stock Variation values.
         stock_variation = {
-            'label': _("Stock Variation"),
+            'label': self.env._("Stock Variation"),
             'value': 0,
         }
         lines_by_account_id = defaultdict(lambda: {

@@ -9,7 +9,6 @@ from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.mail import email_split_and_format, email_normalize
 
-_logger = logging.getLogger(__name__)
 
 emails_split = re.compile(r"[;,\n\r]+")
 
@@ -29,8 +28,8 @@ class SurveyInvite(models.TransientModel):
         string='Attachments', compute='_compute_attachment_ids', store=True, readonly=False, bypass_search_access=True)
     # origin
     author_id = fields.Many2one(
-        'res.partner', 'Author', index=True,
-        ondelete='set null', default=_get_default_author)
+        'res.partner', index=True,
+        ondelete='set null', default=lambda self: self._get_default_author())
     # recipients
     partner_ids = fields.Many2many(
         'res.partner', 'survey_invite_partner_ids', 'invite_id', 'partner_id', string='Recipients',
@@ -53,7 +52,7 @@ class SurveyInvite(models.TransientModel):
     # technical info
     mail_server_id = fields.Many2one('ir.mail_server', 'Outgoing mail server')
     # survey
-    survey_id = fields.Many2one('survey.survey', string='Survey', required=True)
+    survey_id = fields.Many2one('survey.survey', required=True)
     survey_start_url = fields.Char('Survey URL', compute='_compute_survey_start_url')
     survey_access_mode = fields.Selection(related="survey_id.access_mode", readonly=True)
     survey_users_login_required = fields.Boolean(related="survey_id.users_login_required", readonly=True)
@@ -61,8 +60,7 @@ class SurveyInvite(models.TransientModel):
     deadline = fields.Datetime(string="Answer deadline")
     send_email = fields.Boolean(compute="_compute_send_email",
                                 inverse="_inverse_send_email")
-    scheduled_date = fields.Datetime('Scheduled Date',
-        help="send emails after that date. This date is considered as being in UTC timezone."
+    scheduled_date = fields.Datetime(help="send emails after that date. This date is considered as being in UTC timezone."
     )
 
     @api.constrains('scheduled_date', 'deadline')
@@ -99,13 +97,13 @@ class SurveyInvite(models.TransientModel):
             existing_text = False
             if wizard.existing_partner_ids:
                 existing_text = '%s: %s.' % (
-                    _('The following customers have already received an invite'),
+                    self.env._('The following customers have already received an invite'),
                     ', '.join(wizard.mapped('existing_partner_ids.name'))
                 )
             if wizard.existing_emails:
                 existing_text = '%s\n' % existing_text if existing_text else ''
                 existing_text += '%s: %s.' % (
-                    _('The following emails have already received an invite'),
+                    self.env._('The following emails have already received an invite'),
                     wizard.existing_emails
                 )
 
@@ -124,7 +122,7 @@ class SurveyInvite(models.TransientModel):
     @api.onchange('emails')
     def _onchange_emails(self):
         if self.emails and (self.survey_users_login_required and not self.survey_id.users_can_signup):
-            raise UserError(_('This survey does not allow external people to participate. You should create user accounts or update survey access mode accordingly.'))
+            raise UserError(self.env._('This survey does not allow external people to participate. You should create user accounts or update survey access mode accordingly.'))
         if not self.emails:
             return
         valid, error = [], []
@@ -136,7 +134,7 @@ class SurveyInvite(models.TransientModel):
             else:
                 valid.extend(email_check)
         if error:
-            raise UserError(_("Some emails you just entered are incorrect: %s", ', '.join(error)))
+            raise UserError(self.env._("Some emails you just entered are incorrect: %s", ', '.join(error)))
         self.emails = '\n'.join(valid)
 
     @api.onchange('partner_ids')
@@ -148,7 +146,7 @@ class SurveyInvite(models.TransientModel):
                     ('id', 'in', self.partner_ids.ids)
                 ])
                 if invalid_partners:
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         'The following recipients have no user account: %s. You should create user accounts for them or allow external signup in configuration.',
                         ', '.join(invalid_partners.mapped('name'))
                     ))
@@ -170,7 +168,7 @@ class SurveyInvite(models.TransientModel):
             if invite.template_id and invite.template_id.subject:
                 invite.subject = invite.template_id.subject
             else:
-                invite.subject = _("Participate to %(survey_name)s", survey_name=invite.survey_id.display_name)
+                invite.subject = self.env._("Participate to %(survey_name)s", survey_name=invite.survey_id.display_name)
 
     @api.depends('template_id')
     def _compute_attachment_ids(self):
@@ -235,7 +233,7 @@ class SurveyInvite(models.TransientModel):
         """ Create mail specific for recipient containing notably its access token """
         email_from = self.template_id._render_field('email_from', answer.ids)[answer.id] if self.template_id.email_from else self.author_id.email_formatted
         if not email_from:
-            raise UserError(_("Unable to post message, please configure the sender's email address."))
+            raise UserError(self.env._("Unable to post message, please configure the sender's email address."))
         # Synchronize language of subject/body for each recipient
         compute_lang = self.subject == self.template_id['subject'] and self.body == self.template_id['body_html'] if self.template_id else False
         subject = self._render_field('subject', answer.ids, compute_lang=compute_lang)[answer.id]
@@ -289,7 +287,7 @@ class SurveyInvite(models.TransientModel):
                     valid_emails.extend(email_formatted)
 
         if not valid_partners and not valid_emails:
-            raise UserError(_("Please enter at least one valid recipient."))
+            raise UserError(self.env._("Please enter at least one valid recipient."))
 
         answers = self._prepare_answers(valid_partners, valid_emails)
         for answer in answers:

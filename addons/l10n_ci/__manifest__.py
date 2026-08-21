@@ -2,13 +2,6 @@
     'name': "Ivory Coast - Accounting",
     'countries': ['ci'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This module implements the taxes for Ivory Coast.
-=================================================================
-
-The Chart of Accounts is from SYSCOHADA.
-
-    """,
     'depends': [
         'l10n_syscohada',
         'account',

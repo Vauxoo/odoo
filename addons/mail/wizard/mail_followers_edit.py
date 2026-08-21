@@ -1,6 +1,6 @@
 from odoo import fields, models
 from odoo.exceptions import UserError
-from odoo.addons.mail.tools.parser import parse_res_ids
+from ..tools.parser import parse_res_ids
 
 
 class MailFollowersEdit(models.TransientModel):
@@ -18,12 +18,11 @@ class MailFollowersEdit(models.TransientModel):
             ("add", "Add"),
             ("remove", "Remove"),
         ],
-        string="Operation",
         required=True,
         default="add",
     )
     partner_ids = fields.Many2many("res.partner", required=True, string="Followers")
-    message = fields.Html("Message")
+    message = fields.Html()
     notify = fields.Boolean("Notify Recipients", default=False)
 
     def edit_followers(self):

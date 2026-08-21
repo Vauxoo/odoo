@@ -247,7 +247,7 @@ class TestReportsRenderingCommon(odoo.tests.HttpCase):
         if self.last_pdf_content and not self.last_pdf_content_saved:
             self.last_pdf_content_saved = True
             self.save_pdf()
-        super()._addError(result, test, exc_info)
+        return super()._addError(result, test, exc_info)
 
     def get_paper_format(self, mediabox):
         """

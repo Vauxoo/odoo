@@ -2,7 +2,6 @@
 {
     'name': "Sell Courses",
     'summary': 'Sell your courses online',
-    'description': """Sell your courses using the e-commerce features of the website.""",
     'category': 'Website/eLearning',
 
     'depends': ['website_slides', 'website_sale'],

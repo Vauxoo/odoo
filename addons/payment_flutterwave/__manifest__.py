@@ -5,7 +5,7 @@
     "category": "Accounting/Payment Providers",
     "sequence": 350,
     "summary": "A Nigerian payment provider covering several African countries.",
-    "description": " ",  # Non-empty string to avoid loading the README file.
+    # Non-empty string to avoid loading the README file.
     "depends": ["payment"],
     "data": [
         "views/payment_provider_views.xml",

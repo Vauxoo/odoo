@@ -3,7 +3,6 @@
 {
     'name': 'POS Self Order SMS',
     'category': 'Sales/Point Of Sale',
-    'description': """Integrates POS Self Order with SMS to send customers order confirmation via SMS.""",
     'depends': ['pos_self_order', 'pos_sms'],
     'data': [
         'data/preset_data.xml',

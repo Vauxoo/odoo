@@ -34,11 +34,11 @@ class PosMakePayment(models.TransientModel):
             return order_id.session_id.payment_method_ids.sorted(lambda pm: pm.type == 'cash', reverse=True)[:1]
         return False
 
-    config_id = fields.Many2one('pos.config', string='Point of Sale Configuration', required=True, default=_default_config)
-    amount = fields.Float(digits=0, required=True, default=_default_amount)
-    payment_method_id = fields.Many2one('pos.payment.method', string='Payment Method', required=True, default=_default_payment_method)
+    config_id = fields.Many2one('pos.config', string='Point of Sale Configuration', required=True, default=lambda self: self._default_config())
+    amount = fields.Float(digits=0, required=True, default=lambda self: self._default_amount())
+    payment_method_id = fields.Many2one('pos.payment.method', required=True, default=lambda self: self._default_payment_method())
     payment_name = fields.Char(string='Payment Reference')
-    payment_date = fields.Datetime(string='Payment Date', required=True, default=lambda self: fields.Datetime.now())
+    payment_date = fields.Datetime(required=True, default=lambda self: fields.Datetime.now())
 
     def check(self):
         """Check the order:
@@ -49,7 +49,7 @@ class PosMakePayment(models.TransientModel):
 
         order = self.env['pos.order'].browse(self.env.context.get('active_id', False))
         if self.payment_method_id.type == 'pay_later' and not order.partner_id:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "Customer is required for %s payment method.",
                 self.payment_method_id.name
             ))
@@ -78,7 +78,7 @@ class PosMakePayment(models.TransientModel):
 
     def launch_payment(self):
         return {
-            'name': _('Payment'),
+            'name': self.env._('Payment'),
             'view_mode': 'form',
             'res_model': 'pos.make.payment',
             'view_id': False,

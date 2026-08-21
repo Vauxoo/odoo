@@ -5,9 +5,9 @@ from odoo.http import request
 from odoo.http.session import check
 from odoo.tools.misc import OrderedSet
 
-from odoo.addons.bus.bus_dispatcher import dispatch
-from odoo.addons.bus.models.bus import channel_with_db
-from odoo.addons.bus.websocket import wsrequest
+from ..bus_dispatcher import dispatch
+from .bus import channel_with_db
+from ..websocket import wsrequest
 
 
 class IrWebsocket(models.AbstractModel):

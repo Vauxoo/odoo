@@ -33,5 +33,5 @@ class ResCompany(models.Model):
         authorized_keys = self._get_social_media_links()
         for key in social_links:
             if authorized_keys.get(key) is None:
-                raise UserError(_("%(key)s is not a valid social link field name, use `write` instead.", key=key))
+                raise UserError(self.env._("%(key)s is not a valid social link field name, use `write` instead.", key=key))
         self.write({**social_links})

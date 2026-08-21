@@ -3,14 +3,6 @@
 {
     'name': 'Indonesia E-faktur (Coretax)',
     'icon': '/account/static/description/l10n.png',
-    'description': """
-        E-invoicing feature provided by DJP (Indonesian Tax Office). As of January 1st 2025,
-        Indonesia is using CoreTax system, which changes the file format and content of E-Faktur.
-        We're changing from CSV files into XML.
-        At the same time, due to tax regulation changes back and forth, for general E-Faktur now,
-        TaxBase (DPP) has to be mulitplied by factor of 11/12 while multiplied to tax of 12% which
-        is resulting to 11%.
-    """,
     'category': 'Accounting/Localizations/EDI',
     'depends': ['l10n_id'],
     'data': [

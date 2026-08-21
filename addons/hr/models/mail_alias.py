@@ -13,5 +13,5 @@ class MailAlias(models.Model):
 
     def _get_alias_contact_description(self):
         if self.alias_contact == 'employees':
-            return _('addresses linked to registered employees')
+            return self.env._('addresses linked to registered employees')
         return super()._get_alias_contact_description()

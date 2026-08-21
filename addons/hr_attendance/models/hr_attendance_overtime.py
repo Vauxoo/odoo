@@ -8,7 +8,7 @@ class HrAttendanceOvertimeLine(models.Model):
     _description = "Attendance Overtime Line"
     _order = 'date'
 
-    attendance_id = fields.Many2one('hr.attendance', string='Attendance', index=True, ondelete='cascade', required=True)
+    attendance_id = fields.Many2one('hr.attendance', index=True, ondelete='cascade', required=True)
     employee_id = fields.Many2one(related='attendance_id.employee_id', string='Employee', store=True, readonly=True, index='btree_not_null')
 
     date = fields.Date(string='Day', index=True, required=True)

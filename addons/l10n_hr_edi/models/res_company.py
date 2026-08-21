@@ -3,7 +3,7 @@ import logging
 from odoo import api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.l10n_hr_edi.tools.api import (
+from ..tools.api import (
     _mer_api_query_inbox,
     _mer_api_query_document_process_status_outbox,
     _mer_api_query_document_process_status_inbox,

@@ -13,7 +13,7 @@ class TestTranslationModel1(models.Model):
     _name = 'test.translation.model1'
     _description = 'Translation Test 1'
 
-    name = fields.Char('Name', translate=True, help='Help, English')
+    name = fields.Char(translate=True, help='Help, English')
     selection = fields.Selection([
         ('foo', 'Selection Foo'),
         ('bar', 'Selection Bar'),
@@ -73,7 +73,7 @@ class TestTranslationModel1(models.Model):
         # pylint: disable=E8502
         _(f"PY Export 28")  # noqa: F541, INT001
         # pylint: disable=E8502
-        _(f"NO - PY Export 07 {term}")  # noqa: INT001
+        _("NO - PY Export 07 %s", term)  # noqa: INT001
 
         # pylint: disable=E8502
         _(dummy_function("NO - PY Export 08"))
@@ -91,7 +91,7 @@ class TestTranslationConstraint(models.Model):
     _name = 'test.translation.constraint'
     _description = "Translation Constraint Test"
 
-    code = fields.Integer('Code')
+    code = fields.Integer()
 
     _positive_code = models.Constraint(
         'CHECK(code >= 0)',

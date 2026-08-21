@@ -5,10 +5,6 @@
     'name': 'Base',
     'version': '1.3',
     'category': 'Hidden',
-    'description': """
-The kernel of Odoo, needed for all installation.
-===================================================
-""",
     'data': [
         'data/res.lang.csv',
         'data/res_lang_data.xml',

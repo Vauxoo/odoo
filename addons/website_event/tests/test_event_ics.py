@@ -9,7 +9,6 @@ from odoo import Command
 from odoo.tests import tagged
 from odoo.tests.common import HttpCase
 
-_logger = logging.getLogger(__name__)
 
 try:
     import vobject

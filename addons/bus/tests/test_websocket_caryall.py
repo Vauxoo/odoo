@@ -36,13 +36,13 @@ class TestWebsocketCaryall(WebsocketCase):
         events = []
         with patch.object(Websocket, '_Websocket__event_callbacks', defaultdict(set)):
             @Websocket.onopen
-            def onopen(env, websocket):  # pylint: disable=unused-variable
+            def onopen(env, websocket):  # ruff: ignore[unused-variable]
                 self.assertIsInstance(env, Environment)
                 self.assertIsInstance(websocket, Websocket)
                 events.append('open')
 
             @Websocket.onclose
-            def onclose(env, websocket):  # pylint: disable=unused-variable
+            def onclose(env, websocket):  # ruff: ignore[unused-variable]
                 self.assertIsInstance(env, Environment)
                 self.assertIsInstance(websocket, Websocket)
                 events.append('close')

@@ -32,8 +32,8 @@ class HrExportWorkEntries(models.TransientModel):
     eligible_employee_line_ids = fields.One2many(
         'hr.export.work.entries.employee', 'export_id',
         string='Eligible Employees')
-    period_start = fields.Date('Period Start', compute='_compute_period_dates', store=True, readonly=False)
-    period_stop = fields.Date('Period Stop', compute='_compute_period_dates', store=True, readonly=False)
+    period_start = fields.Date(compute='_compute_period_dates', store=True, readonly=False)
+    period_stop = fields.Date(compute='_compute_period_dates', store=True, readonly=False)
 
     @api.model
     def default_get(self, fields):

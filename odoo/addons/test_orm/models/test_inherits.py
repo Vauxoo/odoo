@@ -24,11 +24,11 @@ class TestUnit(models.Model):
     _name = 'test.unit'
     _description = 'Test Unit'
 
-    name = fields.Char('Name', required=True, translate=True)
-    state = fields.Selection([('a', 'A'), ('b', 'B')], string='State')
+    name = fields.Char(required=True, translate=True)
+    state = fields.Selection([('a', 'A'), ('b', 'B')])
     surname = fields.Char(compute='_compute_surname')
     line_ids = fields.One2many('test.unit.line', 'unit_id')
-    readonly_name = fields.Char('Readonly Name', readonly=True)
+    readonly_name = fields.Char(readonly=True)
     size = fields.Integer()
 
     @api.depends('name')
@@ -41,7 +41,7 @@ class TestUnitLine(models.Model):
     _name = 'test.unit.line'
     _description = 'Test Unit Line'
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char(required=True)
     unit_id = fields.Many2one('test.unit', required=True)
 
 
@@ -54,7 +54,7 @@ class TestBox(models.Model):
     _inherits = {'test.unit': 'unit_id'}
     _description = 'Test Box'
 
-    unit_id = fields.Many2one('test.unit', 'Unit', required=True,
+    unit_id = fields.Many2one('test.unit', required=True,
                               ondelete='cascade')
     field_in_box = fields.Char('Field1')
     size = fields.Integer()
@@ -66,7 +66,7 @@ class TestPallet(models.Model):
     _inherits = {'test.box': 'box_id'}
     _description = 'Test Pallet'
 
-    box_id = fields.Many2one('test.box', 'Box', required=True,
+    box_id = fields.Many2one('test.box', required=True,
                              ondelete='cascade')
     field_in_pallet = fields.Char('Field2')
 
@@ -89,8 +89,7 @@ class TestAnother_Box(models.Model):
     _inherits = {'test.another_unit': 'another_unit_id'}
     _description = 'Another Test Box'
 
-    another_unit_id = fields.Many2one('test.another_unit', 'Another Unit',
-                                      required=True, ondelete='cascade')
+    another_unit_id = fields.Many2one('test.another_unit', required=True, ondelete='cascade')
     val2 = fields.Integer('Value 2', required=True)
 
     @api.constrains('val1', 'val2')

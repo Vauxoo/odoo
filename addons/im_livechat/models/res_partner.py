@@ -87,7 +87,7 @@ class ResPartner(models.Model):
         res.attr("user_livechat_username")
 
     def _bus_send_history_message(self, channel, page_history):
-        message_body = _("No history found")
+        message_body = self.env._("No history found")
         if page_history:
             message_body = Markup("<ul>%s</ul>") % (
                 Markup("").join(

@@ -8,7 +8,7 @@ from odoo.addons.mail.controllers.webclient import WebclientController
 from odoo.addons.mail.models.mail_message import SHARE_DOMAIN
 from odoo.addons.mail.tools.discuss import Store
 from odoo.addons.mail.tools.store_handler import store_handler
-from odoo.addons.portal.utils import get_portal_partner
+from ..utils import get_portal_partner
 
 
 class PortalThreadController(ThreadController):

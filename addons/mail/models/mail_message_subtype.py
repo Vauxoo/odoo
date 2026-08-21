@@ -20,14 +20,14 @@ class MailMessageSubtype(models.Model):
              'change in a process (Stage change). Message subtypes allow to '
              'precisely tune the notifications the user want to receive on its wall.')
     description = fields.Text(
-        'Description', translate=True, prefetch=True,
+        translate=True, prefetch=True,
         help='Description that will be added in the message posted for this '
              'subtype. If void, the name will be added instead.')
     internal = fields.Boolean(
         'Internal Only',
         help='Messages with internal subtypes will be visible only by employees, aka members of base_user group')
     parent_id = fields.Many2one(
-        'mail.message.subtype', string='Parent', ondelete='set null',
+        'mail.message.subtype', ondelete='set null',
         help='Parent subtype, used for automatic subscription. This field is not '
              'correctly named. For example on a project, the parent_id of project '
              'subtypes refers to task-related subtypes.')
@@ -37,11 +37,10 @@ class MailMessageSubtype(models.Model):
              'using automatic subscription on a related document. The field '
              'is used to compute getattr(related_document.relation_field).')
     res_model = fields.Char('Model', help="Model the subtype applies to. If False, this subtype applies to all models.")
-    default = fields.Boolean('Default', default=True, help="Activated by default when subscribing.")
-    sequence = fields.Integer('Sequence', default=1, help="Used to order subtypes.")
-    hidden = fields.Boolean('Hidden', help="Hide the subtype in the follower options")
-    track_recipients = fields.Boolean('Track Recipients',
-                                      help="Whether to display all the recipients or only the important ones.")
+    default = fields.Boolean(default=True, help="Activated by default when subscribing.")
+    sequence = fields.Integer(default=1, help="Used to order subtypes.")
+    hidden = fields.Boolean(help="Hide the subtype in the follower options")
+    track_recipients = fields.Boolean(help="Whether to display all the recipients or only the important ones.")
 
     @api.ormcache('model_name')
     def _get_auto_subscription_subtypes(self, model_name):
@@ -116,7 +115,7 @@ class MailMessageSubtype(models.Model):
                         continue
             if protected:
                 raise exceptions.UserError(
-                    _('You cannot modify %(subtype_names)s as their configuration are required in various apps.',
+                    self.env._('You cannot modify %(subtype_names)s as their configuration are required in various apps.',
                       subtype_names=tools.format_list(self.env, protected.mapped('name'), style="standard"),
                 ))
         return super().write(vals)
@@ -131,7 +130,7 @@ class MailMessageSubtype(models.Model):
                 master_data += subtype
         if master_data:
             raise exceptions.UserError(
-                _('You cannot delete %(subtype_names)s as they are required in various apps.',
+                self.env._('You cannot delete %(subtype_names)s as they are required in various apps.',
                   subtype_names=tools.format_list(self.env, master_data.mapped('name'), style="standard"),
             ))
 

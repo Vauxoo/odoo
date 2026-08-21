@@ -7,14 +7,6 @@
     "category": "Accounting/Localizations/Account Charts",
     "author": "Odoo S.A.",
     "license": "LGPL-3",
-    "description": """
-This is the basic Zambian localization necessary to run Odoo in ZM:
-================================================================================
-    - Chart of Accounts
-    - Taxes
-    - Fiscal Positions
-    - Default Settings
-    """,
     "depends": [
         "account",
     ],

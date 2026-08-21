@@ -14,19 +14,19 @@ class ResPartnerBank(models.Model):
     def _check_sg_proxy(self):
         for bank in self.filtered(lambda b: b.country_code == 'SG'):
             if bank.proxy_type not in ['mobile', 'uen', 'none', False]:
-                raise ValidationError(_("The PayNow Type must be either Mobile or UEN to generate a PayNow QR code for account number %s.", bank.account_number))
+                raise ValidationError(self.env._("The PayNow Type must be either Mobile or UEN to generate a PayNow QR code for account number %s.", bank.account_number))
 
     @api.depends('country_code')
     def _compute_country_proxy_keys(self):
         bank_sg = self.filtered(lambda b: b.country_code == 'SG')
         bank_sg.country_proxy_keys = 'mobile,uen'
-        super(ResPartnerBank, self - bank_sg)._compute_country_proxy_keys()
+        return super(ResPartnerBank, self - bank_sg)._compute_country_proxy_keys()
 
     @api.depends('country_code')
     def _compute_display_qr_setting(self):
         bank_sg = self.filtered(lambda b: b.country_code == 'SG')
         bank_sg.display_qr_setting = True
-        super(ResPartnerBank, self - bank_sg)._compute_display_qr_setting()
+        return super(ResPartnerBank, self - bank_sg)._compute_display_qr_setting()
 
     def _get_merchant_account_info(self):
         if self.country_code == 'SG':
@@ -52,13 +52,13 @@ class ResPartnerBank(models.Model):
     def _get_error_messages_for_qr(self, qr_method, debtor_partner, currency):
         if qr_method == 'emv_qr' and self.country_code == 'SG':
             if currency.name not in ['SGD']:
-                return _("Can't generate a PayNow QR code with a currency other than SGD.")
+                return self.env._("Can't generate a PayNow QR code with a currency other than SGD.")
             return None
 
         return super()._get_error_messages_for_qr(qr_method, debtor_partner, currency)
 
     def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
         if qr_method == 'emv_qr' and self.country_code == 'SG' and self.proxy_type not in ['mobile', 'uen']:
-            return _("The PayNow Type must be either Mobile Number or UEN.")
+            return self.env._("The PayNow Type must be either Mobile Number or UEN.")
 
         return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)

@@ -18,8 +18,8 @@ class PosSnooze(models.Model):
 
     product_template_id = fields.Many2one('product.template', string='Product', ondelete="cascade")
     pos_config_id = fields.Many2one('pos.config', string='POS Config', ondelete="cascade", required=True, index=True)
-    start_time = fields.Datetime(string='Start Time', required=True)
-    end_time = fields.Datetime(string='End Time', required=False)
+    start_time = fields.Datetime(required=True)
+    end_time = fields.Datetime(required=False)
     type = fields.Selection(selection=[('product', 'Product')], string="Snoozed for?",
         required=True, default="product")
 

@@ -22,7 +22,6 @@ from odoo.http.session import (
     update_device_fingerprint,
 )
 
-_logger = logging.getLogger(__name__)
 
 
 class Session(Controller):

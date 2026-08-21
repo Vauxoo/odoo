@@ -8,7 +8,7 @@ from werkzeug.exceptions import Forbidden
 from odoo.exceptions import ValidationError
 from odoo.http import Controller, request, route
 
-from odoo.addons.payment_payu import const
+from .. import const
 
 _logger = logging.getLogger(__name__)
 

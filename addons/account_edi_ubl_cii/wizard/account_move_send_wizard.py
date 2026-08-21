@@ -16,6 +16,6 @@ class AccountMoveSendWizard(models.TransientModel):
                 wizard.invoice_edi_format
             )
             wizard.attachments_not_supported = {
-                attachment.id: _("Unsupported file type via %s", wizard.invoice_edi_format)
+                attachment.id: self.env._("Unsupported file type via %s", wizard.invoice_edi_format)
                 for attachment in attachments_not_supported
             }

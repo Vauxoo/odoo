@@ -1,6 +1,6 @@
 from odoo import api, fields, models
 
-from odoo.addons.l10n_gr_edi.models.preferred_classification import (
+from .preferred_classification import (
     CLASSIFICATION_CATEGORY_SELECTION,
     CLASSIFICATION_MAP,
     CLASSIFICATION_TYPE_SELECTION,

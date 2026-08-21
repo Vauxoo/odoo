@@ -20,7 +20,7 @@ class ProjectTaskType(models.Model):
     def _default_user_id(self):
         return not self.env.context.get('default_project_id', False) and self.env.uid
 
-    active = fields.Boolean('Active', default=True, export_string_translation=False)
+    active = fields.Boolean(default=True, export_string_translation=False)
     name = fields.Char(string='Stage Name', required=True, translate=True)
     sequence = fields.Integer(default=1)
     project_ids = fields.Many2many('project.project', 'project_task_type_rel', 'type_id', 'project_id', string='Projects',
@@ -44,7 +44,7 @@ class ProjectTaskType(models.Model):
     rotting_threshold_days = fields.Integer('Days to rot', default=0, help='Day count before tasks in this stage become stale. Set to 0 to disable \
         Changing this parameter will not affect the rotting status/date of resources last updated before this change.')
 
-    user_id = fields.Many2one('res.users', 'Stage Owner', default=_default_user_id, compute='_compute_user_id', store=True, index=True)
+    user_id = fields.Many2one('res.users', 'Stage Owner', default=lambda self: self._default_user_id(), compute='_compute_user_id', store=True, index=True)
 
     # rating fields
     rating_request_deadline = fields.Datetime(compute='_compute_rating_request_deadline', store=True, export_string_translation=False)
@@ -96,7 +96,7 @@ class ProjectTaskType(models.Model):
         context = dict(self.env.context)
         context['stage_view'] = stage_view
         return {
-            'name': _('Delete Stage'),
+            'name': self.env._('Delete Stage'),
             'view_mode': 'form',
             'res_model': 'project.task.type.delete.wizard',
             'views': [(self.env.ref('project.view_project_task_type_delete_wizard').id, 'form')],
@@ -150,7 +150,7 @@ class ProjectTaskType(models.Model):
             user_stages_to_unlink = personal_stages.filtered(lambda stage: stage.user_id == user)
             user_remaining_stages = remaining_personal_stages_by_user[user]
             if not user_remaining_stages:
-                raise UserError(_("Each user should have at least one personal stage. Create a new stage to which the tasks can be transferred after the selected ones are deleted."))
+                raise UserError(self.env._("Each user should have at least one personal stage. Create a new stage to which the tasks can be transferred after the selected ones are deleted."))
             user_stages_to_unlink._prepare_personal_stages_deletion(user_remaining_stages, personal_stages_to_update)
 
     def _prepare_personal_stages_deletion(self, remaining_stages_dict, personal_stages_to_update):
@@ -202,7 +202,7 @@ class ProjectTaskType(models.Model):
             })
 
             return {
-                'name': _('Unarchive Tasks'),
+                'name': self.env._('Unarchive Tasks'),
                 'view_mode': 'form',
                 'res_model': 'project.task.type.delete.wizard',
                 'views': [(self.env.ref('project.view_project_task_type_unarchive_wizard').id, 'form')],
@@ -223,7 +223,7 @@ class ProjectTaskType(models.Model):
     @api.constrains('user_id', 'project_ids')
     def _check_personal_stage_not_linked_to_projects(self):
         if any(stage.user_id and stage.project_ids for stage in self):
-            raise UserError(_('A personal stage cannot be linked to a project because it is only visible to its corresponding user.'))
+            raise UserError(self.env._('A personal stage cannot be linked to a project because it is only visible to its corresponding user.'))
 
     # ---------------------------------------------------
     # Rating business

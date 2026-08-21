@@ -44,13 +44,13 @@ class ResourceCalendar(models.Model):
         return res
 
     name = fields.Char(required=True)
-    active = fields.Boolean("Active", default=True,
+    active = fields.Boolean(default=True,
                             help="If the active field is set to false, it will allow you to hide the Working Time without removing it.")
     attendance_ids = fields.One2many(
         'resource.calendar.attendance', 'calendar_id', 'Working Time', precompute=True,
         compute='_compute_attendance_ids', store=True, readonly=False, copy=True)
     company_id = fields.Many2one(
-        'res.company', 'Company', domain=lambda self: [('id', 'in', self.env.companies.ids)],
+        'res.company', domain=lambda self: [('id', 'in', self.env.companies.ids)],
         default=lambda self: self.env.company, index='btree_not_null')
     country_id = fields.Many2one(related='company_id.country_id')
     country_code = fields.Char(related='country_id.code', depends=['country_id'])
@@ -73,12 +73,12 @@ class ResourceCalendar(models.Model):
         compute="_compute_hours_per_week", store=True, digits=(10, 5), readonly=False, copy=False)
     is_fulltime = fields.Boolean(compute='_compute_is_fulltime', string="Is Full Time")
     work_resources_count = fields.Integer("Work Resources count", compute='_compute_work_resources_count')
-    work_time_rate = fields.Float(string='Work Time Rate', compute='_compute_work_time_rate', store=True,
+    work_time_rate = fields.Float(compute='_compute_work_time_rate', store=True,
         help='Work time rate versus full time working schedule, should be between 0 and 100 %.')
     calendar_type = fields.Selection([
         ('fixed', 'Fixed'),
         ('variable', 'Variable')],
-        string='Calendar Type', default='fixed', required=True)
+        default='fixed', required=True)
 
     def _get_attendances_to_unlink(self, next_calendar_type=None):
         """ To retrieve attendances with date, to unlink when the calendar will be/is fixed

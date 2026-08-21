@@ -14,13 +14,13 @@ class GamificationKarmaTracking(models.Model):
     _order = 'tracking_date desc, id desc'
 
     def _get_origin_selection_values(self):
-        return [('res.users', _('User'))]
+        return [('res.users', self.env._('User'))]
 
-    user_id = fields.Many2one('res.users', 'User', index=True, required=True, ondelete='cascade')
+    user_id = fields.Many2one('res.users', index=True, required=True, ondelete='cascade')
     old_value = fields.Integer('Old Karma Value', readonly=True)
     new_value = fields.Integer('New Karma Value', required=True)
-    gain = fields.Integer('Gain', compute='_compute_gain', readonly=False)
-    consolidated = fields.Boolean('Consolidated')
+    gain = fields.Integer(compute='_compute_gain', readonly=False)
+    consolidated = fields.Boolean()
 
     tracking_date = fields.Datetime(default=fields.Datetime.now, readonly=True, index=True)
     reason = fields.Text(default=lambda self: _('Add Manually'), string='Description')
@@ -124,7 +124,7 @@ class GamificationKarmaTracking(models.Model):
             'from_date': from_date,
             'end_date': end_date,
             'origin_ref': f'res.users,{self.env.user.id}',
-            'reason': _('Consolidation from %(from_date)s to %(end_date)s', from_date=from_date.date(), end_date=end_date.date()),
+            'reason': self.env._('Consolidation from %(from_date)s to %(end_date)s', from_date=from_date.date(), end_date=end_date.date()),
         })
 
         trackings = self.search([

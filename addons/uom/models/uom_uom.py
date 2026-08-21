@@ -36,7 +36,7 @@ class UomUom(models.Model):
     relative_factor = fields.Float(
         'Contains', default=1.0, digits=0, required=True,  # force NUMERIC with unlimited precision
         help='How much bigger or smaller this unit is compared to the reference UoM for this unit')
-    active = fields.Boolean('Active', default=True, help="Uncheck the active field to disable a unit of measure without deleting it.")
+    active = fields.Boolean(default=True, help="Uncheck the active field to disable a unit of measure without deleting it.")
     relative_uom_id = fields.Many2one('uom.uom', 'Reference Unit', ondelete='cascade', index='btree_not_null')
     related_uom_ids = fields.One2many('uom.uom', 'relative_uom_id', 'Related UoMs')
     factor = fields.Float('Absolute Quantity', digits=0, compute='_compute_factor', recursive=True, store=True)
@@ -73,8 +73,8 @@ class UomUom(models.Model):
         if self._filter_protected_uoms() and self.create_date < (fields.Datetime.now() - timedelta(days=1)):
             return {
                 'warning': {
-                    'title': _("Warning for %s", self.name),
-                    'message': _(
+                    'title': self.env._("Warning for %s", self.name),
+                    'message': self.env._(
                         "Some critical fields have been modified on %s.\n"
                         "Note that existing data WON'T be updated by this change.\n\n"
                         "As units of measure impact the whole system, this may cause critical issues.\n"
@@ -90,7 +90,7 @@ class UomUom(models.Model):
     def _check_factor(self):
         for uom in self:
             if not uom.relative_uom_id and uom.relative_factor != 1.0:
-                raise UserError(_("Reference unit of measure is missing."))
+                raise UserError(self.env._("Reference unit of measure is missing."))
 
     # === CRUD METHODS === #
 
@@ -98,7 +98,7 @@ class UomUom(models.Model):
     def _unlink_except_master_data(self):
         locked_uoms = self._filter_protected_uoms()
         if locked_uoms:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "The following units of measure are used by the system and cannot be deleted: %s\nYou can archive them instead.",
                 ", ".join(locked_uoms.mapped('name')),
             ))

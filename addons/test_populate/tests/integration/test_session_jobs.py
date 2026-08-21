@@ -6,7 +6,7 @@ from odoo.addons.populate.utils.profiling import (
     get_profile_description,
     get_profile_session_name,
 )
-from odoo.addons.test_populate.tests.common import PopulateTestCase
+from ..common import PopulateTestCase
 
 
 class TestSessionFieldGeneration(PopulateTestCase):

@@ -146,7 +146,7 @@ class ExportSelectionFunction(models.Model):
     _inherit = ['export.generic']
 
     def selection_fn(self):
-        return [(str(key), val) for key, val in enumerate([_("Corge"), _("Grault"), _("Wheee"), _("Moog")])]
+        return [(str(key), val) for key, val in enumerate([self.env._("Corge"), self.env._("Grault"), self.env._("Wheee"), self.env._("Moog")])]
 
     value = fields.Selection(selection_fn)
 

@@ -14,7 +14,6 @@ class EfakturDocument(models.Model):
     name = fields.Char(compute="_compute_name", store=True)
     company_id = fields.Many2one('res.company', required=True, readonly=True, default=lambda self: self.env.company)
     active = fields.Boolean(
-        string="Active",
         default=True,
     )
     invoice_ids = fields.One2many(
@@ -54,9 +53,9 @@ class EfakturDocument(models.Model):
         non_invoice_entries = self.invoice_ids.filtered(lambda x: x.move_type != 'out_invoice')
 
         if no_trx_code_entries:
-            raise UserError(_("Some documents don't have a transaction code: %s", ", ".join(no_trx_code_entries.mapped('name'))))
+            raise UserError(self.env._("Some documents don't have a transaction code: %s", ", ".join(no_trx_code_entries.mapped('name'))))
         if non_invoice_entries:
-            raise UserError(_("Some documents are not Customer Invoices: %s", ", ".join(non_invoice_entries.mapped('name'))))
+            raise UserError(self.env._("Some documents are not Customer Invoices: %s", ", ".join(non_invoice_entries.mapped('name'))))
         raw_data = self._generate_efaktur_invoice()
 
         if not self.attachment_id:
@@ -76,9 +75,9 @@ class EfakturDocument(models.Model):
             })
 
         if not regenerate:
-            message = _("The e-Faktur report has been generated")
+            message = self.env._("The e-Faktur report has been generated")
         else:
-            message = _("The e-Faktur report has been re-generated")
+            message = self.env._("The e-Faktur report has been re-generated")
 
         self.message_post(
             body=message,

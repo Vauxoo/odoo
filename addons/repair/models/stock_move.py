@@ -69,7 +69,7 @@ class StockMove(models.Model):
             if move.repair_id and move.repair_id.name:
                 move.reference = move.repair_id.name
                 moves_with_reference.add(move.id)
-        super(StockMove, self - self.env['stock.move'].browse(moves_with_reference))._compute_reference()
+        return super(StockMove, self - self.env['stock.move'].browse(moves_with_reference))._compute_reference()
 
     def _inverse_description_picking(self):
         super()._inverse_description_picking()

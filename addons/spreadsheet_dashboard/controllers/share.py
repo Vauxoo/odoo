@@ -37,7 +37,7 @@ class DashboardShareRoute(http.Controller):
         share._check_dashboard_access(token)
         if not request.env.user.has_group('base.group_allow_export'):
             raise UserError(
-                _("You don't have the rights to export data. Please contact an Administrator."))
+                self.env._("You don't have the rights to export data. Please contact an Administrator."))
         stream = request.env["ir.binary"]._get_stream_from(
             share, "excel_export", filename=share.name
         )

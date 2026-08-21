@@ -97,7 +97,7 @@ class MailThreadPhone(models.AbstractModel):
         value = value.strip() if isinstance(value, str) else value
         phone_fields = self._phone_get_phone_mobile_search_fields()
         if not phone_fields:
-            raise UserError(_('Missing definition of phone fields.'))
+            raise UserError(self.env._('Missing definition of phone fields.'))
 
         # search if phone/mobile is set or not
         if (value is True or not value) and operator in ('=', '!='):
@@ -110,7 +110,7 @@ class MailThreadPhone(models.AbstractModel):
         if not value:
             return Domain.TRUE
         if self._phone_search_min_length and len(value) < self._phone_search_min_length:
-            raise UserError(_('Please enter at least 3 characters when searching a Phone number.'))
+            raise UserError(self.env._('Please enter at least 3 characters when searching a Phone number.'))
 
         sql_operator = {'=like': 'LIKE', '=ilike': 'ILIKE'}.get(operator, operator)
 
@@ -223,9 +223,9 @@ class MailThreadPhone(models.AbstractModel):
 
     def _assert_phone_field(self):
         if not hasattr(self, "_phone_get_number_fields"):
-            raise UserError(_('Invalid primary phone field on model %s', self._name))
+            raise UserError(self.env._('Invalid primary phone field on model %s', self._name))
         if not any(fname in self and self._fields[fname].type == 'char' for fname in self._phone_get_number_fields()):
-            raise UserError(_('Invalid primary phone field on model %s', self._name))
+            raise UserError(self.env._('Invalid primary phone field on model %s', self._name))
 
     def _phone_get_sanitize_triggers(self):
         """ Tool method to get all triggers for sanitize """

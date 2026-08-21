@@ -38,7 +38,7 @@ class UtmMedium(models.Model):
         for xml_id in utm_medium_xml_ids:
             utm_medium = self.env.ref(xml_id, raise_if_not_found=False)
             if utm_medium and utm_medium in self:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Oops, you can't delete the Medium '%s'.\n"
                     "Doing so would be like tearing down a load-bearing wall \u2014 not the best idea.",
                     utm_medium.name

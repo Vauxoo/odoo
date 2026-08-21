@@ -48,7 +48,6 @@ class MyInvoisDocument(models.Model):
         index='trigram',
     )
     active = fields.Boolean(
-        string="Active",
         default=True,
     )
     company_id = fields.Many2one(
@@ -174,7 +173,6 @@ class MyInvoisDocument(models.Model):
     )
     journal_id = fields.Many2one(
         comodel_name='account.journal',
-        string='Journal',
         readonly=True,
         check_company=True,
         index=True,

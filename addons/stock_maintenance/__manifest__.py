@@ -3,11 +3,6 @@
 {
     'name': 'Stock - Maintenance',
     'category': 'Supply Chain/Inventory',
-    'description': """
-Stock in Maintenance
-====================
-Open the record of the serial number from an equipment form
-""",
     'depends': ['stock', 'maintenance'],
     'data': [
         'views/maintenance_views.xml',

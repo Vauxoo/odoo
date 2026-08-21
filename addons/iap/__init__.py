@@ -5,5 +5,5 @@ from . import models
 from . import tools
 
 # compatibility imports
-from odoo.addons.iap.tools.iap_tools import iap_jsonrpc as jsonrpc
-from odoo.addons.iap.tools.iap_tools import InsufficientCreditError
+from .tools.iap_tools import iap_jsonrpc as jsonrpc
+from .tools.iap_tools import InsufficientCreditError

@@ -10,13 +10,13 @@ class AccountIncoterms(models.Model):
     _rec_names_search = ('name', 'code')
 
     name = fields.Char(
-        'Name', required=True, translate=True,
+        required=True, translate=True,
         help="Incoterms are series of sales terms. They are used to divide transaction costs and responsibilities between buyer and seller and reflect state-of-the-art transportation practices.")
     code = fields.Char(
-        'Code', size=3, required=True,
+        size=3, required=True,
         help="Incoterm Standard Code")
     active = fields.Boolean(
-        'Active', default=True,
+        default=True,
         help="By unchecking the active field, you may hide an INCOTERM you will not use.")
 
     @api.depends('code')

@@ -42,4 +42,4 @@ class AccountAnalyticAccount(models.Model):
         )
         expense_ids = self.env.cr.fetchall()
         if expense_ids:
-            raise UserError(_("You cannot delete an analytic account that is used in an expense."))
+            raise UserError(self.env._("You cannot delete an analytic account that is used in an expense."))

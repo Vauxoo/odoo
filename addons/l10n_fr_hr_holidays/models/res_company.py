@@ -14,13 +14,13 @@ class ResCompany(models.Model):
     l10n_fr_reference_work_entry_type = fields.Many2one(
         'hr.work.entry.type',
         string='Company Paid Time Type',
-        default=_default_work_entry_type_id)
+        default=lambda self: self._default_work_entry_type_id())
 
     def _get_fr_reference_work_entry_type(self):
         self.ensure_one()
         if not self.l10n_fr_reference_work_entry_type:
             default_type = self._default_work_entry_type_id()
             if not default_type:
-                raise ValidationError(_("You must first define a reference time type for the company."))
+                raise ValidationError(self.env._("You must first define a reference time type for the company."))
             return default_type
         return self.l10n_fr_reference_work_entry_type

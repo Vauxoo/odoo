@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 
 from odoo import models
-from odoo.addons.mail.tools.discuss import add_guest_to_context
+from ..tools.discuss import add_guest_to_context
 from odoo.tools.misc import verify_limited_field_access_token
 
 
@@ -31,7 +31,7 @@ class IrWebsocket(models.AbstractModel):
 
     @add_guest_to_context
     def _subscribe(self, og_data):
-        super()._subscribe(og_data)
+        return super()._subscribe(og_data)
 
     @add_guest_to_context
     def _update_mail_presence(self, inactivity_period):

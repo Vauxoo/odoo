@@ -4,9 +4,6 @@
     'name': 'Website Modules Test',
     'category': 'Hidden',
     'sequence': 9876,
-    'description': """This module contains tests related to website modules.
-It allows to test website business code when another website module is
-installed.""",
     'depends': [
         'theme_default',
         'website',

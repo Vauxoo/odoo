@@ -5,7 +5,7 @@ import json
 from odoo.http import Controller, request, route
 from odoo.http.session import SessionExpiredException
 
-from odoo.addons.bus.websocket import WebsocketConnectionHandler
+from ..websocket import WebsocketConnectionHandler
 
 
 class WebsocketController(Controller):

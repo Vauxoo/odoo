@@ -22,7 +22,7 @@ class ProductDocumentController(Controller):
             return
 
         files = request.httprequest.files.getlist('ufile')
-        result = {'success': _("All files uploaded")}
+        result = {'success': self.env._("All files uploaded")}
         for ufile in files:
             try:
                 mimetype = ufile.content_type

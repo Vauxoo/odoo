@@ -23,7 +23,7 @@ class Data_RecycleModel(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char(
-        compute='_compute_name', string='Name', readonly=False, store=True, required=True, copy=True)
+        compute='_compute_name', readonly=False, store=True, required=True, copy=True)
 
     res_model_id = fields.Many2one('ir.model', string='Model', required=True, ondelete='cascade')
     res_model_name = fields.Char(
@@ -33,17 +33,16 @@ class Data_RecycleModel(models.Model):
     recycle_mode = fields.Selection([
         ('manual', 'Manual'),
         ('automatic', 'Automatic'),
-    ], string='Recycle Mode', default='manual', required=True)
+    ], default='manual', required=True)
     recycle_action = fields.Selection([
         ('archive', 'Archive'),
         ('unlink', 'Delete'),
-    ], string="Recycle Action", default='unlink', required=True)
+    ], default='unlink', required=True)
 
     # Rule
     domain = fields.Char(string="Filter", compute='_compute_domain', readonly=False, store=True)
     time_field_id = fields.Many2one(
-        'ir.model.fields', string='Time Field',
-        domain="[('model_id', '=', res_model_id), ('ttype', 'in', ('date', 'datetime')), ('store', '=', True)]",
+        'ir.model.fields', domain="[('model_id', '=', res_model_id), ('ttype', 'in', ('date', 'datetime')), ('store', '=', True)]",
         ondelete='cascade')
     time_field_delta = fields.Integer(string='Delta', default=1)
     time_field_delta_unit = fields.Selection([
@@ -66,7 +65,7 @@ class Data_RecycleModel(models.Model):
     notify_frequency_period = fields.Selection([
         ('days', 'Days'),
         ('weeks', 'Weeks'),
-        ('months', 'Months')], string='Notify Frequency Period', default='weeks')
+        ('months', 'Months')], default='weeks')
     last_notification = fields.Datetime(readonly=True)
 
     _check_notif_freq = models.Constraint(

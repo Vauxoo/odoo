@@ -50,7 +50,7 @@ class SaleOrderLine(models.Model):
     @api.constrains('event_booth_registration_ids')
     def _check_event_booth_registration_ids(self):
         if len(self.event_booth_registration_ids.event_booth_id.event_id) > 1:
-            raise ValidationError(_('Registrations from the same Order Line must belong to a single event.'))
+            raise ValidationError(self.env._('Registrations from the same Order Line must belong to a single event.'))
 
     @api.onchange('product_id')
     def _onchange_product_id_booth(self):
@@ -70,7 +70,7 @@ class SaleOrderLine(models.Model):
 
         The custom name logic can be found below in _get_sale_order_line_multiline_description_sale.
         """
-        super()._compute_name()
+        return super()._compute_name()
 
     def _update_event_booths(self, set_paid=False):
         for so_line in self.filtered(lambda sol: sol.product_id.service_tracking == 'event_booth'):
@@ -78,7 +78,7 @@ class SaleOrderLine(models.Model):
                 unavailable = so_line.event_booth_pending_ids.filtered(lambda booth: not booth.is_available)
                 if unavailable:
                     raise ValidationError(
-                        _('The following booths are unavailable, please remove them to continue : %(booth_names)s',
+                        self.env._('The following booths are unavailable, please remove them to continue : %(booth_names)s',
                           booth_names=''.join('\n\t- %s' % booth.display_name for booth in unavailable)))
                 so_line.event_booth_registration_ids.sudo().action_confirm()
             if so_line.event_booth_ids and set_paid:

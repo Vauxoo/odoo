@@ -5,7 +5,6 @@
     'version': '1.3',
     'category': 'Productivity/Data Cleaning',
     'summary': 'Find old records and archive/delete them',
-    'description': """Find old records and archive/delete them""",
     'depends': ['mail'],
     'data': [
         'data/ir_cron_data.xml',

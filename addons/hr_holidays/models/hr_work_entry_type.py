@@ -16,7 +16,6 @@ from odoo.tools import format_date
 from odoo.tools.translate import _
 from odoo.tools.float_utils import float_round
 
-_logger = logging.getLogger(__name__)
 
 PY_OPERATORS = {
     '>': py_operator.gt,
@@ -37,8 +36,8 @@ class HrWorkEntryType(models.Model):
         return work_entry_type.sequence
 
     create_calendar_meeting = fields.Boolean(string="Display Time Off in Calendar", default=True, tracking=True)
-    color = fields.Integer(string='Color', help="The color selected here will be used in every screen with the time type.")
-    hide_on_dashboard = fields.Boolean(default=False, string="Hide On Dashboard", tracking=True, help="Non-visible allocations can still be selected when taking a leave, but will simply not be displayed on the leave dashboard.")
+    color = fields.Integer(help="The color selected here will be used in every screen with the time type.")
+    hide_on_dashboard = fields.Boolean(default=False, tracking=True, help="Non-visible allocations can still be selected when taking a leave, but will simply not be displayed on the leave dashboard.")
 
     # employee specific computed data
     max_leaves = fields.Float(compute='_compute_leaves', string='Maximum Allowed', search='_search_max_leaves',
@@ -55,8 +54,7 @@ class HrWorkEntryType(models.Model):
     group_days_leave = fields.Float(
         compute='_compute_group_days_leave', string='Group Time Off')
     is_used = fields.Boolean(compute="_compute_is_used")
-    country_id = fields.Many2one('res.country', string='Country',
-                                 default=lambda self: self.env.company.country_id,
+    country_id = fields.Many2one('res.country', default=lambda self: self.env.company.country_id,
                                  tracking=True,
                                  domain=lambda self: [('id', 'in', self.env.companies.country_id.ids)])
     country_code = fields.Char(related='country_id.code', depends=['country_id'], readonly=True)
@@ -65,7 +63,7 @@ class HrWorkEntryType(models.Model):
         ('hr', 'By Time Off Officer'),
         ('manager', "By Employee's Approver"),
         ('both', "By Employee's Approver and Time Off Officer")], default='hr', string='Time Off Validation', tracking=True)
-    requires_allocation = fields.Boolean(default=True, required=True, string='Requires Allocation', tracking=True)
+    requires_allocation = fields.Boolean(default=True, required=True, tracking=True)
     employee_requests = fields.Boolean(default=False, required=True, string="Allow Employee Requests",
         tracking=True,
         help="""Extra Days Requests Allowed: User can request an allocation for himself.\n

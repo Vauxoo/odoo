@@ -3,9 +3,6 @@
 {
     'name': 'Mass Mailing Themes',
     'summary': 'Design gorgeous mails',
-    'description': """
-Design gorgeous mails
-    """,
     'version': '1.2',
     'sequence': 110,
     'website': 'https://www.odoo.com/app/email-marketing',

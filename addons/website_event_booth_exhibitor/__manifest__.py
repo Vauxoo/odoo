@@ -4,9 +4,6 @@
     'category': 'Marketing/Events',
     'version': '1.1',
     'summary': 'Event Booths, automatically create a sponsor.',
-    'description': """
-Automatically create a sponsor when renting a booth.
-    """,
     'depends': ['website_event_exhibitor', 'website_event_booth'],
     'data': [
         'data/event_booth_category_data.xml',

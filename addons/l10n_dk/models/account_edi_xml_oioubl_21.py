@@ -68,12 +68,12 @@ class AccountEdiXmlOIOUBL21(models.AbstractModel):
             partner = vals[partner_type]
             building_number = street_split(partner.street).get('street_number')
             if not building_number:
-                constraints[f"oioubl21_{partner_type}_building_number_required"] = _("The following partner's street number is missing: %s", partner.display_name)
+                constraints[f"oioubl21_{partner_type}_building_number_required"] = self.env._("The following partner's street number is missing: %s", partner.display_name)
             if partner.country_code == "FR" and not partner.commercial_partner_id._get_additional_identifier('FR_SIRET'):
-                constraints["oioubl21_siret_required_for_french_partner"] = _("A SIRET is required for the french partner: %s", partner.display_name)
+                constraints["oioubl21_siret_required_for_french_partner"] = self.env._("A SIRET is required for the french partner: %s", partner.display_name)
             constraints[f'oioubl21_{partner_type}_vat_required'] = self._check_required_fields(partner.commercial_partner_id, 'vat')
             if not vals['supplier']._get_additional_identifier('DK_CVR'):
-                constraints['oioubl21_supplier_cvr_required'] = _("The Danish CVR is required for the supplier: %s", vals['supplier'].display_name)
+                constraints['oioubl21_supplier_cvr_required'] = self.env._("The Danish CVR is required for the supplier: %s", vals['supplier'].display_name)
 
         return constraints
 

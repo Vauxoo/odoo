@@ -9,7 +9,7 @@ from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError
 from odoo.fields import Domain
 
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
+from ..utils.google_calendar import GoogleCalendarService
 
 
 class CalendarEvent(models.Model):
@@ -41,7 +41,7 @@ class CalendarEvent(models.Model):
     def _compute_videocall_source(self):
         events_with_google_url = self.filtered(lambda event: self.MEET_ROUTE in (event.videocall_location or ''))
         events_with_google_url.videocall_source = 'google_meet'
-        super(CalendarEvent, self - events_with_google_url)._compute_videocall_source()
+        return super(CalendarEvent, self - events_with_google_url)._compute_videocall_source()
 
     @api.model
     def _get_google_synced_fields(self):
@@ -112,7 +112,7 @@ class CalendarEvent(models.Model):
             return
         if any(event.guests_readonly and self.env.user.id != event.user_id.id for event in self):
             raise ValidationError(
-                _("The following event can only be updated by the organizer "
+                self.env._("The following event can only be updated by the organizer "
                 "according to the event permissions set on Google Calendar.")
             )
 
@@ -151,7 +151,7 @@ class CalendarEvent(models.Model):
         alarm_commands = self._odoo_reminders_commands(reminder_command)
         attendee_commands, partner_commands = self._odoo_attendee_commands(google_event)
         related_event = self.search([('google_id', '=', google_event.id)], limit=1)
-        name = google_event.summary or related_event and related_event.name or _("(No title)")
+        name = google_event.summary or related_event and related_event.name or self.env._("(No title)")
         values = {
             'name': name,
             'description': google_event.description and tools.html_sanitize(google_event.description),
@@ -250,7 +250,7 @@ class CalendarEvent(models.Model):
         commands = []
         for reminder in reminders:
             alarm_type = 'email' if reminder.get('method') == 'email' else 'notification'
-            alarm_type_label = _("Email") if alarm_type == 'email' else _("Notification")
+            alarm_type_label = self.env._("Email") if alarm_type == 'email' else self.env._("Notification")
 
             minutes = reminder.get('minutes', 0)
             alarm = self.env['calendar.alarm'].search([
@@ -263,7 +263,7 @@ class CalendarEvent(models.Model):
                 if minutes % (60*24) == 0:
                     interval = 'days'
                     duration = minutes / 60 / 24
-                    name = _(
+                    name = self.env._(
                         "%(reminder_type)s - %(duration)s Days",
                         reminder_type=alarm_type_label,
                         duration=duration,
@@ -271,7 +271,7 @@ class CalendarEvent(models.Model):
                 elif minutes % 60 == 0:
                     interval = 'hours'
                     duration = minutes / 60
-                    name = _(
+                    name = self.env._(
                         "%(reminder_type)s - %(duration)s Hours",
                         reminder_type=alarm_type_label,
                         duration=duration,
@@ -279,7 +279,7 @@ class CalendarEvent(models.Model):
                 else:
                     interval = 'minutes'
                     duration = minutes
-                    name = _(
+                    name = self.env._(
                         "%(reminder_type)s - %(duration)s Minutes",
                         reminder_type=alarm_type_label,
                         duration=duration,
@@ -297,7 +297,7 @@ class CalendarEvent(models.Model):
             # Increase performance handling 'future_events' edge case as it was an 'all_events' update.
             if archive_future_events:
                 recurrence_update_setting = 'all_events'
-        super().action_mass_archive(recurrence_update_setting)
+        return super().action_mass_archive(recurrence_update_setting)
 
     def _google_values(self):
         # In Google API, all-day events must have their 'dateTime' information set

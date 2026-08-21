@@ -61,7 +61,7 @@ class BaseDocumentLayout(models.TransientModel):
     @api.depends('qr_code', 'account_number')
     def _compute_preview(self):
         # EXTENDS 'web' to add dependencies
-        super()._compute_preview()
+        return super()._compute_preview()
 
     def _inverse_account_number(self):
         for record in self:

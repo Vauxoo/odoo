@@ -7,7 +7,7 @@ class TestDigest(models.TransientModel):
     _name = 'digest.test'
     _description = 'Sample Digest Wizard'
 
-    digest_id = fields.Many2one('digest.digest', string='Digest', required=True, ondelete='cascade')
+    digest_id = fields.Many2one('digest.digest', required=True, ondelete='cascade')
     user_ids = fields.Many2many('res.users', string='Recipients', domain="[('share', '=', False)]",
                                 default=lambda self: self.env.user)
 

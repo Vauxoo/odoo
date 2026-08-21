@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.addons.l10n_vn_edi_viettel.models.sinvoice_service import SInvoiceService
+from .sinvoice_service import SInvoiceService
 
 
 class L10n_Vn_Edi_ViettelSinvoiceSymbol(models.Model):
@@ -42,7 +42,6 @@ class L10n_Vn_Edi_ViettelSinvoiceSymbol(models.Model):
     )
     company_id = fields.Many2one(
         'res.company',
-        string='Company',
         required=True,
         default=lambda self: self.env.company,
         readonly=True,
@@ -74,7 +73,7 @@ class L10n_Vn_Edi_ViettelSinvoiceSymbol(models.Model):
 
         for record in self:
             if invoices_per_symbol[record.id] > 0:
-                raise UserError(_('You cannot change the symbol value or template of the symbol %s because it has '
+                raise UserError(self.env._('You cannot change the symbol value or template of the symbol %s because it has '
                                   'already been used to send invoices.', record.name))
 
     @api.depends('name', 'invoice_template_code')
@@ -98,7 +97,7 @@ class L10n_Vn_Edi_ViettelSinvoiceSymbol(models.Model):
         vn_companies = self.env.companies.filtered(lambda c: c.country_id.code == 'VN')
 
         if not vn_companies:
-            raise UserError(_('Please select a Vietnamese company to fetch SInvoice symbol!'))
+            raise UserError(self.env._('Please select a Vietnamese company to fetch SInvoice symbol!'))
 
         existing_symbols = {
             (name, invoice_template_code, company_id): symbol
@@ -114,17 +113,17 @@ class L10n_Vn_Edi_ViettelSinvoiceSymbol(models.Model):
 
         for company in vn_companies:
             if not company.vat:
-                errors.append(_('VAT number is missing on company %s.', company.display_name))
+                errors.append(self.env._('VAT number is missing on company %s.', company.display_name))
                 continue
 
             templates, error = self._l10n_vn_edi_lookup_symbols(company)
 
             if error:
-                errors.append(_('%(company)s: %(error)s', company=company.display_name, error=error))
+                errors.append(self.env._('%(company)s: %(error)s', company=company.display_name, error=error))
                 continue
 
             if not templates:
-                errors.append(_('No symbols found for company %s. Please check your configuration and try again.', company.display_name))
+                errors.append(self.env._('No symbols found for company %s. Please check your configuration and try again.', company.display_name))
                 continue
 
             for symbol_data in templates:
@@ -152,7 +151,7 @@ class L10n_Vn_Edi_ViettelSinvoiceSymbol(models.Model):
             if len(vn_companies) == 1:
                 raise UserError('\n'.join(msg.split(': ', 1)[-1] for msg in errors))
             else:
-                raise UserError(_('Some companies encountered issues:\n\n%s', '\n'.join(errors)))
+                raise UserError(self.env._('Some companies encountered issues:\n\n%s', '\n'.join(errors)))
 
         return {
             'type': 'ir.actions.client',

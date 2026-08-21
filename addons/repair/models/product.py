@@ -40,7 +40,7 @@ class ProductProduct(models.Model):
             ['id:recordset'],
         ):
             if uom != product.product_tmpl_id.uom_id:
-                raise UserError(_(
+                raise UserError(self.env._(
                 'As other units of measure (ex : %(problem_uom)s) '
                 'than %(uom)s have already been used for this product, the change of unit of measure can not be done.'
                 'If you want to change it, please archive the product and create a new one.',

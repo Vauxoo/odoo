@@ -18,7 +18,7 @@ class BaseModuleUpgrade(models.TransientModel):
     def _default_module_info(self):
         return "\n".join("%s: %s" % (mod.name, mod.state) for mod in self.get_module_list())
 
-    module_info = fields.Text('Apps to Update', readonly=True, default=_default_module_info)
+    module_info = fields.Text('Apps to Update', readonly=True, default=lambda self: self._default_module_info())
 
     @api.model
     def get_view(self, view_id=None, view_type='form', **options):

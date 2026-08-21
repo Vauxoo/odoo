@@ -1,7 +1,7 @@
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.pos_bancontact_pay import const
+from .. import const
 
 
 class ResCompany(models.Model):
@@ -25,7 +25,7 @@ class ResCompany(models.Model):
             )
             if payment_method_ids:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "A Bancontact Pay payment method is linked to a journal that uses the company's default currency.\n"
                         "This currency is not supported.\n"
                         "Supported currencies: %(currencies)s.",

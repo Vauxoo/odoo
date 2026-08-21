@@ -3,7 +3,7 @@ from lxml import etree
 
 from odoo import api, fields, models
 from odoo.addons.account.tools import dict_to_xml
-from odoo.addons.l10n_fr_pdp.utils import drom_com_territories
+from ..utils import drom_com_territories
 from odoo.tools import float_is_zero, float_round, frozendict, html2plaintext
 
 

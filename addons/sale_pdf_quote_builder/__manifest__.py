@@ -3,7 +3,6 @@
 {
     "name": "Sales PDF Quotation Builder",
     "category": "Sales/Sales",
-    "description": "Build nice quotations",
     "depends": ["sale_management"],
     "data": [
         "data/ir_cron.xml",

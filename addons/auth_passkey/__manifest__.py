@@ -2,13 +2,6 @@
     'name': 'Passkeys',
     'version': '1.1',
     'summary': 'Log in with a Passkey',
-    'description': """
-The implementation of Passkeys using the webauthn protocol.
-===========================================================
-
-Passkeys are a secure alternative to a username and a password.
-When a user logs in with a Passkey, MFA will not be required.
-""",
     'category': 'Hidden/Tools',
     'depends': ['base_setup', 'web'],
     'auto_install': True,

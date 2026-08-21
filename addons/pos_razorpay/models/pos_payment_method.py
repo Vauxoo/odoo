@@ -9,9 +9,9 @@ class PosPaymentMethod(models.Model):
 
     razorpay_tid = fields.Char(string='Razorpay Device Serial No', help='Device Serial No \n ex: 7000012300')
     razorpay_allowed_payment_modes = fields.Selection(selection=[('all', 'All'), ('card', 'Card'), ('upi', 'UPI'), ('bharatqr', 'BHARATQR')], default='all', help='Choose allow payment mode: \n All/Card/UPI or QR')
-    razorpay_username = fields.Char(string='Razorpay Username', help='Username(Device Login) \n ex: 1234500121')
+    razorpay_username = fields.Char(help='Username(Device Login) \n ex: 1234500121')
     razorpay_api_key = fields.Char(string='Razorpay API Key', help='Used when connecting to Razorpay: https://razorpay.com/docs/payments/dashboard/account-settings/api-keys/', groups='point_of_sale.group_pos_manager')
-    razorpay_test_mode = fields.Boolean(string='Razorpay Test Mode', default=False, help='Turn it on when in Test Mode')
+    razorpay_test_mode = fields.Boolean(default=False, help='Turn it on when in Test Mode')
 
     def _get_terminal_provider_selection(self):
         return super()._get_terminal_provider_selection() + [('razorpay', 'Razorpay')]
@@ -46,7 +46,7 @@ class PosPaymentMethod(models.Model):
                 'acquirerCode': response.get('acquirerCode'),
                 'postingDate': response.get('postingDate'),
             }
-        default_error_msg = _('The Razorpay POS refund request has encountered an unexpected error code.')
+        default_error_msg = self.env._('The Razorpay POS refund request has encountered an unexpected error code.')
         error = response.get('errorMessage') or default_error_msg
         return {'error': str(error)}
 
@@ -63,7 +63,7 @@ class PosPaymentMethod(models.Model):
                 'success': True,
                 'p2pRequestId': str(response.get('p2pRequestId'))
             }
-        default_error_msg = _('Razorpay POS payment request expected errorCode not found in the response')
+        default_error_msg = self.env._('Razorpay POS payment request expected errorCode not found in the response')
         error = response.get('errorMessage') or default_error_msg
         return {'error': str(error)}
 
@@ -98,11 +98,11 @@ class PosPaymentMethod(models.Model):
                     'settlementStatus': response.get('settlementStatus'),
                 }
             elif payment_status == 'FAILED' or payment_messageCode == 'P2P_DEVICE_CANCELED':
-                return {'error': str(response.get('message', _('Razorpay POS transaction failed'))),
+                return {'error': str(response.get('message', self.env._('Razorpay POS transaction failed'))),
                         'payment_messageCode': payment_messageCode}
             elif payment_messageCode in ['P2P_DEVICE_RECEIVED', 'P2P_DEVICE_SENT', 'P2P_STATUS_QUEUED']:
                 return {'status': payment_messageCode.split('_')[-1]}
-        default_error_msg = _('Razorpay POS payment status request expected errorCode not found in the response')
+        default_error_msg = self.env._('Razorpay POS payment status request expected errorCode not found in the response')
         error = response.get('errorMessage') or default_error_msg
         return {'error': str(error)}
 
@@ -112,12 +112,12 @@ class PosPaymentMethod(models.Model):
         body.update({'origP2pRequestId': data.get('p2pRequestId')})
         response = razorpay._call_razorpay(endpoint='cancel', payload=body)
         if response.get('success') and not response.get('errorCode'):
-            return {'error': _('Razorpay POS transaction canceled successfully')}
-        default_error_msg = _('Razorpay POS payment cancel request expected errorCode not found in the response')
+            return {'error': self.env._('Razorpay POS transaction canceled successfully')}
+        default_error_msg = self.env._('Razorpay POS payment cancel request expected errorCode not found in the response')
         errorMessage = response.get('errorMessage') or default_error_msg
         return {'errorMessage': str(errorMessage)}
 
     @api.constrains('payment_provider')
     def _check_razorpay_terminal(self):
         if any(record.payment_provider == 'razorpay' and record.company_id.currency_id.name != 'INR' for record in self):
-            raise UserError(_('This Payment Terminal is only valid for INR Currency'))
+            raise UserError(self.env._('This Payment Terminal is only valid for INR Currency'))

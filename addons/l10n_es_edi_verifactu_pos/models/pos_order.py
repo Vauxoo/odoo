@@ -68,7 +68,7 @@ class PosOrder(models.Model):
                 warning_level = 'danger'
 
             if last_document._filter_waiting():
-                warning = _("%(existing_warning)sA Veri*Factu document is waiting to be sent as soon as possible.",
+                warning = self.env._("%(existing_warning)sA Veri*Factu document is waiting to be sent as soon as possible.",
                             existing_warning=(warning + '\n' if warning else ''))
                 warning_level = warning_level or 'info'
 
@@ -130,10 +130,10 @@ class PosOrder(models.Model):
         errors = []
 
         if self.state not in ('paid', 'done', 'invoiced'):
-            errors.append(_("Veri*Factu documents can only be generated for paid, posted or invoiced Point of Sale Orders."))
+            errors.append(self.env._("Veri*Factu documents can only be generated for paid, posted or invoiced Point of Sale Orders."))
 
         if self.state == 'invoiced' and not cancellation:
-            errors.append(_("Veri*Factu documents can only be generated for invoiced Point of Sale Orders for cancellation purpose."))
+            errors.append(self.env._("Veri*Factu documents can only be generated for invoiced Point of Sale Orders for cancellation purpose."))
 
         return errors
 
@@ -218,16 +218,16 @@ class PosOrder(models.Model):
         self.ensure_one()
         if self.l10n_es_edi_verifactu_required:
             if not self.to_invoice and self.amount_total > self.company_id.l10n_es_simplified_invoice_limit:
-                raise UserError(_("The order needs to be invoiced since its total amount is above %s€.",
+                raise UserError(self.env._("The order needs to be invoiced since its total amount is above %s€.",
                                   self.company_id.l10n_es_simplified_invoice_limit))
             refunded_order = self.refunded_order_id
             if refunded_order:
                 if not self.l10n_es_edi_verifactu_refund_reason:
-                    raise UserError(_("You have to specify a refund reason."))
+                    raise UserError(self.env._("You have to specify a refund reason."))
                 simplified_partner = self.env.ref('l10n_es.partner_simplified', raise_if_not_found=False)
                 partner_specified = self.partner_id and self.partner_id != simplified_partner
                 if not partner_specified and self.l10n_es_edi_verifactu_refund_reason != 'R5':
-                    raise UserError(_("A partner has to be specified for the selected Veri*Factu Refund Reason."))
+                    raise UserError(self.env._("A partner has to be specified for the selected Veri*Factu Refund Reason."))
 
         return super()._process_saved_order(draft)
 
@@ -250,7 +250,7 @@ class PosOrder(models.Model):
 
             waiting_documents = order.l10n_es_edi_verifactu_document_ids._filter_waiting()
             if waiting_documents:
-                raise UserError(_("The order can not be invoiced. It is waiting to send a Veri*Factu record to the AEAT already."))
+                raise UserError(self.env._("The order can not be invoiced. It is waiting to send a Veri*Factu record to the AEAT already."))
 
             # Cancel the order
             if order.l10n_es_edi_verifactu_state in ('accepted', 'registered_with_errors'):
@@ -274,7 +274,7 @@ class PosOrder(models.Model):
             return res
 
         if len(self) > 1:
-            raise UserError(_("With Veri*Factu enabled, POS orders cannot be consolidated into one invoice."))
+            raise UserError(self.env._("With Veri*Factu enabled, POS orders cannot be consolidated into one invoice."))
         res['l10n_es_edi_verifactu_refund_reason'] = self.l10n_es_edi_verifactu_refund_reason
         # There is no reason to create a simplified invoice instead of just creating an order.
         # (Currently "simplified" basically just removes the partner information.)

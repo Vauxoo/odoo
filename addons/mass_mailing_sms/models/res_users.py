@@ -36,7 +36,7 @@ class ResUsers(models.Model):
         if email_activities:
             email_group = self._format_activity_group('mailing.mailing', email_activities)
             email_group.update({
-                'name': _('Email Marketing'),
+                'name': self.env._('Email Marketing'),
                 'icon': modules.module.get_module_icon('mass_mailing'),
                 'domain': [("active", "in", [True, False]), ("mailing_type", "=", 'mail')],
             })
@@ -45,7 +45,7 @@ class ResUsers(models.Model):
         if sms_activities:
             sms_group = self._format_activity_group('mailing.mailing', sms_activities)
             sms_group.update({
-                'name': _('SMS Marketing'),
+                'name': self.env._('SMS Marketing'),
                 'icon': modules.module.get_module_icon('mass_mailing_sms'),
                 'domain': [("active", "in", [True, False]), ("mailing_type", "=", 'sms')],
             })

@@ -3,7 +3,7 @@
 from odoo import models, fields, _
 from odoo.exceptions import UserError
 from odoo.tools import html_escape
-from odoo.addons.l10n_in_ewaybill.tools.ewaybill_api import EWayBillApi, EWayBillError
+from ..tools.ewaybill_api import EWayBillApi, EWayBillError
 
 
 class ResConfigSettings(models.TransientModel):
@@ -29,14 +29,14 @@ class ResConfigSettings(models.TransientModel):
         except EWayBillError as e:
             raise UserError(e.get_all_error_message())
         if not self.company_id.sudo()._l10n_in_ewaybill_token_is_valid():
-            raise UserError(_("Incorrect username or password, or the GST number on company does not match."))
+            raise UserError(self.env._("Incorrect username or password, or the GST number on company does not match."))
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
                 'type': 'info',
                 'sticky': False,
-                'message': _("API credentials validated successfully"),
+                'message': self.env._("API credentials validated successfully"),
             }
         }
 
@@ -48,4 +48,4 @@ class ResConfigSettings(models.TransientModel):
         self.env['res.company'].sudo().search([('account_fiscal_country_id.code', '=', 'IN')]).write({
             'l10n_in_ewaybill_auth_validity': False,
         })
-        super()._l10n_in_gsp_provider_changed()
+        return super()._l10n_in_gsp_provider_changed()

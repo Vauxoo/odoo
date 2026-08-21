@@ -5,9 +5,6 @@
     "category": "Accounting/Localizations/EDI",
     "icon": "/account/static/description/l10n.png",
     "summary": "Consolidated E-invoicing using MyInvois",
-    "description": """
-    This modules allows the user to send consolidated invoices to the MyInvois system when using the POS app.
-    """,
     "depends": ["l10n_my_edi", "point_of_sale"],
     "data": [
         "views/myinvois_document_pos_views.xml",

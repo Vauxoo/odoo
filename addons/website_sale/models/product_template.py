@@ -15,7 +15,7 @@ from odoo.tools.sql import SQL
 from odoo.tools.translate import adapt_translated_field_value, html_translate
 
 from odoo.addons.website.tools import text_from_html
-from odoo.addons.website_sale.const import SHOP_PATH
+from ..const import SHOP_PATH
 
 # A delimiter that users aren't likely to search for in product codes.
 RARE_DELIMITER = "\u241e"
@@ -102,21 +102,18 @@ class ProductTemplate(models.Model):
     )
     # Whether a cron should automatically fill optional products.
     suggest_optional_products = fields.Boolean(
-        string="Suggest Optional Products",
         compute="_compute_suggest_optional_products",
         readonly=False,
         store=True,
     )
     # Whether a cron should automatically fill accessory products.
     suggest_accessory_products = fields.Boolean(
-        string="Suggest Accessory Products",
         compute="_compute_suggest_accessory_products",
         readonly=False,
         store=True,
     )
     # Whether a cron should automatically fill alternative products.
     suggest_alternative_products = fields.Boolean(
-        string="Suggest Alternative Products",
         compute="_compute_suggest_alternative_products",
         readonly=False,
         store=True,
@@ -128,9 +125,8 @@ class ProductTemplate(models.Model):
     website_size_y = fields.Integer(string="Size Y", default=1)
     website_ribbon_id = fields.Many2one(string="Ribbon", comodel_name="product.ribbon")
     website_sequence = fields.Integer(
-        string="Website Sequence",
         help="Determine the display order in the Website E-commerce",
-        default=_default_website_sequence,
+        default=lambda self: self._default_website_sequence(),
         init_storage="_init_column_website_sequence",
         copy=False,
         index=True,
@@ -145,7 +141,6 @@ class ProductTemplate(models.Model):
 
     is_published = fields.Boolean(compute="_compute_is_published", store=True, readonly=False)
     publish_date = fields.Datetime(
-        string="Publish Date",
         compute="_compute_publish_date",
         store=True,
         required=True,

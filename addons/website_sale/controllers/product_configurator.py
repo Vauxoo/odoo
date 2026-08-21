@@ -3,7 +3,7 @@
 from odoo.http import request, route
 
 from odoo.addons.sale.controllers.product_configurator import SaleProductConfiguratorController
-from odoo.addons.website_sale.controllers.main import WebsiteSale
+from .main import WebsiteSale
 
 
 class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController, WebsiteSale):

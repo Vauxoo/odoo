@@ -28,9 +28,9 @@ class HrApplicant(models.Model):
         string="Missing Factors",
         compute="_compute_matching_skill_ids",
     )
-    matching_score = fields.Integer(string="Matching Score", compute="_compute_matching_score", store=True)
-    degree_score = fields.Integer(string="Degree Score", compute="_compute_matching_score", store=True)
-    skills_score = fields.Integer(string="Skills Score", compute="_compute_matching_score", store=True)
+    matching_score = fields.Integer(compute="_compute_matching_score", store=True)
+    degree_score = fields.Integer(compute="_compute_matching_score", store=True)
+    skills_score = fields.Integer(compute="_compute_matching_score", store=True)
     is_degree_score_matching = fields.Boolean(string="Degree Score Matching",
         compute="_compute_matching_skill_ids")
     job_expected_degree = fields.Many2one('hr.recruitment.degree', related='job_id.expected_degree',

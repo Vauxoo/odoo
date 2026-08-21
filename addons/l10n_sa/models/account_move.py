@@ -100,7 +100,7 @@ class AccountMove(models.Model):
         now_sa = datetime.now(sa_tz)
         selected_date = fields.Date.from_string(invoice_date) if isinstance(invoice_date, str) else invoice_date
         if selected_date > now_sa.date():
-            raise UserError(_("Please set the Invoice Date to be either less than or equal to today as per the Asia/Riyadh time zone, since ZATCA does not allow future-dated invoicing."))
+            raise UserError(self.env._("Please set the Invoice Date to be either less than or equal to today as per the Asia/Riyadh time zone, since ZATCA does not allow future-dated invoicing."))
         return min(now_sa, datetime.combine(selected_date, invoice_time or now_sa.time(), tzinfo=sa_tz)).astimezone(ZoneInfo('UTC')).replace(tzinfo=None)
 
     def write(self, vals):

@@ -12,8 +12,8 @@ from odoo.fields import Domain
 from odoo.modules.registry import Registry
 from odoo.sql_db import BaseCursor
 
-from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
+from ..utils.microsoft_event import MicrosoftEvent
+from ..utils.microsoft_calendar import MicrosoftCalendarService
 from odoo.addons.microsoft_account.models.microsoft_service import TIMEOUT
 
 _logger = logging.getLogger(__name__)

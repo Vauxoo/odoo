@@ -3,7 +3,6 @@
 {
     'name': 'Stock Transport',
     'summary': 'Stock Transport Management',
-    'description': 'Allows organizing deliveries by dock, assigning drivers and vehicles, and printing the associated consignment notes.',
     'depends': ['stock_picking_batch', 'fleet'],
     'demo': [
         'data/stock_fleet_demo.xml',

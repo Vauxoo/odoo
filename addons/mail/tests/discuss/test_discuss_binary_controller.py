@@ -1,4 +1,4 @@
-from odoo.addons.mail.tests.common_controllers import MailControllerBinaryCommon
+from ..common_controllers import MailControllerBinaryCommon
 from odoo.tests import tagged
 
 

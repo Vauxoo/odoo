@@ -9,7 +9,7 @@ from dateutil import relativedelta
 from psycopg2 import OperationalError
 
 from odoo import SUPERUSER_ID, _, api, fields, models
-from odoo.addons.stock.models.stock_rule import ProcurementException
+from .stock_rule import ProcurementException
 from odoo.exceptions import RedirectWarning, UserError, ValidationError
 from odoo.modules.registry import Registry
 from odoo.fields import Domain
@@ -27,26 +27,24 @@ class StockWarehouseOrderpoint(models.Model):
     _order = "location_id,company_id,id"
 
     name = fields.Char(
-        'Name', copy=False, required=True, readonly=True,
+        copy=False, required=True, readonly=True,
         default=lambda self: self.env['ir.sequence'].next_by_code('stock.orderpoint'))
     trigger = fields.Selection([
-        ('auto', 'Auto'), ('manual', 'Manual')], string='Trigger', default='auto', required=True)
+        ('auto', 'Auto'), ('manual', 'Manual')], default='auto', required=True)
     active = fields.Boolean(
-        'Active', default=True,
+        default=True,
         help="If the active field is set to False, it will allow you to hide the orderpoint without removing it.")
     snoozed_until = fields.Date('Snoozed', help="Hidden until next scheduler.")
     warehouse_id = fields.Many2one(
-        'stock.warehouse', 'Warehouse',
-        compute="_compute_warehouse_id", store=True, readonly=False, precompute=True,
+        'stock.warehouse', compute="_compute_warehouse_id", store=True, readonly=False, precompute=True,
         check_company=True, ondelete="cascade", required=True, index=True)
     location_id = fields.Many2one(
-        'stock.location', 'Location', index=True,
+        'stock.location', index=True,
         compute="_compute_location_id", store=True, readonly=False, precompute=True,
         ondelete="cascade", required=True, check_company=True)
     product_tmpl_id = fields.Many2one('product.template', related='product_id.product_tmpl_id')
     product_id = fields.Many2one(
-        'product.product', 'Product',
-        domain=("[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else"
+        'product.product', domain=("[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else"
             " [('id', '=', context.get('default_product_id', False))] if context.get('default_product_id') else"
             " [('is_storable', '=', True)]"),
         ondelete='cascade', required=True, check_company=True, index=True)
@@ -67,7 +65,7 @@ class StockWarehouseOrderpoint(models.Model):
         domain="[('id', 'in', allowed_replenishment_uom_ids)]", help="The procurement quantity will be rounded up to a multiple of this unit/packaging. If it is not set, it is not rounded.")
     replenishment_uom_id_placeholder = fields.Char(compute='_compute_replenishment_uom_id_placeholder')
     company_id = fields.Many2one(
-        'res.company', 'Company', required=True, index=True,
+        'res.company', required=True, index=True,
         default=lambda self: self.env.company)
     allowed_location_ids = fields.One2many(comodel_name='stock.location', compute='_compute_allowed_location_ids')
 
@@ -75,8 +73,7 @@ class StockWarehouseOrderpoint(models.Model):
     lead_horizon_date = fields.Date(compute='_compute_lead_days')
     lead_days = fields.Float(compute='_compute_lead_days')
     route_id = fields.Many2one(
-        'stock.route', string='Route',
-        domain="['|', ('product_selectable', '=', True), ('rule_ids.action', 'in', ['buy', 'manufacture'])]",
+        'stock.route', domain="['|', ('product_selectable', '=', True), ('rule_ids.action', 'in', ['buy', 'manufacture'])]",
         inverse='_inverse_route_id')
     route_id_placeholder = fields.Char(compute='_compute_route_id_placeholder')
     effective_route_id = fields.Many2one(
@@ -92,7 +89,7 @@ class StockWarehouseOrderpoint(models.Model):
 
     days_to_order = fields.Float(compute='_compute_days_to_order', help="Numbers of days  in advance that replenishments demands are created.")
 
-    unwanted_replenish = fields.Boolean('Unwanted Replenish', compute="_compute_unwanted_replenish")
+    unwanted_replenish = fields.Boolean(compute="_compute_unwanted_replenish")
     show_supply_warning = fields.Boolean(compute="_compute_show_supply_warning")
     deadline_date = fields.Date("Deadline", compute="_compute_deadline_date", store=True, readonly=True,
                                 help="Date before which you should order to avoid falling below the minimum. If you "
@@ -263,7 +260,7 @@ class StockWarehouseOrderpoint(models.Model):
     @api.constrains('product_min_qty', 'product_max_qty')
     def _check_min_max_qty(self):
         if any(orderpoint.product_min_qty > orderpoint.product_max_qty for orderpoint in self):
-            raise ValidationError(_('The minimum quantity must be less than or equal to the maximum quantity.'))
+            raise ValidationError(self.env._('The minimum quantity must be less than or equal to the maximum quantity.'))
 
     @api.depends('location_id', 'company_id')
     def _compute_warehouse_id(self):
@@ -305,17 +302,17 @@ class StockWarehouseOrderpoint(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         if any(val.get('snoozed_until', False) and val.get('trigger', self.default_get(['trigger'])['trigger']) == 'auto' for val in vals_list):
-            raise UserError(_("You can not create a snoozed orderpoint that is not manually triggered."))
+            raise UserError(self.env._("You can not create a snoozed orderpoint that is not manually triggered."))
         return super().create(vals_list)
 
     def write(self, vals):
         if 'company_id' in vals:
             for orderpoint in self:
                 if orderpoint.company_id.id != vals['company_id']:
-                    raise UserError(_("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
+                    raise UserError(self.env._("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
         if 'snoozed_until' in vals:
             if any(orderpoint.trigger == 'auto' for orderpoint in self):
-                raise UserError(_("You can only snooze manual orderpoints. You should rather archive 'auto-trigger' orderpoints if you do not want them to be triggered."))
+                raise UserError(self.env._("You can only snooze manual orderpoints. You should rather archive 'auto-trigger' orderpoints if you do not want them to be triggered."))
         return super().write(vals)
 
     def action_product_forecast_report(self):
@@ -339,7 +336,7 @@ class StockWarehouseOrderpoint(models.Model):
     def action_stock_replenishment_info(self):
         self.ensure_one()
         action = self.env['ir.actions.actions']._for_xml_id('stock.action_stock_replenishment_info')
-        action['name'] = _(
+        action['name'] = self.env._(
             'Replenishment Information for %(product)s in %(warehouse)s',
             product=self.product_id.display_name,
             warehouse=self.warehouse_id.display_name,
@@ -365,7 +362,7 @@ class StockWarehouseOrderpoint(models.Model):
                 'res_model': 'product.product',
                 'res_id': self.product_id.id,
                 'views': [(self.env.ref('product.product_normal_form_view').id, 'form')],
-            }, _('Edit Product'))
+            }, self.env._('Edit Product'))
         notification = False
         if len(self) == 1:
             notification = self._get_replenishment_order_notification(written_after=now)
@@ -628,7 +625,7 @@ class StockWarehouseOrderpoint(models.Model):
                 orderpoint_values = self.env['stock.warehouse.orderpoint']._get_orderpoint_values(product, location_id)
                 location = self.env['stock.location'].browse(location_id)
                 orderpoint_values.update({
-                    'name': _('Replenishment Report'),
+                    'name': self.env._('Replenishment Report'),
                     'warehouse_id': location.warehouse_id.id or self.env['stock.warehouse'].search([('company_id', '=', location.company_id.id)], limit=1).id,
                     'company_id': location.company_id.id,
                 })
@@ -663,7 +660,7 @@ class StockWarehouseOrderpoint(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _('The inter-warehouse transfers have been generated'),
+                    'title': self.env._('The inter-warehouse transfers have been generated'),
                     'message': '%s',
                     'links': [{
                         'label': move.picking_id.name,

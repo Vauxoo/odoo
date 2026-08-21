@@ -17,8 +17,8 @@ from zeroconf import (
     Zeroconf,
 )
 
-from odoo.addons.iot_drivers.interface import Interface
-from odoo.addons.iot_drivers.main import iot_devices
+from ...interface import Interface
+from ...main import iot_devices
 
 _logger = logging.getLogger(__name__)
 

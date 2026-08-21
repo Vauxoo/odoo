@@ -8,8 +8,7 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     event_id = fields.Many2one(
-        'event.event', string='Event',
-        compute="_compute_event_id", store=True, readonly=False, precompute=True, index='btree_not_null',
+        'event.event', compute="_compute_event_id", store=True, readonly=False, precompute=True, index='btree_not_null',
         help="Choose an event and it will automatically create a registration for this event.")
     event_slot_id = fields.Many2one(
         'event.slot', string='Slot',
@@ -30,7 +29,7 @@ class SaleOrderLine(models.Model):
                 not so_line.event_ticket_id or
                 (so_line.is_multi_slots and not so_line.event_slot_id)
             ):
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "The sale order line with the product %(product_name)s needs an event,"
                     " a ticket and a slot in case the event has multiple time slots.",
                     product_name=so_line.product_id.name))
@@ -39,7 +38,7 @@ class SaleOrderLine(models.Model):
     def _compute_product_uom_readonly(self):
         event_lines = self.filtered(lambda line: line.event_id)
         event_lines.update({'product_uom_readonly': True})
-        super(SaleOrderLine, self - event_lines)._compute_product_uom_readonly()
+        return super(SaleOrderLine, self - event_lines)._compute_product_uom_readonly()
 
     def _init_registrations(self):
         """ Create registrations linked to a sales order line. A sale
@@ -86,7 +85,7 @@ class SaleOrderLine(models.Model):
 
     @api.depends('event_ticket_id')
     def _compute_price_unit(self):
-        super()._compute_price_unit()
+        return super()._compute_price_unit()
 
     @api.depends('event_slot_id', 'event_ticket_id')
     def _compute_name(self):
@@ -94,7 +93,7 @@ class SaleOrderLine(models.Model):
 
         The custom name logic can be found below in _get_sale_order_line_multiline_description_sale.
         """
-        super()._compute_name()
+        return super()._compute_name()
 
     def _get_sale_order_line_multiline_description_sale(self):
         """ We override this method because we decided that:

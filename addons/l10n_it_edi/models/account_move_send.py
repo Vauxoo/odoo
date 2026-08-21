@@ -18,7 +18,7 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        res.update({'it_edi_send': {'label': _("Send to SDI"), 'is_applicable': self._is_it_edi_applicable, 'help': _("Send the e-invoice XML to the Italian Tax Agency.")}})
+        res.update({'it_edi_send': {'label': self.env._("Send to SDI"), 'is_applicable': self._is_it_edi_applicable, 'help': self.env._("Send the e-invoice XML to the Italian Tax Agency.")}})
         return res
 
     @api.model
@@ -40,10 +40,10 @@ class AccountMoveSend(models.AbstractModel):
             if 'prod' not in it_moves.mapped('l10n_it_edi_proxy_mode'):
                 alerts['l10n_it_edi_invite_authorize'] = {
                     'level': 'info',
-                    'message': _("You must authorize Odoo in the Settings to use the IT EDI in production mode."),
-                    'action_text': _("View Settings"),
+                    'message': self.env._("You must authorize Odoo in the Settings to use the IT EDI in production mode."),
+                    'action_text': self.env._("View Settings"),
                     'action': {
-                        'name': _("Settings"),
+                        'name': self.env._("Settings"),
                         'type': 'ir.actions.act_url',
                         'target': 'self',
                         'url': '/odoo/settings#l10n_it_edi_setting',
@@ -73,7 +73,7 @@ class AccountMoveSend(models.AbstractModel):
         ):
             if errors := invoice._l10n_it_edi_export_data_check():
                 invoice_data['error'] = {
-                    'error_title': _("Errors occurred while creating the e-invoice file:"),
+                    'error_title': self.env._("Errors occurred while creating the e-invoice file:"),
                     'errors': [error['message'] for error in errors.values()],
                 }
 

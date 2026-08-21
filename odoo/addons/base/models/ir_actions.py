@@ -71,7 +71,7 @@ class IrActionsActions(models.Model):
     help = fields.Html(string='Action Description',
                        help='Optional help text for the users with a description of the target view, such as its usage and purpose.',
                        translate=True)
-    explanation = fields.Text(string='Explanation', help='Verbose description of what this action actually does')
+    explanation = fields.Text(help='Verbose description of what this action actually does')
     binding_model_id = fields.Many2one('ir.model', ondelete='cascade',
                                        help="Setting a value makes this action available in the sidebar for the given model.")
     binding_type = fields.Selection([('action', 'Action'),
@@ -398,7 +398,7 @@ class IrActionsAct_WindowView(models.Model):
     _unique_mode_per_action = models.UniqueIndex('(act_window_id, view_mode)')
 
     sequence = fields.Integer()
-    view_id = fields.Many2one('ir.ui.view', string='View')
+    view_id = fields.Many2one('ir.ui.view')
     view_mode = fields.Selection(VIEW_TYPES, string='View Type', required=True)
     act_window_id = fields.Many2one('ir.actions.act_window', string='Action', ondelete='cascade', index='btree_not_null')
     multi = fields.Boolean(string='On Multiple Doc.', help="If set to true, the action will not be displayed on the right toolbar of a form view.")
@@ -458,7 +458,7 @@ class ServerActionHistoryWizard(models.TransientModel):
     current_code = fields.Text(related='action_id.code', readonly=True)
     revision = fields.Many2one("ir.actions.server.history",
         domain="[('action_id', '=', action_id), ('code', '!=', current_code)]",
-        default=_default_revision,
+        default=lambda self: self._default_revision(),
         required=True,
     )
 
@@ -586,8 +586,7 @@ class IrActionsServer(models.Model):
     type = fields.Char(default='ir.actions.server')
     usage = fields.Selection([
         ('ir_actions_server', 'Server Action'),
-        ('ir_cron', 'Scheduled Action')], string='Usage',
-        default='ir_actions_server', required=True)
+        ('ir_cron', 'Scheduled Action')], default='ir_actions_server', required=True)
     state = fields.Selection([
         ('object_write', 'Update Record'),
         ('object_create', 'Create Record'),
@@ -611,11 +610,11 @@ class IrActionsServer(models.Model):
     sequence = fields.Integer(default=5,
                               help="When dealing with multiple actions, the execution order is "
                                    "based on the sequence. Low number means high priority.")
-    model_id = fields.Many2one('ir.model', string='Model', required=True, ondelete='cascade', index=True,
+    model_id = fields.Many2one('ir.model', required=True, ondelete='cascade', index=True,
                                help="Model on which the server action runs.")
     available_model_ids = fields.Many2many('ir.model', string='Available Models', compute='_compute_available_model_ids', store=False)
     model_name = fields.Char(related='model_id.model', string='Model Name')
-    warning = fields.Text(string='Warning', compute='_compute_warning', recursive=True)
+    warning = fields.Text(compute='_compute_warning', recursive=True)
     # Inverse relation of ir.cron.ir_actions_server_id (has delegate=True, so either 0 or 1 cron, even if o2m field)
     ir_cron_ids = fields.One2many('ir.cron', 'ir_actions_server_id', 'Scheduled Action', context={'active_test': False})
     # Python code
@@ -635,15 +634,14 @@ class IrActionsServer(models.Model):
         help="Specify which kind of record should be created. Set this field only to specify a different model than the base model.")
     crud_model_name = fields.Char(related='crud_model_id.model', string='Target Model Name', readonly=True)
     link_field_id = fields.Many2one(
-        'ir.model.fields', string='Link Field',
-        help="Specify a field used to link the newly created record on the record used by the server action.")
+        'ir.model.fields', help="Specify a field used to link the newly created record on the record used by the server action.")
     group_ids = fields.Many2many('res.groups', 'ir_act_server_group_rel',
                                  'act_id', 'gid', string='Allowed Groups', help='Groups that can execute the server action. Leave empty to allow everybody.')
 
     update_field_id = fields.Many2one('ir.model.fields', string='Field to Update', ondelete='cascade', compute='_compute_crud_relations', store=True, readonly=False)
     update_field_name = fields.Char(related='update_field_id.name')
     update_property = fields.Char(string='Property to Update', compute='_compute_crud_relations', store=True, readonly=False)
-    update_path = fields.Char(string='Field to Update Path', help="Path to the field to update, e.g. 'partner_id.name'", default=_default_update_path)
+    update_path = fields.Char(string='Field to Update Path', help="Path to the field to update, e.g. 'partner_id.name'", default=lambda self: self._default_update_path())
     update_related_model_id = fields.Many2one('ir.model', compute='_compute_crud_relations', readonly=False, store=True)
     update_field_type = fields.Selection(related='update_field_id.ttype', readonly=True)
     update_m2m_operation = fields.Selection([
@@ -1399,7 +1397,7 @@ class IrActionsTodo(models.Model):
     _order = "sequence, id"
     _allow_sudo_commands = False
 
-    action_id = fields.Many2one('ir.actions.actions', string='Action', required=True, index=True)
+    action_id = fields.Many2one('ir.actions.actions', required=True, index=True)
     sequence = fields.Integer(default=10)
     state = fields.Selection([('open', 'To Do'), ('done', 'Done')], string='Status', default='open', required=True)
     name = fields.Char()

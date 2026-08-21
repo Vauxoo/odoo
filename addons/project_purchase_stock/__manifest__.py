@@ -2,7 +2,6 @@
 
 {
     'name': 'Project - Purchase - Stock',
-    'description': 'Add a project link between POs and their generated stock pickings.',
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'category': 'Services/Project',

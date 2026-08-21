@@ -8,7 +8,7 @@ from odoo.tools.urls import urljoin
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_adyen import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 
@@ -18,7 +18,6 @@ class PaymentProvider(models.Model):
 
     code = fields.Selection(selection_add=[("adyen", "Adyen")], ondelete={"adyen": "set default"})
     adyen_merchant_account = fields.Char(
-        string="Adyen Merchant Account",
         help="The code of the merchant account to use with this provider",
         required_if_provider="adyen",
         copy=False,
@@ -32,7 +31,6 @@ class PaymentProvider(models.Model):
         groups="base.group_system",
     )
     adyen_client_key = fields.Char(
-        string="Adyen Client Key",
         help="The client key of the webservice user",
         required_if_provider="adyen",
         copy=False,

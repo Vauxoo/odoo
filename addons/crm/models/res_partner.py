@@ -8,7 +8,6 @@ class ResPartner(models.Model):
 
     opportunity_ids = fields.One2many('crm.lead', 'partner_id', string='Opportunities', domain=[('type', '=', 'opportunity')])
     opportunity_count = fields.Integer(
-        string="Opportunity Count",
         groups='sales_team.group_sale_salesman',
         compute='_compute_opportunity_count',
     )
@@ -44,7 +43,7 @@ class ResPartner(models.Model):
             return data_list
         for partner in self.filtered('opportunity_count'):
             data_list[partner.id].append(
-                {'icon': 'star', 'iconClass': 'oi-filled', 'value': partner.opportunity_count, 'label': _('Opportunities')}
+                {'icon': 'star', 'iconClass': 'oi-filled', 'value': partner.opportunity_count, 'label': self.env._('Opportunities')}
             )
         return data_list
 

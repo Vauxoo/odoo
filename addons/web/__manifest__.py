@@ -3,12 +3,6 @@
 {
     'name': 'Web',
     'category': 'Hidden',
-    'description': """
-Odoo Web core module.
-========================
-
-This module provides the core of the Odoo Web Client.
-""",
     'depends': ['base'],
     'auto_install': True,
     'data': [

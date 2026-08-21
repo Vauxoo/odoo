@@ -18,7 +18,7 @@ class HrLeaveAccrualLevel(models.Model):
     sequence = fields.Integer(
         string='sequence', compute='_compute_sequence', store=True,
         help='Sequence is generated automatically by start time delta.')
-    accrual_plan_id = fields.Many2one('hr.leave.accrual.plan', "Accrual Plan", required=True, index=True, ondelete="cascade", default=lambda self: self.env.context.get("active_id", None))
+    accrual_plan_id = fields.Many2one('hr.leave.accrual.plan', required=True, index=True, ondelete="cascade", default=lambda self: self.env.context.get("active_id", None))
     accrued_gain_time = fields.Selection(related='accrual_plan_id.accrued_gain_time', export_string_translation=False)
     is_based_on_worked_time = fields.Boolean(related='accrual_plan_id.is_based_on_worked_time', export_string_translation=False)
     start_count = fields.Integer(export_string_translation=False,
@@ -51,7 +51,7 @@ class HrLeaveAccrualLevel(models.Model):
         ('monthly', 'Monthly'),
         ('biyearly', 'Twice a year'),
         ('yearly', 'Yearly'),
-    ], default='daily', required=True, string="Frequency")
+    ], default='daily', required=True)
     week_day = fields.Selection([
         ('0', 'Monday'),
         ('1', 'Tuesday'),
@@ -173,9 +173,9 @@ class HrLeaveAccrualLevel(models.Model):
         error_message = ''
         for level in self:
             if level.frequency == 'weekly' and not level.week_day:
-                error_message = _("Weekday must be selected to use the frequency weekly")
+                error_message = self.env._("Weekday must be selected to use the frequency weekly")
             elif level.frequency == 'bimonthly' and int(level.first_day) >= int(level.second_day):
-                error_message = _("The first day must be lower than the second day.")
+                error_message = self.env._("The first day must be lower than the second day.")
         if error_message:
             raise ValidationError(error_message)
 
@@ -336,7 +336,7 @@ class HrLeaveAccrualLevel(models.Model):
                 return date
             return last_call + relativedelta(month=int(self.yearly_month), day=int(self.yearly_day), years=1)
 
-        raise ValidationError(_("Your frequency selection is not correct: please choose a frequency between theses options:"
+        raise ValidationError(self.env._("Your frequency selection is not correct: please choose a frequency between theses options:"
             "Hourly, Daily, Weekly, Twice a month, Monthly, Twice a year and Yearly."))
 
     def _get_previous_date(self, last_call):
@@ -382,7 +382,7 @@ class HrLeaveAccrualLevel(models.Model):
                 return year_date
             return last_call + relativedelta(month=int(self.yearly_month), day=int(self.yearly_day), years=-1)
 
-        raise ValidationError(_("Your frequency selection is not correct: please choose a frequency between theses options:"
+        raise ValidationError(self.env._("Your frequency selection is not correct: please choose a frequency between theses options:"
             "Hourly, Daily, Weekly, Twice a month, Monthly, Twice a year and Yearly."))
 
     def _get_level_transition_date(self, allocation_start):

@@ -3,9 +3,9 @@
 import ctypes
 import logging
 
-from odoo.addons.iot_drivers.iot_handlers.interfaces.ctep_interface import CTEPInterface
-from odoo.addons.iot_drivers.tools.system import IS_RPI
-from odoo.addons.iot_drivers.iot_handlers.drivers.ctypes_terminal_driver import (
+from ..interfaces.ctep_interface import CTEPInterface
+from ...tools.system import IS_RPI
+from .ctypes_terminal_driver import (
     CtypesTerminalDriver,
     create_ctypes_string_buffer,
     WORLDLINE_ERRORS,

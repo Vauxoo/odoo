@@ -5,15 +5,6 @@
     "category": "Accounting/Localizations/Account Charts",
     "author": "Odoo S.A.",
     "license": "LGPL-3",
-    "description": """
-This is the basic Ugandian localisation necessary to run Odoo in UG:
-================================================================================
-    - Chart of accounts
-    - Taxes
-    - Fiscal positions
-    - Default settings
-    - Tax report
-    """,
     "depends": [
         "account",
     ],

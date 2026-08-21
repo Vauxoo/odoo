@@ -16,7 +16,7 @@ class BaseAutomationLeadTest(models.Model):
                              string="Status", readonly=True, default='draft')
     active = fields.Boolean(default=True)
     tag_ids = fields.Many2many('test_base_automation.tag')
-    partner_id = fields.Many2one('res.partner', string='Partner')
+    partner_id = fields.Many2one('res.partner')
     date_automation_last = fields.Datetime(string='Last Automation', readonly=True)
     employee = fields.Boolean(compute='_compute_employee_deadline', store=True)
     line_ids = fields.One2many('base.automation.line.test', 'lead_id')
@@ -26,8 +26,7 @@ class BaseAutomationLeadTest(models.Model):
     is_assigned_to_admin = fields.Boolean(string='Assigned to admin user')
 
     stage_id = fields.Many2one(
-        'test_base_automation.stage', string='Stage',
-        compute='_compute_stage_id', readonly=False, store=True)
+        'test_base_automation.stage', compute='_compute_stage_id', readonly=False, store=True)
 
     @api.depends('state')
     def _compute_stage_id(self):

@@ -13,7 +13,7 @@ class PurchaseBillLineMatch(models.Model):
     _order = 'matching_id desc, aml_id desc, product_id'
 
     pol_id = fields.Many2one(comodel_name='purchase.order.line', readonly=True)
-    matching_id = fields.Integer(string="Matching", readonly=True)
+    matching_id = fields.Integer(readonly=True)
     aml_id = fields.Many2one(comodel_name='account.move.line', readonly=True)
     company_id = fields.Many2one(comodel_name='res.company', readonly=True)
     partner_id = fields.Many2one(comodel_name='res.partner', readonly=True)
@@ -185,7 +185,7 @@ class PurchaseBillLineMatch(models.Model):
 
     def action_match_lines(self):
         if not self.pol_id:  # we need POL(s) to either match or create bill
-            raise UserError(_("You must select at least one Purchase Order line to match or create bill."))
+            raise UserError(self.env._("You must select at least one Purchase Order line to match or create bill."))
         if not self.aml_id:  # select POL(s) without AML -> create a draft bill with the POL(s)
             return self._action_create_bill_from_po_lines(self.partner_id, self.pol_id)
 
@@ -232,22 +232,22 @@ class PurchaseBillLineMatch(models.Model):
 
     def action_add_to_po(self):
         if not self or not self.aml_id:
-            raise UserError(_("Select Vendor Bill lines to add to a Purchase Order"))
+            raise UserError(self.env._("Select Vendor Bill lines to add to a Purchase Order"))
         partner = self.mapped("partner_id.commercial_partner_id")
         if len(partner) > 1:
-            raise UserError(_("Please select bill lines with the same vendor."))
+            raise UserError(self.env._("Please select bill lines with the same vendor."))
         context = {
             'default_partner_id': partner.id,
             'dialog_size': 'medium',
             'has_products': bool(self.aml_id.product_id),
         }
         if len(self.purchase_order_id) > 1:
-            raise UserError(_("Vendor Bill lines can only be added to one Purchase Order."))
+            raise UserError(self.env._("Vendor Bill lines can only be added to one Purchase Order."))
         elif self.purchase_order_id:
             context['default_purchase_order_id'] = self.purchase_order_id.id
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Add to Purchase Order"),
+            'name': self.env._("Add to Purchase Order"),
             'res_model': 'bill.to.po.wizard',
             'target': 'new',
             'views': [(self.env.ref('purchase.bill_to_po_wizard_form').id, 'form')],

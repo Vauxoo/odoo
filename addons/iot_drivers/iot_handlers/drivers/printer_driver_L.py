@@ -7,11 +7,11 @@ import logging
 import netifaces as ni
 import time
 
-from odoo.addons.iot_drivers.connection_manager import connection_manager
-from odoo.addons.iot_drivers.iot_handlers.drivers.printer_driver_base import PrinterDriverBase
-from odoo.addons.iot_drivers.iot_handlers.interfaces.printer_interface_L import PrinterInterface
-from odoo.addons.iot_drivers.tools import helpers, system, wifi
-from odoo.addons.iot_drivers.tools.system import IOT_IDENTIFIER
+from ...connection_manager import connection_manager
+from .printer_driver_base import PrinterDriverBase
+from ..interfaces.printer_interface_L import PrinterInterface
+from ...tools import helpers, system, wifi
+from ...tools.system import IOT_IDENTIFIER
 
 _logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class PrinterDriver(PrinterDriverBase):
 
     def disconnect(self):
         self.send_status('disconnected', 'Printer was disconnected')
-        super().disconnect()
+        return super().disconnect()
 
     def print_raw(self, data, action_unique_id=None, duplex=True, session_id=None):
         """Print raw data to the printer

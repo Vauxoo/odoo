@@ -1,6 +1,5 @@
 {
     'name': 'Argentinean Stock - Batch Transfers',
-    'description': """Bridge module for Argentine delivery guides on batch transfers.""",
     'category': 'Accounting/Localizations',
     'depends': ['l10n_ar_stock', 'stock_picking_batch'],
     'data': [

@@ -105,7 +105,7 @@ class ProductTemplate(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                'title': _("Note that product(s): '%s' is/are still linked to active Bill of Materials, "
+                'title': self.env._("Note that product(s): '%s' is/are still linked to active Bill of Materials, "
                             "which means that the product can still be used on it/them.", filtered_products),
                 'type': 'warning',
                 'sticky': True,  #True/False will display for few seconds if false
@@ -438,7 +438,7 @@ class ProductProduct(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                'title': _("Note that product(s): '%s' is/are still linked to active Bill of Materials, "
+                'title': self.env._("Note that product(s): '%s' is/are still linked to active Bill of Materials, "
                             "which means that the product can still be used on it/them.", filtered_products),
                 'type': 'warning',
                 'sticky': True,  #True/False will display for few seconds if false
@@ -457,7 +457,7 @@ class ProductProduct(models.Model):
             ['id:recordset'],
         ):
             if product_template.uom_id != uom:
-                raise UserError(_('As other units of measure (ex : %(problem_uom)s) '
+                raise UserError(self.env._('As other units of measure (ex : %(problem_uom)s) '
                 'than %(uom)s have already been used for this product, the change of unit of measure can not be done.'
                 'If you want to change it, please archive the product and create a new one.',
                 problem_uom=uom.name, uom=product_template.uom_id.name))
@@ -469,7 +469,7 @@ class ProductProduct(models.Model):
             ['id:recordset'],
         ):
             if product.product_tmpl_id.uom_id != uom:
-                raise UserError(_('As other units of measure (ex : %(problem_uom)s) '
+                raise UserError(self.env._('As other units of measure (ex : %(problem_uom)s) '
                 'than %(uom)s have already been used for this product, the change of unit of measure can not be done.'
                 'If you want to change it, please archive the product and create a new one.',
                 problem_uom=uom.name, uom=product.product_tmpl_id.uom_id.name))
@@ -481,7 +481,7 @@ class ProductProduct(models.Model):
             ['id:recordset'],
         ):
             if product.product_tmpl_id.uom_id != uom:
-                raise UserError(_('As other units of measure (ex : %(problem_uom)s) '
+                raise UserError(self.env._('As other units of measure (ex : %(problem_uom)s) '
                 'than %(uom)s have already been used for this product, the change of unit of measure can not be done.'
                 'If you want to change it, please archive the product and create a new one.',
                 problem_uom=uom.name, uom=product.product_tmpl_id.uom_id.name))

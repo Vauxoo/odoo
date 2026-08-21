@@ -21,11 +21,10 @@ class CertificateCertificate(models.Model):
     _order = 'date_end DESC'
     _check_company_auto = True
 
-    name = fields.Char(string='Name')
+    name = fields.Char()
     content = fields.Binary(string='Certificate', readonly=False, required=True)
     pkcs12_password = fields.Char(string='Certificate Password', help='Password to decrypt the PKS file.')
     private_key_id = fields.Many2one(
-        string='Private Key',
         comodel_name='certificate.key',
         check_company=True,
         domain=[('public', '=', False)],
@@ -34,7 +33,6 @@ class CertificateCertificate(models.Model):
         readonly=False,
     )
     public_key_id = fields.Many2one(
-        string='Public Key',
         comodel_name='certificate.key',
         check_company=True,
         domain=[('public', '=', True)],
@@ -92,7 +90,6 @@ class CertificateCertificate(models.Model):
     active = fields.Boolean(name='Active', help='Set active to false to archive the certificate', default=True)
     company_id = fields.Many2one(
         comodel_name='res.company',
-        string='Company',
         required=True,
         default=lambda self: self.env.company,
         ondelete='cascade',
@@ -232,7 +229,7 @@ class CertificateCertificate(models.Model):
             if not leaf_pem:
                 reset_certificate(certificate)
                 if certificate.pkcs12_password:
-                    certificate.loading_error = _(
+                    certificate.loading_error = self.env._(
                         "This certificate could not be loaded. Either the content or the password is erroneous."
                     )
                 continue
@@ -292,7 +289,7 @@ class CertificateCertificate(models.Model):
                     pkey_public_key_bytes = certificate.private_key_id._get_public_key_bytes(
                         encoding='pem', formatting='')
                     if not constant_time.bytes_eq(pkey_public_key_bytes, cert_public_key_bytes):
-                        raise ValidationError(_("The certificate and private key are not compatible."))
+                        raise ValidationError(self.env._("The certificate and private key are not compatible."))
 
                 if certificate.public_key_id:
                     if certificate.public_key_id.loading_error:
@@ -300,14 +297,14 @@ class CertificateCertificate(models.Model):
                     pkey_public_key_bytes = certificate.public_key_id._get_public_key_bytes(
                         encoding='pem', formatting='')
                     if not constant_time.bytes_eq(pkey_public_key_bytes, cert_public_key_bytes):
-                        raise ValidationError(_("The certificate and public key are not compatible."))
+                        raise ValidationError(self.env._("The certificate and public key are not compatible."))
 
     @api.constrains('content', 'pem_certificate')
     def _constrains_certificate_loaded(self):
         for certificate in self.filtered(lambda c: c.content and not c.pem_certificate):
             raise ValidationError(
                 certificate.loading_error
-                or _("This certificate could not be loaded. Please provide the certificate password.")
+                or self.env._("This certificate could not be loaded. Please provide the certificate password.")
             )
 
     # -------------------------------------------------------
@@ -597,7 +594,7 @@ class CertificateCertificate(models.Model):
             cert = x509.load_pem_x509_certificate(self.pem_certificate.content)
             public_key = cert.public_key()
         except ValueError:
-            raise UserError(_("The public key from the certificate could not be loaded."))
+            raise UserError(self.env._("The public key from the certificate could not be loaded."))
 
         encoding = serialization.Encoding.DER if encoding == 'der' else serialization.Encoding.PEM
         return _get_formatted_value(
@@ -623,9 +620,9 @@ class CertificateCertificate(models.Model):
         self.ensure_one()
 
         if not self.is_valid:
-            raise UserError(self.loading_error or _("This certificate is not valid, its validity has expired."))
+            raise UserError(self.loading_error or self.env._("This certificate is not valid, its validity has expired."))
         if not self.private_key_id:
-            raise UserError(_("No private key linked to the certificate, it is required to sign documents."))
+            raise UserError(self.env._("No private key linked to the certificate, it is required to sign documents."))
 
         return self.private_key_id._sign(message, hashing_algorithm=hashing_algorithm, formatting=formatting)
 

@@ -32,4 +32,4 @@ class TestOrderReceiptL10n(TestPosOrderReceipt):
         self.key_to_skip['image'].append('sa_qr_code')
 
     def test_receipt_data(self):
-        super().test_receipt_data()
+        return super().test_receipt_data()

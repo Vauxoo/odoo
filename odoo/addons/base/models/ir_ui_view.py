@@ -71,7 +71,7 @@ class IrUiViewCustom(models.Model):
     _allow_sudo_commands = False
 
     ref_id = fields.Many2one('ir.ui.view', string='Original View', index=True, required=True, ondelete='cascade')
-    user_id = fields.Many2one('res.users', string='User', index=True, required=True, ondelete='cascade')
+    user_id = fields.Many2one('res.users', index=True, required=True, ondelete='cascade')
     arch = fields.Text(string='View Architecture', required=True)
 
     _user_id_ref_id = models.Index('(user_id, ref_id)')
@@ -170,8 +170,7 @@ class IrUiView(models.Model):
                                                                          Useful to (soft) reset a broken view.""")
     inherit_id = fields.Many2one('ir.ui.view', string='Inherited View', ondelete='restrict', index=True)
     inherit_children_ids = fields.One2many('ir.ui.view', 'inherit_id', string='Views which inherit from this one')
-    model_data_id = fields.Many2one('ir.model.data', string="Model Data",
-                                    compute='_compute_model_data_id', search='_search_model_data_id')
+    model_data_id = fields.Many2one('ir.model.data', compute='_compute_model_data_id', search='_search_model_data_id')
     xml_id = fields.Char(string="External ID", compute='_compute_xml_id',
                          help="ID of the view defined in xml file")
     group_ids = fields.Many2many('res.groups', 'ir_ui_view_group_rel', 'view_id', 'group_id',
@@ -2652,7 +2651,7 @@ actual arch.
                     self._load_records_write_on_cow(cow_view, inherit_id, authorized_vals)
                 else:
                     cow_view.with_context(no_cow=True).write(authorized_vals)
-        super()._load_records_write(values)
+        return super()._load_records_write(values)
 
     def _load_records_write_on_cow(self, cow_view, inherit_id, values):
         # for modules updated before `website`, we need to
@@ -2671,7 +2670,7 @@ class ResetViewArchWizard(models.TransientModel):
     _name = 'reset.view.arch.wizard'
     _description = "Reset View Architecture Wizard"
 
-    view_id = fields.Many2one('ir.ui.view', string='View')
+    view_id = fields.Many2one('ir.ui.view')
     view_name = fields.Char(related='view_id.name', string='View Name')
     has_diff = fields.Boolean(compute='_compute_arch_diff')
     arch_diff = fields.Html(string='Architecture Diff', readonly=True,
@@ -2680,7 +2679,7 @@ class ResetViewArchWizard(models.TransientModel):
         ('soft', 'Restore previous version (soft reset).'),
         ('hard', 'Reset to file version (hard reset).'),
         ('other_view', 'Reset to another view.')],
-        string='Reset Mode', default='soft', required=True)
+        default='soft', required=True)
     compare_view_id = fields.Many2one('ir.ui.view', string='Compare To View')
     arch_to_compare = fields.Text('Arch To Compare To', compute='_compute_arch_diff')
 

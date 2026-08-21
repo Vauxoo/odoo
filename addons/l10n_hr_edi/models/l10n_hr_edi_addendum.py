@@ -64,7 +64,6 @@ class L10nHrEdiAddendum(models.Model):
             ('O', 'Obračunsko plaćanje'),  # Settlement payment
             ('Z', 'Ostalo'),               # Other
         ],
-        string='Payment Method Type',
         default='T',
     )
     # MojEracun integration fields

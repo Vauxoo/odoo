@@ -5,9 +5,6 @@
     'name': "Partner Autocomplete",
     'summary': "Auto-complete partner companies' data",
     'version': '1.1',
-    'description': """
-Auto-complete partner companies' data
-    """,
     'category': 'Hidden/Tools',
     'depends': [
         'iap_mail',

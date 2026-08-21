@@ -2,10 +2,6 @@
 {
     'name': 'KPI Digests',
     'category': 'Marketing',
-    'description': """
-Send KPI Digests periodically
-=============================
-""",
     'version': '1.1',
     'depends': [
         'mail',

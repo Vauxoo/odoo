@@ -5,8 +5,8 @@ import requests
 import serial
 import time
 
-from odoo.addons.iot_drivers.tools import helpers, system
-from odoo.addons.iot_drivers.iot_handlers.drivers.serial_driver_base import SerialDriver, SerialProtocol, serial_connection
+from ...tools import helpers, system
+from .serial_driver_base import SerialDriver, SerialProtocol, serial_connection
 
 _logger = logging.getLogger(__name__)
 

@@ -7,9 +7,6 @@
     'sequence': 265,
     'summary': 'Manage a forum with FAQ and Q&A',
     'version': '1.2',
-    'description': """
-Ask questions, get answers, no distractions
-        """,
     'website': 'https://www.odoo.com/app/forum',
     'depends': [
         'auth_signup',

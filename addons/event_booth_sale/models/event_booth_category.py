@@ -7,7 +7,6 @@ from odoo.addons.product.models.product_template import PRICE_CONTEXT_KEYS
 from odoo.exceptions import ValidationError
 from odoo.tools import SQL
 
-_logger = logging.getLogger(__name__)
 
 
 class EventBoothCategory(models.Model):
@@ -17,19 +16,19 @@ class EventBoothCategory(models.Model):
         return self.env.ref('event_booth_sale.product_product_event_booth', raise_if_not_found=False)
 
     product_id = fields.Many2one(
-        'product.product', string='Product', required=True,
-        domain=[('service_tracking', '=', 'event_booth')], default=_default_product_id,
+        'product.product', required=True,
+        domain=[('service_tracking', '=', 'event_booth')], default=lambda self: self._default_product_id(),
         init_storage='_init_column_product_id',
         groups="event.group_event_registration_desk")
     price = fields.Float(
-        string='Price', compute='_compute_price', min_display_digits='Product Price', readonly=False,
+        compute='_compute_price', min_display_digits='Product Price', readonly=False,
         store=True, groups="event.group_event_registration_desk")
     price_incl = fields.Float(
         string='Price incl', compute='_compute_price_incl', min_display_digits='Product Price', readonly=False,
         groups="event.group_event_registration_desk")
     currency_id = fields.Many2one(related='product_id.currency_id', groups="event.group_event_registration_desk")
     price_reduce = fields.Float(
-        string='Price Reduce', compute='_compute_price_reduce',
+        compute='_compute_price_reduce',
         compute_sudo=True, min_display_digits='Product Price', groups="event.group_event_registration_desk")
     price_reduce_taxinc = fields.Float(
         string='Price Reduce Tax inc', compute='_compute_price_reduce_taxinc',
@@ -42,7 +41,7 @@ class EventBoothCategory(models.Model):
         for record in self:
             if record.product_id and record.product_id.service_tracking != 'event_booth':
                 raise ValidationError(
-                    _(
+                    self.env._(
                         'The product, %(product_name)s , is used for Event Booth, it must have service_tracking set to "Event Booth".',
                         product_name=record.product_id.name
                     )

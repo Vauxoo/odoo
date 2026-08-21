@@ -76,7 +76,7 @@ class PosPaymentMethod(models.Model):
         access_token = response_json.get('access_token')
 
         if not access_token:
-            raise UserError(_('Unable to retrieve DPO Pay bearer token: check Client ID and Client Secret.'))
+            raise UserError(self.env._('Unable to retrieve DPO Pay bearer token: check Client ID and Client Secret.'))
 
         # The token is short-lived and refreshed automatically to keep the payment flow working.
         # sudo() is used because POS users only have read access to this model.
@@ -86,7 +86,7 @@ class PosPaymentMethod(models.Model):
     def _execute_dpopay_api_request(self, payload, endpoint):
         self.ensure_one()
         if endpoint not in ('start-transaction', 'get-result', 'get-status', 'cancel-transaction'):
-            raise UserError(_('Invalid endpoint'))
+            raise UserError(self.env._('Invalid endpoint'))
 
         mode = 'Test' if self.dpopay_test_mode else 'Production'
         url = f'{self._get_dpopay_base_url()}/{endpoint}'
@@ -115,10 +115,10 @@ class PosPaymentMethod(models.Model):
             error_message = error_json.get('errorMessage') or error_json.get('error_description') or error_json.get('resultDescription') or str(error_json)
 
             if error_code == "403":
-                error_message = _("Please ensure the device is online and confirm that the Merchant ID (MID) and Terminal ID (TID) are correct. %s", error_message)
+                error_message = self.env._("Please ensure the device is online and confirm that the Merchant ID (MID) and Terminal ID (TID) are correct. %s", error_message)
 
             if error_code == "999911":
-                error_message = _("Invalid Chain ID. Please verify the configuration. %s", error_message)
+                error_message = self.env._("Invalid Chain ID. Please verify the configuration. %s", error_message)
 
             return {'errorMessage': error_message}
 

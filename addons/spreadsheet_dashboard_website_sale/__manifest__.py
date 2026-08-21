@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for eCommerce",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'website_sale'],
     'data': [
         'data/dashboards.xml',

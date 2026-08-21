@@ -17,7 +17,6 @@ from odoo.tools import format_date, format_datetime, is_html_empty
 
 from odoo.addons.base.models.ir_qweb import keep_query
 
-_logger = logging.getLogger(__name__)
 
 
 class Survey(http.Controller):
@@ -501,7 +500,7 @@ class Survey(http.Controller):
         survey_sudo, answer_sudo = access_data['survey_sudo'], access_data['answer_sudo']
 
         if answer_sudo.state != "new":
-            return {}, {'error': _("The survey has already started.")}
+            return {}, {'error': self.env._("The survey has already started.")}
 
         if 'lang_code' in post:
             answer_sudo.lang_id = self.env['res.lang']._lang_get(post['lang_code'])
@@ -538,7 +537,7 @@ class Survey(http.Controller):
         if answer_sudo.state == 'done':
             return {}, {'error': 'unauthorized'}
         if answer_sudo.is_session_answer and not answer_sudo.test_entry and not survey_sudo.session_question_can_answer:
-            return {}, {'error': 'validation', 'fields': {survey_sudo.session_question_id.id: _('We do not accept submissions for this question anymore.')}}
+            return {}, {'error': 'validation', 'fields': {survey_sudo.session_question_id.id: self.env._('We do not accept submissions for this question anymore.')}}
 
         questions, page_or_question_id = survey_sudo._get_survey_questions(answer=answer_sudo,
                                                                            page_id=post.get('page_id'),
@@ -725,7 +724,7 @@ class Survey(http.Controller):
         ], limit=1)
 
         if not succeeded_attempt:
-            raise UserError(_("The user has not succeeded the certification"))
+            raise UserError(self.env._("The user has not succeeded the certification"))
 
         return self._generate_report(succeeded_attempt, download=True)
 

@@ -14,14 +14,12 @@ class MailActivityPlanTemplate(models.Model):
     _rec_name = 'summary'
 
     plan_id = fields.Many2one(
-        'mail.activity.plan', string="Plan",
-        ondelete='cascade', required=True, index=True)
+        'mail.activity.plan', ondelete='cascade', required=True, index=True)
     res_model = fields.Selection(related="plan_id.res_model")
     company_id = fields.Many2one(related='plan_id.company_id')
     sequence = fields.Integer(default=10)
     activity_type_id = fields.Many2one(
-        'mail.activity.type', 'Activity Type',
-        default=lambda self: self.env.ref('mail.mail_activity_data_todo'),
+        'mail.activity.type', default=lambda self: self.env.ref('mail.mail_activity_data_todo'),
         domain="['|', ('res_model', '=', False), '&', ('res_model', '!=', False), ('res_model', '=', parent.res_model)]",
         ondelete='restrict', required=True, index=True,
     )
@@ -40,7 +38,7 @@ class MailActivityPlanTemplate(models.Model):
     ],
         string='Trigger', default="before_plan_date", required=True)
     icon = fields.Char('Icon', related='activity_type_id.icon', readonly=True)
-    summary = fields.Char('Summary', compute="_compute_summary", store=True, readonly=False)
+    summary = fields.Char(compute="_compute_summary", store=True, readonly=False)
     responsible_type = fields.Selection([
         ('on_demand', 'Ask at launch'),
         ('other', 'Specific User'),
@@ -53,9 +51,8 @@ class MailActivityPlanTemplate(models.Model):
         check_company=True, compute="_compute_responsible_id", store=True, readonly=False)
     role_id = fields.Many2one(
         'res.role',
-        'Role',
         compute="_compute_role_id", store=True, readonly=False)
-    note = fields.Html('Note', compute="_compute_note", store=True, readonly=False)
+    note = fields.Html(compute="_compute_note", store=True, readonly=False)
     suggested_next_type_id = fields.Many2one(string='Suggested Next Activity', related='activity_type_id.suggested_next_type_id')
 
     @api.constrains('activity_type_id', 'plan_id')
@@ -68,7 +65,7 @@ class MailActivityPlanTemplate(models.Model):
         for template in self.filtered(lambda tpl: tpl.activity_type_id.res_model):
             if template.activity_type_id.res_model != template.plan_id.res_model:
                 raise ValidationError(
-                    _('The activity type "%(activity_type_name)s" is not compatible with the plan "%(plan_name)s"'
+                    self.env._('The activity type "%(activity_type_name)s" is not compatible with the plan "%(plan_name)s"'
                       ' because it is limited to the model "%(activity_type_model)s".',
                       activity_type_name=template.activity_type_id.name,
                       activity_type_model=template.activity_type_id.res_model,
@@ -168,17 +165,17 @@ class MailActivityPlanTemplate(models.Model):
                 try:
                     user = applied_on_record.mapped(on_demand_responsible_fname)
                 except Exception:  # noqa: BLE001
-                    error_detail = _("We were not able to fetch value of field '%(field)s'", field=on_demand_responsible_fname)
+                    error_detail = self.env._("We were not able to fetch value of field '%(field)s'", field=on_demand_responsible_fname)
                 if not error_detail:
                     if not isinstance(user, self.pool['res.users']):
-                        error_detail = _(
+                        error_detail = self.env._(
                             'The field "%(field_name)s" must be related to the res.users model.',
                             field_name=on_demand_responsible_fname,
                         )
                     elif user:
                         responsible = user[0]
             if not responsible and not on_demand_role:
-                error = _('No responsible or role specified for %(activity_type_name)s: %(activity_summary)s.%(error_detail)s',
+                error = self.env._('No responsible or role specified for %(activity_type_name)s: %(activity_summary)s.%(error_detail)s',
                           activity_type_name=self.activity_type_id.name,
                           activity_summary=self.summary or '-',
                           error_detail=f"\n\n{error_detail}" if error_detail else '')

@@ -2,13 +2,6 @@
     'name': "Comoros - Accounting",
     'countries': ['km'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This module implements the tax for Comoros.
-=================================================================
-
-The Chart of Accounts is from SYSCOHADA.
-
-    """,
     'depends': [
         'l10n_syscohada',
         'account',

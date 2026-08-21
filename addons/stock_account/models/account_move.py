@@ -5,8 +5,8 @@ from odoo.tools import float_is_zero
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    stock_move_ids = fields.One2many('stock.move', 'account_move_id', string='Stock Move')
-    inventory_closing = fields.Boolean(string='Inventory Closing', default=False)
+    stock_move_ids = fields.One2many('stock.move', 'account_move_id')
+    inventory_closing = fields.Boolean(default=False)
     closing_datetime = fields.Datetime(string='Closing Date')
 
     # -------------------------------------------------------------------------

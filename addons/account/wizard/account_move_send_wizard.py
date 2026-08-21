@@ -85,7 +85,7 @@ class AccountMoveSendWizard(models.TransientModel):
 
     model = fields.Char('Related Document Model', compute='_compute_model', readonly=False, store=True)
     res_ids = fields.Text('Related Document IDs', compute='_compute_res_ids', readonly=False, store=True)
-    template_name = fields.Char('Template Name')  # used when saving a new mail template
+    template_name = fields.Char()  # used when saving a new mail template
 
     # -------------------------------------------------------------------------
     # DEFAULTS
@@ -285,7 +285,7 @@ class AccountMoveSendWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'view_id': self.env.ref('mail.mail_compose_message_view_form_template_save').id,
-            'name': _('Create a Mail Template'),
+            'name': self.env._('Create a Mail Template'),
             'res_model': 'account.move.send.wizard',
             'context': {'dialog_size': 'medium'},
             'target': 'new',
@@ -297,7 +297,7 @@ class AccountMoveSendWizard(models.TransientModel):
         """ Creates a mail template with the current mail composer's fields. """
         self.ensure_one()
         if not self.model or not self.model in self.env:
-            raise UserError(_('Template creation from composer requires a valid model.'))
+            raise UserError(self.env._('Template creation from composer requires a valid model.'))
         model_id = self.env['ir.model']._get_id(self.model)
         template_body = self.body
         if template_body:

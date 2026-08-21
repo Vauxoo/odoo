@@ -11,7 +11,7 @@ class CrmIapLeadIndustryDivision(models.Model):
 
     name = fields.Char(string="Division Name", required=True, translate=True)
     code = fields.Char(string="Division Code", required=True, help="Division code as per SIC indicating the higher-level industry classification.")
-    sequence = fields.Integer('Sequence')
+    sequence = fields.Integer()
 
     _name_uniq = models.Constraint(
         'unique (name)',

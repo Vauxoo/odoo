@@ -1,4 +1,4 @@
-from odoo.addons.mail.tests.common_controllers import MailControllerUpdateCommon
+from ..common_controllers import MailControllerUpdateCommon
 from odoo.tests import tagged
 
 

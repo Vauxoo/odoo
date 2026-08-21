@@ -27,7 +27,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('be_asso')
     def _get_be_asso_template_data(self):
         return {
-            'name': _('Associations and Foundations'),
+            'name': self.env._('Associations and Foundations'),
             'parent': 'be',
             'code_digits': '6',
         }

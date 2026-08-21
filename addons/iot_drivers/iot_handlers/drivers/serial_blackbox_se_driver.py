@@ -1,7 +1,7 @@
 import logging
 import serial
 
-from odoo.addons.iot_drivers.iot_handlers.drivers.serial_driver_base import (
+from .serial_driver_base import (
     SerialDriver,
     SerialProtocol,
     serial_connection,

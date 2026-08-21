@@ -25,7 +25,6 @@ class SpreadsheetDashboard(models.Model):
     )
     is_favorite = fields.Boolean(
         compute='_compute_is_favorite',
-        string='Is Favorite',
         help='Indicates whether the dashboard is favorited by the current user'
     )
     main_data_model_ids = fields.Many2many('ir.model', copy=False)
@@ -85,7 +84,7 @@ class SpreadsheetDashboard(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for dashboard, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", dashboard.name)
+                vals['name'] = self.env._("%s (copy)", dashboard.name)
         return vals_list
 
     def action_open_dashboard(self):

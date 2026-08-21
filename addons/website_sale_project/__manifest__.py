@@ -4,9 +4,6 @@
     'name': 'Website Sale - Project',
     'category': 'Website/Website',
     'summary': 'Bridge module between website_sale and project',
-    'description': """
-Bridge module between website_sale and project.
-    """,
     'depends': ['website_sale', 'project'],
     'data': [
         'data/website_sale_project_data.xml',

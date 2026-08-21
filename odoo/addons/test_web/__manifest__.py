@@ -1,7 +1,5 @@
 {
     'name': "test_search_panel",
-    'description': "Tests for the search panel python methods",
-
     'category': 'Hidden/Tests',
     'version': '0.1',
 

@@ -5,9 +5,9 @@ from werkzeug.exceptions import BadRequest
 from odoo.fields import Domain
 from odoo.http import request
 
-from odoo.addons.mail.controllers.webclient import WebclientController
-from odoo.addons.mail.tools.discuss import Store
-from odoo.addons.mail.tools.store_handler import store_handler
+from .webclient import WebclientController
+from ..tools.discuss import Store
+from ..tools.store_handler import store_handler
 
 
 class MessagingMenuController(WebclientController):

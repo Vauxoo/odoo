@@ -25,16 +25,16 @@ class WebsiteMenu(models.Model):
         return menu.sequence or 0
 
     name = fields.Char('Menu', required=True, translate=True)
-    url = fields.Char("Url", compute="_compute_url", store=True, required=True, readonly=False, default="#", copy=True)
+    url = fields.Char(compute="_compute_url", store=True, required=True, readonly=False, default="#", copy=True)
     page_id = fields.Many2one('website.page', 'Related Page', ondelete='cascade', index='btree_not_null')
     controller_page_id = fields.Many2one('website.controller.page', 'Related Model Page', ondelete='cascade', index='btree_not_null')
-    new_window = fields.Boolean('New Window')
-    sequence = fields.Integer(default=_default_sequence)
-    website_id = fields.Many2one('website', 'Website', ondelete='cascade')
+    new_window = fields.Boolean()
+    sequence = fields.Integer(default=lambda self: self._default_sequence())
+    website_id = fields.Many2one('website', ondelete='cascade')
     parent_id = fields.Many2one('website.menu', 'Parent Menu', index=True, ondelete="cascade")
     child_id = fields.One2many('website.menu', 'parent_id', string='Child Menus')
     parent_path = fields.Char(index=True)
-    is_visible = fields.Boolean(compute='_compute_visible', string='Is Visible')
+    is_visible = fields.Boolean(compute='_compute_visible')
     group_ids = fields.Many2many('res.groups', string='Visible Groups',
         groups='base.group_user',
         help="User needs to be at least in one of these groups to see the menu")
@@ -96,16 +96,16 @@ class WebsiteMenu(models.Model):
                 level += 1
                 current_menu = current_menu.parent_id
                 if level > 2:
-                    raise UserError(_("Menus cannot have more than two levels of hierarchy."))
+                    raise UserError(self.env._("Menus cannot have more than two levels of hierarchy."))
 
             if parent_menu:
                 # Mega menu constraint
                 if parent_menu.is_mega_menu or (record.is_mega_menu and (parent_menu.parent_id or record.child_id)):
-                    raise UserError(_("A mega menu cannot have a parent or child menu."))
+                    raise UserError(self.env._("A mega menu cannot have a parent or child menu."))
 
                 # Submenu structure constraint
                 if record.child_id and (parent_menu.parent_id or record.child_id.child_id):
-                    raise UserError(_("Menus with child menus cannot be added as a submenu."))
+                    raise UserError(self.env._("Menus with child menus cannot be added as a submenu."))
 
     @api.constrains("mega_menu_content")
     def _validate_mega_menu_content(self):
@@ -114,7 +114,7 @@ class WebsiteMenu(models.Model):
         """
         for record in self:
             if record.mega_menu_content and ' data-oe-model=' in record.mega_menu_content:
-                raise UserError(_("Presence of publishing branding in html content is forbidden"))
+                raise UserError(self.env._("Presence of publishing branding in html content is forbidden"))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -184,7 +184,7 @@ class WebsiteMenu(models.Model):
     def _unlink_except_master_tags(self):
         main_menu = self.env.ref('website.main_menu', raise_if_not_found=False)
         if main_menu and main_menu in self:
-            raise UserError(_("You cannot delete this website menu as this serves as the default parent menu for new websites (e.g., /shop, /event, ...)."))
+            raise UserError(self.env._("You cannot delete this website menu as this serves as the default parent menu for new websites (e.g., /shop, /event, ...)."))
 
     def _compute_visible(self):
         for menu in self:

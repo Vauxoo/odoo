@@ -2,22 +2,6 @@
 {
     'name': 'Jordan - Accounting',
     'countries': ['jo'],
-    'description': """
-This is the base module to manage the accounting chart for Jordan in Odoo.
-==============================================================================
-
-Jordan accounting basic charts and localization.
-
-Activates:
-
-- Chart of accounts
-
-- Taxes
-
-- Tax report
-
-- Fiscal positions
-    """,
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [
         'account',

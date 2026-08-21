@@ -80,7 +80,7 @@ class HrLeave(models.Model):
     def _timesheet_prepare_line_values(self, index, work_hours_data, day_date, work_hours_count, project, task):
         self.ensure_one()
         return {
-            'name': _("Time Off (%(index)s/%(total)s)", index=index + 1, total=len(work_hours_data)),
+            'name': self.env._("Time Off (%(index)s/%(total)s)", index=index + 1, total=len(work_hours_data)),
             'project_id': project.id,
             'task_id': task.id,
             'account_id': project.sudo().account_id.id,

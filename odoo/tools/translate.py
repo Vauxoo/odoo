@@ -370,7 +370,7 @@ def parse_html(text):
     try:
         parse = html.fragment_fromstring(text, parser=_HTML_PARSER)
     except (etree.ParserError, TypeError) as e:
-        raise UserError(_("Error while parsing view:\n\n%s") % e) from e
+        raise UserError(_("Error while parsing view:\n\n%s", e)) from e
     return parse
 
 def serialize_html(node):
@@ -1265,7 +1265,7 @@ def TranslationFileWriter(target, fileformat='po', lang=None):
         return TarFileWriter(target, lang=lang)
 
     raise Exception(_('Unrecognized extension: must be one of '
-                      '.csv, .po, or .tgz (received .%s).') % fileformat)
+                      '.csv, .po, or .tgz (received .%s).', fileformat))
 
 
 _writer = codecs.getwriter('utf-8')
@@ -1391,7 +1391,7 @@ class TarFileWriter:
 
 
 # Methods to export the translation file
-# pylint: disable=redefined-builtin
+# ruff: disable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
 def trans_export(lang, modules, buffer, format, env):
     reader = TranslationModuleReader(env.cr, modules=modules, lang=lang)
     if not reader:

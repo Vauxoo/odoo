@@ -98,7 +98,7 @@ class MaintenanceRequest(models.Model):
     def _default_employee_get(self):
         return self.env.user.employee_id
 
-    employee_id = fields.Many2one('hr.employee', string='Employee', default=_default_employee_get)
+    employee_id = fields.Many2one('hr.employee', default=lambda self: self._default_employee_get())
     owner_user_id = fields.Many2one(compute='_compute_owner', store=True)
     equipment_id = fields.Many2one(domain="['|', ('employee_id', '=', employee_id), ('employee_id', '=', False)]")
 

@@ -4,18 +4,6 @@
     'website': 'https://www.odoo.com/app/events',
     'category': 'Marketing/Events',
     'summary': 'Trainings, Conferences, Meetings, Exhibitions, Registrations',
-    'description': """
-Organization and management of Events.
-======================================
-
-The event module allows you to efficiently organize events and all related tasks: planning, registration tracking,
-attendances, etc.
-
-Key Features
-------------
-* Manage your Events and Registrations
-* Use emails to automatically confirm and send acknowledgments for any event registration
-""",
     'depends': ['barcodes', 'base_setup', 'digest', 'mail', 'phone_validation', 'portal', 'utm'],
     'data': [
         'security/event_security.xml',

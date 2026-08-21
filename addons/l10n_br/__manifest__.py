@@ -6,49 +6,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['br'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Base module for the Brazilian localization
-==========================================
-
-This module consists of:
-
-- Generic Brazilian chart of accounts
-- Brazilian taxes such as:
-
-  - IPI
-  - ICMS
-  - PIS
-  - COFINS
-  - ISS
-  - IR
-  - CSLL
-
-- Document Types as NFC-e, NFS-e, etc.
-- Identification Documents as CNPJ and CPF
-
-In addition to this module, the Brazilian Localizations is also
-extended and complemented with several additional modules.
-
-Brazil - Accounting Reports (l10n_br_reports)
----------------------------------------------
-Adds a simple tax report that helps check the tax amount per tax group
-in a given period of time. Also adds the P&L and BS adapted for the
-Brazilian market.
-
-Avatax Brazil (l10n_br_avatax)
-------------------------------
-Add Brazilian tax calculation via Avatax and all necessary fields needed to
-configure Odoo in order to properly use Avatax and send the needed fiscal
-information to retrieve the correct taxes.
-
-Avatax for SOs in Brazil (l10n_br_avatax_sale)
-----------------------------------------------
-Same as the l10n_br_avatax module with the extension to the sales order module.
-
-Electronic invoicing through Avatax (l10n_br_edi)
--------------------------------------------------
-Create electronic sales invoices with Avatax.
-""",
     'author': 'Akretion, Odoo Brasil',
     'depends': [
         'account',

@@ -4,9 +4,6 @@
     'name': "Online Event Ticketing",
     'category': 'Website/Website',
     'summary': "Sell event tickets online",
-    'description': """
-Sell event tickets through eCommerce app.
-    """,
     'depends': ['website_event', 'event_sale', 'website_sale'],
     'data': [
         'data/event_data.xml',

@@ -10,15 +10,15 @@ class ResourceCalendar(models.Model):
     # the dependencies
     @api.depends('attendance_ids.work_entry_type_id.count_as')
     def _compute_hours_per_week(self):
-        super()._compute_hours_per_week()
+        return super()._compute_hours_per_week()
 
     @api.depends('attendance_ids.work_entry_type_id.count_as')
     def _compute_days_per_week(self):
-        super()._compute_days_per_week()
+        return super()._compute_days_per_week()
 
     @api.depends('attendance_ids.work_entry_type_id.count_as')
     def _compute_hours_per_day(self):
-        super()._compute_hours_per_day()
+        return super()._compute_hours_per_day()
 
     def _get_reference_hours_per_day(self, day):
         """

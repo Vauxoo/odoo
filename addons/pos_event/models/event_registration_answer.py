@@ -7,7 +7,7 @@ class EventRegistrationAnswer(models.Model):
     _name = 'event.registration.answer'
     _inherit = ['event.registration.answer', 'pos.load.mixin']
 
-    uuid = fields.Char(string='Uuid', readonly=True, default=lambda self: str(uuid4()), copy=False)
+    uuid = fields.Char(readonly=True, default=lambda self: str(uuid4()), copy=False)
 
     @api.model
     def _load_pos_data_fields(self, config):

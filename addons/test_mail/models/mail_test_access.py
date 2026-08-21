@@ -17,7 +17,7 @@ class MailTestAccess(models.Model):
     name = fields.Char()
     email_from = fields.Char()
     phone = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
     access = fields.Selection(
         [
             ('public', 'public'),
@@ -47,7 +47,7 @@ class MailTestAccessCusto(models.Model):
     name = fields.Char()
     email_from = fields.Char()
     phone = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
     is_locked = fields.Boolean()
     is_readonly = fields.Boolean()
 
@@ -76,10 +76,10 @@ class MailTestAccessPublic(models.Model):
     _name = "mail.test.access.public"
     _inherit = ["mail.thread"]
 
-    name = fields.Char("Name")
-    customer_id = fields.Many2one('res.partner', 'Customer')
-    email = fields.Char('Email')
-    mobile = fields.Char('Mobile')
+    name = fields.Char()
+    customer_id = fields.Many2one('res.partner')
+    email = fields.Char()
+    mobile = fields.Char()
     is_locked = fields.Boolean()
 
     def _mail_get_partner_fields(self, introspect_fields=False):

@@ -24,7 +24,7 @@ class ZatcaMixin(models.AbstractModel):
     def _compute_qr_code_str(self):
         rejected = self.filtered(lambda r: r.l10n_sa_edi_state == 'rejected')
         rejected.l10n_sa_qr_code_str = False
-        super(ZatcaMixin, self - rejected)._compute_qr_code_str()
+        return super(ZatcaMixin, self - rejected)._compute_qr_code_str()
 
     def _l10n_sa_get_alerts(self):
         return {}

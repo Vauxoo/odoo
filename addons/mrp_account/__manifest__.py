@@ -4,17 +4,6 @@
     'name': 'Accounting - MRP',
     'category': 'Supply Chain/Manufacturing',
     'summary': 'Analytic accounting in Manufacturing',
-    'description': """
-Analytic Accounting in MRP
-==========================
-
-* Cost structure report
-
-Also, allows to compute the cost of the product based on its BoM, using the costs of its components and work center operations.
-It adds a button on the product itself but also an action in the list view of the products.
-If the automated inventory valuation is active, the necessary accounting entries will be created.
-
-""",
     'website': 'https://www.odoo.com/app/manufacturing',
     'depends': ['mrp', 'stock_account'],
     "data": [

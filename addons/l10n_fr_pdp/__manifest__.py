@@ -2,10 +2,6 @@
     'name': 'France - E-Invoicing (Approved Platform)',
     'category': 'Accounting/Localizations/EDI',
     'website': "https://www.odoo.com/documentation/18.0/applications/finance/fiscal_localizations/france.html#PDP",
-    'description': """
-        - Support for the mandatory electronic invoicing in France
-        - Send and receive documents via the Odoo approved platform
-""",
     'depends': [
         'l10n_fr_account',
         'account_peppol',

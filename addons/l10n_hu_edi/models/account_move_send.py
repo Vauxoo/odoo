@@ -2,7 +2,7 @@ import time
 from datetime import timedelta
 
 from odoo import api, fields, models, _
-from odoo.addons.l10n_hu_edi.models.l10n_hu_edi_connection import L10nHuEdiConnection
+from .l10n_hu_edi_connection import L10nHuEdiConnection
 
 
 class AccountMoveSend(models.AbstractModel):
@@ -15,7 +15,7 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        res.update({'hu_nav_30': {'label': _("NAV 3.0"), 'is_applicable': self._is_hu_edi_applicable}})
+        res.update({'hu_nav_30': {'label': self.env._("NAV 3.0"), 'is_applicable': self._is_hu_edi_applicable}})
         return res
 
     # -------------------------------------------------------------------------
@@ -29,7 +29,7 @@ class AccountMoveSend(models.AbstractModel):
         enabled_moves = moves.filtered(lambda m: 'upload' in m._l10n_hu_edi_get_valid_actions())._origin
         if hu_moves - enabled_moves:
             alerts['l10n_hu_edi_checkbox_not_ticked'] = {
-                'message': _("Invoices issued in Hungary must, with few exceptions, be reported to the NAV's Online-Invoice system.")
+                'message': self.env._("Invoices issued in Hungary must, with few exceptions, be reported to the NAV's Online-Invoice system.")
             }
         else:
             alerts.update(enabled_moves._l10n_hu_edi_check_invoices())

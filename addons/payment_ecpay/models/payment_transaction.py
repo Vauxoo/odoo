@@ -6,7 +6,7 @@ from odoo import api, models
 from odoo.tools.urls import urljoin
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_ecpay import const
+from .. import const
 
 
 class PaymentTransaction(models.Model):

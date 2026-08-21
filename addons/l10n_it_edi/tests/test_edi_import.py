@@ -16,7 +16,6 @@ from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 from odoo.addons.account_edi_proxy_client.tests.test_account_edi_proxy_client import TestAccountEdiProxyUser
 
 import logging
-_logger = logging.getLogger(__name__)
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')

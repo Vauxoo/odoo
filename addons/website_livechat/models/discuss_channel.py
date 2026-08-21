@@ -41,9 +41,9 @@ class DiscussChannel(models.Model):
     def _get_visitor_leave_message(self, correspondents=False, cancel=False):
         if not cancel:
             if self.livechat_visitor_id.id:
-                return _("Visitor #%(id)d left the conversation.", id=self.livechat_visitor_id.id)
-            return _("Visitor left the conversation.")
-        return _(
+                return self.env._("Visitor #%(id)d left the conversation.", id=self.livechat_visitor_id.id)
+            return self.env._("Visitor left the conversation.")
+        return self.env._(
             "Live chat conversation closed automatically: the visitor started a new conversation with another agent.",
         )
 

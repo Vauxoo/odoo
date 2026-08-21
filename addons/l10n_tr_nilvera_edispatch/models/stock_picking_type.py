@@ -46,7 +46,7 @@ class StockPickingType(models.Model):
             and self.sequence_code
             and not gib_prefix
         ):
-            raise UserError(_("Odoo extracts the last 3 letters of the Sequence Prefix as the GIB prefix for e-Dispatch orders."
+            raise UserError(self.env._("Odoo extracts the last 3 letters of the Sequence Prefix as the GIB prefix for e-Dispatch orders."
                               "\n\nValid examples:"
                               "\nOUT/"
                               "\nOUT-"

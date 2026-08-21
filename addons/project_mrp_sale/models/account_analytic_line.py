@@ -11,4 +11,4 @@ class AccountAnalyticLine(models.Model):
     def _set_billable_cost(self):
         aals_mrp = self.filtered(lambda aal: aal.category == 'manufacturing_order')
         aals_mrp.billable_type = '14_manufacturing_order'
-        super(AccountAnalyticLine, self - aals_mrp)._set_billable_cost()
+        return super(AccountAnalyticLine, self - aals_mrp)._set_billable_cost()

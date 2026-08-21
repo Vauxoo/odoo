@@ -3,9 +3,6 @@
     'name': "HR Attendance Holidays",
     'summary': """Attendance Holidays""",
     'category': 'Human Resources',
-    'description': """
-Convert employee's extra hours to leave allocations.
-    """,
     'depends': ['hr_attendance', 'hr_holidays'],
     'auto_install': True,
     'data': [

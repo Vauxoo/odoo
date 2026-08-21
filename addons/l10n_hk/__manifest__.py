@@ -5,7 +5,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['hk'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': ' This is the base module to manage chart of accounting and localization for Hong Kong ',
     'depends': [
         'account_qr_code_emv',
         'account',

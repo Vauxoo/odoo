@@ -1,7 +1,6 @@
 {
     'name': 'Test Tests',
     'category': 'Hidden/Tests',
-    'description': """Tests the Tests utilities.""",
     'depends': ['base', 'web'],
     'data': [
         'views/menu.xml',

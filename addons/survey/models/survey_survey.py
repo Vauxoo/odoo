@@ -44,7 +44,7 @@ class SurveySurvey(models.Model):
         ('assessment', 'Assessment'),
         ('custom', 'Custom'),
     ],
-        string='Survey Type', required=True, default='custom')
+        required=True, default='custom')
     lang_ids = fields.Many2many(
         'res.lang', string='Languages',
         default=lambda self: self.env['res.lang']._lang_get(
@@ -56,15 +56,15 @@ class SurveySurvey(models.Model):
     title = fields.Char('Survey Title', required=True, translate=True)
     color = fields.Integer('Color Index', default=0)
     description = fields.Html(
-        "Description", translate=True, sanitize=True, sanitize_overridable=True,
+        translate=True, sanitize=True, sanitize_overridable=True,
         help="The description will be displayed on the home page of the survey. You can use this to give the purpose and guidelines to your candidates before they start it.")
     description_done = fields.Html(
         "End Message", translate=True,
         help="This message will be displayed when survey is completed")
-    background_image = fields.Image("Background Image")
+    background_image = fields.Image()
     background_image_url = fields.Char('Background Url', compute="_compute_background_image_url")
     background_image_filename = fields.Char("Background Filename")
-    active = fields.Boolean("Active", default=True)
+    active = fields.Boolean(default=True)
     user_id = fields.Many2one(
         'res.users', string='Responsible',
         domain=[('share', '=', False)], tracking=1,
@@ -94,9 +94,8 @@ class SurveySurvey(models.Model):
     # security / access
     access_mode = fields.Selection([
         ('public', 'Anyone with the link'),
-        ('token', 'Invited people only')], string='Access Mode',
-        default='public', required=True)
-    access_token = fields.Char('Access Token', default=lambda self: self._get_default_access_token(), copy=False)
+        ('token', 'Invited people only')], default='public', required=True)
+    access_token = fields.Char(default=lambda self: self._get_default_access_token(), copy=False)
     users_login_required = fields.Boolean('Require Login', help="If checked, users have to login before answering even with a valid token.")
     users_can_go_back = fields.Boolean('Users can go back', help="If checked, users can go back to previous pages.")
     users_can_signup = fields.Boolean('Users can signup', compute='_compute_users_can_signup')
@@ -146,18 +145,18 @@ class SurveySurvey(models.Model):
     #       So it can be edited but not removed or replaced.
     certification_give_badge = fields.Boolean('Give Badge', compute='_compute_certification_give_badge',
                                               readonly=False, store=True, copy=False)
-    certification_badge_id = fields.Many2one('gamification.badge', 'Certification Badge', copy=False, index='btree_not_null')
+    certification_badge_id = fields.Many2one('gamification.badge', copy=False, index='btree_not_null')
     certification_badge_id_dummy = fields.Many2one(related='certification_badge_id', string='Certification Badge ')
     # live sessions
     session_available = fields.Boolean('Live session available', compute='_compute_session_available')
     session_state = fields.Selection([
         ('ready', 'Ready'),
         ('in_progress', 'In Progress'),
-        ], string="Session State", copy=False)
-    session_code = fields.Char('Session Code', copy=False, compute="_compute_session_code",
+        ], copy=False)
+    session_code = fields.Char(copy=False, compute="_compute_session_code",
                                precompute=True, store=True, readonly=False,
         help="This code will be used by your attendees to reach your session. Feel free to customize it however you like!")
-    session_link = fields.Char('Session Link', compute='_compute_session_link')
+    session_link = fields.Char(compute='_compute_session_link')
     # live sessions - current question fields
     session_question_id = fields.Many2one('survey.question', string="Current Question", copy=False,
         help="The current question of the survey session.")
@@ -449,7 +448,7 @@ class SurveySurvey(models.Model):
         failing = self.filtered(lambda survey: survey.scoring_type == 'scoring_with_answers_after_page' and survey.users_can_go_back)
         if failing:
             raise ValidationError(
-                _('Combining roaming and "Scoring with answers after each page" is not possible; please update the following surveys:\n- %(survey_names)s',
+                self.env._('Combining roaming and "Scoring with answers after each page" is not possible; please update the following surveys:\n- %(survey_names)s',
                   survey_names="\n- ".join(failing.mapped('title')))
             )
 
@@ -465,7 +464,7 @@ class SurveySurvey(models.Model):
             if len(accessible) < len(surveys):
                 failing_surveys_sudo = (self - accessible).sudo()
                 raise ValidationError(
-                    _('The access of the following surveys is restricted. Make sure their responsible still has access to it: \n%(survey_names)s\n',
+                    self.env._('The access of the following surveys is restricted. Make sure their responsible still has access to it: \n%(survey_names)s\n',
                         survey_names='\n'.join(f'- {survey.title}: {survey.user_id.name}' for survey in failing_surveys_sudo)))
 
     # ------------------------------------------------------------
@@ -611,22 +610,22 @@ class SurveySurvey(models.Model):
             try:
                 self.with_user(user).check_access('read')
             except AccessError:
-                raise exceptions.UserError(_('Creating test token is not allowed for you.'))
+                raise exceptions.UserError(self.env._('Creating test token is not allowed for you.'))
 
         if not test_entry:
             if not self.active:
-                raise exceptions.UserError(_('Creating token for closed/archived surveys is not allowed.'))
+                raise exceptions.UserError(self.env._('Creating token for closed/archived surveys is not allowed.'))
             if self.access_mode == 'authentication':
                 # signup possible -> should have at least a partner to create an account
                 if self.users_can_signup and not user and not partner:
-                    raise exceptions.UserError(_('Creating token for external people is not allowed for surveys requesting authentication.'))
+                    raise exceptions.UserError(self.env._('Creating token for external people is not allowed for surveys requesting authentication.'))
                 # no signup possible -> should be a not public user (employee or portal users)
                 if not self.users_can_signup and (not user or user._is_public()):
-                    raise exceptions.UserError(_('Creating token for external people is not allowed for surveys requesting authentication.'))
+                    raise exceptions.UserError(self.env._('Creating token for external people is not allowed for surveys requesting authentication.'))
             if self.access_mode == 'internal' and (not user or not user._is_internal()):
-                raise exceptions.UserError(_('Creating token for anybody else than employees is not allowed for internal surveys.'))
+                raise exceptions.UserError(self.env._('Creating token for anybody else than employees is not allowed for internal surveys.'))
             if check_attempts and not self._has_attempts_left(partner or (user and user.partner_id), email, invite_token):
-                raise exceptions.UserError(_('No attempts left.'))
+                raise exceptions.UserError(self.env._('No attempts left.'))
 
     def _prepare_user_input_predefined_questions(self):
         """ Will generate the questions for a randomized survey.
@@ -1040,22 +1039,22 @@ class SurveySurvey(models.Model):
     def check_validity(self):
         # Ensure that this survey has at least one question.
         if not self.question_ids:
-            raise UserError(_('You cannot send an invitation for a survey that has no questions.'))
+            raise UserError(self.env._('You cannot send an invitation for a survey that has no questions.'))
 
         # Ensure scored survey have a positive total score obtainable.
         if self.scoring_type != 'no_scoring' and self.scoring_max_obtainable <= 0:
-            raise UserError(_("A scored survey needs at least one question that gives points.\n"
+            raise UserError(self.env._("A scored survey needs at least one question that gives points.\n"
                               "Please check answers and their scores."))
 
         # Ensure that this survey has at least one section with question(s), if question layout is 'One page per section'.
         if self.questions_layout == 'page_per_section':
             if not self.page_ids:
-                raise UserError(_('You cannot send an invitation for a "One page per section" survey if the survey has no sections.'))
+                raise UserError(self.env._('You cannot send an invitation for a "One page per section" survey if the survey has no sections.'))
             if not self.page_ids.mapped('question_ids'):
-                raise UserError(_('You cannot send an invitation for a "One page per section" survey if the survey only contains empty sections.'))
+                raise UserError(self.env._('You cannot send an invitation for a "One page per section" survey if the survey only contains empty sections.'))
 
         if not self.active:
-            raise exceptions.UserError(_("You cannot send invitations for closed surveys."))
+            raise exceptions.UserError(self.env._("You cannot send invitations for closed surveys."))
 
     def action_send_survey(self):
         """ Open a window to compose an email, pre-filled with the survey message """
@@ -1072,7 +1071,7 @@ class SurveySurvey(models.Model):
         )
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Share a Survey"),
+            'name': self.env._("Share a Survey"),
             'view_mode': 'form',
             'res_model': 'survey.invite',
             'target': 'new',
@@ -1158,7 +1157,7 @@ class SurveySurvey(models.Model):
         not their own survey. """
 
         if not self.env.user.has_group('survey.group_survey_user'):
-            raise AccessError(_('Only survey users can manage sessions.'))
+            raise AccessError(self.env._('Only survey users can manage sessions.'))
 
         self.ensure_one()
         self.sudo().write({
@@ -1184,7 +1183,7 @@ class SurveySurvey(models.Model):
         not their own survey. """
 
         if not self.env.user.has_group('survey.group_survey_user'):
-            raise AccessError(_('Only survey users can manage sessions.'))
+            raise AccessError(self.env._('Only survey users can manage sessions.'))
 
         self.sudo().write({'session_state': False})
         self.user_input_ids.sudo().write({'state': 'done'})
@@ -1247,11 +1246,11 @@ class SurveySurvey(models.Model):
     def _create_certification_badge_trigger(self):
         self.ensure_one()
         if not self.certification_badge_id:
-            raise ValueError(_('Certification Badge is not configured for the survey %(survey_name)s', survey_name=self.title))
+            raise ValueError(self.env._('Certification Badge is not configured for the survey %(survey_name)s', survey_name=self.title))
 
         goal = self.env['gamification.goal.definition'].create({
             'name': self.title,
-            'description': _("%s certification passed", self.title),
+            'description': self.env._("%s certification passed", self.title),
             'domain': "['&', ('survey_id', '=', %s), ('scoring_success', '=', True)]" % self.id,
             'computation_mode': 'count',
             'display_mode': 'boolean',
@@ -1262,7 +1261,7 @@ class SurveySurvey(models.Model):
             'batch_user_expression': 'user.partner_id.id'
         })
         challenge = self.env['gamification.challenge'].create({
-            'name': _('%s challenge certification', self.title),
+            'name': self.env._('%s challenge certification', self.title),
             'reward_id': self.certification_badge_id.id,
             'state': 'inprogress',
             'period': 'once',

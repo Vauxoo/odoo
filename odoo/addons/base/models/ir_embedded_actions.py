@@ -12,14 +12,14 @@ class IrEmbeddedActions(models.Model):
 
     name = fields.Char(translate=True)
     sequence = fields.Integer()
-    parent_action_id = fields.Many2one('ir.actions.act_window', required=True, string='Parent Action', ondelete="cascade")
+    parent_action_id = fields.Many2one('ir.actions.act_window', required=True, ondelete="cascade")
     parent_res_id = fields.Integer(string="Active Parent Id")
     parent_res_model = fields.Char(string='Active Parent Model', required=True)
     # It is required to have either action_id or python_method
-    action_id = fields.Many2one('ir.actions.actions', string="Action", ondelete="cascade")
+    action_id = fields.Many2one('ir.actions.actions', ondelete="cascade")
     python_method = fields.Char(help="Python method returning an action")
 
-    user_id = fields.Many2one('res.users', string="User", help="User specific embedded action. If empty, shared embedded action", ondelete="cascade")
+    user_id = fields.Many2one('res.users', help="User specific embedded action. If empty, shared embedded action", ondelete="cascade")
     is_deletable = fields.Boolean(compute="_compute_is_deletable")
     default_view_mode = fields.Char(string="Default View", help="Default view (if none, default view of the action is taken)")
     filter_ids = fields.One2many("ir.filters", "embedded_action_id", help="Default filter of the embedded action (if none, no filters)")

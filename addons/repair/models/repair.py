@@ -36,8 +36,7 @@ class RepairOrder(models.Model):
         copy=False, required=True,
         readonly=True)
     company_id = fields.Many2one(
-        'res.company', 'Company',
-        readonly=True, required=True, index=True,
+        'res.company', readonly=True, required=True, index=True,
         default=lambda self: self.env.company)
     state = fields.Selection([
         ('draft', 'New'),
@@ -51,7 +50,7 @@ class RepairOrder(models.Model):
              "* The \'Under Repair\' status is used when the repair is ongoing.\n"
              "* The \'Repaired\' status is set when repairing is completed.\n"
              "* The \'Cancelled\' status is used when user cancel repair order.")
-    priority = fields.Selection([('0', 'Normal'), ('1', 'Urgent')], default='0', string="Priority")
+    priority = fields.Selection([('0', 'Normal'), ('1', 'Urgent')], default='0')
     partner_id = fields.Many2one(
         'res.partner', 'Customer',
         index=True, check_company=True, change_default=True, compute='_compute_partner_id', readonly=False, store=True,
@@ -59,10 +58,9 @@ class RepairOrder(models.Model):
     user_id = fields.Many2one('res.users', string="Responsible", default=lambda self: self.env.user, check_company=True)
 
     # Specific Fields
-    internal_notes = fields.Html('Internal Notes')
+    internal_notes = fields.Html()
     tag_ids = fields.Many2many('repair.tags', string="Tags")
     under_warranty = fields.Boolean(
-        'Under Warranty',
         help='If ticked, the sales price will be set to 0 for all products transferred from the repair order.')
     schedule_date = fields.Datetime("Scheduled Date", default=fields.Datetime.now, index=True, required=True, copy=False)
     search_date_category = fields.Selection([
@@ -103,7 +101,7 @@ class RepairOrder(models.Model):
     picking_type_id = fields.Many2one(
         'stock.picking.type', 'Operation Type', copy=True, readonly=False,
         compute='_compute_picking_type_id', store=True,
-        default=_default_picking_type_id,
+        default=lambda self: self._default_picking_type_id(),
         domain="[('code', '=', 'repair_operation'), ('company_id', '=', company_id)]",
         required=True, precompute=True, check_company=True, index=True)
     reference_ids = fields.Many2many(
@@ -170,7 +168,7 @@ class RepairOrder(models.Model):
 
     # Sale Order Binding
     sale_order_id = fields.Many2one(
-        'sale.order', 'Sale Order', check_company=True, readonly=True, index='btree_not_null',
+        'sale.order', check_company=True, readonly=True, index='btree_not_null',
         copy=False, help="Sale Order from which the Repair Order comes from.")
     sale_order_line_id = fields.Many2one(
         'sale.order.line', check_company=True, readonly=True,
@@ -190,8 +188,8 @@ class RepairOrder(models.Model):
     allowed_lot_ids = fields.One2many('stock.lot', compute='_compute_allowed_lot_ids')
 
     # Invoice Binding
-    invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
-    invoice_ids = fields.One2many('account.move', 'repair_order_id', string='Invoice', compute='_compute_invoice_ids', store=True, copy=False)
+    invoice_count = fields.Integer(compute='_compute_invoice_count')
+    invoice_ids = fields.One2many('account.move', 'repair_order_id', compute='_compute_invoice_ids', store=True, copy=False)
     can_create_extra_invoice = fields.Boolean(compute='_compute_can_create_sale_or_invoice')
 
     # UI Fields
@@ -321,7 +319,7 @@ class RepairOrder(models.Model):
     def _compute_parts_availability(self):
         repairs = self.filtered(lambda ro: ro.state in ('confirmed', 'under_repair'))
         repairs.parts_availability_state = 'available'
-        repairs.parts_availability = _('Available')
+        repairs.parts_availability = self.env._('Available')
 
         other_repairs = self - repairs
         other_repairs.parts_availability = False
@@ -338,13 +336,13 @@ class RepairOrder(models.Model):
                 ) < 0
                 for move in repair.move_ids
             ):
-                repair.parts_availability = _('Not Available')
+                repair.parts_availability = self.env._('Not Available')
                 repair.parts_availability_state = 'late'
                 continue
             forecast_date = max(repair.move_ids.filtered('forecast_expected_date').mapped('forecast_expected_date'), default=False)
             if not forecast_date:
                 continue
-            repair.parts_availability = _('Exp %s', format_date(self.env, forecast_date))
+            repair.parts_availability = self.env._('Exp %s', format_date(self.env, forecast_date))
             if repair.schedule_date:
                 repair.parts_availability_state = 'late' if forecast_date > repair.schedule_date else 'expected'
 
@@ -401,7 +399,7 @@ class RepairOrder(models.Model):
         picking_warehouse = self.picking_id.location_dest_id.warehouse_id
         if location_warehouse and picking_warehouse and location_warehouse != picking_warehouse:
             return {
-                'warning': {'title': _("Warning"), 'message': _("Note that the warehouses of the return and repair locations don't match!")},
+                'warning': {'title': self.env._("Warning"), 'message': self.env._("Note that the warehouses of the return and repair locations don't match!")},
             }
 
     @api.model
@@ -423,7 +421,7 @@ class RepairOrder(models.Model):
             )
             if 'picking_type_id' not in vals:
                 vals['picking_type_id'] = picking_type.id
-            if not vals.get('name', False) or vals['name'] == _('New'):
+            if not vals.get('name', False) or vals['name'] == self.env._('New'):
                 vals['name'] = picking_type.sequence_id.next_by_id()
             if not vals.get('reference_ids'):
                 vals['reference_ids'] = [Command.link(self.env["stock.reference"].create({'name': vals['name']}).id)]
@@ -474,7 +472,7 @@ class RepairOrder(models.Model):
         if exist_lot:
             name = self.env['stock.lot']._get_next_serial(self.company_id, self.product_id)
         if not name:
-            raise UserError(_("Please set the first Serial Number or a default sequence"))
+            raise UserError(self.env._("Please set the first Serial Number or a default sequence"))
         self.lot_id = self.env['stock.lot'].create({'product_id': self.product_id.id, 'name': name})
 
     def action_assign(self):
@@ -486,7 +484,7 @@ class RepairOrder(models.Model):
 
     def action_repair_cancel(self):
         if any(repair.state == 'done' for repair in self):
-            raise UserError(_("You cannot cancel a Repair Order that's already been completed"))
+            raise UserError(self.env._("You cannot cancel a Repair Order that's already been completed"))
         for repair in self:
             if repair.sale_order_id:
                 repair.sale_order_line_id.write({'product_uom_qty': 0.0})  # Quantity of the product that generated the RO is set to 0
@@ -553,7 +551,7 @@ class RepairOrder(models.Model):
                 continue
 
             if repair.product_id.tracking in ['lot', 'serial'] and not repair.lot_id:
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "Serial number is required for product to repair : %s",
                     repair.product_id.display_name
                 ))
@@ -610,7 +608,7 @@ class RepairOrder(models.Model):
         @return: True
         """
         if self.filtered(lambda repair: repair.state != 'under_repair'):
-            raise UserError(_("Repair must be under repair in order to end reparation."))
+            raise UserError(self.env._("Repair must be under repair in order to end reparation."))
         if moves := self.move_ids.filtered(lambda move: move.quantity != move.product_uom_qty):
             ctx = self.env.context.copy()
             lines = []
@@ -641,7 +639,7 @@ class RepairOrder(models.Model):
     def action_validate(self):
         self.ensure_one()
         if self.filtered(lambda repair: any(m.product_uom_qty < 0 for m in repair.move_ids)):
-            raise UserError(_("You can not enter negative quantities."))
+            raise UserError(self.env._("You can not enter negative quantities."))
         return self._action_repair_confirm()
 
     def action_view_sale_order(self):
@@ -736,7 +734,7 @@ class RepairOrder(models.Model):
             concerned_ro = self.filtered('sale_order_id')
             ref_str = "\n".join(ro.name for ro in concerned_ro)
             raise UserError(
-                _(
+                self.env._(
                     "You cannot create a quotation for a repair order that is already linked to an existing sale order.\nConcerned repair order(s):\n%(ref_str)s",
                     ref_str=ref_str,
                 ),
@@ -745,7 +743,7 @@ class RepairOrder(models.Model):
             concerned_ro = self.filtered(lambda ro: not ro.partner_id)
             ref_str = "\n".join(ro.name for ro in concerned_ro)
             raise UserError(
-                _(
+                self.env._(
                     "You need to define a customer for a repair order in order to create an associated quotation.\nConcerned repair order(s):\n%(ref_str)s",
                     ref_str=ref_str,
                 ),
@@ -809,7 +807,7 @@ class RepairTags(models.Model):
         return randint(1, 11)
 
     name = fields.Char('Tag Name', required=True)
-    color = fields.Integer(string='Color Index', default=_get_default_color)
+    color = fields.Integer(string='Color Index', default=lambda self: self._get_default_color())
 
     _name_uniq = models.Constraint(
         'unique (name)',

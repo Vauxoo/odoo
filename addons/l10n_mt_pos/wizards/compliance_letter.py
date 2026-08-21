@@ -6,11 +6,11 @@ class ComplianceLetter(models.TransientModel):
     _name = 'compliance.letter.wizard'
     _description = 'Compliance Letter for EXO Number'
 
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
 
     def generate_letter(self):
         if self.company_id.country_id.code != 'MT':
-            raise UserError(_("Compliance letters can only be created for companies registered in Malta. Please ensure the company's country is set to Malta."))
+            raise UserError(self.env._("Compliance letters can only be created for companies registered in Malta. Please ensure the company's country is set to Malta."))
 
         data = {
             "version": self._get_odoo_version(),

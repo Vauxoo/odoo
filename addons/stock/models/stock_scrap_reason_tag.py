@@ -6,9 +6,9 @@ class StockScrapReasonTag(models.Model):
     _description = 'Scrap Reason Tag'
     _order = 'sequence, id'
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(default=10)
-    color = fields.Integer(string="Color", default=0x3C3C3C)
+    color = fields.Integer(default=0x3C3C3C)
 
     _name_uniq = models.Constraint(
         'unique (name)',

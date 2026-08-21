@@ -3,7 +3,7 @@ from odoo.fields import Domain
 from odoo.tools.misc import format_datetime
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.account.models.company import SOFT_LOCK_DATE_FIELDS
+from .company import SOFT_LOCK_DATE_FIELDS
 
 from datetime import date
 
@@ -13,7 +13,6 @@ class AccountLock_Exception(models.Model):
     _description = "Account Lock Exception"
 
     active = fields.Boolean(
-        string='Active',
         default=True,
     )
     state = fields.Selection(
@@ -22,13 +21,11 @@ class AccountLock_Exception(models.Model):
             ('revoked', 'Revoked'),
             ('expired', 'Expired'),
         ],
-        string="State",
         compute='_compute_state',
         search='_search_state'
     )
     company_id = fields.Many2one(
         'res.company',
-        string='Company',
         required=True,
         readonly=True,
         default=lambda self: self.env.company,
@@ -36,12 +33,9 @@ class AccountLock_Exception(models.Model):
     # An exception w/o user_id is an exception for everyone
     user_id = fields.Many2one(
         'res.users',
-        string='User',
         default=lambda self: self.env.user,
     )
-    reason = fields.Char(
-        string='Reason',
-    )
+    reason = fields.Char()
     # An exception without `end_datetime` is valid forever
     end_datetime = fields.Datetime(
         string='End Date',
@@ -55,7 +49,6 @@ class AccountLock_Exception(models.Model):
             ('sale_lock_date', 'Sales Lock Date'),
             ('purchase_lock_date', 'Purchase Lock Date'),
         ],
-        string="Lock Date Field",
         required=True,
         help="Technical field identifying the changed lock date",
     )
@@ -89,7 +82,6 @@ class AccountLock_Exception(models.Model):
         help="The date the Sale Lock Date is set to by this exception. If the lock date is not changed it is set to the maximal date.",
     )
     purchase_lock_date = fields.Date(
-        string='Purchase Lock Date',
         compute="_compute_lock_dates",
         search="_search_purchase_lock_date",
         help="The date the Purchase Lock Date is set to by this exception. If the lock date is not changed it is set to the maximal date.",
@@ -99,7 +91,7 @@ class AccountLock_Exception(models.Model):
 
     def _compute_display_name(self):
         for record in self:
-            record.display_name = _("Lock Date Exception %s", record.id)
+            record.display_name = self.env._("Lock Date Exception %s", record.id)
 
     @api.depends('active', 'end_datetime')
     def _compute_state(self):
@@ -174,7 +166,7 @@ class AccountLock_Exception(models.Model):
                 # Use vals[field] (for field in SOFT_LOCK_DATE_FIELDS) to init the data
                 changed_fields = [field for field in SOFT_LOCK_DATE_FIELDS if field in vals]
                 if len(changed_fields) != 1:
-                    raise ValidationError(_("A single exception must change exactly one lock date field."))
+                    raise ValidationError(self.env._("A single exception must change exactly one lock date field."))
                 field = changed_fields[0]
                 vals['lock_date_field'] = field
                 vals['lock_date'] = vals.pop(field)
@@ -192,12 +184,12 @@ class AccountLock_Exception(models.Model):
             field_name = exception.lock_date_field
 
             # In case there is no explicit end datetime "forever" is implied by not mentioning an end datetime
-            end_datetime_string = _(" valid until %s", format_datetime(self.env, exception.end_datetime)) if exception.end_datetime else ""
-            reason_string = _(" for '%s'", exception.reason) if exception.reason else ""
-            company_chatter_message = _(
+            end_datetime_string = self.env._(" valid until %s", format_datetime(self.env, exception.end_datetime)) if exception.end_datetime else ""
+            reason_string = self.env._(" for '%s'", exception.reason) if exception.reason else ""
+            company_chatter_message = self.env._(
                 "%(exception)s for %(user)s%(end_datetime_string)s%(reason)s.",
-                exception=exception._get_html_link(title=_("Exception")),
-                user=exception.user_id.display_name if exception.user_id else _("everyone"),
+                exception=exception._get_html_link(title=self.env._("Exception")),
+                user=exception.user_id.display_name if exception.user_id else self.env._("everyone"),
                 end_datetime_string=end_datetime_string,
                 reason=reason_string,
             )
@@ -211,7 +203,7 @@ class AccountLock_Exception(models.Model):
         return exceptions
 
     def copy(self, default=None):
-        raise UserError(_('You cannot duplicate a Lock Date Exception.'))
+        raise UserError(self.env._('You cannot duplicate a Lock Date Exception.'))
 
     def _recreate(self):
         """
@@ -229,7 +221,7 @@ class AccountLock_Exception(models.Model):
     def action_revoke(self):
         """Revokes an active exception."""
         if not self.env.user.has_group('account.group_account_manager') and not self.env.su:
-            raise UserError(_("You cannot revoke Lock Date Exceptions. Ask someone with the 'Adviser' role."))
+            raise UserError(self.env._("You cannot revoke Lock Date Exceptions. Ask someone with the 'Adviser' role."))
         for record in self:
             if record.state == 'active':
                 record_sudo = record.sudo()

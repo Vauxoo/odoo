@@ -21,28 +21,28 @@ class IrMail_Server(models.Model):
 
     def _compute_smtp_authentication_info(self):
         outlook_servers = self.filtered(lambda server: server.smtp_authentication == 'outlook')
-        outlook_servers.smtp_authentication_info = _(
+        outlook_servers.smtp_authentication_info = self.env._(
             'Connect your Outlook account with the OAuth Authentication process.  \n'
             'By default, only a user with a matching email address will be able to use this server. '
             'To extend its use, you should set a "mail.default.from" system parameter.')
-        super(IrMail_Server, self - outlook_servers)._compute_smtp_authentication_info()
+        return super(IrMail_Server, self - outlook_servers)._compute_smtp_authentication_info()
 
     @api.constrains('smtp_authentication', 'smtp_pass', 'smtp_encryption', 'smtp_user')
     def _check_use_microsoft_outlook_service(self):
         outlook_servers = self.filtered(lambda server: server.smtp_authentication == 'outlook')
         for server in outlook_servers:
             if server.smtp_pass:
-                raise UserError(_(
+                raise UserError(self.env._(
                     'Please leave the password field empty for Outlook mail server “%s”. '
                     'The OAuth process does not require it', server.name))
 
             if server.smtp_encryption != 'starttls':
-                raise UserError(_(
+                raise UserError(self.env._(
                     'Incorrect Connection Security for Outlook mail server “%s”. '
                     'Please set it to "TLS (STARTTLS)".', server.name))
 
             if not server.smtp_user:
-                raise UserError(_(
+                raise UserError(self.env._(
                             'Please fill the "Username" field with your Outlook/Office365 username (your email address). '
                             'This should be the same account as the one used for the Outlook OAuthentication Token.'))
 

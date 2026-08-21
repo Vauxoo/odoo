@@ -6,9 +6,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['ee'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the base module to manage the accounting chart for Estonia in Odoo.
-    """,
     'author': 'Odoo S.A.',
     'depends': [
         'account',

@@ -11,9 +11,9 @@ from odoo.exceptions import UserError, ValidationError
 
 from odoo.tools import format_list
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
-from odoo.addons.account_peppol.exceptions import get_peppol_error_message
-from odoo.addons.account_peppol.tools.demo_utils import handle_demo
-from odoo.addons.account_peppol.tools.peppol_iap_connector import PEPPOL_PROXY_URLS
+from ..exceptions import get_peppol_error_message
+from ..tools.demo_utils import handle_demo
+from ..tools.peppol_iap_connector import PEPPOL_PROXY_URLS
 
 _logger = logging.getLogger(__name__)
 BATCH_SIZE = 50
@@ -90,7 +90,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
                 # commit the above changes before raising below
                 if not modules.module.current_test:
                     self.env.cr.commit()
-                raise UserError(_('We could not find a user with this information on our server. Please check your information.'))
+                raise UserError(self.env._('We could not find a user with this information on our server. Please check your information.'))
 
             elif e.code == 'invalid_signature':
                 self._mark_connection_out_of_sync()
@@ -125,7 +125,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
                 self._peppol_out_of_sync_disconnect_this_database()
                 if not tools.config['test_enable'] and not modules.module.current_test:
                     self.env.cr.commit()
-                raise UserError(_('This connection has been superseded by another database. Register again.'))
+                raise UserError(self.env._('This connection has been superseded by another database. Register again.'))
             raise
 
     def _peppol_out_of_sync_reconnect_this_database(self):
@@ -246,7 +246,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
         if proxy_type == 'peppol':
             if not company.partner_id.routing_identifier:
                 raise UserError(
-                    _("Please fill in the company's routing identification."))
+                    self.env._("Please fill in the company's routing identification."))
             return company.partner_id.routing_identifier
         return super()._get_proxy_identification(company, proxy_type)
 
@@ -398,7 +398,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
         for edi_user in self:
             edi_user = edi_user.with_company(edi_user.company_id)
             if not edi_user.company_id.peppol_purchase_journal_id:
-                msg = _('Please set a journal for Peppol invoices on %s before receiving documents.', edi_user.company_id.display_name)
+                msg = self.env._('Please set a journal for Peppol invoices on %s before receiving documents.', edi_user.company_id.display_name)
                 if skip_no_journal:
                     _logger.warning(msg)
                 else:
@@ -705,7 +705,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
             # a participant can only try registering as a receiver if they are currently a sender
             peppol_states = dict(self.env['ir.model.fields'].get_field_selection('res.company', 'account_peppol_proxy_state'))[company.account_peppol_proxy_state]  # handles translation correctly
             raise UserError(
-                _('Cannot register a user with a %s application', peppol_states))
+                self.env._('Cannot register a user with a %s application', peppol_states))
 
         edi_identification = self._get_proxy_identification(company, 'peppol')
         peppol_info = company._get_company_info_on_peppol(edi_identification)

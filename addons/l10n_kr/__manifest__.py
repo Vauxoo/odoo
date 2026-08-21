@@ -3,11 +3,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['kr'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Accounting Module for the Republic of Korea
-===========================================
-This provides a base chart of accounts and taxes template for use in Odoo.
-    """,
     'depends': ['account'],
     'auto_install': ['account'],
     'data': [

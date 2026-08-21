@@ -265,4 +265,4 @@ class ProjectProject(models.Model):
     def _toggle_template_mode(self, is_template):
         if not is_template and self.allow_timesheets and not self.account_id:
             self._create_analytic_account()
-        super()._toggle_template_mode(is_template)
+        return super()._toggle_template_mode(is_template)

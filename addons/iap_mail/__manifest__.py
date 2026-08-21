@@ -4,7 +4,6 @@
 {
     'name': "IAP / Mail",
     'summary': """Bridge between IAP and mail""",
-    'description': """Bridge between IAP and mail""",
     'category': 'Hidden/Tools',
     'depends': [
         'iap',

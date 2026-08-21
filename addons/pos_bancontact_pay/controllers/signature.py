@@ -13,8 +13,8 @@ from cryptography.hazmat.primitives.hashes import SHA256
 
 from odoo.http import request
 
-from odoo.addons.pos_bancontact_pay import const
-from odoo.addons.pos_bancontact_pay.errors.exceptions import BancontactSignatureValidationError
+from .. import const
+from ..errors.exceptions import BancontactSignatureValidationError
 
 _logger = logging.getLogger(__name__)
 

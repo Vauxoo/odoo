@@ -8,12 +8,6 @@
         'l10n_in_stock',
         'l10n_in_ewaybill',
     ],
-    'description': """
-Indian E-waybill for Stock
-==========================
-
-This module enables users to create E-waybill from Inventory App without generating an invoice
-    """,
     'data': [
         'data/ewaybill_type_data.xml',
         'views/l10n_in_ewaybill_views.xml',

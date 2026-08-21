@@ -322,7 +322,7 @@ class HrEmployee(models.Model):
                 non_hourly_leaves.with_context(leave_skip_date_check=True, leave_skip_state_check=True)._compute_date_from_to()
                 non_hourly_leaves.filtered(lambda l: l.state == 'validate')._validate_leave_request()
             except ValidationError:
-                raise ValidationError(_("Changing this working schedule results in the affected employee(s) not having enough "
+                raise ValidationError(self.env._("Changing this working schedule results in the affected employee(s) not having enough "
                                         "leaves allocated to accomodate for their leaves already taken in the future. Please "
                                         "review this employee's leaves and adjust their allocation accordingly."))
 
@@ -352,7 +352,7 @@ class HrEmployee(models.Model):
 
     def action_time_off_dashboard(self):
         return {
-            'name': _('Time Off Dashboard'),
+            'name': self.env._('Time Off Dashboard'),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.leave',
             'view_mode': 'calendar,list,form',

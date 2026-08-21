@@ -18,14 +18,13 @@ class EventQuestion(models.Model):
         ('email', 'Email'),
         ('phone', 'Phone'),
         ('company_name', 'Company'),
-    ], default='simple_choice', string="Question Type", required=True)
-    active = fields.Boolean('Active', default=True)
+    ], default='simple_choice', required=True)
+    active = fields.Boolean(default=True)
     event_type_ids = fields.Many2many('event.type', string='Event Types', copy=False)
     event_ids = fields.Many2many('event.event', string='Events', copy=False)
     event_count = fields.Integer('# Events', compute='_compute_event_count')
     is_default = fields.Boolean('Default question', help="Include by default in new events.")
-    is_reusable = fields.Boolean('Is Reusable',
-                                 compute='_compute_is_reusable', default=True, store=True,
+    is_reusable = fields.Boolean(compute='_compute_is_reusable', default=True, store=True,
                                  help='Allow this question to be selected and reused for any future event. Always true for default questions.')
     answer_ids = fields.One2many('event.question.answer', 'question_id', "Answers", copy=True)
     sequence = fields.Integer(default=10)
@@ -61,18 +60,18 @@ class EventQuestion(models.Model):
             if questions_new_type:
                 answer_count = self.env['event.registration.answer'].search_count([('question_id', 'in', questions_new_type.ids)])
                 if answer_count > 0:
-                    raise UserError(_("You cannot change the question type of a question that already has answers!"))
+                    raise UserError(self.env._("You cannot change the question type of a question that already has answers!"))
         return super().write(vals)
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_answered_question(self):
         if self.env['event.registration.answer'].search_count([('question_id', 'in', self.ids)]):
-            raise UserError(_('You cannot delete a question that has already been answered by attendees. You can archive it instead.'))
+            raise UserError(self.env._('You cannot delete a question that has already been answered by attendees. You can archive it instead.'))
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_default_question(self):
         if set(self.ids) & set(self.env['event.type']._default_question_ids()):
-            raise UserError(_('You cannot delete a default question.'))
+            raise UserError(self.env._('You cannot delete a default question.'))
 
     def action_view_question_answers(self):
         """ Allow analyzing the attendees answers to event questions in a convenient way:

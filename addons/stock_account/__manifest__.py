@@ -4,20 +4,6 @@
     'name': 'WMS Accounting',
     'version': '1.1',
     'summary': 'Inventory, Logistic, Valuation, Accounting',
-    'description': """
-WMS Accounting module
-======================
-This module makes the link between the 'stock' and 'account' modules and allows you to create accounting entries to value your stock movements
-
-Key Features
-------------
-* Stock Valuation (periodical or automatic)
-* Invoice from Picking
-
-Dashboard / Reports for Warehouse Management includes:
-------------------------------------------------------
-* Stock Inventory Value at given date (support dates in the past)
-    """,
     'depends': ['stock', 'account'],
     'category': 'Supply Chain/Inventory',
     'sequence': 16,

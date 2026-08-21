@@ -43,7 +43,7 @@ class CertificateAdapter(requests.adapters.HTTPAdapter):
         context.load_cert_chain = patched_load_cert_chain
 
         kwargs['ssl_context'] = context
-        super().init_poolmanager(*args, **kwargs)
+        return super().init_poolmanager(*args, **kwargs)
 
     def cert_verify(self, conn, url, verify, cert):
         """ The original method wants to check for an existing file

@@ -15,12 +15,12 @@ class SlideSlideResource(models.Model):
 
     slide_id = fields.Many2one('slide.slide', required=True, index=True, ondelete='cascade')
     resource_type = fields.Selection([('file', 'File'), ('url', 'Link')], required=True)
-    name = fields.Char('Name', compute="_compute_name", readonly=False, store=True)
+    name = fields.Char(compute="_compute_name", readonly=False, store=True)
     data = fields.Binary('Resource', compute='_compute_reset_resources', store=True, readonly=False)
     file_name = fields.Char(store=True)
-    link = fields.Char('Link', compute='_compute_reset_resources', store=True, readonly=False)
+    link = fields.Char(compute='_compute_reset_resources', store=True, readonly=False)
     download_url = fields.Char('Download URL', compute='_compute_download_url')
-    sequence = fields.Integer(string="Sequence")
+    sequence = fields.Integer()
 
     _check_url = models.Constraint(
         "CHECK (resource_type != 'url' OR link IS NOT NULL)",
@@ -44,9 +44,9 @@ class SlideSlideResource(models.Model):
     @api.depends('file_name', 'resource_type', 'data', 'link')
     def _compute_name(self):
         for resource in self:
-            to_update = not resource.name or resource.name == _("Resource")
+            to_update = not resource.name or resource.name == self.env._("Resource")
             if to_update:
-                new_name = _("Resource")
+                new_name = self.env._("Resource")
                 if resource.resource_type == 'file' and (resource.data or resource.file_name):
                     new_name = resource.file_name
                 elif resource.resource_type == 'url':
@@ -70,4 +70,4 @@ class SlideSlideResource(models.Model):
     def _check_link_type(self):
         for record in self:
             if record.resource_type != 'file' and record.data:
-                raise ValidationError(_("Resource %(resource_name)s is a link and should not contain a data file", resource_name=record.name))
+                raise ValidationError(self.env._("Resource %(resource_name)s is a link and should not contain a data file", resource_name=record.name))

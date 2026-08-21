@@ -63,7 +63,7 @@ class HrEmployee(models.Model):
         ])
         # Prevent from removing employee address when linked to a car
         if car_ids:
-            raise ValidationError(_('Cannot remove address from employees with linked cars.'))
+            raise ValidationError(self.env._('Cannot remove address from employees with linked cars.'))
 
     def write(self, vals):
         # Update car partner when it is changed on the employee

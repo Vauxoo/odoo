@@ -22,7 +22,7 @@ class ProductSupplierinfo(models.Model):
         'Vendor Product Code',
         help="This vendor's product code will be used when printing a request for quotation. Keep empty to use the internal one.")
     sequence = fields.Integer(
-        'Sequence', default=1, help="Assigns the priority to the list of product vendor.")
+        default=1, help="Assigns the priority to the list of product vendor.")
     uom_id = fields.Many2one(
         'uom.uom', 'Unit', compute='_compute_uom_id', store=True, readonly=False, required=True, precompute=True)
     min_qty = fields.Float(
@@ -32,11 +32,9 @@ class ProductSupplierinfo(models.Model):
         'Unit Price', min_display_digits='Product Price', default=0.0, help="The price to purchase a product")
     price_discounted = fields.Float('Discounted Price', compute='_compute_price_discounted')
     company_id = fields.Many2one(
-        'res.company', 'Company',
-        default=lambda self: self.env.company.id, index=1)
+        'res.company', default=lambda self: self.env.company.id, index=1)
     currency_id = fields.Many2one(
-        'res.currency', 'Currency',
-        default=lambda self: self.env.company.currency_id.id,
+        'res.currency', default=lambda self: self.env.company.currency_id.id,
         required=True)
     date_start = fields.Date('Start Date', help="Start date for this vendor price")
     date_end = fields.Date('End Date', help="End date for this vendor price")
@@ -96,14 +94,14 @@ class ProductSupplierinfo(models.Model):
     def _check_dates(self):
         invalid_suppliers = self.filtered(lambda r: r.date_end and r.date_start and r.date_end < r.date_start)
         if invalid_suppliers:
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "End date can't be earlier than the start date. Please check dates for vendor pricelist: %s", ', '.join(invalid_suppliers.mapped('partner_id.name'))
             ))
 
     @api.model
     def get_import_templates(self):
         return [{
-            'label': _('Template for Vendor Pricelists'),
+            'label': self.env._('Template for Vendor Pricelists'),
             'template': '/product/static/xls/product_supplierinfo.xls'
         }]
 

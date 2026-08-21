@@ -40,22 +40,22 @@ class ForumForum(models.Model):
                     </p>
                 </div>
             """) % {
-            'message_intro': _("Welcome!"),
-            'message_post': _(
+            'message_intro': self.env._("Welcome!"),
+            'message_post': self.env._(
                 "Share and discuss the best content and new marketing ideas, build your professional profile and become"
                 " a better marketer together."
             ),
-            'hide_text': _('Dismiss'),
-            'register_text': _('Sign up'),
+            'hide_text': self.env._('Dismiss'),
+            'register_text': self.env._('Sign up'),
         }
 
     # description and use
     name = fields.Char('Forum Name', required=True, translate=True)
-    sequence = fields.Integer('Sequence', default=1)
+    sequence = fields.Integer(default=1)
     mode = fields.Selection([
         ('questions', 'Questions (1 answer)'),
         ('discussions', 'Discussions (multiple answers)')],
-        string='Mode', required=True, default='questions',
+        required=True, default='questions',
         help='Questions mode: only one answer allowed\n Discussions mode: multiple answers allowed')
     privacy = fields.Selection([
         ('public', 'Public'),
@@ -63,15 +63,15 @@ class ForumForum(models.Model):
         ('private', 'Some users')],
         help="Public: Forum is public\nSigned In: Forum is visible for signed in users\nSome users: Forum and their content are hidden for non members of selected group",
         default='public')
-    authorized_group_id = fields.Many2one('res.groups', 'Authorized Group')
+    authorized_group_id = fields.Many2one('res.groups')
     active = fields.Boolean(default=True)
     faq = fields.Html(
         'Guidelines', translate=html_translate,
         sanitize=True, sanitize_overridable=True)
-    description = fields.Text('Description', translate=True)
+    description = fields.Text(translate=True)
     welcome_message = fields.Html(
-        'Welcome Message', translate=html_translate,
-        default=_get_default_welcome_message,
+        translate=html_translate,
+        default=lambda self: self._get_default_welcome_message(),
         sanitize_attributes=False, sanitize_form=False)
     default_order = fields.Selection([
         ('create_date desc', 'Newest'),

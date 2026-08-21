@@ -22,10 +22,10 @@ class ResUsersDeletion(models.Model):
     _rec_name = 'user_id'
 
     # Integer field because the related user might be deleted from the database
-    user_id = fields.Many2one('res.users', string='User', ondelete='set null')
+    user_id = fields.Many2one('res.users', ondelete='set null')
     user_id_int = fields.Integer('User Id', compute='_compute_user_id_int', store=True)
     state = fields.Selection([('todo', 'To Do'), ('done', 'Done'), ('fail', 'Failed')],
-                             string='State', required=True, default='todo')
+                             required=True, default='todo')
 
     @api.depends('user_id')
     def _compute_user_id_int(self):

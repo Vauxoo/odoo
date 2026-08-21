@@ -1050,7 +1050,7 @@ class LastOrderedSet[T](OrderedSet[T]):
     """ A set collection that remembers the elements last insertion order. """
     def add(self, elem):
         self.discard(elem)
-        super().add(elem)
+        return super().add(elem)
 
     def copy(self):
         new_set = LastOrderedSet()

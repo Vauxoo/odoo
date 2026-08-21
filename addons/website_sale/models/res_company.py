@@ -8,7 +8,6 @@ class ResCompany(models.Model):
 
     # Labels to be displayed on the payment buttons, see the rest in payment/models/res_company.py
     free_order_label = fields.Char(
-        string="Free Order Label",
         help="The label to be displayed on the payment buttons for orders with Total Amount zero",
         default="Confirm Order",
         translate=True,

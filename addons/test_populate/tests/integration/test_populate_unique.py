@@ -1,6 +1,6 @@
 from odoo.addons.populate import start_populate
 from odoo.addons.populate.generators import UniqueValueNotFound
-from odoo.addons.test_populate.tests.common import PopulateTestCase
+from ..common import PopulateTestCase
 
 
 class TestUniqueConstraints(PopulateTestCase):

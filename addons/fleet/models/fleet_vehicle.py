@@ -7,7 +7,7 @@ from datetime import datetime
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.fields import Domain
-from odoo.addons.fleet.models.fleet_vehicle_model import FUEL_TYPES
+from .fleet_vehicle_model import FUEL_TYPES
 
 
 #Some fields don't have the exact same name
@@ -45,15 +45,14 @@ class FleetVehicle(models.Model):
 
     name = fields.Char(compute="_compute_vehicle_name", store=True)
     description = fields.Html("Vehicle Description")
-    active = fields.Boolean('Active', default=True, tracking=True)
+    active = fields.Boolean(default=True, tracking=True)
     manager_id = fields.Many2one(
         'res.users', 'Fleet Manager',
         domain=lambda self: f"[('share', '=', False), ('company_id', 'in', {self.env.companies.ids}), ('all_group_ids', 'in', {self.env.ref('fleet.fleet_group_user').id})]",
         tracking=True,
     )
     company_id = fields.Many2one(
-        'res.company', 'Company',
-        default=lambda self: self.env.company,
+        'res.company', default=lambda self: self.env.company,
         index=True,
     )
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
@@ -65,35 +64,32 @@ class FleetVehicle(models.Model):
     trailer_hook = fields.Boolean(default=False, string='Trailer Hitch', tracking=True,
         help="A trailer hitch is a device attached to a vehicle's chassis for towing purposes, \
             such as pulling trailers, boats, or other vehicles.")
-    driver_id = fields.Many2one('res.partner', 'Driver', tracking=True, help='Driver address of the vehicle', copy=False)
-    future_driver_id = fields.Many2one('res.partner', 'Future Driver', tracking=True, help='Next Driver Address of the vehicle', copy=False, check_company=True)
-    model_id = fields.Many2one('fleet.vehicle.model', 'Model',
-        tracking=True, index=True)
+    driver_id = fields.Many2one('res.partner', tracking=True, help='Driver address of the vehicle', copy=False)
+    future_driver_id = fields.Many2one('res.partner', tracking=True, help='Next Driver Address of the vehicle', copy=False, check_company=True)
+    model_id = fields.Many2one('fleet.vehicle.model', tracking=True, index=True)
     brand_id = fields.Many2one('fleet.vehicle.model.brand', 'Brand', related="model_id.brand_id", store=True, readonly=False)
     log_drivers = fields.One2many('fleet.vehicle.assignation.log', 'vehicle_id', string='Assignment Logs')
     log_services = fields.One2many('fleet.vehicle.log.services', 'vehicle_id', 'Services Logs')
     log_contracts = fields.One2many('fleet.vehicle.log.contract', 'vehicle_id', 'Contracts')
-    contract_count = fields.Integer(compute="_compute_count_all", string='Contract Count')
+    contract_count = fields.Integer(compute="_compute_count_all")
     service_count = fields.Integer(compute="_compute_count_all", string='Services')
     odometer_count = fields.Integer(compute="_compute_count_all", string='Odometer')
     history_count = fields.Integer(compute="_compute_count_all", string="Drivers History Count")
     next_assignation_date = fields.Date('Available From', help="The date from which this vehicle becomes available for assignment. Leave empty if it's available immediately.",
         tracking=True)
-    order_date = fields.Date('Order Date', tracking=True)
+    order_date = fields.Date(tracking=True)
     acquisition_date = fields.Date('Registration Date', required=False, default=fields.Date.context_today,
         tracking=True, help='Date of vehicle registration')
     write_off_date = fields.Date('Cancellation Date', tracking=True, help="Date when the vehicle's license plate has been cancelled/removed.")
     contract_date_start = fields.Date(string="First Contract Date", default=fields.Date.context_today, tracking=True)
     color = fields.Char(help='Color of the vehicle', tracking=True)
-    state_id = fields.Many2one('fleet.vehicle.state', 'State',
-        default=_get_default_state, group_expand='_read_group_expand_full',
+    state_id = fields.Many2one('fleet.vehicle.state', default=lambda self: self._get_default_state(), group_expand='_read_group_expand_full',
         tracking=True,
         help='Current state of the vehicle', ondelete="set null")
     location = fields.Char(help='Location of the vehicle (garage, ...)')
     seats = fields.Integer('Seating Capacity', help='Number of seats of the vehicle',
         compute='_compute_seats', store=True, readonly=False)
-    model_year = fields.Selection(selection='_get_year_selection', string='Model Year',
-        help='Year of the model', compute='_compute_model_year', store=True, readonly=False)
+    model_year = fields.Selection(selection='_get_year_selection', help='Year of the model', compute='_compute_model_year', store=True, readonly=False)
     doors = fields.Integer('Number of Doors', help='Number of doors of the vehicle',
         compute='_compute_doors', store=True, readonly=False)
     tag_ids = fields.Many2many('fleet.vehicle.tag', 'fleet_vehicle_vehicle_tag_rel', 'vehicle_tag_id', 'tag_id', 'Tags', copy=False)
@@ -102,17 +98,16 @@ class FleetVehicle(models.Model):
     odometer_unit = fields.Selection([
         ('kilometers', 'km'),
         ('miles', 'mi')
-        ], 'Odometer Unit', default='kilometers', required=True)
+        ], default='kilometers', required=True)
     transmission = fields.Selection(
-        [('manual', 'Manual'), ('semi_automatic', 'Semi-Automatic'), ('automatic', 'Automatic')], 'Transmission',
-        compute='_compute_transmission', store=True, readonly=False)
-    fuel_type = fields.Selection(FUEL_TYPES, 'Fuel Type', compute='_compute_fuel_type', store=True, readonly=False)
+        [('manual', 'Manual'), ('semi_automatic', 'Semi-Automatic'), ('automatic', 'Automatic')], compute='_compute_transmission', store=True, readonly=False)
+    fuel_type = fields.Selection(FUEL_TYPES, compute='_compute_fuel_type', store=True, readonly=False)
     power_unit = fields.Selection([
         ('power', 'kW'),
         ('horsepower', 'Horsepower')
-        ], 'Power Unit', default='power', required=True)
+        ], default='power', required=True)
     horsepower = fields.Float(compute='_compute_horsepower', store=True, readonly=False)
-    power = fields.Float('Power', help='Power in kW of the vehicle',
+    power = fields.Float(help='Power in kW of the vehicle',
         compute='_compute_power', store=True, readonly=False)
     co2 = fields.Float('CO₂ Emissions', help='CO2 emissions of the vehicle', compute='_compute_co2',
         store=True, readonly=False, tracking=True, aggregator=None)
@@ -121,7 +116,7 @@ class FleetVehicle(models.Model):
     co2_standard = fields.Char('Emission Standard', compute='_compute_co2_standard', store=True, readonly=False,
         help="Emission Standard specifies the regulatory test procedure \
             or guideline under which a vehicle's emissions are measured.")
-    category_id = fields.Many2one('fleet.vehicle.model.category', 'Category', compute='_compute_category', store=True,
+    category_id = fields.Many2one('fleet.vehicle.model.category', compute='_compute_category', store=True,
         readonly=False, tracking=True)
     image_128 = fields.Image(related='model_id.image_128', readonly=True)
     contract_renewal_due_soon = fields.Boolean(compute='_compute_contract_reminder', search='_search_contract_renewal_due_soon',
@@ -343,7 +338,7 @@ class FleetVehicle(models.Model):
 
     def _get_analytic_name(self):
         # This function is used in fleet_account and is overrided in l10n_be_hr_payroll_fleet
-        return self.license_plate or _('No plate')
+        return self.license_plate or self.env._('No plate')
 
     def _search_contract_renewal_due_soon(self, operator, value):
         if operator != 'in':
@@ -413,7 +408,7 @@ class FleetVehicle(models.Model):
 
     def write(self, vals):
         if 'odometer' in vals and any(vehicle.odometer > vals['odometer'] for vehicle in self):
-            raise UserError(_('The odometer value cannot be lower than the previous one.'))
+            raise UserError(self.env._('The odometer value cannot be lower than the previous one.'))
 
         if 'driver_id' in vals and vals['driver_id']:
             driver_id = vals['driver_id']
@@ -450,7 +445,7 @@ class FleetVehicle(models.Model):
             self.env['mail.activity'].sudo().search([
                 ('res_model_id', '=', self._name),
                 ('res_id', 'in', self.ids),
-                ('note', 'ilike', _('Review driver change')),
+                ('note', 'ilike', self.env._('Review driver change')),
                 ('user_id', 'in', self.manager_id.ids or [self.env.user.id])
             ]).unlink()
 
@@ -559,7 +554,7 @@ class FleetVehicle(models.Model):
 
     def action_send_email(self):
         return {
-            'name': _('Send Email'),
+            'name': self.env._('Send Email'),
             'type': 'ir.actions.act_window',
             'target': 'new',
             'view_mode': 'form',

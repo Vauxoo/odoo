@@ -10,7 +10,6 @@ from json import JSONDecodeError
 
 from odoo.exceptions import UserError
 
-_logger = logging.getLogger(__name__)
 TIMEOUT = 30
 
 

@@ -18,7 +18,7 @@ class PosCategory(models.Model):
     @api.constrains('parent_id')
     def _check_category_recursion(self):
         if self._has_cycle():
-            raise ValidationError(_('Error! You cannot create recursive categories.'))
+            raise ValidationError(self.env._('Error! You cannot create recursive categories.'))
 
     def get_default_color(self):
         return random.randint(0, 10)
@@ -27,13 +27,13 @@ class PosCategory(models.Model):
         return (self.search([], order="sequence desc", limit=1).sequence or 0) + 1
 
     name = fields.Char(string='Category Name', required=True, translate=True)
-    complete_name = fields.Char('Complete Name', compute='_compute_complete_name', recursive=True, store=True)
+    complete_name = fields.Char(compute='_compute_complete_name', recursive=True, store=True)
     parent_id = fields.Many2one('pos.category', string='Parent Category', index=True)
     child_ids = fields.One2many('pos.category', 'parent_id', string='Children Categories')
-    sequence = fields.Integer(help="Gives the sequence order when displaying a list of product categories.", default=_default_sequence)
+    sequence = fields.Integer(help="Gives the sequence order when displaying a list of product categories.", default=lambda self: self._default_sequence())
     image_512 = fields.Image("Image", max_width=512, max_height=512)
     image_128 = fields.Image("Image 128", related="image_512", max_width=128, max_height=128, store=True)
-    color = fields.Integer('Color', required=False, default=get_default_color)
+    color = fields.Integer(required=False, default=lambda self: self.get_default_color())
     hour_until = fields.Float(string='Availability Until', default=24.0, help="The product will be available until this hour for online order and self order.")
     hour_after = fields.Float(string='Availability After', default=0.0, help="The product will be available after this hour for online order and self order.")
     pos_config_ids = fields.Many2many('pos.config', string='Linked PoS Configurations')
@@ -73,7 +73,7 @@ class PosCategory(models.Model):
 
     def _check_categ_in_linked_to_pos(self):
         if self.pos_config_ids:
-            raise UserError(_('You cannot archive/delete a category which is currently in use in a point of sale.'))
+            raise UserError(self.env._('You cannot archive/delete a category which is currently in use in a point of sale.'))
 
     def action_archive(self):
         self._check_categ_in_linked_to_pos()
@@ -82,7 +82,7 @@ class PosCategory(models.Model):
 
     def _check_categ_in_active_session(self):
         if self._check_linked_active_pos_session():
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You cannot archive/delete PoS Product Categories that are used in an active Point of Sale session.\n"
                 "Close all related PoS sessions first and try again.",
             ))
@@ -118,18 +118,18 @@ class PosCategory(models.Model):
     def _check_hour(self):
         for category in self:
             if category.hour_until and not (0.0 <= category.hour_until <= 24.0):
-                raise ValidationError(_('The Availability Until must be set between 00:00 and 24:00'))
+                raise ValidationError(self.env._('The Availability Until must be set between 00:00 and 24:00'))
             if category.hour_after and not (0.0 <= category.hour_after <= 24.0):
-                raise ValidationError(_('The Availability After must be set between 00:00 and 24:00'))
+                raise ValidationError(self.env._('The Availability After must be set between 00:00 and 24:00'))
             if category.hour_until and category.hour_after and category.hour_until < category.hour_after:
-                raise ValidationError(_('The Availability Until must be greater than Availability After.'))
+                raise ValidationError(self.env._('The Availability Until must be greater than Availability After.'))
 
     def copy_data(self, default=None):
         default = dict(default or {})
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for pos_category, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", pos_category.name)
+                vals['name'] = self.env._("%s (copy)", pos_category.name)
         return vals_list
 
     def _compute_product_count(self):

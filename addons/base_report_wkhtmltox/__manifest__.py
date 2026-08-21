@@ -3,13 +3,6 @@
 {
     'name': "Report Engine: wkhtmltopdf/wkhtmltoimage",
     'summary': "wkhtmltopdf rendering engine",
-    'description': """
-This module is the implementation of the wkhtmltopdf and
-wlhtmltoimage rendering engine for Odoo.
-
-learn more about it here:
-https://wkhtmltopdf.org/
-    """,
     'category': 'Hidden/Tools',
     'auto_install': True,
     'post_init_hook': 'post_init_hook',

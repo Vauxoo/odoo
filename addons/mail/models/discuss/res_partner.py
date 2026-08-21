@@ -3,7 +3,7 @@
 from odoo import api, fields, models
 from odoo.fields import Domain
 from odoo.tools import email_normalize, single_email_re
-from odoo.addons.mail.tools.discuss import Store
+from ...tools.discuss import Store
 from odoo.exceptions import AccessError
 
 

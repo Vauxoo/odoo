@@ -6,8 +6,8 @@ from PIL import Image, ImageOps
 import re
 import time
 
-from odoo.addons.iot_drivers.driver import Driver
-from odoo.addons.iot_drivers.event_manager import event_manager
+from ...driver import Driver
+from ...event_manager import event_manager
 
 _logger = logging.getLogger(__name__)
 

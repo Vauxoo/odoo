@@ -3,17 +3,6 @@
 {
     'name': 'Opportunity to Quotation',
     'category': 'Sales/Sales',
-    'description': """
-This module adds a shortcut on one or several opportunity cases in the CRM.
-===========================================================================
-
-This shortcut allows you to generate a sales order based on the selected case.
-If different cases are open (a list), it generates one sales order by case.
-The case is then closed and linked to the generated sales order.
-
-We suggest you to install this module, if you installed both the sale and the crm
-modules.
-    """,
     'depends': ['sale', 'crm'],
     'data': [
         'data/crm_lead_merge_template.xml',

@@ -24,14 +24,14 @@ class ResUsers(models.Model):
         if 'totp_secret' in vals:
             if vals.get('totp_secret'):
                 self._notify_security_setting_update(
-                    _("Security Update: 2FA Activated"),
-                    _("Two-factor authentication has been activated on your account"),
+                    self.env._("Security Update: 2FA Activated"),
+                    self.env._("Two-factor authentication has been activated on your account"),
                     suggest_2fa=False,
                 )
             else:
                 self._notify_security_setting_update(
-                    _("Security Update: 2FA Deactivated"),
-                    _("Two-factor authentication has been deactivated on your account"),
+                    self.env._("Security Update: 2FA Deactivated"),
+                    self.env._("Two-factor authentication has been deactivated on your account"),
                     suggest_2fa=False,
                 )
 
@@ -79,7 +79,7 @@ class ResUsers(models.Model):
 
     def action_open_my_account_settings(self):
         action = {
-            "name": _("Security"),
+            "name": self.env._("Security"),
             "type": "ir.actions.act_window",
             "res_model": "res.users",
             "views": [[self.env.ref('auth_totp_mail.res_users_view_form').id, "form"]],
@@ -108,7 +108,7 @@ class ResUsers(models.Model):
             'params': {
                 'type': 'info',
                 'sticky': False,
-                'message': _("Invitation to use two-factor authentication sent for the following user(s): %s",
+                'message': self.env._("Invitation to use two-factor authentication sent for the following user(s): %s",
                              ', '.join(users_to_invite.mapped('name'))),
             }
         }
@@ -143,7 +143,7 @@ class ResUsers(models.Model):
             match = TOTP(key).match(credentials['token'], window=3600, timestep=3600)
             if match is None:
                 _logger.info("2FA check (mail): FAIL for %s %r", user, user.login)
-                raise AccessDenied(_("Verification failed, please double-check the 6-digit code"))
+                raise AccessDenied(self.env._("Verification failed, please double-check the 6-digit code"))
             _logger.info("2FA check(mail): SUCCESS for %s %r", user, user.login)
             self._totp_rate_limit_purge('code_check')
             self._totp_rate_limit_purge('send_email')
@@ -183,7 +183,7 @@ class ResUsers(models.Model):
         self._totp_rate_limit('send_email')
 
         if not self.email:
-            raise UserError(_("Cannot send email: user %s has no email address.", self.name))
+            raise UserError(self.env._("Cannot send email: user %s has no email address.", self.name))
 
         template = self.env.ref('auth_totp_mail.mail_template_totp_mail_code').sudo()
         context = {}

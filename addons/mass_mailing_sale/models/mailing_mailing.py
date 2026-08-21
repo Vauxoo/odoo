@@ -42,8 +42,8 @@ class MailingMailing(models.Model):
             )
 
     def action_redirect_to_quotations(self):
-        helper_header = _("No Quotations yet!")
-        helper_message = _("Quotations will appear here once your customers add "
+        helper_header = self.env._("No Quotations yet!")
+        helper_message = self.env._("Quotations will appear here once your customers add "
                            "products to their Carts or when your sales reps assign this mailing.")
         return {
             'context': {
@@ -55,7 +55,7 @@ class MailingMailing(models.Model):
             'help': Markup('<p class="o_view_nocontent_smiling_face">%s</p><p>%s</p>') % (
                 helper_header, helper_message,
             ),
-            'name': _("Sales Analysis"),
+            'name': self.env._("Sales Analysis"),
             'res_model': 'sale.report',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,pivot,graph,form',
@@ -67,8 +67,8 @@ class MailingMailing(models.Model):
             [('state', 'not in', ['draft', 'cancel'])]
         ])
         moves = self.env['account.move'].search(domain)
-        helper_header = _("No Revenues yet!")
-        helper_message = _("Revenues will appear here once orders are turned into invoices.")
+        helper_header = self.env._("No Revenues yet!")
+        helper_message = self.env._("Revenues will appear here once orders are turned into invoices.")
         return {
             'context': {
                 'create': False,
@@ -81,7 +81,7 @@ class MailingMailing(models.Model):
             'help': Markup('<p class="o_view_nocontent_smiling_face">%s</p><p>%s</p>') % (
                 helper_header, helper_message,
             ),
-            'name': _("Invoices Analysis"),
+            'name': self.env._("Invoices Analysis"),
             'res_model': 'account.invoice.report',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,pivot,graph,form',
@@ -99,11 +99,11 @@ class MailingMailing(models.Model):
 
         values['kpi_data'][1]['kpi_col2'] = {
             'value': self.sale_quotation_count,
-            'col_subtitle': _('QUOTATIONS'),
+            'col_subtitle': self.env._('QUOTATIONS'),
         }
         values['kpi_data'][1]['kpi_col3'] = {
             'value': formated_amount,
-            'col_subtitle': _('INVOICED'),
+            'col_subtitle': self.env._('INVOICED'),
         }
         values['kpi_data'][1]['kpi_name'] = 'sale'
         return values

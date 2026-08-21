@@ -18,12 +18,11 @@ class ProductPricelistItem(models.Model):
 
     pricelist_id = fields.Many2one(
         comodel_name='product.pricelist',
-        string="Pricelist",
         index=True,
         ondelete='cascade',
         # Standard flows do not handle rules without pricelists (but some custom modules do)!
         required=False,
-        default=_default_pricelist_id,
+        default=lambda self: self._default_pricelist_id(),
     )
 
     is_pricelist_required = fields.Boolean(compute='_compute_is_pricelist_required')
@@ -120,13 +119,12 @@ class ProductPricelistItem(models.Model):
              " in order to show discount to customer.",
         index=True, default='fixed', required=True)
 
-    fixed_price = fields.Float(string="Fixed Price", min_display_digits='Product Price')
+    fixed_price = fields.Float(min_display_digits='Product Price')
     percent_price = fields.Float(
         string="Percentage Price",
         help="You can apply a mark-up by setting a negative discount.")
 
     price_discount = fields.Float(
-        string="Price Discount",
         default=0,
         digits=(16, 2),
         help="You can apply a mark-up by setting a negative discount.")
@@ -160,7 +158,6 @@ class ProductPricelistItem(models.Model):
 
     # functional fields used for usability purposes
     name = fields.Char(
-        string="Name",
         compute='_compute_name',
         help="Explicit rule name for this pricelist line.")
     price = fields.Char(

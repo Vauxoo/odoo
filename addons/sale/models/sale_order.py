@@ -112,7 +112,7 @@ class SaleOrder(models.Model):
         "If set, the delivery order will be scheduled based on "
         "this date rather than product lead times.",
     )
-    delivery_date = fields.Datetime(string="Delivery Date", compute="_compute_delivery_date")
+    delivery_date = fields.Datetime(compute="_compute_delivery_date")
     date_order = fields.Datetime(
         string="Order Date",
         required=True,
@@ -128,7 +128,6 @@ class SaleOrder(models.Model):
         string="Payment Ref.", help="The payment communication of this sale order.", copy=False
     )
     pending_email_template_id = fields.Many2one(
-        string="Pending Email Template",
         comodel_name="mail.template",
         ondelete="set null",
         readonly=True,
@@ -151,7 +150,6 @@ class SaleOrder(models.Model):
         help="The percentage of the amount that must be paid by the customer to confirm the order.",
     )
     prepayment_amount = fields.Monetary(
-        string="Prepayment Amount",
         help="The amount that must be paid by the customer to confirm the order.",
         currency_field="currency_id",
         compute="_compute_prepayment_amount",
@@ -160,10 +158,10 @@ class SaleOrder(models.Model):
     )
 
     signature = fields.Image(
-        string="Signature", copy=False, attachment=True, max_width=1024, max_height=1024
+        copy=False, attachment=True, max_width=1024, max_height=1024
     )
-    signed_by = fields.Char(string="Signed By", copy=False)
-    signed_on = fields.Datetime(string="Signed On", copy=False)
+    signed_by = fields.Char(copy=False)
+    signed_on = fields.Datetime(copy=False)
 
     validity_date = fields.Date(
         string="Expiration",
@@ -175,7 +173,6 @@ class SaleOrder(models.Model):
         precompute=True,
     )
     journal_id = fields.Many2one(
-        string="Journal",
         comodel_name="account.journal",
         compute="_compute_journal_id",
         store=True,
@@ -230,7 +227,6 @@ class SaleOrder(models.Model):
 
     fiscal_position_id = fields.Many2one(
         comodel_name="account.fiscal.position",
-        string="Fiscal Position",
         compute="_compute_fiscal_position_id",
         store=True,
         readonly=False,
@@ -261,7 +257,6 @@ class SaleOrder(models.Model):
     )
     pricelist_id = fields.Many2one(
         comodel_name="product.pricelist",
-        string="Pricelist",
         compute="_compute_pricelist_id",
         store=True,
         readonly=False,
@@ -280,7 +275,6 @@ class SaleOrder(models.Model):
         ondelete="restrict",
     )
     currency_rate = fields.Float(
-        string="Currency Rate",
         compute="_compute_currency_rate",
         digits=0,
         store=True,
@@ -317,7 +311,6 @@ class SaleOrder(models.Model):
     )
     incoterm = fields.Many2one(
         comodel_name="account.incoterms",
-        string="Incoterm",
         compute="_compute_incoterm",
         precompute=True,
         store=True,
@@ -326,7 +319,6 @@ class SaleOrder(models.Model):
         " international transactions.",
     )
     incoterm_location = fields.Char(
-        string="Incoterm Location",
         compute="_compute_incoterm_location",
         precompute=True,
         store=True,
@@ -354,7 +346,7 @@ class SaleOrder(models.Model):
     )
     amount_invoiced = fields.Monetary(string="Already invoiced", compute="_compute_amount_invoiced")
 
-    invoice_count = fields.Integer(string="Invoice Count", compute="_get_invoiced")
+    invoice_count = fields.Integer(compute="_get_invoiced")
     invoice_ids = fields.Many2many(
         comodel_name="account.move",
         string="Invoices",
@@ -364,7 +356,6 @@ class SaleOrder(models.Model):
     )
     invoice_status = fields.Selection(
         selection=INVOICE_STATUS,
-        string="Invoice Status",
         compute="_compute_invoice_status",
         store=True,
     )
@@ -436,7 +427,6 @@ class SaleOrder(models.Model):
             ("partial", "Partially Delivered"),
             ("full", "Fully Delivered"),
         ],
-        string="Delivery Status",
         compute="_compute_delivery_status",
         store=True,
         help="Blue: Not Delivered/Started\n\
@@ -447,7 +437,6 @@ class SaleOrder(models.Model):
         comodel_name="sale.order", compute="_compute_duplicated_order_ids"
     )
     expected_date = fields.Datetime(
-        string="Expected Date",
         compute="_compute_expected_date",
         store=False,  # Note: can not be stored since depends on today()
         help="Delivery date you can promise to the customer, computed from the minimum lead time of"
@@ -455,7 +444,7 @@ class SaleOrder(models.Model):
     )
     extra_total_fields = fields.Json(compute="_compute_extra_total_fields")
     is_expired = fields.Boolean(
-        string="Is Expired", compute="_compute_is_expired", search="_search_is_expired"
+        compute="_compute_is_expired", search="_search_is_expired"
     )
     is_unfulfilled = fields.Boolean(
         string="Unfulfilled Orders", search="_search_is_unfulfilled", store=False
@@ -473,7 +462,7 @@ class SaleOrder(models.Model):
     )
     tax_totals = fields.Json(compute="_compute_tax_totals", exportable=False)
     terms_type = fields.Selection(related="company_id.terms_type")
-    type_name = fields.Char(string="Type Name", compute="_compute_type_name")
+    type_name = fields.Char(compute="_compute_type_name")
 
     has_overages = fields.Boolean(compute="_compute_has_overages")
     invoice_overages = fields.Boolean()
@@ -483,7 +472,7 @@ class SaleOrder(models.Model):
     has_active_pricelist = fields.Boolean(compute="_compute_has_active_pricelist")
 
     analytic_account_id = fields.Many2one(
-        string="Analytic Account", comodel_name="account.analytic.account"
+        comodel_name="account.analytic.account"
     )
 
     _date_order_id_idx = models.Index("(date_order desc, id desc)")

@@ -17,7 +17,7 @@ class ResConfigSettings(models.TransientModel):
     website_id = fields.Many2one(
         'website',
         string="website",
-        default=_default_website, ondelete='cascade')
+        default=lambda self: self._default_website(), ondelete='cascade')
     website_name = fields.Char(
         'Website Name',
         related='website_id.name',

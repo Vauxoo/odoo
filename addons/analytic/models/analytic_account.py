@@ -30,14 +30,12 @@ class AccountAnalyticAccount(models.Model):
         tracking=True,
     )
     active = fields.Boolean(
-        'Active',
         help="Deactivate the account.",
         default=True,
         tracking=True,
     )
     plan_id = fields.Many2one(
         'account.analytic.plan',
-        string='Plan',
         required=True,
         index=True,
     )
@@ -60,7 +58,6 @@ class AccountAnalyticAccount(models.Model):
 
     company_id = fields.Many2one(
         'res.company',
-        string='Company',
         default=lambda self: self.env.company,
         index=True,
     )
@@ -77,15 +74,12 @@ class AccountAnalyticAccount(models.Model):
 
     balance = fields.Monetary(
         compute='_compute_debit_credit_balance',
-        string='Balance',
     )
     debit = fields.Monetary(
         compute='_compute_debit_credit_balance',
-        string='Debit',
     )
     credit = fields.Monetary(
         compute='_compute_debit_credit_balance',
-        string='Credit',
     )
 
     currency_id = fields.Many2one(
@@ -100,7 +94,7 @@ class AccountAnalyticAccount(models.Model):
                 ('auto_account_id', 'in', [account.id for account in accounts]),
                 '!', ('company_id', 'child_of', company.id),
             ], limit=1):
-                raise UserError(_("You can't change the company of an analytic account that already has analytic items! It's a recipe for an analytical disaster!"))
+                raise UserError(self.env._("You can't change the company of an analytic account that already has analytic items! It's a recipe for an analytical disaster!"))
 
     @api.depends('code', 'partner_id')
     def _compute_display_name(self):
@@ -117,7 +111,7 @@ class AccountAnalyticAccount(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for account, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", account.name)
+                vals['name'] = self.env._("%s (copy)", account.name)
         return vals_list
 
     def web_read(self, specification: dict[str, dict]) -> list[dict]:
@@ -211,7 +205,7 @@ class AccountAnalyticAccount(models.Model):
             if self.env['account.analytic.line'].sudo().search_count(domain, limit=1):
                 list_view = self.env.ref('analytic.view_account_analytic_line_tree', raise_if_not_found=False)
                 raise RedirectWarning(
-                    message=_("Whoa there! Making this change would wipe out your current data. Let's avoid that, shall we?"),
+                    message=self.env._("Whoa there! Making this change would wipe out your current data. Let's avoid that, shall we?"),
                     action={
                         'res_model': 'account.analytic.line',
                         'type': 'ir.actions.act_window',
@@ -219,7 +213,7 @@ class AccountAnalyticAccount(models.Model):
                         'target': 'new',
                         'views': [(list_view and list_view.id, 'list')]
                     },
-                    button_text=_("See them"),
+                    button_text=self.env._("See them"),
                 )
             self.env.cr.execute(SQL(
                 """

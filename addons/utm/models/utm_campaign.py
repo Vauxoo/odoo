@@ -9,7 +9,7 @@ class UtmCampaign(models.Model):
     _description = 'UTM Campaign'
     _rec_name = 'title'
 
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     name = fields.Char(string='Campaign Identifier', required=True, compute='_compute_name',
                        store=True, readonly=False, precompute=True, translate=False)
     title = fields.Char(string='Campaign Name', required=True, translate=True)
@@ -18,7 +18,7 @@ class UtmCampaign(models.Model):
         'res.users', string='Responsible',
         required=True, default=lambda self: self.env.uid)
     stage_id = fields.Many2one(
-        'utm.stage', string='Stage', ondelete='restrict', required=True,
+        'utm.stage', ondelete='restrict', required=True,
         default=lambda self: self.env['utm.stage'].search([], limit=1),
         copy=False, group_expand='_group_expand_stage_ids')
     tag_ids = fields.Many2many(

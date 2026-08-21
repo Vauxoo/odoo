@@ -7,16 +7,6 @@
     'countries': ['au'],
     'version': '1.1',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Australian Accounting Module
-============================
-
-Australian accounting basic charts and localizations.
-
-Also:
-    - activates a number of regional currencies.
-    - sets up Australian taxes.
-    """,
     'depends': ['account'],
     'auto_install': ['account'],
     'data': [

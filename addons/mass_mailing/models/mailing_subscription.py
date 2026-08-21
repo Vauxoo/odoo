@@ -14,10 +14,9 @@ class MailingSubscription(models.Model):
     _rec_name = 'contact_id'
     _order = 'list_id DESC, contact_id DESC'
 
-    contact_id = fields.Many2one('mailing.contact', string='Contact', ondelete='cascade', required=True)
+    contact_id = fields.Many2one('mailing.contact', ondelete='cascade', required=True)
     list_id = fields.Many2one('mailing.list', string='Mailing List', ondelete='cascade', required=True, index=True)
     opt_out = fields.Boolean(
-        string='Opt Out',
         default=False,
         help='The contact has chosen not to receive mails anymore from this list')
     opt_out_reason_id = fields.Many2one(
@@ -54,7 +53,7 @@ class MailingSubscription(models.Model):
 
     def open_mailing_contact(self):
         action = {
-            'name': _('Mailing Contacts'),
+            'name': self.env._('Mailing Contacts'),
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form',
             'domain': [('id', 'in', self.contact_id.ids)],
@@ -62,7 +61,7 @@ class MailingSubscription(models.Model):
         }
         if len(self) == 1:
             action.update({
-                'name': _('Mailing Contact'),
+                'name': self.env._('Mailing Contact'),
                 'view_mode': 'form',
                 'res_id': self.contact_id.id,
             })

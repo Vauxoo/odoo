@@ -9,8 +9,8 @@ class AccountMoveTicarifaturaResponseWizard(models.TransientModel):
     response_code = fields.Selection([
         ('approved', "Approve"),
         ('rejected', "Reject"),
-    ], string="Response Code", required=True)
-    response_note = fields.Text(string="Response Note")
+    ], required=True)
+    response_note = fields.Text()
 
     def action_proceed(self):
         self.ensure_one()

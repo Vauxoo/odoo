@@ -24,9 +24,9 @@ class MailActivityType(models.Model):
                 ['&', ('is_mail_thread', '=', True), ('transient', '=', False)])
         ]
 
-    name = fields.Char('Name', required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     summary = fields.Char('Default Summary', translate=True)
-    sequence = fields.Integer('Sequence', default=10)
+    sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
     create_uid = fields.Many2one('res.users', index=True)
     delay_count = fields.Integer(
@@ -40,11 +40,10 @@ class MailActivityType(models.Model):
     delay_from = fields.Selection([
         ('current_date', 'after previous activity completion date'),
         ('previous_activity', 'after previous activity deadline')], string="Delay Type", help="Type of delay", required=True, default='previous_activity')
-    icon = fields.Char('Icon', help="Material Symbols icon e.g. checklist")
+    icon = fields.Char(help="Material Symbols icon e.g. checklist")
     decoration_type = fields.Selection([
         ('warning', 'Alert'),
-        ('danger', 'Error')], string="Decoration Type",
-        help="Change the background color of the related activities of this type.")
+        ('danger', 'Error')], help="Change the background color of the related activities of this type.")
     res_model = fields.Selection(selection=_get_model_selection, string="Model",
         help='Specify a model if the activity should be specific to a model'
              ' and not available when managing activities for other models.')
@@ -63,9 +62,9 @@ class MailActivityType(models.Model):
     ], default='default', string='Action',
         help='Actions may trigger specific behavior like opening calendar view or automatically mark as done when a document is uploaded')
     mail_template_ids = fields.Many2many('mail.template', string='Email templates')
-    default_user_id = fields.Many2one("res.users", string="Default User")
+    default_user_id = fields.Many2one("res.users")
     default_role_id = fields.Many2one("res.role", string="Role")
-    default_note = fields.Html(string="Default Note", translate=True)
+    default_note = fields.Html(translate=True)
     kpi_provider_visibility = fields.Selection([
             ('none', 'None'),
             ('own', 'Own Activities'),
@@ -119,7 +118,7 @@ class MailActivityType(models.Model):
                     modified += activity_type
             if modified:
                 raise exceptions.UserError(
-                    _('You cannot modify %(activities_names)s target model as they are are required in various apps.',
+                    self.env._('You cannot modify %(activities_names)s target model as they are are required in various apps.',
                       activities_names=', '.join(act.name for act in modified),
                 ))
         return super().write(vals)
@@ -133,13 +132,13 @@ class MailActivityType(models.Model):
                 master_data += activity_type
         if master_data:
             raise exceptions.UserError(
-                _('You cannot delete %(activity_names)s as it is required in various apps.',
+                self.env._('You cannot delete %(activity_names)s as it is required in various apps.',
                   activity_names=', '.join(act.name for act in master_data),
             ))
 
     def action_archive(self):
         if self.env.ref('mail.mail_activity_data_todo') in self:
-            raise UserError(_("The 'To-Do' activity type is used to create reminders from the top bar menu and the command palette. Consequently, it cannot be archived or deleted."))
+            raise UserError(self.env._("The 'To-Do' activity type is used to create reminders from the top bar menu and the command palette. Consequently, it cannot be archived or deleted."))
         return super().action_archive()
 
     def unlink(self):

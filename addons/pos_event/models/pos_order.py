@@ -5,7 +5,7 @@ from odoo import models, fields, api
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    attendee_count = fields.Integer('Attendee Count', compute='_compute_attendee_count')
+    attendee_count = fields.Integer(compute='_compute_attendee_count')
 
     @api.depends('lines.event_registration_ids')
     def _compute_attendee_count(self):

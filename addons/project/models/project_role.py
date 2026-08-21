@@ -12,7 +12,7 @@ class ProjectRole(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char(required=True, translate=True)
-    color = fields.Integer(default=_get_default_color)
+    color = fields.Integer(default=lambda self: self._get_default_color())
     sequence = fields.Integer(export_string_translation=False)
     user_ids = fields.Many2many(
         'res.users',

@@ -9,7 +9,7 @@ from odoo import fields, models
 from odoo.fields import Datetime
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_worldline import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 
@@ -33,10 +33,9 @@ class PaymentProvider(models.Model):
         groups="base.group_system",
     )
     worldline_webhook_key = fields.Char(
-        string="Worldline Webhook Key", required_if_provider="worldline", copy=False
+        required_if_provider="worldline", copy=False
     )
     worldline_webhook_secret = fields.Char(
-        string="Worldline Webhook Secret",
         required_if_provider="worldline",
         copy=False,
         groups="base.group_system",

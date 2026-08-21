@@ -22,7 +22,6 @@ from odoo.tools.safe_eval import safe_eval
 
 from .utils import get_action_triples
 
-_logger = logging.getLogger(__name__)
 
 
 class WebJsonController(http.Controller):

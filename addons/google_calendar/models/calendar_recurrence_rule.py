@@ -7,7 +7,7 @@ from odoo import api, models
 from odoo.fields import Command, Domain
 from odoo.tools import email_normalize
 
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
+from ..utils.google_calendar import GoogleCalendarService
 
 _logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class CalendarRecurrence(models.Model):
 
     def _cancel(self):
         self.calendar_event_ids._cancel()
-        super()._cancel()
+        return super()._cancel()
 
     def _get_google_synced_fields(self):
         return {'rrule'}

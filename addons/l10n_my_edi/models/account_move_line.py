@@ -1,5 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.l10n_my_edi.models.product_template import CLASSIFICATION_CODES_LIST
+from .product_template import CLASSIFICATION_CODES_LIST
 
 from odoo import api, fields, models
 

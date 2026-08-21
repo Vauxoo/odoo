@@ -39,7 +39,7 @@ class PosPaymentMethod(models.Model):
         config_currency = self.sudo().env['pos.config'].browse(pos_config_id).currency_id
         valid_providers = providers_sudo.filtered(lambda p: not p.journal_id.currency_id or p.journal_id.currency_id == config_currency)
         if error_if_invalid and len(providers_sudo) != len(valid_providers):
-            raise ValidationError(_("All payment providers configured for an online payment method must use the same currency as the Sales Journal, or the company currency if that is not set, of the POS config."))
+            raise ValidationError(self.env._("All payment providers configured for an online payment method must use the same currency as the Sales Journal, or the company currency if that is not set, of the POS config."))
         return valid_providers
 
     @api.depends('type', 'online_payment_provider_ids')
@@ -57,7 +57,7 @@ class PosPaymentMethod(models.Model):
             for config in pm.config_ids:
                 other_online_pms = config.payment_method_ids.filtered(lambda other_pm: other_pm.type == 'online' and other_pm.id != pm.id)
                 if other_online_pms:
-                    raise ValidationError(_("The %s already has one online payment.", config.name))
+                    raise ValidationError(self.env._("The %s already has one online payment.", config.name))
 
     def _is_write_forbidden(self, fields):
         return super()._is_write_forbidden(fields - {'online_payment_provider_ids'})
@@ -121,13 +121,13 @@ class PosPaymentMethod(models.Model):
             payment_method_id = self.env['pos.payment.method'].search([('type', '=', 'online'), ('company_id', '=', company_id)], limit=1).exists()
             if not payment_method_id:
                 payment_method_id = self.env['pos.payment.method'].create({
-                    'name': _('Online Payment'),
+                    'name': self.env._('Online Payment'),
                     'type': 'online',
                     'company_id': company_id,
                     'sequence': 3,
                 })
                 if not payment_method_id:
-                    raise ValidationError(_(
+                    raise ValidationError(self.env._(
                         "Could not create an online payment method (company_id=%(company_id)d, pos_config_id=%(pos_config_id)d)",
                         company_id=company_id,
                         pos_config_id=pos_config_id,
@@ -165,7 +165,7 @@ class PosPaymentMethod(models.Model):
 
         total_amount = sum(pay.amount for pay in online_orders.payment_ids)
         account_payment = online_orders.payment_ids.online_account_payment_id
-        ref = _(
+        ref = self.env._(
             "Transfer Online payment %(account_name)s => %(pos_receivable_name)s",
             account_name=account_payment.destination_account_id.name,
             pos_receivable_name=pos_receivable.name,
@@ -179,14 +179,14 @@ class PosPaymentMethod(models.Model):
                     "account_id": pos_receivable.id,
                     "debit": 0,
                     "credit": total_amount,
-                    "name": _("POS Receivable Transfer"),
+                    "name": self.env._("POS Receivable Transfer"),
                     "partner_id": account_payment.partner_id.id,
                 }),
                 Command.create({
                     "account_id": account_payment.destination_account_id.id,
                     "debit": total_amount,
                     "credit": 0,
-                    "name": _("Online Payment Transfer"),
+                    "name": self.env._("Online Payment Transfer"),
                     "partner_id": account_payment.partner_id.id,
                 }),
             ],

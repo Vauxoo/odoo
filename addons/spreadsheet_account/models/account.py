@@ -101,7 +101,7 @@ class AccountAccount(models.Model):
             "views": [[False, "list"]],
             "target": "current",
             "domain": domain,
-            "name": _("Cell Audit"),
+            "name": self.env._("Cell Audit"),
         }
 
     @api.readonly

@@ -15,7 +15,6 @@ class ResUsers(models.Model):
         "im_livechat.channel", "im_livechat_channel_im_user", "user_id", "channel_id", copy=False
     )
     livechat_username = fields.Char(
-        string="Livechat Username",
         compute="_compute_livechat_username",
         inverse="_inverse_livechat_username",
         store=False,

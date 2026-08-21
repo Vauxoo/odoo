@@ -9,8 +9,8 @@ class PosPrepLine(models.Model):
 
     prep_order_id = fields.Many2one('pos.prep.order', string='Preparation Order', ondelete='cascade', index='btree_not_null')
     pos_order_line_id = fields.Many2one('pos.order.line', string="Original pos order line", index='btree_not_null')
-    quantity = fields.Float('Quantity', required=True)
-    uuid = fields.Char(string='Uuid', readonly=True, default=lambda self: str(uuid4()), copy=False)
+    quantity = fields.Float(required=True)
+    uuid = fields.Char(readonly=True, default=lambda self: str(uuid4()), copy=False)
     cancelled = fields.Float("Quantity of cancelled product", default=0)
     combo_line_ids = fields.One2many('pos.prep.line', 'combo_parent_id')
     product_id = fields.Many2one('product.product', string="Product ID")

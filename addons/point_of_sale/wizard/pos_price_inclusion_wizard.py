@@ -25,12 +25,12 @@ class PosPriceInclusionWizard(models.TransientModel):
                 computed_price_excl = currency.round(base_price / factor)
                 price_excl = currency.format(computed_price_excl)
                 price_recalc = currency.format(computed_price_excl * factor)
-                incl_formula = _("(%(price_incl)s) ÷ %(factor)s = %(price_excl)s excl.",
+                incl_formula = self.env._("(%(price_incl)s) ÷ %(factor)s = %(price_excl)s excl.",
                     price_incl=price_incl, factor=factor, price_excl=price_excl)
-                excl_formula = _("(%(price_excl)s) × %(factor)s = %(price_recalc)s incl.",
+                excl_formula = self.env._("(%(price_excl)s) × %(factor)s = %(price_recalc)s incl.",
                     price_excl=price_excl, factor=factor, price_recalc=price_recalc)
                 tax_name = "21%"
-                amount_type_label = _("Percentage")
+                amount_type_label = self.env._("Percentage")
             else:
                 res_incl = tax.with_context(force_price_include=True).compute_all(base_price, currency)
                 price_excl_val = res_incl['total_excluded']
@@ -40,26 +40,26 @@ class PosPriceInclusionWizard(models.TransientModel):
 
                 if tax.amount_type == 'percent':
                     factor = f"{1 + tax.amount / 100:g}"
-                    incl_formula = _("(%(price_incl)s) ÷ %(factor)s = %(price_excl)s excl.",
+                    incl_formula = self.env._("(%(price_incl)s) ÷ %(factor)s = %(price_excl)s excl.",
                         price_incl=price_incl, factor=factor, price_excl=price_excl)
-                    excl_formula = _("(%(price_excl)s) × %(factor)s = %(price_recalc)s incl.",
+                    excl_formula = self.env._("(%(price_excl)s) × %(factor)s = %(price_recalc)s incl.",
                         price_excl=price_excl, factor=factor, price_recalc=price_recalc)
                 elif tax.amount_type == 'division':
                     factor = f"{1 / (1 - tax.amount / 100):g}" if tax.amount != 100 else '∞'
-                    incl_formula = _("(%(price_incl)s) ÷ %(factor)s = %(price_excl)s excl.",
+                    incl_formula = self.env._("(%(price_incl)s) ÷ %(factor)s = %(price_excl)s excl.",
                         price_incl=price_incl, factor=factor, price_excl=price_excl)
-                    excl_formula = _("(%(price_excl)s) × %(factor)s = %(price_recalc)s incl.",
+                    excl_formula = self.env._("(%(price_excl)s) × %(factor)s = %(price_recalc)s incl.",
                         price_excl=price_excl, factor=factor, price_recalc=price_recalc)
                 elif tax.amount_type == 'fixed':
                     amount = currency.format(tax.amount)
-                    incl_formula = _("(%(price_incl)s) − %(amount)s = %(price_excl)s excl.",
+                    incl_formula = self.env._("(%(price_incl)s) − %(amount)s = %(price_excl)s excl.",
                         price_incl=price_incl, amount=amount, price_excl=price_excl)
-                    excl_formula = _("(%(price_excl)s) + %(amount)s = %(price_recalc)s incl.",
+                    excl_formula = self.env._("(%(price_excl)s) + %(amount)s = %(price_recalc)s incl.",
                         price_excl=price_excl, amount=amount, price_recalc=price_recalc)
                 else:
-                    incl_formula = _("Computed tax amount: %(price_incl)s → %(price_excl)s excl.",
+                    incl_formula = self.env._("Computed tax amount: %(price_incl)s → %(price_excl)s excl.",
                         price_incl=price_incl, price_excl=price_excl)
-                    excl_formula = _("Computed tax amount: %(price_excl)s → %(price_recalc)s incl.",
+                    excl_formula = self.env._("Computed tax amount: %(price_excl)s → %(price_recalc)s incl.",
                         price_excl=price_excl, price_recalc=price_recalc)
 
                 amount_type_label = dict(tax._fields['amount_type']._description_selection(wizard.env)).get(tax.amount_type, tax.amount_type)
@@ -67,12 +67,12 @@ class PosPriceInclusionWizard(models.TransientModel):
 
             wizard.example_text = f"""
                 <div class="d-flex flex-column gap-1">
-                    <div>{_('You want to sell a product at %(price_incl)s using tax "%(tax_name)s" (%(amount_type_label)s)',
+                    <div>{self.env._('You want to sell a product at %(price_incl)s using tax "%(tax_name)s" (%(amount_type_label)s)',
                         price_incl=price_incl, tax_name=tax_name, amount_type_label=amount_type_label)}</div>
                     <div class="d-grid" style="grid-template-columns: max-content 1fr">
-                        <span class="me-1">{_('Tax included:')}</span>
+                        <span class="me-1">{self.env._('Tax included:')}</span>
                         <span>{incl_formula}</span>
-                        <span class="me-1">{_('Tax excluded:')}</span>
+                        <span class="me-1">{self.env._('Tax excluded:')}</span>
                         <span>{excl_formula}</span>
                     </div>
                 </div>

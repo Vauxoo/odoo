@@ -5,8 +5,8 @@ from odoo.tools import format_amount
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_adyen import const
-from odoo.addons.payment_adyen import utils as adyen_utils
+from .. import const
+from .. import utils as adyen_utils
 
 _logger = get_payment_logger(__name__)
 

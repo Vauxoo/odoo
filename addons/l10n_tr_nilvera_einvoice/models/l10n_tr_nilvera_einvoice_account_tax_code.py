@@ -32,7 +32,6 @@ class L10nTrNilveraEinvoiceAccountTaxCode(models.Model):
             ("export_registration", "Export Registration"),
         ],
         required=True,
-        string="Code Type",
         help="Classifies the purpose of the reason. This is used to filter the "
         "correct codes in different parts of Odoo: \n"
         "Withholding: Used for invoices with withholding taxes. \n"

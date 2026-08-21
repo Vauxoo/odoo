@@ -26,11 +26,11 @@ class AccountMove(models.Model):
     purchase_id = fields.Many2one('purchase.order', store=False, readonly=False,
         string='Purchase Order',
         help="Auto-complete from a past purchase order.")
-    purchase_order_count = fields.Integer(compute="_compute_origin_po_count", string='Purchase Order Count')
+    purchase_order_count = fields.Integer(compute="_compute_origin_po_count")
     display_auto_complete_field = fields.Boolean(compute="_compute_display_auto_complete", groups='purchase.group_purchase_user')
     purchase_order_name = fields.Char(compute='_compute_purchase_order_name')
     is_purchase_matched = fields.Boolean(compute='_compute_is_purchase_matched')  # 0: PO not required or partially linked. 1: All lines linked
-    purchase_matched_ratio = fields.Float(compute='_compute_is_purchase_matched', string='Purchase Matched Ratio')
+    purchase_matched_ratio = fields.Float(compute='_compute_is_purchase_matched')
     purchase_warning_text = fields.Text(
         "Purchase Warning",
         help="Internal warning for the partner or the products as set by the user.",
@@ -225,7 +225,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Purchase Matching"),
+            'name': self.env._("Purchase Matching"),
             'res_model': 'purchase.bill.line.match',
             'context': {
                 'partner_id': self.partner_id.id,
@@ -267,7 +267,7 @@ class AccountMove(models.Model):
             if not purchases:
                 continue
             refs = [purchase._get_html_link() for purchase in purchases]
-            message = _("This vendor bill has been created from: ") + Markup(',').join(refs)
+            message = self.env._("This vendor bill has been created from: ") + Markup(',').join(refs)
             move.message_post(body=message)
         return moves
 
@@ -282,7 +282,7 @@ class AccountMove(models.Model):
             diff_purchases = new_purchases - old_purchases[i]
             if diff_purchases:
                 refs = [purchase._get_html_link() for purchase in diff_purchases]
-                message = _("This vendor bill has been modified from: ") + Markup(',').join(refs)
+                message = self.env._("This vendor bill has been modified from: ") + Markup(',').join(refs)
                 move.message_post(body=message)
         return res
 
@@ -465,7 +465,7 @@ class AccountMove(models.Model):
                 for purchase_order in purchase_orders:
                     invoice.invoice_line_ids = [Command.create({
                         'display_type': 'line_section',
-                        'name': _('From %s', purchase_order.name)
+                        'name': self.env._('From %s', purchase_order.name)
                     })]
                     invoice.purchase_id = purchase_order
                     invoice.with_context(from_edi=True)._onchange_purchase_auto_complete()
@@ -636,7 +636,7 @@ class AccountMove(models.Model):
                 if len(unmatched_lines) > 0:
                     invoice.invoice_line_ids = [Command.create({
                         'display_type': 'line_section',
-                        'name': _('From Electronic Document'),
+                        'name': self.env._('From Electronic Document'),
                         'sequence': -1,
                     })]
 
@@ -680,7 +680,7 @@ class AccountMoveLine(models.Model):
 
     @api.depends('purchase_line_id.analytic_distribution')
     def _compute_analytic_distribution(self):
-        super()._compute_analytic_distribution()
+        return super()._compute_analytic_distribution()
 
     @api.depends('product_id.purchase_line_warn_msg')
     def _compute_purchase_line_warn_msg(self):

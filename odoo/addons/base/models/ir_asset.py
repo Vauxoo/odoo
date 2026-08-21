@@ -63,9 +63,9 @@ class IrAsset(models.Model):
     _allow_sudo_commands = False
     _clear_cache_name = 'assets'
 
-    name = fields.Char(string='Name', required=True)
+    name = fields.Char(required=True)
     bundle = fields.Char(string='Bundle name', required=True)
-    directive = fields.Selection(string='Directive', selection=[
+    directive = fields.Selection(selection=[
         (APPEND_DIRECTIVE, 'Append'),
         (PREPEND_DIRECTIVE, 'Prepend'),
         (AFTER_DIRECTIVE, 'After'),
@@ -74,9 +74,9 @@ class IrAsset(models.Model):
         (REPLACE_DIRECTIVE, 'Replace'),
         (INCLUDE_DIRECTIVE, 'Include')], default=APPEND_DIRECTIVE)
     path = fields.Char(string='Path (or glob pattern)', required=True)
-    target = fields.Char(string='Target')
+    target = fields.Char()
     active = fields.Boolean(string='active', default=True)
-    sequence = fields.Integer(string="Sequence", default=DEFAULT_SEQUENCE, required=True)
+    sequence = fields.Integer(default=DEFAULT_SEQUENCE, required=True)
 
     def _get_asset_params(self):
         """

@@ -11,7 +11,7 @@ from odoo.tools.partner_identifiers import (
     normalize_identifier,
 )
 
-from odoo.addons.l10n_fr_pdp.tools.demo_utils import handle_demo
+from ..tools.demo_utils import handle_demo
 
 _logger = logging.getLogger(__name__)
 

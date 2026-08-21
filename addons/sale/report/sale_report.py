@@ -5,7 +5,7 @@ from odoo.fields import Domain
 from odoo.models import TableSQL
 from odoo.tools import SQL
 
-from odoo.addons.sale.models.sale_order import SALE_ORDER_STATE
+from ..models.sale_order import SALE_ORDER_STATE
 
 
 class SaleReport(models.Model):
@@ -48,9 +48,9 @@ class SaleReport(models.Model):
         readonly=True,
     )
 
-    campaign_id = fields.Many2one(comodel_name="utm.campaign", string="Campaign", readonly=True)
-    medium_id = fields.Many2one(comodel_name="utm.medium", string="Medium", readonly=True)
-    source_id = fields.Many2one(comodel_name="utm.source", string="Source", readonly=True)
+    campaign_id = fields.Many2one(comodel_name="utm.campaign", readonly=True)
+    medium_id = fields.Many2one(comodel_name="utm.medium", readonly=True)
+    source_id = fields.Many2one(comodel_name="utm.source", readonly=True)
     utm_reference = fields.Reference(string="UTM Reference", selection="_selection_target_model")
 
     # res.partner fields
@@ -87,14 +87,14 @@ class SaleReport(models.Model):
     )
     product_uom_id = fields.Many2one(comodel_name="uom.uom", string="Unit", readonly=True)
     product_uom_qty = fields.Float(string="Qty Ordered", readonly=True)
-    qty_to_deliver = fields.Float(string="Qty To Deliver", readonly=True)
-    qty_delivered = fields.Float(string="Qty Delivered", readonly=True)
-    qty_to_invoice = fields.Float(string="Qty To Invoice", readonly=True)
-    qty_invoiced = fields.Float(string="Qty Invoiced", readonly=True)
+    qty_to_deliver = fields.Float(readonly=True)
+    qty_delivered = fields.Float(readonly=True)
+    qty_to_invoice = fields.Float(readonly=True)
+    qty_invoiced = fields.Float(readonly=True)
     price_subtotal = fields.Monetary(string="Untaxed Total", readonly=True)
     price_total = fields.Monetary(string="Total", readonly=True)
-    untaxed_amount_to_invoice = fields.Monetary(string="Untaxed Amount To Invoice", readonly=True)
-    untaxed_amount_invoiced = fields.Monetary(string="Untaxed Amount Invoiced", readonly=True)
+    untaxed_amount_to_invoice = fields.Monetary(readonly=True)
+    untaxed_amount_invoiced = fields.Monetary(readonly=True)
     untaxed_delivered_amount = fields.Monetary(string="Untaxed Amount Delivered", readonly=True)
     line_invoice_status = fields.Selection(
         selection=[
@@ -108,10 +108,10 @@ class SaleReport(models.Model):
     )
 
     weight = fields.Float(string="Gross Weight", readonly=True)
-    volume = fields.Float(string="Volume", readonly=True)
+    volume = fields.Float(readonly=True)
     price_unit = fields.Float(string="Unit Price", aggregator="avg", readonly=True)
     discount = fields.Float(string="Discount %", readonly=True, aggregator="avg")
-    discount_amount = fields.Monetary(string="Discount Amount", readonly=True)
+    discount_amount = fields.Monetary(readonly=True)
 
     # aggregates or computed fields
     nbr = fields.Integer(string="# of Lines", readonly=True)

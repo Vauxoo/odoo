@@ -14,9 +14,9 @@ class ForumTag(models.Model):
         'website.seo.metadata',
     ]
 
-    name = fields.Char('Name', required=True)
-    color = fields.Integer('Color')
-    forum_id = fields.Many2one('forum.forum', string='Forum', required=True)
+    name = fields.Char(required=True)
+    color = fields.Integer()
+    forum_id = fields.Many2one('forum.forum', required=True)
     post_ids = fields.Many2many(
         'forum.post', 'forum_tag_rel', 'forum_tag_id', 'forum_post_id',
         string='Posts', domain=[('state', '=', 'active')])
@@ -37,7 +37,6 @@ class ForumTag(models.Model):
         compute="_compute_is_follower",
         inverse="_inverse_is_follower",
         search="_search_is_follower",
-        string="Is Follower",
     )
 
     @api.depends_context('uid')
@@ -80,7 +79,7 @@ class ForumTag(models.Model):
         for vals in vals_list:
             forum = self.env['forum.forum'].browse(vals.get('forum_id'))
             if self.env.user.karma < forum.karma_tag_create and not self.env.is_admin():
-                raise AccessError(_('%d karma required to create a new Tag.', forum.karma_tag_create))
+                raise AccessError(self.env._('%d karma required to create a new Tag.', forum.karma_tag_create))
         return super(ForumTag, self.with_context(mail_create_nolog=True, mail_create_nosubscribe=True)).create(vals_list)
 
     # ----------------------------------------------------------------------

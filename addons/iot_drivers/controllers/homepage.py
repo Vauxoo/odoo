@@ -15,9 +15,9 @@ from odoo.http import Controller
 from odoo.http.stream import Stream
 from odoo.tools.misc import file_path
 
-from odoo.addons.iot_drivers.connection_manager import connection_manager
-from odoo.addons.iot_drivers.main import iot_devices, unsupported_devices
-from odoo.addons.iot_drivers.tools import (
+from ..connection_manager import connection_manager
+from ..main import iot_devices, unsupported_devices
+from ..tools import (
     certificate,
     helpers,
     route,
@@ -25,7 +25,7 @@ from odoo.addons.iot_drivers.tools import (
     upgrade,
     wifi,
 )
-from odoo.addons.iot_drivers.tools.system import (
+from ..tools.system import (
     IOT_IDENTIFIER,
     IOT_SYSTEM,
     IS_RPI,

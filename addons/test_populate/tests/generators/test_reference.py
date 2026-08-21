@@ -7,7 +7,7 @@ from odoo.addons.populate.generators import (
     ReferenceRaw,
     UnmetDependencies,
 )
-from odoo.addons.test_populate.tests.common import PopulateTestCase
+from ..common import PopulateTestCase
 
 
 class TestReferenceOne(TransactionCase):

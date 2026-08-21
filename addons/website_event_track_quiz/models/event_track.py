@@ -7,11 +7,11 @@ from odoo.fields import Domain
 class EventTrack(models.Model):
     _inherit = 'event.track'
 
-    quiz_id = fields.Many2one('event.quiz', string="Quiz", compute='_compute_quiz_id', store=True, groups="event.group_event_user")
+    quiz_id = fields.Many2one('event.quiz', compute='_compute_quiz_id', store=True, groups="event.group_event_user")
     quiz_ids = fields.One2many('event.quiz', 'event_track_id', string="Quizzes")
     quiz_questions_count = fields.Integer(string="# Quiz Questions", compute='_compute_quiz_questions_count', groups="event.group_event_user")
     is_quiz_completed = fields.Boolean('Is Quiz Done', compute='_compute_quiz_data')
-    quiz_points = fields.Integer('Quiz Points', compute='_compute_quiz_data')
+    quiz_points = fields.Integer(compute='_compute_quiz_data')
 
     @api.depends('quiz_ids.event_track_id')
     def _compute_quiz_id(self):

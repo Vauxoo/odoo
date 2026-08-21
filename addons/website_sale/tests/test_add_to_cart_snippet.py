@@ -5,7 +5,6 @@ import logging
 from odoo import Command
 from odoo.tests import HttpCase, tagged
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged("post_install", "-at_install")

@@ -2,11 +2,6 @@
 {
     'name': "Project - Account",
     'summary': "project profitability items computation",
-    'description': """
-Allows the computation of some section for the project profitability
-==================================================================================================
-This module allows the computation of the 'Vendor Bills', 'Other Costs' and 'Other Revenues' section for the project profitability, in the project update view.
-""",
     'category': 'Accounting/Accounting',
     'depends': ['account', 'project'],
     'auto_install': True,

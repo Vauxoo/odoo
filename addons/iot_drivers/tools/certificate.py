@@ -5,15 +5,15 @@ from cryptography import x509
 from cryptography.x509.oid import NameOID
 from pathlib import Path
 
-from odoo.addons.iot_drivers.tools import system
-from odoo.addons.iot_drivers.tools.system import (
+from . import system
+from .system import (
     IS_RPI,
     IS_TEST,
     IS_WINDOWS,
     IOT_IDENTIFIER,
     NGINX_PATH,
 )
-from odoo.addons.iot_drivers.tools.helpers import (
+from .helpers import (
     odoo_restart,
     require_db,
 )

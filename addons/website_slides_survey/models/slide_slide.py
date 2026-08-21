@@ -76,7 +76,7 @@ class SlideSlide(models.Model):
         slides_certification = self.filtered(lambda slide: slide.slide_category == 'certification')
         slides_certification.can_self_mark_uncompleted = False
         slides_certification.can_self_mark_completed = False
-        super(SlideSlide, self - slides_certification)._compute_mark_complete_actions()
+        return super(SlideSlide, self - slides_certification)._compute_mark_complete_actions()
 
     @api.depends('slide_category')
     def _compute_is_preview(self):
@@ -88,7 +88,7 @@ class SlideSlide(models.Model):
     def _compute_slide_icon_class(self):
         certification = self.filtered(lambda slide: slide.slide_type == 'certification')
         certification.slide_icon_class = 'trophy'
-        super(SlideSlide, self - certification)._compute_slide_icon_class()
+        return super(SlideSlide, self - certification)._compute_slide_icon_class()
 
     @api.depends('slide_category', 'source_type')
     def _compute_slide_type(self):

@@ -15,7 +15,7 @@ class HrEmployeeCategory(models.Model):
         return randint(1, 11)
 
     name = fields.Char(string="Tag Name", required=True)
-    color = fields.Integer(string='Color Index', default=_get_default_color)
+    color = fields.Integer(string='Color Index', default=lambda self: self._get_default_color())
     employee_ids = fields.Many2many('hr.employee', 'employee_category_rel', 'category_id', 'employee_id', string='Employees')
 
     _name_uniq = models.Constraint(

@@ -38,7 +38,7 @@ class CardCampaign(models.Model):
     mailing_count = fields.Integer(compute='_compute_mailing_count')
 
     card_ids = fields.One2many('card.card', inverse_name='campaign_id')
-    card_template_id = fields.Many2one('card.template', string="Design", default=_default_card_template_id, required=True)
+    card_template_id = fields.Many2one('card.template', string="Design", default=lambda self: self._default_card_template_id(), required=True)
     image_preview = fields.Image(compute='_compute_image_preview', compute_sudo=False, readonly=True, store=True, attachment=False)
     link_tracker_id = fields.Many2one('link.tracker', ondelete="restrict")
     res_model = fields.Selection(
@@ -60,7 +60,7 @@ class CardCampaign(models.Model):
     reward_message = fields.Html(string='Thank You Message', translate=True)
     reward_target_url = fields.Char(string='Reward Link')
     request_title = fields.Char('Request', default=lambda self: _('Help us share the news'), translate=True)
-    request_description = fields.Text('Request Description', translate=True)
+    request_description = fields.Text(translate=True)
 
     # Static Content fields
     content_background = fields.Image('Background')
@@ -207,9 +207,9 @@ class CardCampaign(models.Model):
         """Overridable in case `_get_record_url` implements other fallbacks."""
         for model_name, campaigns in self.grouped('res_model').items():
             if model_name and isinstance(self.env[model_name], self.env.registry['website.published.mixin']):
-                campaigns.target_url_placeholder = _("Target record (if published) or Home page")
+                campaigns.target_url_placeholder = self.env._("Target record (if published) or Home page")
             else:
-                campaigns.target_url_placeholder = _("Home page")
+                campaigns.target_url_placeholder = self.env._("Home page")
 
     @api.onchange('res_model')
     def _onchange_model(self):
@@ -260,7 +260,7 @@ class CardCampaign(models.Model):
         ])
         for campaign in updated_model_campaigns:
             if campaign.card_count:
-                raise exceptions.ValidationError(_(
+                raise exceptions.ValidationError(self.env._(
                     "Model of campaign %(campaign)s may not be changed as it already has cards",
                     campaign=campaign.display_name,
                 ))
@@ -290,7 +290,7 @@ class CardCampaign(models.Model):
     def action_view_mailings(self):
         self.ensure_one()
         return {
-            'name': _('%(card_campaign_name)s Mailings', card_campaign_name=self.name),
+            'name': self.env._('%(card_campaign_name)s Mailings', card_campaign_name=self.name),
             'type': 'ir.actions.act_window',
             'res_model': 'mailing.mailing',
             'domain': [('card_campaign_id', '=', self.id)],
@@ -307,7 +307,7 @@ class CardCampaign(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Send Cards'),
+            'name': self.env._('Send Cards'),
             'res_model': 'mailing.mailing',
             'context': {
                 'create': False,
@@ -364,10 +364,10 @@ class CardCampaign(models.Model):
 
 <div class="s_text_block o_mail_snippet_general pt24 pb24" style="padding-left: 15px; padding-right: 15px;" data-snippet="s_text_block" data-name="Text">
     <div class="container s_allow_columns">
-        <p>{_("Hi everyone!")}</p>
-        <p>{_("We've created these personalized cards to make it easy for you to share your involvement with your network.")}
-        <br>{_("We'd love your help in getting the word out. Feel free to post these on your social channels!")}</p>
-        <p>{_("Thanks for your support.")}</p>
+        <p>{self.env._("Hi everyone!")}</p>
+        <p>{self.env._("We've created these personalized cards to make it easy for you to share your involvement with your network.")}
+        <br>{self.env._("We'd love your help in getting the word out. Feel free to post these on your social channels!")}</p>
+        <p>{self.env._("Thanks for your support.")}</p>
     </div>
 </div>
 
@@ -377,7 +377,7 @@ class CardCampaign(models.Model):
             <tr>
                 <td align="center">
                     <a href="/cards/{preview_card.id or 0}/preview" style="padding-left: 3px !important; padding-right: 3px !important">
-                        <img src="/web/image/card.campaign/{self.id or 0}/image_preview" alt="{_("Card Preview")}" class="img-fluid" style="width: 540px;"
+                        <img src="/web/image/card.campaign/{self.id or 0}/image_preview" alt="{self.env._("Card Preview")}" class="img-fluid" style="width: 540px;"
                             data-original-src="/web/image/card.campaign/{self.id or 0}/image_preview"/>
                     </a>
                 </td>
@@ -419,7 +419,7 @@ class CardCampaign(models.Model):
         # None means there was a logged error at image rendering time.
         # Tests also do not render by default, in that case ignore.
         if image_bytes is None and not modules.module.current_test:
-            raise exceptions.UserError(_(
+            raise exceptions.UserError(self.env._(
                 'An error occurred while rendering a card for %(record_name)s. '
                 'Try again or check the server logs for more details.',
                 record_name=record.display_name

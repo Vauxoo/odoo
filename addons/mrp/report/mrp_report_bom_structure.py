@@ -580,7 +580,7 @@ class ReportMrpReport_Bom_Structure(models.AbstractModel):
 
         if data['operations']:
             lines.append({
-                'name': _('Operations'),
+                'name': self.env._('Operations'),
                 'type': 'operation',
                 'quantity': data['operations_time'],
                 'uom': "",
@@ -604,7 +604,7 @@ class ReportMrpReport_Bom_Structure(models.AbstractModel):
                 })
         if data['byproducts']:
             lines.append({
-                'name': _('Byproducts'),
+                'name': self.env._('Byproducts'),
                 'type': 'byproduct',
                 'uom': False,
                 'quantity': data['byproducts_total'],
@@ -761,13 +761,13 @@ class ReportMrpReport_Bom_Structure(models.AbstractModel):
     def _format_date_display(self, state, delay):
         date_today = self.env.context.get('from_date', fields.Date.context_today(self))
         if state == 'available':
-            return _('Available')
+            return self.env._('Available')
         if state == 'unavailable':
-            return _('Not Available')
+            return self.env._('Not Available')
         if state == 'expected':
-            return _('Expected %s', format_date(self.env, date_today + timedelta(days=delay)))
+            return self.env._('Expected %s', format_date(self.env, date_today + timedelta(days=delay)))
         if state == 'estimated':
-            return _('Estimated %s', format_date(self.env, date_today + timedelta(days=delay)))
+            return self.env._('Estimated %s', format_date(self.env, date_today + timedelta(days=delay)))
         return ''
 
     @api.model
@@ -865,7 +865,7 @@ class ReportMrpReport_Bom_Structure(models.AbstractModel):
         best_date_start = best_workcenter = best_duration_expected = None
         for workcenter in workcenters:
             if not workcenter.resource_calendar_id:
-                raise UserError(_('There is no defined calendar on workcenter %s.', workcenter.name))
+                raise UserError(self.env._('There is no defined calendar on workcenter %s.', workcenter.name))
             # Compute theoretical duration
             duration_expected = operation.with_context(product=product, quantity=quantity, workcenter=workcenter).time_total
             # Try to plan on workcenter
@@ -881,7 +881,7 @@ class ReportMrpReport_Bom_Structure(models.AbstractModel):
                 best_duration_expected = duration_expected
         # If none of the workcenter are available, raise
         if best_date_finished == datetime.max:
-            raise UserError(_('Impossible to plan. Please check the workcenter availabilities.'))
+            raise UserError(self.env._('Impossible to plan. Please check the workcenter availabilities.'))
         planning_per_operation[operation] = {
             'date_start': best_date_start,
             'date_finished': best_date_finished,

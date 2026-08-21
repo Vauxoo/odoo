@@ -7,16 +7,6 @@
     'author': 'Tech Receptives',
     'version': '2.3',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Singapore accounting chart and localization.
-=======================================================
-
-This module add, for accounting:
- - The Chart of Accounts of Singapore
- - Field UEN (Unique Entity Number) on company and partner
- - Field PermitNo and PermitNoDate on invoice
-
-    """,
     'depends': [
         'account_qr_code_emv',
         'account',

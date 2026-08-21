@@ -7,10 +7,9 @@ from odoo.exceptions import LockError
 from odoo.http import request
 from odoo.tools.translate import LazyTranslate
 
-from odoo.addons.payment import utils as payment_utils
+from .. import utils as payment_utils
 
 _lt = LazyTranslate(__name__)
-_logger = logging.getLogger(__name__)
 
 
 class PaymentStatus(http.Controller):

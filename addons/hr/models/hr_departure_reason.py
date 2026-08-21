@@ -10,9 +10,9 @@ class HrDepartureReason(models.Model):
     _order = "sequence"
 
     active = fields.Boolean(default=True)
-    sequence = fields.Integer("Sequence", default=10)
+    sequence = fields.Integer(default=10)
     name = fields.Char(string="Reason", required=True, translate=True)
-    country_id = fields.Many2one('res.country', string='Country', default=lambda self: self.env.company.country_id)
+    country_id = fields.Many2one('res.country', default=lambda self: self.env.company.country_id)
     country_code = fields.Char(related='country_id.code')
 
     @api.model
@@ -27,4 +27,4 @@ class HrDepartureReason(models.Model):
     def _unlink_except_default_departure_reasons(self):
         master_departure_codes = self._get_default_departure_reasons()
         if any(reason in master_departure_codes for reason in self):
-            raise UserError(_('Default departure reasons cannot be deleted.'))
+            raise UserError(self.env._('Default departure reasons cannot be deleted.'))

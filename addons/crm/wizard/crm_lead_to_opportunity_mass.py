@@ -88,9 +88,9 @@ class CrmLead2opportunityPartnerMass(models.TransientModel):
 
     def _get_success_toast_message(self, affected_leads_count):
         if affected_leads_count == 1:
-            return _("1 lead has been converted")
+            return self.env._("1 lead has been converted")
         else:
-            return _("%(converted_count)s leads have been converted", converted_count=affected_leads_count)
+            return self.env._("%(converted_count)s leads have been converted", converted_count=affected_leads_count)
 
     def _action_convert_and_merge(self):
         """

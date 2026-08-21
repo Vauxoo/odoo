@@ -26,15 +26,14 @@ class PaymentData(models.Model):
         )
 
     transaction_id = fields.Many2one(
-        string="Transaction",
         comodel_name="payment.transaction",
         ondelete="restrict",
         required=True,
         index=True,
     )
-    payload = fields.Json(string="Payload", required=True)
+    payload = fields.Json(required=True)
     errored = fields.Boolean(string="Failed")
-    error_traceback = fields.Text(string="Error Traceback")
+    error_traceback = fields.Text()
 
     @api.model
     def _cron_process(self):

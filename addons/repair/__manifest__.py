@@ -6,18 +6,6 @@
     'sequence': 230,
     'category': 'Supply Chain/Inventory',
     'summary': 'Repair damaged products',
-    'description': """
-The aim is to have a complete module to manage all products repairs.
-====================================================================
-
-The following topics are covered by this module:
-------------------------------------------------------
-    * Add/remove products in the reparation
-    * Impact for stocks
-    * Warranty concept
-    * Repair quotation report
-    * Notes for the technician and for the final customer
-""",
     'depends': ['sale_stock', 'sale_management'],
     'data': [
         'views/product_views.xml',

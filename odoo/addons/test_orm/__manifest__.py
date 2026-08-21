@@ -1,7 +1,6 @@
 {
     'name': 'Test ORM',
     'category': 'Hidden/Tests',
-    'description': """A module to test the ORM.""",
     'depends': ['base'],
     'data': [
         'data/test_access_rights_data.xml',

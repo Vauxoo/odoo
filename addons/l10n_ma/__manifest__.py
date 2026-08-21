@@ -6,11 +6,6 @@
     'countries': ['ma'],
     'author': 'Odoo S.A.',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the base module to manage the accounting chart for Morocco.
-
-This module has been built with the help of Caudigef.
-""",
     'depends': [
         'base',
         'account',

@@ -94,4 +94,4 @@ class TemplateResetMixin(models.AbstractModel):
             else:
                 templates_with_missing_source.append(template.display_name)
         if templates_with_missing_source:
-            raise UserError(_("The following email templates could not be reset because their related source files could not be found:\n- %s", "\n- ".join(templates_with_missing_source)))
+            raise UserError(self.env._("The following email templates could not be reset because their related source files could not be found:\n- %s", "\n- ".join(templates_with_missing_source)))

@@ -37,7 +37,6 @@ class ResCompany(models.Model):
     nemhandel_identifier_value = fields.Char(related='partner_id.nemhandel_identifier_value', readonly=False)
     nemhandel_purchase_journal_id = fields.Many2one(
         comodel_name='account.journal',
-        string='Nemhandel Purchase Journal',
         domain=[('type', '=', 'purchase')],
         compute='_compute_nemhandel_purchase_journal_id', store=True, readonly=False,
     )
@@ -53,12 +52,12 @@ class ResCompany(models.Model):
     @api.model
     def _check_phonenumbers_import(self):
         if not phonenumbers:
-            raise ValidationError(_("Please install the phonenumbers library."))
+            raise ValidationError(self.env._("Please install the phonenumbers library."))
 
     def _sanitize_nemhandel_phone_number(self, phone_number=None):
         self.ensure_one()
 
-        error_message = _(
+        error_message = self.env._(
             "Please enter the phone number in the correct international format.\n"
             "For example: +32123456789, where +32 is the country code.\n"
             "Currently, only European countries are supported."
@@ -96,7 +95,7 @@ class ResCompany(models.Model):
     def _check_nemhandel_purchase_journal_id(self):
         for company in self:
             if company.nemhandel_purchase_journal_id and company.nemhandel_purchase_journal_id.type != 'purchase':
-                raise ValidationError(_("A purchase journal must be used to receive Nemhandel documents."))
+                raise ValidationError(self.env._("A purchase journal must be used to receive Nemhandel documents."))
 
     # -------------------------------------------------------------------------
     # COMPUTE METHODS

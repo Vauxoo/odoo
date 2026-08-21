@@ -15,7 +15,7 @@ class StockValuationReport(models.AbstractModel):
             location_domain=[('usage', '=', 'production')]
         )
         cost_of_production = {
-            'label': _("Cost of Production"),
+            'label': self.env._("Cost of Production"),
             'value': 0,
         }
         lines_by_account_id = defaultdict(lambda: {

@@ -10,7 +10,7 @@ class AccountAnalyticAccount(models.Model):
     _description = 'Analytic Account'
 
     project_ids = fields.One2many('project.project', 'account_id', string='Projects', export_string_translation=False)
-    project_count = fields.Integer("Project Count", compute='_compute_project_count', export_string_translation=False)
+    project_count = fields.Integer(compute='_compute_project_count', export_string_translation=False)
 
     @api.depends('project_ids')
     def _compute_project_count(self):
@@ -26,7 +26,7 @@ class AccountAnalyticAccount(models.Model):
             limit=1,
         )
         if has_tasks:
-            raise UserError(_("Before we can bid farewell to these accounts, you need to tidy up the projects linked to them by removing their existing tasks!"))
+            raise UserError(self.env._("Before we can bid farewell to these accounts, you need to tidy up the projects linked to them by removing their existing tasks!"))
 
     def action_view_projects(self):
         kanban_view_id = self.env.ref('project.view_project_kanban').id
@@ -36,7 +36,7 @@ class AccountAnalyticAccount(models.Model):
             "views": [[kanban_view_id, "kanban"], [False, "form"]],
             "domain": [['account_id', '=', self.id]],
             "context": {"create": False},
-            "name": _("Projects"),
+            "name": self.env._("Projects"),
         }
         if len(self.project_ids) == 1:
             result['views'] = [(False, "form")]

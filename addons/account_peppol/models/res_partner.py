@@ -9,7 +9,7 @@ from urllib import parse
 from odoo import api, fields, models
 from odoo.fields import Domain
 
-from odoo.addons.account_peppol.tools.demo_utils import handle_demo
+from ..tools.demo_utils import handle_demo
 from odoo.addons.account.models.company import PEPPOL_LIST
 
 INVOICE_RESPONSE_CUSTOMISATION_ID = "busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:invoice_response:3::2.1"
@@ -88,7 +88,7 @@ class ResPartner(models.Model):
         # Don't recompute on partners corresponding to registered companies
         partners_not_to_recompute = self.filtered_domain(self._domain_peppol_do_not_modify_routing_identifier())
         partners_to_recompute = self.browse([partner.id for partner in self if partner._origin.id not in partners_not_to_recompute.ids])
-        super(ResPartner, partners_to_recompute)._compute_routing_scheme_endpoint()
+        return super(ResPartner, partners_to_recompute)._compute_routing_scheme_endpoint()
 
     # -------------------------------------------------------------------------
     # HELPERS

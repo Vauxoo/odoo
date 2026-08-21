@@ -11,7 +11,7 @@ class PosCourse(models.Model):
         return (self.search([], order="sequence desc", limit=1).sequence or 0) + 1
 
     name = fields.Char(string="Course Name", required=True)
-    sequence = fields.Integer(string="Sequence", default=_default_sequence)
+    sequence = fields.Integer(default=lambda self: self._default_sequence())
     category_ids = fields.One2many('pos.category', 'course_id', string="Pos Category")
 
     _name_unique = models.Constraint(
@@ -24,7 +24,7 @@ class PosCourse(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for course, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", course.name)
+                vals['name'] = self.env._("%s (copy)", course.name)
         return vals_list
 
     @api.model

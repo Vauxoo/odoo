@@ -30,16 +30,16 @@ class StockPackage(models.Model):
     contained_quant_ids = fields.One2many('stock.quant', compute="_compute_contained_quant_ids", search="_search_contained_quant_ids")
     content_description = fields.Char('Contents', compute="_compute_content_description")
     package_type_id = fields.Many2one(
-        'stock.package.type', 'Package Type', index=True)
+        'stock.package.type', index=True)
     location_id = fields.Many2one(
-        'stock.location', 'Location', compute='_compute_package_info',
+        'stock.location', compute='_compute_package_info',
         index=True, readonly=False, store=True, recursive=True)
     location_dest_id = fields.Many2one('stock.location', 'Destination location', compute='_compute_location_dest_id', search="_search_location_dest_id")
     company_id = fields.Many2one(
-        'res.company', 'Company', compute='_compute_package_info',
+        'res.company', compute='_compute_package_info',
         index=True, readonly=True, store=True, recursive=True)
     owner_id = fields.Many2one(
-        'res.partner', 'Owner', compute='_compute_owner_id', search='_search_owner',
+        'res.partner', compute='_compute_owner_id', search='_search_owner',
         readonly=True, compute_sudo=True)
     parent_package_id = fields.Many2one('stock.package', 'Container', index='btree_not_null')
     child_package_ids = fields.One2many('stock.package', 'parent_package_id', string='Contained Packages')
@@ -49,9 +49,9 @@ class StockPackage(models.Model):
     child_package_dest_ids = fields.One2many('stock.package', 'package_dest_id', 'Assigned Contained Packages')
     move_line_ids = fields.One2many('stock.move.line', compute="_compute_move_line_ids", search="_search_move_line_ids")
     picking_ids = fields.Many2many('stock.picking', string='Transfers', compute='_compute_picking_ids', search="_search_picking_ids", help="Transfers in which the Package is set as Destination Package")
-    shipping_weight = fields.Float(string='Shipping Weight', help="Total weight of the package.")
+    shipping_weight = fields.Float(help="Total weight of the package.")
     valid_sscc = fields.Boolean('Package name is valid SSCC', compute='_compute_valid_sscc')
-    pack_date = fields.Date('Pack Date', default=fields.Date.context_today)
+    pack_date = fields.Date(default=fields.Date.context_today)
     parent_path = fields.Char(index=True)
     json_popover = fields.Char('JSON data for popover widget', compute='_compute_json_popover')
 

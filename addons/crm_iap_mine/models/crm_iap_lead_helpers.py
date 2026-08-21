@@ -42,7 +42,7 @@ class CrmIapLeadHelpers(models.Model):
             'user_id': user_id,
             'reveal_id': company_data.get('duns') or company_data.get('clearbit_id', ''),
             # Lead vals from data
-            'name': _("%s's opportunity", (company_data.get('name', '') or company_data.get('domain', ''))),
+            'name': self.env._("%s's opportunity", (company_data.get('name', '') or company_data.get('domain', ''))),
             'partner_name': company_data.get('name', ''),
             'email_from': next(iter(company_data.get('email', [])), ''),
             'phone': company_data.get('phone') or next(iter(company_data.get('phone_numbers', [])), ''),

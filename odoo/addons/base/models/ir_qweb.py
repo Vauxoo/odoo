@@ -406,8 +406,8 @@ from odoo.http import request
 from odoo.tools.profiler import QwebTracker
 from odoo.exceptions import UserError, MissingError
 
-from odoo.addons.base.models.assetsbundle import AssetsBundle
-from odoo.addons.base.models.ir_ui_view import MOVABLE_BRANDING
+from .assetsbundle import AssetsBundle
+from .ir_ui_view import MOVABLE_BRANDING
 from odoo.tools.constants import SCRIPT_EXTENSIONS, STYLE_EXTENSIONS, TEMPLATE_EXTENSIONS, FONT_EXTENSIONS
 
 _logger = logging.getLogger(__name__)

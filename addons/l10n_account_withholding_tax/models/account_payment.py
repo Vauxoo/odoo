@@ -29,7 +29,6 @@ class AccountPayment(models.Model):
     outstanding_account_id = fields.Many2one(readonly=False)
     withholding_hide_tax_base_account = fields.Boolean(compute='_compute_withholding_hide_tax_base_account')
     withholding_amount = fields.Monetary(
-        string="Withholding Amount",
         compute="_compute_withholding_amount",
         currency_field='currency_id',
     )
@@ -76,7 +75,7 @@ class AccountPayment(models.Model):
     @api.depends('withhold')
     def _compute_outstanding_account_id(self):
         """ Update the computation to reset the account when withhold is changed. """
-        super()._compute_outstanding_account_id()
+        return super()._compute_outstanding_account_id()
 
     @api.depends('withholding_line_ids.amount')
     def _compute_withholding_amount(self):
@@ -156,4 +155,4 @@ class AccountPayment(models.Model):
 
     @api.constrains('payment_method_line_id')
     def _check_payment_method_line_id(self):
-        super(AccountPayment, self.filtered(lambda p: p.withhold != 'withhold'))._check_payment_method_line_id()
+        return super(AccountPayment, self.filtered(lambda p: p.withhold != 'withhold'))._check_payment_method_line_id()

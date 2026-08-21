@@ -7,7 +7,7 @@ import uuid
 from urllib.parse import urljoin
 
 from odoo import api, fields, models
-from odoo.addons.l10n_tw_edi_ecpay.utils import call_ecpay_api, transfer_time, convert_utc_time_to_tw_time
+from ..utils import call_ecpay_api, transfer_time, convert_utc_time_to_tw_time
 from odoo.exceptions import UserError
 from odoo.tools import float_round
 
@@ -169,7 +169,7 @@ class AccountMove(models.Model):
     @api.depends("l10n_tw_edi_state")
     def _compute_need_cancel_request(self):
         # EXTENDS 'account'
-        super()._compute_need_cancel_request()
+        return super()._compute_need_cancel_request()
 
     @api.depends("l10n_tw_edi_state", "l10n_tw_edi_refund_state")
     def _compute_show_reset_to_draft_button(self):

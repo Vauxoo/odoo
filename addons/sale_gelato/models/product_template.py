@@ -4,7 +4,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Command, Domain
 
-from odoo.addons.sale_gelato import utils
+from .. import utils
 
 
 class ProductTemplate(models.Model):

@@ -5,7 +5,7 @@ from datetime import timedelta
 from odoo import api, fields, models, tools
 from odoo.sql_db import PG_CONCURRENCY_EXCEPTIONS_TO_RETRY
 
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 
 UPDATE_PRESENCE_DELAY = 60
 DISCONNECTION_TIMER = UPDATE_PRESENCE_DELAY + 5
@@ -25,9 +25,9 @@ class MailPresence(models.Model):
     _log_access = False
 
     user_id = fields.Many2one("res.users", "Users", ondelete="cascade")
-    guest_id = fields.Many2one("mail.guest", "Guest", ondelete="cascade")
-    last_poll = fields.Datetime("Last Poll", default=lambda self: fields.Datetime.now())
-    last_presence = fields.Datetime("Last Presence", default=lambda self: fields.Datetime.now())
+    guest_id = fields.Many2one("mail.guest", ondelete="cascade")
+    last_poll = fields.Datetime(default=lambda self: fields.Datetime.now())
+    last_presence = fields.Datetime(default=lambda self: fields.Datetime.now())
     status = fields.Selection(
         [("online", "Online"), ("away", "Away"), ("offline", "Offline")],
         "IM Status",

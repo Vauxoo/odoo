@@ -7,7 +7,7 @@ class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
 
     equipment_ids = fields.One2many('maintenance.equipment', 'vehicle_id')
-    equipment_count = fields.Integer(string='Equipment Count', compute='_compute_equipment_count')
+    equipment_count = fields.Integer(compute='_compute_equipment_count')
 
     @api.depends('equipment_ids')
     def _compute_equipment_count(self):

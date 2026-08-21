@@ -2,7 +2,7 @@
 
 from odoo import models
 
-from odoo.addons.payment import utils as payment_utils
+from .. import utils as payment_utils
 
 
 class IrWebsocket(models.AbstractModel):

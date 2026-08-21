@@ -28,7 +28,7 @@ class AccountMove(models.Model):
                     or line.display_type != 'product':
                 continue
             val = line._prepare_fleet_log_service()
-            log = _('Service Vendor Bill: %s', line.move_id._get_html_link())
+            log = self.env._('Service Vendor Bill: %s', line.move_id._get_html_link())
             val_list.append(val)
             log_list.append(log)
         log_service_ids = self.env['fleet.vehicle.log.services'].create(val_list)
@@ -40,7 +40,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Services"),
+            'name': self.env._("Services"),
             'res_model': 'fleet.vehicle.log.services',
             'domain': [
                 ('account_move_line_id', 'in', self.line_ids.ids),
@@ -52,7 +52,7 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    vehicle_id = fields.Many2one('fleet.vehicle', string='Vehicle', index='btree_not_null')
+    vehicle_id = fields.Many2one('fleet.vehicle', index='btree_not_null')
     # used to decide whether the vehicle_id field is editable
     need_vehicle = fields.Boolean(compute='_compute_need_vehicle')
     vehicle_log_service_ids = fields.One2many(export_string_translation=False,

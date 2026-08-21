@@ -14,12 +14,12 @@ class HrSkillType(models.Model):
     def _get_default_color(self):
         return randint(1, 11)
 
-    active = fields.Boolean('Active', default=True)
-    sequence = fields.Integer("Sequence")
+    active = fields.Boolean(default=True)
+    sequence = fields.Integer()
     name = fields.Char(required=True, translate=True)
     skill_ids = fields.One2many('hr.skill', 'skill_type_id', string="Skills")
     skill_level_ids = fields.One2many('hr.skill.level', 'skill_type_id', string="Levels", copy=True)
-    color = fields.Integer('Color', default=_get_default_color)
+    color = fields.Integer(default=lambda self: self._get_default_color())
     levels_count = fields.Integer(compute="_compute_levels_count", store=True, readonly=False, help="Number of levels linked to this skill type")
     is_certification = fields.Boolean('Certification', help="if checked the skill type become a certification type")
 
@@ -31,7 +31,7 @@ class HrSkillType(models.Model):
                 incorrect_skill_type |= skill_type
         if incorrect_skill_type:
             raise ValidationError(
-                _("The following skills type must contain at least one skill and one level: %s",
+                self.env._("The following skills type must contain at least one skill and one level: %s",
                   "\n".join(skill_type.name for skill_type in incorrect_skill_type)))
 
     def _compute_display_name(self):

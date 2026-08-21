@@ -41,7 +41,7 @@ class AccountChartTemplate(models.AbstractModel):
     def _get_tr_account_journal(self):
         return {
             'cash': {
-                'name': _("Cash"),
+                'name': self.env._("Cash"),
                 'type': 'cash',
                 'show_on_dashboard': True,
             },

@@ -85,7 +85,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
             and tax_category_key['tax_category_code'] == 'E'
             and not tax_category_key.get('tax_exemption_reason')
         ):
-            tax_category_key['tax_exemption_reason'] = _("Exempt from tax")
+            tax_category_key['tax_exemption_reason'] = self.env._("Exempt from tax")
 
         return tax_total_keys
 
@@ -108,7 +108,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
             # [BR-IC-12]-In an Invoice with a VAT breakdown (BG-23) where the VAT category code (BT-118) is
             # "Intra-community supply" the Deliver to country code (BT-80) shall not be blank.
             if dict_to_xml(document_node['cac:Delivery']['cac:DeliveryLocation'], nsmap=nsmap, tag='cac:DeliveryLocation') is None:
-                constraints['cen_en16931_delivery_country_code'] = _("For intracommunity supply, the delivery address should be included.")
+                constraints['cen_en16931_delivery_country_code'] = self.env._("For intracommunity supply, the delivery address should be included.")
 
             # [BR-IC-11]-In an Invoice with a VAT breakdown (BG-23) where the VAT category code (BT-118) is
             # "Intra-community supply" the Actual delivery date (BT-72) or the Invoicing period (BG-14)
@@ -117,7 +117,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
                 dict_to_xml(document_node['cac:Delivery']['cbc:ActualDeliveryDate'], nsmap=nsmap, tag='cbc:ActualDeliveryDate') is None
                 and dict_to_xml(document_node['cac:InvoicePeriod'], nsmap=nsmap, tag='cac:InvoicePeriod') is None
             ):
-                constraints['cen_en16931_delivery_date_invoicing_period'] = _("For intracommunity supply, the actual delivery date or the invoicing period should be included.")
+                constraints['cen_en16931_delivery_date_invoicing_period'] = self.env._("For intracommunity supply, the actual delivery date or the invoicing period should be included.")
 
         # [BR-61]-If the Payment means type code (BT-81) means SEPA credit transfer, Local credit transfer or
         # Non-SEPA international credit transfer, the Payment account identifier (BT-84) shall be present.
@@ -134,7 +134,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
         # [BR-25]-Each Invoice line (BG-25) shall contain the Item name (BT-153).
         for line_node in line_nodes:
             if not (line_node['cac:Item']['cbc:Name'] or {}).get('_text'):
-                constraints['cen_en16931_item_name'] = _("Each invoice line should have a product or a label.")
+                constraints['cen_en16931_item_name'] = self.env._("Each invoice line should have a product or a label.")
                 break
 
         tax_category_ids_per_line_node = [
@@ -151,7 +151,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
         # [UBL-SR-48]-Invoice lines shall have one and only one classified tax category.
         for line_node, tax_categories in tax_category_ids_per_line_node:
             if len(tax_categories) != 1 or None in tax_categories:
-                constraints['cen_en16931_tax_line'] = _("Each invoice line shall have one and only one tax.")
+                constraints['cen_en16931_tax_line'] = self.env._("Each invoice line shall have one and only one tax.")
 
         # [BR-O-02] and other [BR-XX-02] contradict each other.
         # taxes of category 'O' should not be mixed with other.
@@ -163,7 +163,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
             if set(tax_categories) != {'O'}:
                 has_only_service_outside_scope_of_tax = False
         if has_service_outside_scope_of_tax and not has_only_service_outside_scope_of_tax:
-            constraints['cen_en16931_tax_category_o'] = _("Taxes of category 'Service outside scope of tax' shall not be mixed with tax from other categories. You should split your invoice in two")
+            constraints['cen_en16931_tax_category_o'] = self.env._("Taxes of category 'Service outside scope of tax' shall not be mixed with tax from other categories. You should split your invoice in two")
 
         for party_node, role in (
             (document_node['cac:AccountingSupplierParty'], 'supplier'),
@@ -172,7 +172,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
             # [BR-09] Seller postal address must contain Seller country code (BT-40).
             # [BR-11] Buyer postal address must contain Buyer country code (BT-55).
             if dict_to_xml(party_node['cac:Party']['cac:PostalAddress']['cac:Country']['cbc:IdentificationCode'], nsmap=nsmap, tag='cbc:IdentificationCode') is None:
-                constraints[f'cen_en16931_{role}_country'] = _("The country is required for the %s.", role)
+                constraints[f'cen_en16931_{role}_country'] = self.env._("The country is required for the %s.", role)
 
             # [BR-CO-09]-The Seller VAT identifier (BT-31), the Seller tax representative VAT identifier (BT-63)
             # and the Buyer VAT identifier (BT-48) shall have a prefix in accordance with ISO code ISO 3166-1
@@ -182,7 +182,7 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
                     tax_scheme_node['cac:TaxScheme']['cbc:ID']['_text'] == 'VAT'
                     and not tax_scheme_node['cbc:CompanyID']['_text'][:2].isalpha()
                 ):
-                    constraints[f'cen_en16931_{role}_vat_country_code'] = _("The VAT of the %s should be prefixed with its country code.", role)
+                    constraints[f'cen_en16931_{role}_vat_country_code'] = self.env._("The VAT of the %s should be prefixed with its country code.", role)
 
         # [BR-57]-Each Deliver to address (BG-15) shall contain a Deliver to country code (BT-80).
         if (
@@ -194,14 +194,14 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
         if self.env.context.get('from_peppol'):
             # [PEPPOL-EN16931-R010]
             if not vals['document_node']['cac:AccountingCustomerParty']['cac:Party']['cbc:EndpointID']['_text']:
-                constraints['ubl_peppol_en16931-r010'] = _(
+                constraints['ubl_peppol_en16931-r010'] = self.env._(
                     "[PEPPOL-EN16931-R010] An electronic address (EAS) must be provided on the customer '%s'.",
                     vals['customer'].display_name,
                 )
 
             # [PEPPOL-EN16931-R020]
             if not vals['document_node']['cac:AccountingSupplierParty']['cac:Party']['cbc:EndpointID']['_text']:
-                constraints['ubl_peppol_en16931-r020'] = _(
+                constraints['ubl_peppol_en16931-r020'] = self.env._(
                     "[PEPPOL-EN16931-R020] An electronic address (EAS) must be provided on the company '%s'.",
                     vals['supplier'].display_name,
                 )

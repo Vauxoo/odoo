@@ -3,16 +3,6 @@
 {
     'name': 'Automation Rules',
     'category': 'Sales/Sales',
-    'description': """
-This module allows to implement automation rules for any object.
-================================================================
-
-Use automation rules to automatically trigger actions for various screens.
-
-**Example:** A lead created by a specific user may be automatically set to a specific
-Sales Team, or an opportunity which still has status pending after 14 days might
-trigger an automatic reminder email.
-    """,
     'depends': ['base', 'digest', 'resource', 'mail', 'sms'],
     'data': [
         'data/base_automation_data.xml',

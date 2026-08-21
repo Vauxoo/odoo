@@ -16,4 +16,4 @@ class TestOrderReceiptL10n(TestPosOrderReceipt):
         self.key_to_skip['image'].append('l10n_es_pos_tbai_qrsrc')
 
     def test_receipt_data(self):
-        super().test_receipt_data()
+        return super().test_receipt_data()

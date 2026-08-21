@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
-from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+from ..common import MailCommon, mail_new_test_user
 from odoo.exceptions import UserError, AccessError
 from odoo.fields import Command
 from odoo.tests.common import HttpCase, JsonRpcException, freeze_time, users

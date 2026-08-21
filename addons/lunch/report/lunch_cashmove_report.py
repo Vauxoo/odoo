@@ -11,15 +11,15 @@ class LunchCashmoveReport(models.Model):
     _order = "date desc"
 
     id = fields.Id(string='ID')
-    amount = fields.Float('Amount')
-    date = fields.Date('Date')
-    currency_id = fields.Many2one('res.currency', string='Currency')
-    user_id = fields.Many2one('res.users', string='User')
-    description = fields.Text('Description')
+    amount = fields.Float()
+    date = fields.Date()
+    currency_id = fields.Many2one('res.currency')
+    user_id = fields.Many2one('res.users')
+    description = fields.Text()
 
     def _compute_display_name(self):
         for cashmove in self:
-            cashmove.display_name = '{} {}'.format(_('Lunch Cashmove'), '#%d' % cashmove.id)
+            cashmove.display_name = '{} {}'.format(self.env._('Lunch Cashmove'), '#%d' % cashmove.id)
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)

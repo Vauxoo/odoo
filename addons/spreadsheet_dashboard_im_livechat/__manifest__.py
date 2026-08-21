@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for live chat",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'im_livechat'],
     'data': [
         "data/livechat_ongoing_sessions_actions.xml",

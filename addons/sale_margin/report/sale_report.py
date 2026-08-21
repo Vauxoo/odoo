@@ -7,7 +7,7 @@ from odoo.tools import SQL
 class SaleReport(models.Model):
     _inherit = "sale.report"
 
-    margin = fields.Float("Margin", readonly=True)
+    margin = fields.Float(readonly=True)
     margin_percent = fields.Float("Margin (%)", aggregator=None, readonly=True)
     purchase_price = fields.Float(string="Expected Cost", readonly=True)
 

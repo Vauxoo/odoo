@@ -53,8 +53,7 @@ class MailPollVote(models.Model):
         )
         if failing_polls := self.env["mail.poll"].browse([r[0].id for r in result]):
             raise ValidationError(
-                self.env._('Cannot vote on poll "%(polls)s": only one vote is allowed per user.')
-                % {"polls": format_list(self.env, failing_polls.mapped("poll_question"))}
+                self.env._('Cannot vote on poll "%(polls)s": only one vote is allowed per user.', polls=format_list(self.env, failing_polls.mapped("poll_question")))
             )
 
     @api.depends_context("guest", "uid")

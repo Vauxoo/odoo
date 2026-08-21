@@ -4,13 +4,6 @@
     'name': 'Timesheet when on Time Off',
     'category': 'Human Resources',
     'summary': 'Schedule timesheet when on time off',
-    'description': """
-Bridge module to integrate leaves in timesheet
-================================================
-
-This module allows to automatically log timesheets when employees are
-on leaves. Project and task can be configured company-wide.
-    """,
     'depends': ['hr_timesheet', 'hr_holidays'],
     'data': [
         'views/res_config_settings_views.xml',

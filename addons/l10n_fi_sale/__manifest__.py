@@ -2,7 +2,6 @@
 
 {
     'name': 'Finland - Sale',
-    'description': """Finland Sale""",
     'category': 'Sales/Sales',
     'depends': [
         'l10n_fi',

@@ -64,4 +64,4 @@ class TestProjectTodoTagsSecurity(TestProjectTagsSecurity):
         # The goal of the class inheritance and the call to `super`
         # is to re-test the expected access for `project.group_project_user` and `project.group_project_manager`
         # despite the new ACLs and rules of this module
-        super().test_security()
+        return super().test_security()

@@ -4,11 +4,6 @@
     'name': 'Greece - myDATA',
     'category': 'Accounting/Localizations',
     'summary': """Connect to myDATA API implementation for Greece""",
-    'description': """
-        myDATA is a platform created by Greece's tax authority,
-        The Independent Authority for Public Revenue (IAPR),
-        to digitize business tax and accounting information declaration.
-    """,
     'countries': ['gr'],
     'depends': ['account_edi_ubl_cii', 'l10n_gr'],
     'data': [

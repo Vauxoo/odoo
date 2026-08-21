@@ -2,7 +2,6 @@
 
 {
     'name': 'Indian - Stock Report(GST)',
-    'description': """GST Stock Report""",
     'category': 'Accounting/Localizations',
     'depends': [
         'l10n_in',

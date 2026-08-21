@@ -50,4 +50,4 @@ class AccountJournal(models.Model):
 
             creditor = record.l10n_dk_fik_creditor_number
             if not creditor or not (creditor.isdigit() and len(creditor) == 8):
-                raise ValidationError(_("FIK Creditor Number must be exactly 8 digits."))
+                raise ValidationError(self.env._("FIK Creditor Number must be exactly 8 digits."))

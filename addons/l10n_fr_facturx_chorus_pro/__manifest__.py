@@ -4,9 +4,6 @@
     'name': 'France - BIS3 integration for Chorus Pro',
     'countries': ['fr'],
     'category': 'Accounting/Localizations/EDI',
-    'description': """
-Add support to fill three fields used when using Chorus Pro, especially when invoicing public services.
-""",
     'depends': [
         'account',
         'account_edi_ubl_cii',

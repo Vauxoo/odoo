@@ -4,14 +4,6 @@
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'icon': '/account/static/description/l10n.png',
     'countries': ['hr'],
-    'description': """
-Croatian Chart of Accounts updated (RRIF ver.2021)
-
-Sources:
-https://www.rrif.hr/dok/preuzimanje/Bilanca-2016.pdf
-https://www.rrif.hr/dok/preuzimanje/RRIF-RP2021.PDF
-https://www.rrif.hr/dok/preuzimanje/RRIF-RP2021-ENG.PDF
-    """,
     'version': '13.0',
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [

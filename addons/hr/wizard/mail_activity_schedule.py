@@ -22,7 +22,7 @@ class MailActivitySchedule(models.TransientModel):
             else:
                 domain &= Domain('department_id', '=', False) | Domain('department_id', '=', scheduler.department_id.id)
             scheduler.plan_available_ids = self.env['mail.activity.plan'].search(domain)
-        super(MailActivitySchedule, self - todo)._compute_plan_available_ids()
+        return super(MailActivitySchedule, self - todo)._compute_plan_available_ids()
 
     @api.depends('res_model')
     def _compute_plan_department_filterable(self):
@@ -51,4 +51,4 @@ class MailActivitySchedule(models.TransientModel):
                     scheduler.plan_date = today + relativedelta(days=+30)
                 else:
                     scheduler.plan_date = planned_due_date
-        super(MailActivitySchedule, self - todo)._compute_plan_date()
+        return super(MailActivitySchedule, self - todo)._compute_plan_date()

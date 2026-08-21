@@ -47,7 +47,6 @@ class ResCompany(models.Model):
     )
     peppol_purchase_journal_id = fields.Many2one(
         comodel_name='account.journal',
-        string='Peppol Purchase Journal',
         domain=[('type', '=', 'purchase')],
         compute='_compute_peppol_purchase_journal_id',
         store=True,
@@ -58,7 +57,7 @@ class ResCompany(models.Model):
     peppol_can_send = fields.Boolean(compute='_compute_peppol_can_send')
     peppol_parent_company_id = fields.Many2one(comodel_name='res.company', compute='_compute_peppol_parent_company_id')
     # IAP-driven metadata with additive keys
-    peppol_metadata = fields.Json(string='Peppol Metadata')
+    peppol_metadata = fields.Json()
     peppol_metadata_updated_at = fields.Datetime(string='Peppol meta updated at')
 
     # -------------------------------------------------------------------------
@@ -106,12 +105,12 @@ class ResCompany(models.Model):
     @api.model
     def _check_phonenumbers_import(self):
         if not phonenumbers:
-            raise ValidationError(_("Please install the phonenumbers library."))
+            raise ValidationError(self.env._("Please install the phonenumbers library."))
 
     def _sanitize_peppol_phone_number(self, phone_number=None):
         self.ensure_one()
 
-        error_message = _(
+        error_message = self.env._(
             "Please enter the mobile number in the correct international format.\n"
             "For example: +32123456789, where +32 is the country code.")
 
@@ -153,7 +152,7 @@ class ResCompany(models.Model):
     def _check_peppol_purchase_journal_id(self):
         for company in self:
             if company.peppol_purchase_journal_id and company.peppol_purchase_journal_id.type != 'purchase':
-                raise ValidationError(_("A purchase journal must be used to receive Peppol documents."))
+                raise ValidationError(self.env._("A purchase journal must be used to receive Peppol documents."))
 
     # -------------------------------------------------------------------------
     # COMPUTE METHODS
@@ -305,12 +304,12 @@ class ResCompany(models.Model):
             (participant_info := self.partner_id._peppol_lookup_participant(edi_identification)) is not None
             and (is_company_on_peppol := self.partner_id._check_peppol_participant_exists(participant_info, edi_identification))
         ):
-            error_msg = _(
+            error_msg = self.env._(
                 "A participant with these details has already been registered on the network. "
                 "If you have previously registered to a Peppol service, please deregister."
             )
             if (external_provider := _get_peppol_provider(participant_info)) and "Odoo" not in external_provider:
-                error_msg += _("The Peppol service that is used is %s.", external_provider)
+                error_msg += self.env._("The Peppol service that is used is %s.", external_provider)
         return {
             'is_on_peppol': is_company_on_peppol,
             'external_provider': external_provider,

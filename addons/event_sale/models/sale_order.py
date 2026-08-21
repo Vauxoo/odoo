@@ -8,7 +8,7 @@ from odoo.fields import Domain
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    attendee_count = fields.Integer('Attendee Count', compute='_compute_attendee_count')
+    attendee_count = fields.Integer(compute='_compute_attendee_count')
 
     def write(self, vals):
         """ Synchronize partner from SO to registrations. This is done notably
@@ -29,7 +29,7 @@ class SaleOrder(models.Model):
             so_lines_missing_events = so.order_line.filtered(lambda line: line.service_tracking == 'event' and not line.event_id)
             if so_lines_missing_events:
                 so_lines_descriptions = "".join(f"\n- {so_line_description.name}" for so_line_description in so_lines_missing_events)
-                raise ValidationError(_("Please make sure all your event related lines are configured before confirming this order:%s", so_lines_descriptions))
+                raise ValidationError(self.env._("Please make sure all your event related lines are configured before confirming this order:%s", so_lines_descriptions))
             # Initialize registrations
             so.order_line._init_registrations()
             if len(self) == 1:

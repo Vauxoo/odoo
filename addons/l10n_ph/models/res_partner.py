@@ -142,4 +142,4 @@ class ResPartner(models.Model):
         ph_partners = self.filtered(lambda partner: partner.country_code == 'PH' and partner.l10n_ph_entity_type)
         for partner in ph_partners:
             partner.is_company = partner.l10n_ph_entity_type == 'corporation'
-        super(ResPartner, self - ph_partners)._compute_is_company()
+        return super(ResPartner, self - ph_partners)._compute_is_company()

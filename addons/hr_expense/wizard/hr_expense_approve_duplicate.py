@@ -26,5 +26,5 @@ class HrExpenseApproveDuplicate(models.TransientModel):
         return {'type': 'ir.actions.act_window_close'}
 
     def action_refuse(self):
-        self.expense_ids.filtered(lambda expense: expense.state == 'submitted')._do_refuse(_('Duplicate Expense'))
+        self.expense_ids.filtered(lambda expense: expense.state == 'submitted')._do_refuse(self.env._('Duplicate Expense'))
         return {'type': 'ir.actions.act_window_close'}

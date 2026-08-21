@@ -53,7 +53,7 @@ class PdfWriter(_Writer):
     def add_metadata(self, infos: dict[str, typing.Any]) -> None:
         if hasattr(self, '_info') and self._info is None:
             self._info = generic.DictionaryObject()
-        super().add_metadata(infos)
+        return super().add_metadata(infos)
 
     @deprecate
     def getPage(self, pageNumber):

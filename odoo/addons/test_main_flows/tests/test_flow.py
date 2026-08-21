@@ -7,7 +7,6 @@ from odoo.addons.hr.tests.test_utils import get_admin_employee
 import logging
 import odoo.tests
 
-_logger = logging.getLogger(__name__)
 
 
 class BaseTestUi(AccountTestMockOnlineSyncCommon):

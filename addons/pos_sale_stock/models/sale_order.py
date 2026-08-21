@@ -16,7 +16,7 @@ class SaleOrderLine(models.Model):
 
     @api.depends('pos_order_line_ids.order_id.picking_ids', 'pos_order_line_ids.order_id.picking_ids.state', 'pos_order_line_ids.refund_orderline_ids.order_id.picking_ids.state')
     def _compute_qty_delivered(self):
-        super()._compute_qty_delivered()
+        return super()._compute_qty_delivered()
 
     def _prepare_qty_delivered(self):
         delivered_qties = super()._prepare_qty_delivered()

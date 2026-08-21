@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for restaurants",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'pos_hr', 'pos_restaurant'],
     'data': [
         "data/dashboards.xml",

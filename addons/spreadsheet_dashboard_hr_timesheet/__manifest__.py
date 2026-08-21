@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for time sheets",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'hr_timesheet'],
     'data': [
         "data/dashboards.xml",

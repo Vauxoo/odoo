@@ -7,9 +7,9 @@ import requests
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.const import REPORT_REASONS_MAPPING, SENSITIVE_KEYS
-from odoo.addons.payment.logging import get_payment_logger
+from .. import utils as payment_utils
+from ..const import REPORT_REASONS_MAPPING, SENSITIVE_KEYS
+from ..logging import get_payment_logger
 
 # Pass the possibly empty set of sensitive keys to the logger in case a provider module extends it.
 _logger = get_payment_logger(__name__, sensitive_keys=SENSITIVE_KEYS)
@@ -27,9 +27,8 @@ class PaymentProvider(models.Model):
 
     # === GENERAL FIELDS === #
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     code = fields.Selection(
-        string="Code",
         help="The technical code of this payment provider.",
         selection=[("none", "No Provider Set")],
         default="none",
@@ -47,8 +46,8 @@ class PaymentProvider(models.Model):
         " are only visible on manage forms.",
         copy=False,
     )
-    active = fields.Boolean(string="Active", default=True)
-    sequence = fields.Integer(string="Sequence", help="Define the display order", default=1000)
+    active = fields.Boolean(default=True)
+    sequence = fields.Integer(help="Define the display order", default=1000)
     image_128 = fields.Image(string="Logo", max_width=128, max_height=128)
 
     # === RELATED RECORD FIELDS === #
@@ -71,17 +70,16 @@ class PaymentProvider(models.Model):
         inverse_name="provider_id",
     )
     processed_amount = fields.Monetary(
-        string="Processed Amount",
         compute="_compute_processed_amount",
         currency_field="main_currency_id",
     )
     transaction_count = fields.Integer(
-        string="Transaction Count", compute="_compute_transaction_count"
+        compute="_compute_transaction_count"
     )
     payment_token_ids = fields.One2many(
         string="Payment Tokens", comodel_name="payment.token", inverse_name="provider_id"
     )
-    token_count = fields.Integer(string="Token Count", compute="_compute_token_count")
+    token_count = fields.Integer(compute="_compute_token_count")
 
     # === FEATURE SUPPORT FIELDS === #
 
@@ -116,7 +114,6 @@ class PaymentProvider(models.Model):
         " provider's database, allowing the customer to reuse it for a next purchase.",
     )
     allow_express_checkout = fields.Boolean(
-        string="Allow Express Checkout",
         help="This controls whether customers can use express payment methods. Express checkout"
         " enables customers to pay with Google Pay and Apple Pay from which address information is"
         " collected at payment.",
@@ -127,7 +124,6 @@ class PaymentProvider(models.Model):
         " charge your customers cards only when you are sure you can ship the goods to them.",
     )
     company_id = fields.Many2one(
-        string="Company",
         comodel_name="res.company",
         default=lambda self: self.env.company.id,
         required=True,
@@ -141,13 +137,11 @@ class PaymentProvider(models.Model):
     # === RESTRICTION FIELDS === #
 
     minimum_amount = fields.Monetary(
-        string="Minimum Amount",
         help="The minimum payment amount that this payment provider is available for. Leave blank "
         "to make it available for any payment amount.",
         currency_field="main_currency_id",
     )
     maximum_amount = fields.Monetary(
-        string="Maximum Amount",
         help="The maximum payment amount that this payment provider is available for. Leave blank"
         " to make it available for any payment amount.",
         currency_field="main_currency_id",

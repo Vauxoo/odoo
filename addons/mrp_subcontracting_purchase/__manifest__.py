@@ -4,9 +4,6 @@
     'name': 'Purchase and Subcontracting Management',
     'version': '0.1',
     'category': 'Supply Chain/Purchase',
-    'description': """
-This bridge module adds some smart buttons between Purchase and Subcontracting
-    """,
     'depends': ['mrp_subcontracting_account', 'purchase_mrp'],
     'data': [
         'views/purchase_order_views.xml',

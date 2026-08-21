@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
-from odoo.addons.resource.models.utils import get_collision_new_rucurrency
+from .utils import get_collision_new_rucurrency
 from odoo.exceptions import UserError
 from odoo.fields import Domain
 from odoo.tools import format_time

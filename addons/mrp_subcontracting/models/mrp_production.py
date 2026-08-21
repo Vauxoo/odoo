@@ -16,7 +16,7 @@ class MrpProduction(models.Model):
         'stock.move.line', string="Detail Component", readonly=False,
         inverse='_inverse_move_line_raw_ids', compute='_compute_move_line_raw_ids'
     )
-    subcontractor_id = fields.Many2one('res.partner', string="Subcontractor", help="Used to restrict access to the portal user through Record Rules")
+    subcontractor_id = fields.Many2one('res.partner', help="Used to restrict access to the portal user through Record Rules")
     bom_product_ids = fields.Many2many('product.product', compute="_compute_bom_product_ids", help="List of Products used in the BoM, used to filter the list of products in the subcontracting portal view")
 
     incoming_picking = fields.Many2one(related='move_finished_ids.move_dest_ids.picking_id')
@@ -48,7 +48,7 @@ class MrpProduction(models.Model):
         if self.env.user._is_portal() and not self.env.su:
             unauthorized_fields = set(vals.keys()) - set(self._get_writeable_fields_portal_user())
             if unauthorized_fields:
-                raise AccessError(_("You cannot write on fields %s in mrp.production.", ', '.join(unauthorized_fields)))
+                raise AccessError(self.env._("You cannot write on fields %s in mrp.production.", ', '.join(unauthorized_fields)))
 
         if 'date_start' in vals and self.env.context.get('from_subcontract'):
             date_start = fields.Datetime.to_datetime(vals['date_start'])
@@ -91,7 +91,7 @@ class MrpProduction(models.Model):
 
     def action_merge(self):
         if any(production._get_subcontract_move() for production in self):
-            raise ValidationError(_("Subcontracted manufacturing orders cannot be merged."))
+            raise ValidationError(self.env._("Subcontracted manufacturing orders cannot be merged."))
         return super().action_merge()
 
     def pre_button_mark_done(self):
@@ -117,12 +117,12 @@ class MrpProduction(models.Model):
     def action_split_subcontracting(self):
         self.ensure_one()
         if not self.lot_producing_ids:
-            raise UserError(_("Please set a lot/serial for the currently opened subcontracting MO first."))
+            raise UserError(self.env._("Please set a lot/serial for the currently opened subcontracting MO first."))
         move = self._get_subcontract_move()
         if not move:
             return False
         if move.state == 'done':
-            raise UserError(_("The subcontracted goods have already been received."))
+            raise UserError(self.env._("The subcontracted goods have already been received."))
         if all(l.lot_id for l in move.move_line_ids):
             move.move_line_ids.create({
                 'product_id': move.product_id.id,

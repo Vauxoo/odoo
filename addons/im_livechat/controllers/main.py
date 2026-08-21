@@ -68,7 +68,7 @@ class LivechatController(http.Controller):
 
     @http.route('/im_livechat/loader/<int:channel_id>', type='http', auth='public')
     def loader(self, channel_id, **kwargs):
-        username = kwargs.get("username", _("Visitor"))
+        username = kwargs.get("username", self.env._("Visitor"))
         channel = request.env['im_livechat.channel'].sudo().browse(channel_id)
         info = channel.get_livechat_info(username=username)
         return request.render('im_livechat.loader', {'info': info}, headers=[('Content-Type', 'application/javascript')])
@@ -78,7 +78,7 @@ class LivechatController(http.Controller):
         return {}, {}
 
     def _get_guest_name(self):
-        return _("Visitor")
+        return self.env._("Visitor")
 
     @mail_route('/im_livechat/get_session', methods=["POST"], type="jsonrpc", auth='public')
     def get_session(self, channel_id, previous_operator_id=None, chatbot_script_id=None, persisted=True, **kwargs):

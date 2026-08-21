@@ -19,13 +19,13 @@ class SmsTemplate(models.Model):
             res['model_id'] = self.env['ir.model']._get(res['model']).id
         return res
 
-    name = fields.Char('Name', translate=True)
+    name = fields.Char(translate=True)
     model_id = fields.Many2one(
         'ir.model', string='Applies to', required=True,
         domain=['&', ('is_mail_thread_sms', '=', True), ('transient', '=', False)],
         help="The type of document this template can be used with", ondelete='cascade')
     model = fields.Char('Related Document Model', related='model_id.model', index=True, store=True, readonly=True)
-    body = fields.Char('Body', translate=True, required=True)
+    body = fields.Char(translate=True, required=True)
     # Use to create contextual action (same as for email template)
     sidebar_action_id = fields.Many2one('ir.actions.act_window', 'Sidebar action', readonly=True, copy=False,
                                         help="Sidebar action to make this template available on records "
@@ -54,7 +54,7 @@ class SmsTemplate(models.Model):
         view = self.env.ref('sms.sms_composer_view_form')
 
         for template in self:
-            button_name = _('Send SMS (%s)', template.name)
+            button_name = self.env._('Send SMS (%s)', template.name)
             action = ActWindow.create({
                 'name': button_name,
                 'type': 'ir.actions.act_window',

@@ -14,7 +14,7 @@ from odoo.tools import OrderedSet, is_html_empty
 from odoo.tools.misc import clean_context, get_lang, groupby
 from odoo.tools.translate import LazyTranslate
 from odoo.addons.base.models.ir_attachment import condition_values
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 from .mail_message import MAX_COMODELS_FOR_DOMAIN, MAX_SEARCH_LIMIT, _find_allowed_doc_ids, exists_in_cache
 
 _logger = logging.getLogger(__name__)
@@ -93,21 +93,20 @@ class MailActivity(models.Model):
 
     # activity
     activity_type_id = fields.Many2one(
-        'mail.activity.type', string='Activity Type',
-        domain="['|', ('res_model', '=', False), ('res_model', '=', res_model)]", ondelete='restrict', index='btree_not_null',
-        default=_default_activity_type)
+        'mail.activity.type', domain="['|', ('res_model', '=', False), ('res_model', '=', res_model)]", ondelete='restrict', index='btree_not_null',
+        default=lambda self: self._default_activity_type())
     activity_category = fields.Selection(related='activity_type_id.category', readonly=True)
     activity_decoration = fields.Selection(related='activity_type_id.decoration_type', readonly=True)
     icon = fields.Char('Icon', related='activity_type_id.icon', readonly=True)
     activity_plan_id = fields.Many2one('mail.activity.plan', string='Plan', ondelete='set null', copy=False)
     activity_template_id = fields.Many2one('mail.activity.plan.template', string='Generated From',
                                            index='btree_not_null')
-    summary = fields.Char('Summary', compute='_compute_summary', precompute=True, store=True, readonly=False)
-    note = fields.Html('Note', sanitize_style=True, compute='_compute_note', precompute=True, store=True, readonly=False)
+    summary = fields.Char(compute='_compute_summary', precompute=True, store=True, readonly=False)
+    note = fields.Html(sanitize_style=True, compute='_compute_note', precompute=True, store=True, readonly=False)
     date_deadline = fields.Date('Due Date', index=True, required=True,
         compute='_compute_date_deadline', precompute=True, store=True, readonly=False)
     date_done = fields.Date('Done Date', compute='_compute_date_done', store=True)
-    feedback = fields.Text('Feedback')
+    feedback = fields.Text()
     automated = fields.Boolean(
         'Automated activity', readonly=True,
         help='Indicates this activity has been created automatically and not by any user.')
@@ -125,16 +124,14 @@ class MailActivity(models.Model):
         index=True, required=False, ondelete='cascade',
         compute='_compute_user_id', precompute=True, store=True, readonly=False)
     role_id = fields.Many2one(
-        'res.role', 'Role',
-        index='btree_not_null', required=False, ondelete='set null',
+        'res.role', index='btree_not_null', required=False, ondelete='set null',
         compute='_compute_role_id', precompute=True, store=True, readonly=False)
     user_tz = fields.Selection(string='Timezone', related="user_id.tz", store=True)
     state = fields.Selection([
         ('overdue', 'Overdue'),
         ('today', 'Today'),
         ('planned', 'Planned'),
-        ('done', 'Done')], 'State',
-        compute='_compute_state')
+        ('done', 'Done')], compute='_compute_state')
     mail_template_ids = fields.Many2many(related='activity_type_id.mail_template_ids', readonly=True)
     # access
     can_write = fields.Boolean(compute='_compute_can_write') # used to hide buttons if the current user has no access
@@ -531,7 +528,7 @@ class MailActivity(models.Model):
                     body=body,
                     model_description=model_description,
                     email_layout_xmlid='mail.mail_notification_layout',
-                    subject=_('"%(activity_name)s: %(summary)s" assigned to you',
+                    subject=self.env._('"%(activity_name)s: %(summary)s" assigned to you',
                               activity_name=activity.res_name,
                               summary=activity.summary or activity.activity_type_id.name or ''),
                     subtitles=[
@@ -594,7 +591,7 @@ class MailActivity(models.Model):
             ctx['default_activity_type_id'] = self.activity_type_id.suggested_next_type_id.id
         self._action_done(feedback=feedback, attachment_ids=attachment_ids)  # will unlink activity, dont access self after that
         return {
-            'name': _('Schedule Activity'),
+            'name': self.env._('Schedule Activity'),
             'context': ctx,
             'view_mode': 'form',
             'res_model': 'mail.activity.schedule',

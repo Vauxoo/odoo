@@ -3,7 +3,6 @@
     'name': "Spreadsheet",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['bus', 'web', 'portal'],
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',

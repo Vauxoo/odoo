@@ -33,7 +33,7 @@ class PosPaymentMethod(models.Model):
 
     def _check_special_access(self):
         if not self.env.user.has_group('point_of_sale.group_pos_user'):
-            raise AccessError(_("Do not have access to fetch token from Mercado Pago"))
+            raise AccessError(self.env._("Do not have access to fetch token from Mercado Pago"))
 
     def _compute_mp_webhook_endpoint(self):
         for record in self:
@@ -54,7 +54,7 @@ class PosPaymentMethod(models.Model):
         resp = mercado_pago.call_mercado_pago("patch", "/terminals/v1/setup", payload)
         terminals = resp.get("terminals")
         if not terminals or terminals[0].get("operating_mode") != "PDV":
-            raise UserError(_("Unexpected Mercado Pago response: %s", resp))
+            raise UserError(self.env._("Unexpected Mercado Pago response: %s", resp))
         _logger.debug("Successfully set the terminal mode to 'PDV'.")
 
     def mp_order_create(self, infos):
@@ -104,7 +104,7 @@ class PosPaymentMethod(models.Model):
             order = self.mp_order_get(order_id)
             payments = order.get("transactions", {}).get("payments")
             if not payments:
-                return {"errorMessage": _("Original Mercado Pago payment not found on order %s", order_id)}
+                return {"errorMessage": self.env._("Original Mercado Pago payment not found on order %s", order_id)}
             body = {"transactions": [{"id": payments[0]["id"], "amount": amount}]}
         resp = mercado_pago.call_mercado_pago("post", f"/v1/orders/{order_id}/refund", body, idempotent=True)
         _logger.debug("mp_order_refund(), response from Mercado Pago: %s", resp)
@@ -114,12 +114,12 @@ class PosPaymentMethod(models.Model):
         mercado_pago = MercadoPagoPosRequest(token)
         data = mercado_pago.call_mercado_pago("get", "/terminals/v1/list", {}).get('data', {})
         if 'terminals' not in data:
-            raise UserError(_("Please verify your production user token as it was rejected"))
+            raise UserError(self.env._("Please verify your production user token as it was rejected"))
 
         # Search for a terminal id that contains the serial number entered by the user
         found_terminal = next((t for t in data['terminals'] if point_smart in t['id']), None)
         if not found_terminal:
-            raise UserError(_("The terminal serial number is not registered on Mercado Pago"))
+            raise UserError(self.env._("The terminal serial number is not registered on Mercado Pago"))
         return found_terminal.get('id', '')
 
     def write(self, vals):

@@ -36,7 +36,7 @@ class ChooseDeliveryCarrier(models.TransientModel):
     total_weight = fields.Float(
         string="Total Order Weight", related="order_id.shipping_weight", readonly=False
     )
-    weight_uom_name = fields.Char(default=_get_default_weight_uom, readonly=True)
+    weight_uom_name = fields.Char(default=lambda self: self._get_default_weight_uom(), readonly=True)
 
     @api.onchange("carrier_id", "total_weight")
     def _onchange_carrier_id(self):

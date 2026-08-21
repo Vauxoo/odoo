@@ -18,7 +18,7 @@ class MrpRoutingWorkcenter(models.Model):
     active = fields.Boolean(default=True)
     workcenter_id = fields.Many2one('mrp.workcenter', 'Work Center', required=True, check_company=True, tracking=True, index=True)
     sequence = fields.Integer(
-        'Sequence', default=100,
+        default=100,
         help="Gives the sequence order when displaying a list of routing Work Centers.")
     bom_id = fields.Many2one(
         'mrp.bom', 'Bill of Material',
@@ -61,12 +61,12 @@ class MrpRoutingWorkcenter(models.Model):
                                  help="Determines the way Odoo calculates the cost of the operation:\n"
                                  "- Based on Actual time: the cost will be calculated based on tracked time and real employee costs.\n"
                                  "- Based on Theoretical time: the cost will be calculated based on estimated time and costs.")
-    cost = fields.Float('Cost', compute="_compute_cost")
+    cost = fields.Float(compute="_compute_cost")
 
     @api.depends('time_mode', 'time_mode_batch')
     def _compute_time_computed_on(self):
         for operation in self:
-            operation.time_computed_on = _('%i work orders', operation.time_mode_batch) if operation.time_mode != 'manual' else False
+            operation.time_computed_on = self.env._('%i work orders', operation.time_mode_batch) if operation.time_mode != 'manual' else False
 
     @api.depends('time_cycle_manual', 'time_mode', 'workorder_ids',
         'bom_id.product_id', 'bom_id.product_qty',
@@ -137,7 +137,7 @@ class MrpRoutingWorkcenter(models.Model):
     @api.constrains('blocked_by_operation_ids')
     def _check_no_cyclic_dependencies(self):
         if self._has_cycle('blocked_by_operation_ids'):
-            raise ValidationError(_("You cannot create cyclic dependency."))
+            raise ValidationError(self.env._("You cannot create cyclic dependency."))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -184,7 +184,7 @@ class MrpRoutingWorkcenter(models.Model):
     def copy_existing_operations(self):
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Select Operations to Copy'),
+            'name': self.env._('Select Operations to Copy'),
             'res_model': 'mrp.routing.workcenter',
             'view_mode': 'list,form',
             'domain': ['|', ('bom_id', '=', False), ('bom_id.active', '=', True)],

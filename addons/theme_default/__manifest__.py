@@ -2,7 +2,6 @@
 
 {
     'name': 'Default Theme',
-    'description': 'Default website theme',
     'category': 'Theme',
     'sequence': 1000,
     'depends': ['website'],

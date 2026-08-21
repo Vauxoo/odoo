@@ -22,7 +22,7 @@ class HrVersion(models.Model):
          groups="hr.group_hr_manager",
          tracking=True,
          index='btree_not_null',
-         default=_default_ruleset_id,
+         default=lambda self: self._default_ruleset_id(),
     )
 
     has_ruleset_id = fields.Boolean(compute="_compute_has_ruleset_id", groups="hr.group_hr_user")

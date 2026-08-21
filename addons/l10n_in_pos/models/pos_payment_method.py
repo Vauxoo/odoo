@@ -41,6 +41,6 @@ class PosPaymentMethod(models.Model):
         self.ensure_one()
         if self.payment_method_type == 'bank_qr_code' and self.qr_code_method == 'upi':
             if not self.upi_identifier:
-                raise UserError(_("Please set a UPI ID for the payment method '%s'.", self.name))
+                raise UserError(self.env._("Please set a UPI ID for the payment method '%s'.", self.name))
             return f"upi://pay?pa={self.upi_identifier}&am={amount}&cu={self.journal_id.currency_id.name or self.env.company.currency_id.name}"
         return super().get_qr_code_value(amount, free_communication, structured_communication, currency, debtor_partner)

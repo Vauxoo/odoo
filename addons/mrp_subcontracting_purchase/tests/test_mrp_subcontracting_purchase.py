@@ -12,7 +12,6 @@ from odoo.tests import Form, tagged
 
 from odoo.addons.mrp_subcontracting_account.tests.test_subcontracting_account import TestAccountSubcontractingFlows
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged('post_install', '-at_install')

@@ -3,10 +3,6 @@
 {
     'name': 'Warehouse Management: Batch Transfer',
     'category': 'Supply Chain/Inventory',
-    'description': """
-This module adds the batch transfer option in warehouse management
-==================================================================
-    """,
     'depends': ['stock'],
     'data': [
         'views/stock_picking_batch_views.xml',

@@ -10,7 +10,7 @@ from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_round, float_repr, float_compare, date_utils, SQL
 from odoo.tools.xml_utils import cleanup_xml_node, find_xml_value
-from odoo.addons.l10n_es_edi_facturae.xml_utils import (
+from ..xml_utils import (
     NS_MAP,
     _canonicalize_node,
     _reference_digests,
@@ -254,10 +254,10 @@ class AccountMove(models.Model):
             start_date = self.l10n_es_invoicing_period_start_date
             end_date = self.l10n_es_invoicing_period_end_date
             if not (start_date and end_date):
-                raise UserError(_("Please fill in the invoicing period (start and end date) "
+                raise UserError(self.env._("Please fill in the invoicing period (start and end date) "
                                   "before generating the corrective Facturae document."))
         else:
-            raise UserError(_("To generate a Facturae corrective document, link the refund to its "
+            raise UserError(self.env._("To generate a Facturae corrective document, link the refund to its "
                               "original invoice or, if it is not in the system, fill in the 'Original Invoice Credited' field."))
 
         reason_code = self.l10n_es_edi_facturae_reason_code or '10'
@@ -421,11 +421,11 @@ class AccountMove(models.Model):
         partner = self.commercial_partner_id
 
         if not company.vat:
-            raise UserError(_('The company needs a set tax identification number or VAT number'))
+            raise UserError(self.env._('The company needs a set tax identification number or VAT number'))
         if not partner.vat:
-            raise UserError(_('The partner needs a set tax identification number or VAT number'))
+            raise UserError(self.env._('The partner needs a set tax identification number or VAT number'))
         if not partner.country_id:
-            raise UserError(_("The partner needs a set country"))
+            raise UserError(self.env._("The partner needs a set country"))
         if self.move_type == "entry":
             return False
 
@@ -592,7 +592,7 @@ class AccountMove(models.Model):
         try:
             xml_content = self._l10n_es_facturae_sign_xml(xml_content, signature_values)
         except ValueError:
-            errors.append(_('No valid certificate found for this company, Facturae EDI file will not be signed.\n'))
+            errors.append(self.env._('No valid certificate found for this company, Facturae EDI file will not be signed.\n'))
         return xml_content, errors
 
     # -------------------------------------------------------------------------
@@ -697,7 +697,7 @@ class AccountMove(models.Model):
         if partner:
             invoice.partner_id = partner
         else:
-            logs.append(_("Customer/Vendor could not be found and could not be created due to missing data in the XML."))
+            logs.append(self.env._("Customer/Vendor could not be found and could not be created due to missing data in the XML."))
 
         # ==== currency_id ====
         invoice_currency_code = find_xml_value('.//InvoiceCurrencyCode', tree)
@@ -706,7 +706,7 @@ class AccountMove(models.Model):
             if currency:
                 invoice.currency_id = currency
             else:
-                logs.append(_("Could not retrieve currency: %s. Did you enable the multicurrency option "
+                logs.append(self.env._("Could not retrieve currency: %s. Did you enable the multicurrency option "
                               "and activate the currency?", invoice_currency_code))
 
         # ==== invoice date ====
@@ -731,7 +731,7 @@ class AccountMove(models.Model):
         # === invoice_line_ids ===
         logs += self._import_invoice_fill_lines(invoice, tree, ref_multiplier)
 
-        body = Markup("<strong>%s</strong>") % _("Invoice imported from Factura-E XML file.")
+        body = Markup("<strong>%s</strong>") % self.env._("Invoice imported from Factura-E XML file.")
 
         if logs:
             body += Markup("<ul>%s</ul>") \
@@ -754,7 +754,7 @@ class AccountMove(models.Model):
                 if product:
                     line_vals['product_id'] = product.id
                 else:
-                    logs.append(_("The product '%s' could not be found.", item_description))
+                    logs.append(self.env._("The product '%s' could not be found.", item_description))
                 line_vals['name'] = item_description
 
             # ==== quantity ====
@@ -814,7 +814,7 @@ class AccountMove(models.Model):
                     tax_ids.append(tax_incl)
                     line_vals['price_unit'] *= (1.0 + float(tax_rate) / 100.0)
                 else:
-                    logs.append(_("Could not retrieve the tax: %(tax_rate)s %% for line '%(line)s'.", tax_rate=tax_rate, line=line_vals.get('name', "")))
+                    logs.append(self.env._("Could not retrieve the tax: %(tax_rate)s %% for line '%(line)s'.", tax_rate=tax_rate, line=line_vals.get('name', "")))
 
         return logs
 
@@ -864,7 +864,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         certificates_sudo = self.company_id.sudo().l10n_es_edi_facturae_certificate_ids.filtered("is_valid")
         if not certificates_sudo:
-            raise UserError(_('No valid certificate found'))
+            raise UserError(self.env._('No valid certificate found'))
 
         certificate_sudo = certificates_sudo[0]
 
@@ -921,7 +921,7 @@ class AccountMove(models.Model):
         if self.filtered('l10n_es_edi_facturae_xml_id'):
             print_items.append({
                 'key': 'download_xml_facturae',
-                'description': _('Factura-e XML'),
+                'description': self.env._('Factura-e XML'),
                 **self.action_invoice_download_facturae(),
             })
         return print_items

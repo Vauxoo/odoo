@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Brazil - Sale',
-    'description': 'Sale modifications for Brazil',
     'category': 'Sales/Sales',
     'depends': [
         'l10n_br',

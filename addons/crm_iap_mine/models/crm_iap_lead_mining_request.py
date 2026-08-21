@@ -8,7 +8,6 @@ from odoo.addons.iap.tools import iap_tools
 from odoo.exceptions import UserError
 from odoo.tools import is_html_empty
 
-_logger = logging.getLogger(__name__)
 
 DEFAULT_ENDPOINT = 'https://iap-services.odoo.com'
 
@@ -39,11 +38,11 @@ class CrmIapLeadMiningRequest(models.Model):
     error_type = fields.Selection([
         ('credits', 'Insufficient Credits'),
         ('no_result', 'No Result'),
-    ], string='Error Type', copy=False, readonly=True)
+    ], copy=False, readonly=True)
 
     # Lead / Opportunity Data
 
-    lead_type = fields.Selection([('lead', 'Leads'), ('opportunity', 'Opportunities')], string='Type', required=True, default=_default_lead_type)
+    lead_type = fields.Selection([('lead', 'Leads'), ('opportunity', 'Opportunities')], string='Type', required=True, default=lambda self: self._default_lead_type())
     team_id = fields.Many2one(
         'crm.team', string='Sales Team', ondelete="set null",
         domain="[('use_opportunities', '=', True)]", readonly=False, compute='_compute_team_id', store=True)
@@ -56,7 +55,7 @@ class CrmIapLeadMiningRequest(models.Model):
     filter_on_size = fields.Boolean(string='Filter on Size', default=False)
     company_size_min = fields.Integer(string='Size', default=1)
     company_size_max = fields.Integer(default=100)
-    country_ids = fields.Many2many('res.country', string='Countries', default=_default_country_ids)
+    country_ids = fields.Many2many('res.country', string='Countries', default=lambda self: self._default_country_ids())
     state_ids = fields.Many2many('res.country.state', string='States')
     available_state_ids = fields.One2many('res.country.state', compute='_compute_available_state_ids')
     industry_ids = fields.Many2many('crm.iap.lead.industry', string='Industries')
@@ -68,7 +67,7 @@ class CrmIapLeadMiningRequest(models.Model):
     def _compute_tooltip(self):
         for record in self:
             company_credits = CREDIT_PER_COMPANY * record.lead_number
-            record.lead_credits = _(
+            record.lead_credits = self.env._(
                 "%(credit_count)d credits will be consumed to find %(company_count)d companies.",
                 credit_count=company_credits,
                 company_count=record.lead_number,
@@ -158,8 +157,8 @@ class CrmIapLeadMiningRequest(models.Model):
         if not is_html_empty(help_message):
             return help_message
 
-        help_title = _('Create a Lead Mining Request')
-        sub_title = _('Generate new leads based on their country, industry, size, etc.')
+        help_title = self.env._('Create a Lead Mining Request')
+        sub_title = self.env._('Generate new leads based on their country, industry, size, etc.')
         return super().get_empty_list_help(
             f'<p class="o_view_nocontent_smiling_face">{help_title}</p><p class="oe_view_nocontent_alias">{sub_title}</p>'
         )
@@ -221,7 +220,7 @@ class CrmIapLeadMiningRequest(models.Model):
 
             return response['data']
         except Exception as e:
-            raise UserError(_("Your request could not be executed: %s", e))
+            raise UserError(self.env._("Your request could not be executed: %s", e))
 
     def _iap_contact_mining(self, params, timeout=300):
         endpoint = self.env['ir.config_parameter'].sudo().get_str('reveal.endpoint', DEFAULT_ENDPOINT) + '/api/dnb/1/search_by_criteria'
@@ -238,7 +237,7 @@ class CrmIapLeadMiningRequest(models.Model):
 
             template_values = data
             template_values.update({
-                'flavor_text': _("Opportunity created by Odoo Lead Generation"),
+                'flavor_text': self.env._("Opportunity created by Odoo Lead Generation"),
                 'country': country.name,
                 'zip_code': data.get('zip'),
                 'country_id': country.id,
@@ -264,13 +263,13 @@ class CrmIapLeadMiningRequest(models.Model):
 
     def action_draft(self):
         self.ensure_one()
-        self.name = _('New')
+        self.name = self.env._('New')
         self.state = 'draft'
 
     def action_submit(self):
         self.ensure_one()
-        if self.name == _('New'):
-            self.name = self.env['ir.sequence'].next_by_code('crm.iap.lead.mining.request') or _('New')
+        if self.name == self.env._('New'):
+            self.name = self.env['ir.sequence'].next_by_code('crm.iap.lead.mining.request') or self.env._('New')
         results = self._perform_request()
 
         if results:
@@ -285,7 +284,7 @@ class CrmIapLeadMiningRequest(models.Model):
             # that way, the form view is updated and the correct error message appears
             # (sadly, there is no way to simply 'reload' a form view within a modal)
             return {
-                'name': _('Generate Leads'),
+                'name': self.env._('Generate Leads'),
                 'res_model': 'crm.iap.lead.mining.request',
                 'views': [[False, 'form']],
                 'target': 'new',

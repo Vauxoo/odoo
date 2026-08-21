@@ -161,7 +161,7 @@ class StockPicking(models.Model):
         })
 
         return {
-            'name': _('Send to SInvoice'),
+            'name': self.env._('Send to SInvoice'),
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
@@ -180,15 +180,15 @@ class StockPicking(models.Model):
         errors = []
         company = self.company_id
         if not company._l10n_vn_edi_get_credentials_company():
-            errors.append(_('SInvoice credentials are missing on company %s.', company.display_name))
+            errors.append(self.env._('SInvoice credentials are missing on company %s.', company.display_name))
         if not company.vat:
-            errors.append(_('VAT number is missing on company %s.', company.display_name))
+            errors.append(self.env._('VAT number is missing on company %s.', company.display_name))
         if not self.l10n_vn_edi_symbol_id:
-            errors.append(_('The transfer note symbol must be provided. Set it on the warehouse or in the Inventory settings.'))
+            errors.append(self.env._('The transfer note symbol must be provided. Set it on the warehouse or in the Inventory settings.'))
         if self.l10n_vn_edi_symbol_id and not self.l10n_vn_edi_symbol_id.invoice_template_code:
-            errors.append(_("The symbol's template code must be provided."))
+            errors.append(self.env._("The symbol's template code must be provided."))
         if not company.street or not company.country_id:
-            errors.append(_('The street and country of company %s must be provided.', company.display_name))
+            errors.append(self.env._('The street and country of company %s must be provided.', company.display_name))
         return errors
 
     def _l10n_vn_edi_generate_transfer_note_json(self, template_field_lines=None):
@@ -330,7 +330,7 @@ class StockPicking(models.Model):
                 invoice_data, error_message = sinvoice.create_invoice(json_data)
                 if error_message:
                     if 'BAD_REQUEST_STRING_VALUE_INFO_UPDATE_REQUIRED' in error_message:
-                        error_message = _('Some required template fields are missing or have invalid values. Please check the required template fields and try again.')
+                        error_message = self.env._('Some required template fields are missing or have invalid values. Please check the required template fields and try again.')
                     return [error_message]
 
         self.write({
@@ -353,11 +353,11 @@ class StockPicking(models.Model):
         """Fetch XML and PDF files from SInvoice and attach them to this picking."""
         self.ensure_one()
         if not self.l10n_vn_edi_is_sent:
-            raise UserError(_("Please send the transfer note to SInvoice before fetching the files."))
+            raise UserError(self.env._("Please send the transfer note to SInvoice before fetching the files."))
 
         access_token, error = self.company_id._l10n_vn_edi_get_access_token()
         if error:
-            return {'error_title': _('Cannot get access token.'), 'errors': [error]}
+            return {'error_title': self.env._('Cannot get access token.'), 'errors': [error]}
 
         template_code = self.l10n_vn_edi_symbol_id.invoice_template_code
         invoice_no = self.l10n_vn_edi_invoice_number
@@ -373,7 +373,7 @@ class StockPicking(models.Model):
                         base64.b64decode(file_bytes)
                     )
                 else:
-                    xml_error = _('XML file not yet available from Viettel.')
+                    xml_error = self.env._('XML file not yet available from Viettel.')
 
                 if xml_data:
                     xml_data['res_field'] = 'l10n_vn_edi_sinvoice_xml_file_id'
@@ -405,12 +405,12 @@ class StockPicking(models.Model):
             for att in attachments:
                 self[att.res_field] = att.id
             self.message_post(
-                body=_('Transfer note sent to SInvoice'),
+                body=self.env._('Transfer note sent to SInvoice'),
                 attachment_ids=attachments.ids + self.l10n_vn_edi_sinvoice_file_id.ids,
             )
 
         if xml_error or pdf_error:
             return {
-                'error_title': _('Error when receiving SInvoice files.'),
+                'error_title': self.env._('Error when receiving SInvoice files.'),
                 'errors': [e for e in [xml_error, pdf_error] if e],
             }

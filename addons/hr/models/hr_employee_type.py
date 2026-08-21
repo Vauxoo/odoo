@@ -11,7 +11,7 @@ class HrEmployeeType(models.Model):
     code = fields.Char(compute='_compute_code', store=True, readonly=False)
     country_id = fields.Many2one('res.country', domain=lambda self: [('id', 'in', self.env.companies.country_id.ids)])
     country_code = fields.Char(related='country_id.code')
-    company_id = fields.Many2one('res.company', string='Company')
+    company_id = fields.Many2one('res.company')
     employees_count = fields.Integer(compute='_compute_employee_count', string='Employees')
     employee_ids = fields.One2many('hr.employee', 'employee_type_id', string='Related Employees')
     sequence = fields.Integer(default=10)

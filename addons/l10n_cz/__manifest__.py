@@ -7,17 +7,6 @@
     'author': '26HOUSE (http://www.26house.com)',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Czech accounting chart and localization.  With Chart of Accounts with taxes and basic fiscal positions.
-
-Tento modul definuje:
-
-- Českou účetní osnovu za rok 2020
-
-- Základní sazby pro DPH z prodeje a nákupu
-
-- Základní fiskální pozice pro českou legislativu
-    """,
     'depends': [
         'account',
         'account_edi_ubl_cii',

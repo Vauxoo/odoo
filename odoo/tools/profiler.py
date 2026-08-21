@@ -257,7 +257,7 @@ class PeriodicCollector(_BasePeriodicCollector):
     def start(self):
         self._memory_profile = self.profiler.memory_profile
         self._process = self.profiler.process
-        super().start()
+        return super().start()
 
     def add(self, entry=None, frame=None, check_limit=True):
         """ Add an entry (dict) to this collector. """
@@ -435,7 +435,7 @@ class QwebCollector(Collector):
                     data = stack.pop()
 
         self.add({'results': {'archs': archs, 'data': results}}, check_limit=False)
-        super().post_process()
+        return super().post_process()
 
 
 class ExecutionContext:
@@ -564,8 +564,8 @@ class Profiler:
             self.cpu_duration = real_cpu_time() - self.start_cpu_time
             self._add_file_lines(self.init_stack_trace)
 
+            # ruff: disable[import-outside-top-level]
             if self.db:
-                # pylint: disable=import-outside-toplevel
                 from odoo.sql_db import db_connect  # only import from odoo if/when needed.
                 with db_connect(self.db).cursor() as cr:
                     values = {
@@ -595,6 +595,7 @@ class Profiler:
                     cr.execute(query)
                     self.profile_id = cr.fetchone()[0]
                     _logger.info('ir_profile %s (%s) created', self.profile_id, self.profile_session)
+            # ruff: enable[import-outside-top-level]
         except OperationalError:
             _logger.exception("Could not save profile in database")
         finally:

@@ -21,7 +21,7 @@ class WebsiteTrack(models.Model):
 
     visitor_id = fields.Many2one('website.visitor', ondelete="cascade", index=True, required=True, readonly=True)
     page_id = fields.Many2one('website.page', index=True, ondelete='cascade', readonly=True)
-    url = fields.Text('Url', index=True)
+    url = fields.Text(index=True)
     visit_datetime = fields.Datetime('Visit Date', default=fields.Datetime.now, required=True, readonly=True)
 
 
@@ -48,18 +48,18 @@ class WebsiteVisitor(models.Model):
         return hashlib.sha1(msg).hexdigest()[:32]
 
     name = fields.Char('Name', related='partner_id.name')
-    access_token = fields.Char(required=True, default=_get_access_token, copy=False)
-    website_id = fields.Many2one('website', "Website", readonly=True)
+    access_token = fields.Char(required=True, default=lambda self: self._get_access_token(), copy=False)
+    website_id = fields.Many2one('website', readonly=True)
     partner_id = fields.Many2one('res.partner', string="Contact", help="Partner of the last logged in user.", compute='_compute_partner_id', store=True, index='btree_not_null')
     partner_image = fields.Binary(related='partner_id.image_1920')
 
     # localisation and info
-    country_id = fields.Many2one('res.country', 'Country', readonly=True, index='btree_not_null')
+    country_id = fields.Many2one('res.country', readonly=True, index='btree_not_null')
     country_flag = fields.Char(related="country_id.image_url", string="Country Flag")
     lang_id = fields.Many2one('res.lang', string='Language', help="Language from the website when visitor has been created")
-    timezone = fields.Selection(_tz_get, string='Timezone')
-    email = fields.Char(string='Email', compute='_compute_email_phone', compute_sudo=True)
-    mobile = fields.Char(string='Mobile', compute='_compute_email_phone', compute_sudo=True)
+    timezone = fields.Selection(_tz_get)
+    email = fields.Char(compute='_compute_email_phone', compute_sudo=True)
+    mobile = fields.Char(compute='_compute_email_phone', compute_sudo=True)
 
     # Visit fields
     visit_count = fields.Integer('# Visits', default=1, readonly=True, help="A new visit is considered if last connection was more than 8 hours ago.")
@@ -67,7 +67,7 @@ class WebsiteVisitor(models.Model):
     visitor_page_count = fields.Integer('Page Views', compute="_compute_page_statistics", help="Total number of visits on tracked pages")
     page_ids = fields.Many2many('website.page', string="Visited Pages", compute="_compute_page_statistics", groups="website.group_website_designer", search="_search_page_ids")
     page_count = fields.Integer('# Visited Pages', compute="_compute_page_statistics", help="Total number of tracked page visited")
-    last_visited_page_id = fields.Many2one('website.page', string="Last Visited Page", compute="_compute_last_visited_page_id")
+    last_visited_page_id = fields.Many2one('website.page', compute="_compute_last_visited_page_id")
 
     # Time fields
     create_date = fields.Datetime('First Connection', readonly=True)

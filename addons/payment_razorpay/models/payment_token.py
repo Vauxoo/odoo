@@ -3,7 +3,7 @@
 from odoo import models
 from odoo.tools import float_round
 
-from odoo.addons.payment_razorpay import const
+from .. import const
 
 
 class PaymentToken(models.Model):

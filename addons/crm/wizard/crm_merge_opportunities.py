@@ -67,7 +67,7 @@ class CrmMergeOpportunity(models.TransientModel):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'message': _('Something went wrong, please try again later'),
+                    'message': self.env._('Something went wrong, please try again later'),
                     'type': 'warning',
                     'sticky': False,
                     'next': {'type': 'ir.actions.act_window_close'},
@@ -78,7 +78,7 @@ class CrmMergeOpportunity(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'message': _('Leads merged'),
+                'message': self.env._('Leads merged'),
                 'type': 'success',
                 'sticky': False,
                 'next': {'type': 'ir.actions.act_window_close'},

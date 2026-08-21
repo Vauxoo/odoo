@@ -4,7 +4,7 @@ from odoo import fields, models, release
 from odoo.tools import urls
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_mollie import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 

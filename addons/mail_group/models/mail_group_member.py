@@ -6,7 +6,6 @@ import logging
 from odoo import api, fields, models
 from odoo.tools import email_normalize
 
-_logger = logging.getLogger(__name__)
 
 
 class MailGroupMember(models.Model):
@@ -15,12 +14,12 @@ class MailGroupMember(models.Model):
     _description = 'Mailing List Member'
     _rec_name = 'email'
 
-    email = fields.Char(string='Email', compute='_compute_email', readonly=False, store=True)
+    email = fields.Char(compute='_compute_email', readonly=False, store=True)
     email_normalized = fields.Char(
         string='Normalized Email', compute='_compute_email_normalized',
         index=True, store=True)
     mail_group_id = fields.Many2one('mail.group', string='Group', required=True, index=True, ondelete='cascade')
-    partner_id = fields.Many2one('res.partner', 'Partner', ondelete='cascade')
+    partner_id = fields.Many2one('res.partner', ondelete='cascade')
 
     _unique_partner = models.Constraint(
         'UNIQUE(partner_id, mail_group_id)',

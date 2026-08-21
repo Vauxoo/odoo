@@ -2,9 +2,6 @@
     'author': 'Odoo S.A.',
     'name': 'Romania - E-invoicing',
     'category': 'Accounting/Localizations/EDI',
-    'description': """
-E-invoice implementation for Romania
-    """,
     'summary': "E-Invoice implementation for Romania",
     'depends': [
         'account_edi_ubl_cii',

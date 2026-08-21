@@ -10,8 +10,8 @@ from odoo.fields import Domain
 from odoo.tools import human_size
 from odoo.tools.mail import is_html_empty, email_normalize, email_split_and_format, html_remove_xpath
 from odoo.tools.misc import clean_context
-from odoo.addons.mail.tools.attachment import extract_attachment_ids_from_html
-from odoo.addons.mail.tools.parser import parse_res_ids
+from ..tools.attachment import extract_attachment_ids_from_html
+from ..tools.parser import parse_res_ids
 
 
 def _reopen(self, res_id, model, context=None):
@@ -64,7 +64,7 @@ class MailComposeMessage(models.TransientModel):
             )
         # deprecated record context management
         if 'default_res_id' in self.env.context:
-            raise ValueError(_("Deprecated usage of 'default_res_id', should use 'default_res_ids'."))
+            raise ValueError(self.env._("Deprecated usage of 'default_res_id', should use 'default_res_ids'."))
         if (
             'body' in fields
             and self.env.context.get('default_body')
@@ -88,9 +88,8 @@ class MailComposeMessage(models.TransientModel):
 
     # content
     subject = fields.Char(
-        'Subject',
         compute='_compute_subject', readonly=False, store=True)
-    subject_placeholder = fields.Char('Subject Placeholder', compute='_compute_subject_placeholder')
+    subject_placeholder = fields.Char(compute='_compute_subject_placeholder')
     body = fields.Html(
         'Contents',
         render_engine='qweb', render_options={'post_process': True},
@@ -120,8 +119,7 @@ class MailComposeMessage(models.TransientModel):
         'From', compute='_compute_authorship', readonly=False, store=True, compute_sudo=False,
         help="Email address of the sender. This field is set when no matching partner is found and replaces the author_id field in the chatter.")
     author_id = fields.Many2one(
-        'res.partner', string='Author',
-        compute='_compute_authorship', readonly=False, store=True, compute_sudo=False,
+        'res.partner', compute='_compute_authorship', readonly=False, store=True, compute_sudo=False,
         help="Author of the message. If not set, email_from may hold an email address that did not match any partner.")
     # composition
     composition_mode = fields.Selection(
@@ -155,13 +153,13 @@ class MailComposeMessage(models.TransientModel):
         help="Message type: email for email message, notification for system "
              "message, comment for other messages such as user replies")
     subtype_id = fields.Many2one(
-        'mail.message.subtype', 'Subtype', ondelete='set null',
+        'mail.message.subtype', ondelete='set null',
         compute="_compute_subtype_id", readonly=False, store=True)
     subtype_is_log = fields.Boolean('Is a log', compute='_compute_subtype_is_log')
-    mail_activity_type_id = fields.Many2one('mail.activity.type', 'Mail Activity Type', ondelete='set null')
+    mail_activity_type_id = fields.Many2one('mail.activity.type', ondelete='set null')
     # destination
     reply_to = fields.Char(
-        'Reply To', compute='_compute_reply_to', readonly=False, store=True, compute_sudo=False,
+        compute='_compute_reply_to', readonly=False, store=True, compute_sudo=False,
         help='Reply email address. Setting the reply_to bypasses the automatic thread creation.')
     reply_to_force_new = fields.Boolean(
         string='Considers answers as new thread',
@@ -206,16 +204,15 @@ class MailComposeMessage(models.TransientModel):
     notify_author_mention = fields.Boolean(compute='_compute_notify_author_mention', readonly=False, store=True)
     notify_skip_followers = fields.Boolean(compute='_compute_notify_skip_followers', readonly=False, store=True)
     scheduled_date = fields.Char(
-        'Scheduled Date',
         compute='_compute_scheduled_date', readonly=False, store=True, compute_sudo=False,
         help="In comment mode: if set, postpone notifications sending. "
              "In mass mail mode: if sent, send emails after that date. "
              "This date is considered as being in UTC timezone.")
     use_exclusion_list = fields.Boolean(
-        'Use Exclusion List', default=True, copy=False,
+        default=True, copy=False,
         help='Prevent sending messages to blacklisted contacts. Disable only when absolutely necessary.')
     # template generation
-    template_name = fields.Char('Template Name')
+    template_name = fields.Char()
 
     @api.constrains('res_ids')
     def _check_res_ids(self):
@@ -270,7 +267,7 @@ class MailComposeMessage(models.TransientModel):
                 if record := res_ids and self.env[composer.model].browse(res_ids[0]):
                     subject = record._message_compute_subject() or record.display_name
             if not subject:
-                subject = _('e.g. Welcome to MyCompany!')
+                subject = self.env._('e.g. Welcome to MyCompany!')
             composer.subject_placeholder = subject
 
     @api.depends('composition_mode', 'model', 'res_domain', 'res_ids',
@@ -347,7 +344,7 @@ class MailComposeMessage(models.TransientModel):
             return
         self.attachment_links = self.env['ir.qweb']._render(
             'mail.mail_attachment_links', {'attachments': attachments, 'is_preview': True})
-        self.attachment_links_info = _(
+        self.attachment_links_info = self.env._(
             "Your attachments exceed %(max_email_size)s and will be sent as secure links to ensure they reach your recipients",
             max_email_size=human_size(max_email_size_bytes))
 
@@ -748,7 +745,7 @@ class MailComposeMessage(models.TransientModel):
         """
         non_mass_mail = self.filtered(lambda m: m.composition_mode != 'mass_mail')
         non_mass_mail.can_edit_body = True
-        super(MailComposeMessage, self - non_mass_mail)._compute_can_edit_body()
+        return super(MailComposeMessage, self - non_mass_mail)._compute_can_edit_body()
 
     def _compute_field_value(self, field):
         if field.compute_sudo:
@@ -815,7 +812,7 @@ class MailComposeMessage(models.TransientModel):
         """ Create a 'scheduled message' to be posted automatically later. """
         # currently only allowed in mono-comment mode
         if any(wizard.composition_mode != 'comment' or wizard.composition_batch for wizard in self):
-            raise UserError(_("A message can only be scheduled in monocomment mode"))
+            raise UserError(self.env._("A message can only be scheduled in monocomment mode"))
         create_values = []
         # some actions might be triggered on message post based on some context keys
         cleaned_ctx = clean_context(self.env.context)
@@ -825,7 +822,7 @@ class MailComposeMessage(models.TransientModel):
             if not post_values:
                 continue
             if not post_values['scheduled_date']:
-                raise UserError(_("A scheduled date is needed to schedule a message"))
+                raise UserError(self.env._("A scheduled date is needed to schedule a message"))
             create_values.append(wizard._prepare_schedule_message_post_values(post_values))
         return self.env['mail.scheduled.message'].create(create_values)
 
@@ -866,7 +863,7 @@ class MailComposeMessage(models.TransientModel):
             # in comment mode: raise here as anyway message_post will raise.
             if not res_ids and wizard.composition_mode == 'comment':
                 raise ValueError(
-                    _('Mail composer in comment mode should run on at least one record. No records found (model %(model_name)s).',
+                    self.env._('Mail composer in comment mode should run on at least one record. No records found (model %(model_name)s).',
                       model_name=wizard.model)
                 )
 
@@ -899,7 +896,7 @@ class MailComposeMessage(models.TransientModel):
                 message = ActiveModel.message_notify(**post_values)
                 if not message:
                     # if message_notify returns an empty record set, no recipients where found.
-                    raise UserError(_("No recipient found."))
+                    raise UserError(self.env._("No recipient found."))
                 messages += message
             else:
                 messages += ActiveModel.browse(res_id).message_post(**post_values)
@@ -978,7 +975,7 @@ class MailComposeMessage(models.TransientModel):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'view_id': self.env.ref('mail.mail_compose_message_view_form_template_save').id,
-            'name': _('Create a Mail Template'),
+            'name': self.env._('Create a Mail Template'),
             'res_model': 'mail.compose.message',
             'context': {'dialog_size': 'medium'},
             'target': 'new',
@@ -989,7 +986,7 @@ class MailComposeMessage(models.TransientModel):
         """ creates a mail template with the current mail composer's fields """
         self.ensure_one()
         if not self.model or not self.model in self.env:
-            raise UserError(_('Template creation from composer requires a valid model.'))
+            raise UserError(self.env._('Template creation from composer requires a valid model.'))
         model_id = self.env['ir.model']._get_id(self.model)
         template_body = self.body
         if template_body:
@@ -1647,7 +1644,7 @@ class MailComposeMessage(models.TransientModel):
             domain.validate(self.env[self.model])
         except ValueError as e:
             raise ValidationError(
-                _("Invalid domain “%(domain)s” (type “%(domain_type)s”)",
+                self.env._("Invalid domain “%(domain)s” (type “%(domain_type)s”)",
                     domain=self.res_domain,
                     domain_type=type(self.res_domain))
             ) from e

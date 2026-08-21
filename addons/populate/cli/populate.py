@@ -201,7 +201,7 @@ class Populate(Command):
         :param session: Session to execute or resume.
         :param profile: Whether to save profiler entries for this invocation.
         """
-        from odoo.addons.populate import start_populate  # noqa: PLC0415
+        from .. import start_populate  # noqa: PLC0415
 
         time_start = time.time()
         try:

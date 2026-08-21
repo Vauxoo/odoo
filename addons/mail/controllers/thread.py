@@ -9,8 +9,8 @@ from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools.misc import verify_limited_field_access_token
 
-from odoo.addons.mail.controllers.store import StoreController
-from odoo.addons.mail.tools.discuss import Store, mail_route
+from .store import StoreController
+from ..tools.discuss import Store, mail_route
 
 
 class ThreadController(StoreController):

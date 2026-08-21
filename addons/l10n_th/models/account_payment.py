@@ -60,7 +60,7 @@ class AccountPayment(models.Model):
         valid_payments = self - invalid_payments
 
         if not valid_payments:
-            raise UserError(_("No eligible payments found for 50 Tawi report."))
+            raise UserError(self.env._("No eligible payments found for 50 Tawi report."))
 
         report_action = self.env.ref('l10n_th.action_report_50_tawi')
         attachments = self.env['ir.attachment']
@@ -89,8 +89,8 @@ class AccountPayment(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _("Notification"),
-                    'message': _("Invalid payments skipped: %s. The process will continue and print the valid payments.", invalid_list),
+                    'title': self.env._("Notification"),
+                    'message': self.env._("Invalid payments skipped: %s. The process will continue and print the valid payments.", invalid_list),
                     'type': 'warning',
                     'sticky': True,
                     'next': download_action,

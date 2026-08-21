@@ -20,15 +20,15 @@ class AccountMoveSendWizard(models.TransientModel):
             peppol_partner._compute_routing_scheme_endpoint()  # Try to recompute the Peppol credentials.
         eas_label = dict(peppol_partner._fields['routing_scheme']._description_selection(self.env)).get(peppol_partner.routing_scheme)
         if peppol_partner.peppol_verification_state == 'not_valid':
-            addendum_disable_reason = _(' (Customer not on Peppol)')
+            addendum_disable_reason = self.env._(' (Customer not on Peppol)')
         elif peppol_partner.peppol_verification_state == 'not_verified':
             # The recomputation of the Peppol credentials did not manage to fill these fields.
-            addendum_disable_reason = _(' (Customer not on Peppol)')
+            addendum_disable_reason = self.env._(' (Customer not on Peppol)')
             if not peppol_partner.routing_scheme or not peppol_partner.routing_endpoint:
                 if not peppol_partner.vat:
-                    addendum_disable_reason = _(' (no VAT)')
+                    addendum_disable_reason = self.env._(' (no VAT)')
                 elif eas_label:
-                    addendum_disable_reason = _(
+                    addendum_disable_reason = self.env._(
                         ' (Missing %(eas)s)',
                         eas=eas_label,
                     )
@@ -49,16 +49,16 @@ class AccountMoveSendWizard(models.TransientModel):
                 vals_not_valid = {'readonly': True, 'checked': False} if addendum_disable_reason else {}
                 addendum_mode = ''
                 if peppol_proxy_mode == 'test':
-                    addendum_mode = _(' (Test)')
+                    addendum_mode = self.env._(' (Test)')
                 elif peppol_proxy_mode == 'demo':
-                    addendum_mode = _(' (Demo)')
+                    addendum_mode = self.env._(' (Demo)')
                 if addendum_disable_reason or addendum_mode:
                     wizard.sending_method_checkboxes = {
                         **wizard.sending_method_checkboxes,
                         'peppol': {
                             **peppol_checkbox,
                             **vals_not_valid,
-                            'label': _(
+                            'label': self.env._(
                                 '%(peppol_label)s%(disable_reason)s%(peppol_proxy_mode)s',
                                 peppol_label=peppol_label,
                                 disable_reason=addendum_disable_reason,
@@ -72,7 +72,7 @@ class AccountMoveSendWizard(models.TransientModel):
         self.ensure_one()
         if self.sending_methods and 'peppol' in self.sending_methods:
             if self.move_id.partner_id.commercial_partner_id.peppol_verification_state != 'valid':
-                raise UserError(_("Partner doesn't have a valid Peppol configuration."))
+                raise UserError(self.env._("Partner doesn't have a valid Peppol configuration."))
             if registration_action := self._do_peppol_pre_send(self.move_id):
                 return registration_action
         return super().action_send_and_print(allow_fallback_pdf=allow_fallback_pdf)

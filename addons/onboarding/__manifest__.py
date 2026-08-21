@@ -5,10 +5,6 @@
     'version': '1.2',
     'category': 'Hidden',
     'sequence': 9001,
-    'description': """
-This module allows to manage onboardings and their progress
-================================================================================
-    """,
     'depends': ['web'],
     'data': [
         'views/onboarding_templates.xml',

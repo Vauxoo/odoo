@@ -127,4 +127,4 @@ class PurchaseOrderLine(models.Model):
             if line.product_description_variants:
                 name += '\n' + line.product_description_variants
             pol.name = name
-        super(PurchaseOrderLine, po_lines_without_requisition)._compute_price_unit_and_date_planned_and_name()
+        return super(PurchaseOrderLine, po_lines_without_requisition)._compute_price_unit_and_date_planned_and_name()

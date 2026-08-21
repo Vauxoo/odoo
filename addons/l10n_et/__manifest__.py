@@ -5,16 +5,6 @@
     'countries': ['et'],
     'version': '2.0',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Base Module for Ethiopian Localization
-======================================
-
-This is the latest Ethiopian Odoo localization and consists of:
-    - Chart of Accounts
-    - VAT tax structure
-    - Withholding tax structure
-    - Regional State listings
-    """,
     'author': 'Michael Telahun Makonnen <mmakonnen@gmail.com>',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'depends': [

@@ -112,7 +112,7 @@ class Response(werkzeug.wrappers.Response):
 
         if request.db and not request.env['ir.http']._is_allowed_cookie(cookie_type):
             max_age = 0
-        super().set_cookie(key, value=value, max_age=max_age, expires=expires, path=path, domain=domain, secure=secure, httponly=httponly, samesite=samesite)
+        return super().set_cookie(key, value=value, max_age=max_age, expires=expires, path=path, domain=domain, secure=secure, httponly=httponly, samesite=samesite)
 
 
 # Replace the above (unsafe) response by the facade safe one

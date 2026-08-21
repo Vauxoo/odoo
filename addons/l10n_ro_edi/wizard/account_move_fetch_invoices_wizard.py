@@ -32,4 +32,4 @@ class L10n_ro_AccountMoveFetchInvoicesWizard(models.TransientModel):
     def _check_start_date(self):
         for wizard in self:
             if not 0 < wizard.nb_days <= 60:
-                raise ValidationError(_("You cannot synchronize invoices that are older than 60 days"))
+                raise ValidationError(self.env._("You cannot synchronize invoices that are older than 60 days"))

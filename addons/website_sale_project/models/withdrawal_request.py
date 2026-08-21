@@ -10,7 +10,6 @@ class WithdrawalRequest(models.Model):
 
     project_id = fields.Many2one(
         comodel_name="project.project",
-        string="Project",
         domain=[("is_template", "=", False)],
     )
     task_id = fields.Many2one(comodel_name="project.task")
@@ -31,7 +30,7 @@ class WithdrawalRequest(models.Model):
                 "project_id": self.project_id.id,
                 "description": nl2br_enclose(self.log_message, "p"),
             })
-        super()._notify_withdrawal_request()
+        return super()._notify_withdrawal_request()
 
     def _log_mail_sent_to_customer(self, mail_content):
         """Log the confirmation message sent to the customer on the task's chatter."""

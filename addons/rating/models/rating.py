@@ -4,7 +4,7 @@ import uuid
 
 from odoo import api, fields, models
 from odoo.addons.mail.tools.discuss import Store
-from odoo.addons.rating.models import rating_data
+from . import rating_data
 from odoo.tools import BinaryBytes, file_open
 
 
@@ -28,14 +28,14 @@ class RatingRating(models.Model):
     res_model = fields.Char(string='Document Model', related='res_model_id.model', store=True, index=True, readonly=True)
     res_id = fields.Many2oneReference(string='Document', model_field='res_model', required=True, index=True)
     resource_ref = fields.Reference(
-        string='Resource Ref', selection='_selection_target_model',
+        selection='_selection_target_model',
         compute='_compute_resource_ref', readonly=True)
     parent_res_name = fields.Char('Parent Document Name', compute='_compute_parent_res_name', store=True)
     parent_res_model_id = fields.Many2one('ir.model', 'Parent Related Document Model', index=True, ondelete='cascade')
     parent_res_model = fields.Char('Parent Document Model', store=True, related='parent_res_model_id.model', index=True, readonly=False)
     parent_res_id = fields.Many2oneReference('Parent Document', model_field='parent_res_model', index=True)
     parent_ref = fields.Reference(
-        string='Parent Ref', selection='_selection_target_model',
+        selection='_selection_target_model',
         compute='_compute_parent_ref', readonly=True)
     rated_partner_id = fields.Many2one('res.partner', string="Rated Operator", index='btree_not_null')
     rated_partner_name = fields.Char(related="rated_partner_id.name")
@@ -46,12 +46,11 @@ class RatingRating(models.Model):
     rating_text = fields.Selection(rating_data.RATING_TEXT, string='Rating', store=True, compute='_compute_rating_text', readonly=True)
     feedback = fields.Text('Comment')
     message_id = fields.Many2one(
-        'mail.message', string="Message",
-        index=True, ondelete='cascade')
+        'mail.message', index=True, ondelete='cascade')
     is_internal = fields.Boolean('Visible Internally Only', readonly=False, related='message_id.is_internal', store=True)
-    access_token = fields.Char('Security Token', default=_default_access_token)
+    access_token = fields.Char('Security Token', default=lambda self: self._default_access_token())
     consumed = fields.Boolean(string="Filled Rating")
-    rated_on = fields.Datetime(string="Rated On")
+    rated_on = fields.Datetime()
 
     _rating_range = models.Constraint(
         'check(rating >= 0 and rating <= 5)',

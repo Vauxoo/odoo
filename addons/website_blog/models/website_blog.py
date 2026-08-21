@@ -29,11 +29,11 @@ class BlogBlog(models.Model):
     def _default_sequence(self):
         return (self.search([], order="sequence desc", limit=1).sequence or 0) + 1
 
-    sequence = fields.Integer("Sequence", default=_default_sequence)
+    sequence = fields.Integer(default=lambda self: self._default_sequence())
     name = fields.Char('Blog Name', required=True, translate=True)
     subtitle = fields.Char('Blog Subtitle', translate=True)
-    active = fields.Boolean('Active', default=True)
-    content = fields.Html('Content', translate=html_translate, sanitize=False)
+    active = fields.Boolean(default=True)
+    content = fields.Html(translate=html_translate, sanitize=False)
     blog_post_ids = fields.One2many('blog.post', 'blog_id', 'Blog Posts')
     blog_post_count = fields.Integer("Posts", compute='_compute_blog_post_count')
 
@@ -132,7 +132,7 @@ class BlogTagCategory(models.Model):
     _description = 'Blog Tag Category'
     _order = 'name'
 
-    name = fields.Char('Name', required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     tag_ids = fields.One2many('blog.tag', 'category_id', string='Tags')
 
     _name_uniq = models.Constraint(
@@ -147,9 +147,9 @@ class BlogTag(models.Model):
     _inherit = ['website.seo.metadata']
     _order = 'name'
 
-    name = fields.Char('Name', required=True, translate=True)
-    category_id = fields.Many2one('blog.tag.category', 'Category', index=True)
-    color = fields.Integer('Color')
+    name = fields.Char(required=True, translate=True)
+    category_id = fields.Many2one('blog.tag.category', index=True)
+    color = fields.Integer()
     post_ids = fields.Many2many('blog.post', string='Posts')
 
     _name_uniq = models.Constraint(
@@ -177,22 +177,21 @@ class BlogPost(models.Model):
                 blog_post.website_url = "/blog/%s/%s" % (self.env['ir.http']._slug(blog_post.blog_id), self.env['ir.http']._slug(blog_post))
 
     def _default_content(self):
-        text = html_escape(_("Start writing here..."))
+        text = html_escape(self.env._("Start writing here..."))
         return """
             <p>%(text)s</p>
         """ % {"text": text}
     name = fields.Char('Title', required=True, translate=True, default='')
     subtitle = fields.Char('Sub Title', translate=True)
-    author_id = fields.Many2one('res.partner', 'Author', default=lambda self: self.env.user.partner_id, index='btree_not_null')
+    author_id = fields.Many2one('res.partner', default=lambda self: self.env.user.partner_id, index='btree_not_null')
     author_avatar = fields.Binary(related='author_id.image_128', string="Avatar", readonly=False)
     author_name = fields.Char(related='author_id.display_name', string="Author Name", readonly=False, store=True)
-    active = fields.Boolean('Active', default=True)
-    blog_id = fields.Many2one('blog.blog', 'Blog', required=True, index=True, ondelete='cascade', default=lambda self: self.env['blog.blog'].search([], limit=1))
-    recommended_next_post_id = fields.Many2one('blog.post', string="Recommended Next Post",
-        help="Next blog post that will be shown as the next article to users at the bottom of the blog post.")
+    active = fields.Boolean(default=True)
+    blog_id = fields.Many2one('blog.blog', required=True, index=True, ondelete='cascade', default=lambda self: self.env['blog.blog'].search([], limit=1))
+    recommended_next_post_id = fields.Many2one('blog.post', help="Next blog post that will be shown as the next article to users at the bottom of the blog post.")
     tag_ids = fields.Many2many('blog.tag', string='Tags')
-    content = fields.Html('Content', default=_default_content, translate=html_translate, sanitize=False)
-    teaser = fields.Text('Teaser', compute='_compute_teaser', inverse='_set_teaser', translate=True)
+    content = fields.Html(default=lambda self: self._default_content(), translate=html_translate, sanitize=False)
+    teaser = fields.Text(compute='_compute_teaser', inverse='_set_teaser', translate=True)
     teaser_manual = fields.Text(string='Teaser Content', translate=True)
 
     # creation / update stuff

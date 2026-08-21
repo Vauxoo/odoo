@@ -35,8 +35,7 @@ class ProductProduct(models.Model):
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    use_expiration_date = fields.Boolean(string='Use Expiration Date',
-        help='When this box is ticked, you have the possibility to specify dates to manage'
+    use_expiration_date = fields.Boolean(help='When this box is ticked, you have the possibility to specify dates to manage'
         ' product expiration, on the product and on the corresponding lot/serial numbers')
     expiration_time = fields.Integer(string='Expiration Date',
         help='Number of days after the receipt of the products (from the vendor'

@@ -23,11 +23,11 @@ class UtmMixin(models.AbstractModel):
             in self.env['ir.model'].sudo().search_fetch([('transient', '=', False)])
         ]
 
-    campaign_id = fields.Many2one('utm.campaign', 'Campaign', index='btree_not_null',
+    campaign_id = fields.Many2one('utm.campaign', index='btree_not_null',
                                   help="This is a name that helps you keep track of your different campaign efforts, e.g. Fall_Drive, Christmas_Special")
-    source_id = fields.Many2one('utm.source', 'Source', index='btree_not_null',
+    source_id = fields.Many2one('utm.source', index='btree_not_null',
                                 help="This is the source of the link, e.g. Search Engine, another domain, or name of email list")
-    medium_id = fields.Many2one('utm.medium', 'Medium', index='btree_not_null',
+    medium_id = fields.Many2one('utm.medium', index='btree_not_null',
                                 help="This is the method of delivery, e.g. Postcard, Email, or Banner Ad")
     # This is the (optional) reference to the originating record (e.g: the social post, the mailing)
     utm_reference = fields.Reference(string='UTM Reference',

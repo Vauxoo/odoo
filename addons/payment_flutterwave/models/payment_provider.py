@@ -6,7 +6,7 @@ from odoo.tools.urls import urljoin as url_join
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.const import REPORT_REASONS_MAPPING
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_flutterwave import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 
@@ -18,19 +18,16 @@ class PaymentProvider(models.Model):
         selection_add=[("flutterwave", "Flutterwave")], ondelete={"flutterwave": "set default"}
     )
     flutterwave_public_key = fields.Char(
-        string="Flutterwave Public Key",
         help="The key solely used to identify the account with Flutterwave.",
         required_if_provider="flutterwave",
         copy=False,
     )
     flutterwave_secret_key = fields.Char(
-        string="Flutterwave Secret Key",
         required_if_provider="flutterwave",
         copy=False,
         groups="base.group_system",
     )
     flutterwave_webhook_secret = fields.Char(
-        string="Flutterwave Webhook Secret",
         required_if_provider="flutterwave",
         copy=False,
         groups="base.group_system",

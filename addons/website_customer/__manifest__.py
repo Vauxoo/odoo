@@ -4,9 +4,6 @@
     'name': 'Customer References',
     'category': 'Website/Website',
     'summary': 'Publish your customer references',
-    'description': """
-Publish your customers as business references on your website to attract new potential prospects.
-    """,
     'depends': [
         'website_crm_partner_assign',
         'website_partner',

@@ -3,9 +3,6 @@
     'name': 'Website Payment',
     'category': 'Website/Website',
     'summary': 'Payment integration with website',
-    'description': """
-This is a bridge module that adds multi-website support for payment providers.
-    """,
     'depends': [
         'website',
         'account_payment',

@@ -8,7 +8,6 @@ from lxml import etree
 from odoo.fields import Command
 from odoo.tests import HttpCase, tagged
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged("post_install", "-at_install")

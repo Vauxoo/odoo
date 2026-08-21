@@ -3,14 +3,6 @@
     "name": "Mauritius - Accounting",
     'countries': ['mu'],
     "category": "Accounting/Localizations/Account Charts",
-    "description": """
-This is the base module to manage the accounting chart for the Republic of Mauritius in Odoo.
-==============================================================================================
-    - Chart of accounts
-    - Taxes
-    - Fiscal positions
-    - Default settings
-    """,
     "author": "Odoo S.A.",
     "depends": [
         "account",

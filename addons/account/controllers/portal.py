@@ -9,7 +9,7 @@ from odoo.http import request
 from odoo.tools import email_normalize, email_normalize_all
 from odoo.tools.misc import verify_hash_signed
 
-from odoo.addons.account.controllers.download_docs import _build_zip_from_data, _get_headers
+from .download_docs import _build_zip_from_data, _get_headers
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 

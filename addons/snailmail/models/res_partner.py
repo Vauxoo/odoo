@@ -3,7 +3,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, models
-from odoo.addons.snailmail.country_utils import SNAILMAIL_COUNTRIES
+from ..country_utils import SNAILMAIL_COUNTRIES
 
 
 class ResPartner(models.Model):

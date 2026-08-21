@@ -27,21 +27,18 @@ class PosConfig(models.Model):
 
     status = fields.Selection(
         [("inactive", "Inactive"), ("active", "Active")],
-        string="Status",
         compute="_compute_status",
         store=False,
     )
     self_ordering_url = fields.Char(compute="_compute_self_ordering_url")
     self_ordering_mode = fields.Selection(
         [("nothing", "Disable"), ("consultation", "QR menu"), ("mobile", "QR menu + Ordering"), ("kiosk", "Kiosk")],
-        string="Self Ordering Mode",
         default="nothing",
         help="Choose the self ordering mode",
         required=True,
     )
     self_ordering_service_mode = fields.Selection(
         [("counter", "Pickup zone"), ("table", "Table")],
-        string="Self Ordering Service Mode",
         default="counter",
         help="Choose the kiosk mode",
         required=True,
@@ -58,7 +55,7 @@ class PosConfig(models.Model):
         "res.lang",
         string="Available Languages",
         help="Languages available for the kiosk mode",
-        default=_self_order_kiosk_default_languages,
+        default=lambda self: self._self_order_kiosk_default_languages(),
     )
     self_ordering_image_home_ids = fields.Many2many(
         'ir.attachment',
@@ -77,7 +74,7 @@ class PosConfig(models.Model):
         "res.users",
         string="Default User",
         help="Access rights of this user will be used when visiting self order website when no session is open.",
-        default=_self_order_default_user,
+        default=lambda self: self._self_order_default_user(),
     )
     self_ordering_pay_after = fields.Selection(
         selection=lambda self: self._compute_selection_pay_after(),
@@ -160,7 +157,7 @@ class PosConfig(models.Model):
 
             if not exists:
                 record.env['pos_self_order.custom_link'].create({
-                    'name': _('Order Now'),
+                    'name': self.env._('Order Now'),
                     'url': f'/pos-self/{record.id}/products',
                     'pos_config_ids': [(4, record.id)],
                 })
@@ -207,10 +204,10 @@ class PosConfig(models.Model):
                 record.self_ordering_mode = 'nothing'
 
     def _compute_selection_pay_after(self):
-        selection_each_label = _("Each Order")
+        selection_each_label = self.env._("Each Order")
         if not release.version_info[-1]:
-            selection_each_label = f"{selection_each_label} {_('(require Odoo Enterprise)')}"
-        return [("meal", _("Meal")), ("each", selection_each_label)]
+            selection_each_label = f"{selection_each_label} {self.env._('(require Odoo Enterprise)')}"
+        return [("meal", self.env._("Meal")), ("each", selection_each_label)]
 
     @api.constrains('self_ordering_default_user_id')
     def _check_default_user(self):
@@ -222,7 +219,7 @@ class PosConfig(models.Model):
                 and not record.self_ordering_default_user_id.sudo().has_group("point_of_sale.group_pos_user")
                 and not record.self_ordering_default_user_id.sudo().has_group("point_of_sale.group_pos_manager")))
             ):
-                raise UserError(_("The Self-Order default user must be a POS user"))
+                raise UserError(self.env._("The Self-Order default user must be a POS user"))
 
     def _get_qr_code_data(self):
         self.ensure_one()
@@ -248,7 +245,7 @@ class PosConfig(models.Model):
             # Here we use "range" to determine the number of QR codes to generate from
             # this list, which will then be inserted into a PDF.
             table_qr_code.extend([{
-                'name': _('Generic'),
+                'name': self.env._('Generic'),
                 'type': 'default',
                 'tables': [{
                     'id': i,
@@ -392,7 +389,7 @@ class PosConfig(models.Model):
 
         return {
             'type': 'ir.actions.act_url',
-            'name': _('Self Order'),
+            'name': self.env._('Self Order'),
             'target': 'new',
             'url': self.get_kiosk_url(),
         }
@@ -421,7 +418,7 @@ class PosConfig(models.Model):
             ('id', 'in', payment_methods_ids),
         ]).ids
         config = self.env['pos.config'].create({
-            'name': _('Kiosk'),
+            'name': self.env._('Kiosk'),
             'company_id': self.env.company.id,
             'journal_id': journal.id,
             'payment_method_ids': not_cash_payment_methods_ids,

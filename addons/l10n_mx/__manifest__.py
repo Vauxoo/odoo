@@ -7,25 +7,6 @@
     'version': '2.3',
     'author': 'Vauxoo',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Minimal accounting configuration for Mexico.
-============================================
-
-This Chart of account is a minimal proposal to be able to use OoB the
-accounting feature of Odoo.
-
-This doesn't pretend be all the localization for MX it is just the minimal
-data required to start from 0 in mexican localization.
-
-This modules and its content is updated frequently by openerp-mexico team.
-
-With this module you will have:
-
- - Minimal chart of account tested in production environments.
- - Minimal chart of taxes, to comply with SAT_ requirements.
-
-.. _SAT: http://www.sat.gob.mx/
-    """,
     'depends': [
         'account',
     ],

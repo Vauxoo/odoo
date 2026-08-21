@@ -99,7 +99,7 @@ class AccountMove(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form',
-            'name': _("Linked deliveries"),
+            'name': self.env._("Linked deliveries"),
             'res_model': 'stock.picking',
             'domain': [('id', 'in', self.l10n_it_ddt_ids.ids)],
         }

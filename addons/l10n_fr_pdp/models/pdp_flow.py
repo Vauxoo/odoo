@@ -69,7 +69,6 @@ class PdpFlow(models.Model):
     periodicity_code = fields.Char()
     company_id = fields.Many2one(
         comodel_name='res.company',
-        string="Company",
         required=True,
         default=lambda self: self.env.company,
     )
@@ -92,7 +91,6 @@ class PdpFlow(models.Model):
             ('grace', "Grace"),
             ('closed', "Closed"),
         ],
-        string="Period Status",
         compute='_compute_period_status',
         help="Current status of the reporting period: Open (before grace), Grace (can send), Closed (after deadline).",
     )

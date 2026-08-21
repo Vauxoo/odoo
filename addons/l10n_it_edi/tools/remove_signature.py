@@ -17,7 +17,6 @@ from contextlib import suppress
 from OpenSSL import crypto as ssl_crypto
 import OpenSSL._util as ssl_util
 
-_logger = logging.getLogger(__name__)
 
 
 def remove_signature(content, target=None):

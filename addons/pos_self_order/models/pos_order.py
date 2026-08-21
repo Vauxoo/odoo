@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PosOrder(models.Model):
     _inherit = "pos.order"
 
-    table_stand_number = fields.Char(string="Table Stand Number")
+    table_stand_number = fields.Char()
     self_ordering_table_id = fields.Many2one('restaurant.table', string='Table reference', readonly=True)
     source = fields.Selection(selection_add=[
         ('mobile', 'Self-Order Mobile'),
@@ -77,7 +77,7 @@ class PosOrder(models.Model):
         self.email = email
         mail_template = self.env['mail.template'].browse(mail_template_id)
         if not mail_template:
-            raise UserError(_("The mail template with xmlid %s has been deleted.", mail_template_id))
+            raise UserError(self.env._("The mail template with xmlid %s has been deleted.", mail_template_id))
         email_values = {'email_to': email}
         if self.state == 'paid' and ticket_image:
             email_values['attachment_ids'] = self._get_mail_attachments(self.name, ticket_image, basic_image)
@@ -179,17 +179,17 @@ class PosOrder(models.Model):
         floating_order_name = order.get('floating_order_name')
 
         if not preset_id and pos_config.use_presets:
-            raise UserError(_("Invalid preset"))
+            raise UserError(self.env._("Invalid preset"))
 
         if not order['session_id'] or order['session_id'] != pos_config.current_session_id.id:
             try:
                 pos_config.open_session_if_not_opened()  # Create a session after doing the necessary checks.
             except ValidationError as e:
                 _logger.warning("pos_self_order: Error while opening a session for future orders: %s", e.args[0])
-                raise UserError(_("Impossible to create a new order."))
+                raise UserError(self.env._("Impossible to create a new order."))
             except LockError:
                 _logger.warning("pos_self_order: Lock not available while opening a session for future orders.")
-                raise UserError(_("Error while creating the order. Please try again."))
+                raise UserError(self.env._("Error while creating the order. Please try again."))
             order['session_id'] = pos_config.current_session_id.id
 
         existing_order = pos_config.env['pos.order']._get_open_order(order)

@@ -13,8 +13,8 @@ class CalendarEventType(models.Model):
     def _default_color(self):
         return randint(1, 11)
 
-    name = fields.Char('Name', required=True)
-    color = fields.Integer('Color', default=_default_color)
+    name = fields.Char(required=True)
+    color = fields.Integer(default=lambda self: self._default_color())
 
     _name_uniq = models.Constraint(
         'unique (name)',

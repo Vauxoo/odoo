@@ -57,7 +57,7 @@ class AccountAnalyticLine(models.Model):
         return domain
 
     task_id = fields.Many2one(
-        'project.task', 'Task', index='btree_not_null',
+        'project.task', index='btree_not_null',
         compute='_compute_task_id', store=True, readonly=False,
         # The task_id is set to False when there is no project_id on the line,
         # but at installation, no line is associated with a project
@@ -65,13 +65,13 @@ class AccountAnalyticLine(models.Model):
         domain="[('allow_timesheets', '=', True), ('project_id', '=?', project_id), ('has_template_ancestor', '=', False)]")
     parent_task_id = fields.Many2one('project.task', related='task_id.parent_id', store=True, index='btree_not_null', init_storage=lambda model: None)
     project_id = fields.Many2one(
-        'project.project', 'Project', domain=_domain_project_id, index=True,
+        'project.project', domain=lambda self: self._domain_project_id(), index=True,
         compute='_compute_project_id', store=True, readonly=False, init_storage=lambda model: None)
     user_id = fields.Many2one(compute='_compute_user_id', store=True, readonly=False)
-    employee_id = fields.Many2one('hr.employee', "Employee", domain=_domain_employee_id, context={'active_test': False},
+    employee_id = fields.Many2one('hr.employee', domain=lambda self: self._domain_employee_id(), context={'active_test': False},
         index=True, help="Define an 'hourly cost' on the employee to track the cost of their time.")
     job_title = fields.Char(related='employee_id.job_title', export_string_translation=False)
-    department_id = fields.Many2one('hr.department', "Department", compute='_compute_department_id', store=True, compute_sudo=True, init_storage=lambda model: None)
+    department_id = fields.Many2one('hr.department', compute='_compute_department_id', store=True, compute_sudo=True, init_storage=lambda model: None)
     manager_id = fields.Many2one('hr.employee', "Manager", related='employee_id.parent_id', store=True, init_storage=lambda model: None)
     encoding_uom_id = fields.Many2one('uom.uom', compute='_compute_encoding_uom_id', export_string_translation=False)
     partner_id = fields.Many2one(compute='_compute_partner_id', store=True, readonly=False)
@@ -80,7 +80,7 @@ class AccountAnalyticLine(models.Model):
     message_partner_ids = fields.Many2many('res.partner', compute='_compute_message_partner_ids', search='_search_message_partner_ids')
     calendar_display_name = fields.Char(compute="_compute_calendar_display_name", export_string_translation=False)
     color = fields.Integer(related="project_id.color")
-    sequence = fields.Integer(string='Sequence', export_string_translation=False, default=10)
+    sequence = fields.Integer(export_string_translation=False, default=10)
 
     def _search_message_partner_ids(self, operator, value):
         followed_ids_by_model = dict(self.env['mail.followers']._read_group([
@@ -209,7 +209,7 @@ class AccountAnalyticLine(models.Model):
         ):
             raise AccessError(_("You cannot access timesheets that are not yours."))
 
-        super()._check_can_write(values)
+        return super()._check_can_write(values)
 
     def _check_can_create(self):
         # override in other modules to check current user has create access

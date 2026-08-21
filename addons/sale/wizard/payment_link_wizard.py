@@ -8,9 +8,9 @@ class PaymentLinkWizard(models.TransientModel):
     _description = "Generate Sales Payment Link"
 
     amount_paid = fields.Monetary(string="Already Paid", readonly=True)
-    prepayment_amount = fields.Monetary(string="Prepayment Amount", currency_field="currency_id")
+    prepayment_amount = fields.Monetary(currency_field="currency_id")
     confirmation_message = fields.Char(
-        string="Confirmation Message", compute="_compute_confirmation_message"
+        compute="_compute_confirmation_message"
     )
 
     @api.depends("amount")
@@ -36,7 +36,7 @@ class PaymentLinkWizard(models.TransientModel):
             if sale_order.is_expired:
                 wizard.warning_message = wizard.env._("The sale order has expired.")
                 sale_wizards |= wizard
-        super(PaymentLinkWizard, self - sale_wizards)._compute_warning_message()
+        return super(PaymentLinkWizard, self - sale_wizards)._compute_warning_message()
 
     def _prepare_url(self, base_url, related_document):
         """Override of `payment` to use the portal page URL of sales orders."""

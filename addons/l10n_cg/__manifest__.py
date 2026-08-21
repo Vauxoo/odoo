@@ -2,13 +2,6 @@
     'name': 'Congo - Accounting',
     'category': 'Accounting/Localizations/Account Charts',
     'countries': ['cg'],
-    'description': """
-This module implements the tax for Congo.
-===========================================================
-
-The Chart of Accounts is from SYSCOHADA.
-
-    """,
     'depends': [
         'l10n_syscohada',
         'account',

@@ -3,18 +3,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['bh'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the base module to manage the accounting chart for Bahrain in Odoo.
-===========================================================================
-Bahrain accounting basic charts and localization.
-
-Activates:
- - Chart of Accounts
- - Taxes
- - Tax reports
- - Fiscal Positions
- - States
-    """,
     'depends': [
         'account',
         'l10n_gcc_invoice',

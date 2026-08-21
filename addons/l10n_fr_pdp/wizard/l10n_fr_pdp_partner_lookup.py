@@ -12,7 +12,6 @@ class L10nFrPdpPartnerLookup(models.TransientModel):
 
     selected_line_id = fields.Many2one(
         comodel_name='l10n_fr_pdp.annuaire.line',
-        string="Selected Line",
         domain="[('id', 'in', available_annuaire_line_ids)]",
         compute='_compute_selected_line_id',
         readonly=False,

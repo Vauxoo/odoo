@@ -3,7 +3,7 @@
 from odoo import api, fields, models
 from odoo.fields import Domain
 
-from odoo.addons.payment_custom import const
+from .. import const
 
 
 class PaymentProvider(models.Model):
@@ -18,7 +18,6 @@ class PaymentProvider(models.Model):
         selection_add=[("custom", "Custom")], ondelete={"custom": "set default"}
     )
     custom_mode = fields.Selection(
-        string="Custom Mode",
         selection=[("pay_on_invoice", "Pay on Invoice"), ("wire_transfer", "Wire Transfer")],
         required_if_provider="custom",
     )

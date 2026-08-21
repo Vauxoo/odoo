@@ -4,9 +4,6 @@
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'icon': '/account/static/description/l10n.png',
     'countries': ['mt'],
-    'description': """
-Malta basic package that contains the chart of accounts, the taxes, tax reports, etc.
-    """,
     'version': '1.1',
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [

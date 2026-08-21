@@ -2,13 +2,6 @@
     'name': "Guinea-Bissau - Accounting",
     'countries': ['gw'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This module implements the tax for Guinea-Bissau.
-=================================================================
-
-The Chart of Accounts is from SYSCOHADA.
-
-    """,
     'depends': [
         'l10n_syscohada',
         'account',

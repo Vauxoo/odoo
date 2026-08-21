@@ -21,7 +21,7 @@ class IrConfigParameter(models.Model):
             and (plan := self.env['account.analytic.plan'].browse(int(new_plan_id)))
             and (plan_field := plan._find_plan_column())
         ):
-            raise UserError(_('The value for %s must be the ID to a valid analytic plan that is not a subplan', param.key))
+            raise UserError(self.env._('The value for %s must be the ID to a valid analytic plan that is not a subplan', param.key))
         res = super().write(vals)
         old_plan = self.env['account.analytic.plan'].browse(int(old_plan_id))
         old_plan._sync_all_plan_column()

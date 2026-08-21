@@ -4,7 +4,7 @@ from copy import deepcopy
 from odoo import fields, models, api, Command
 from odoo.tools import float_compare
 
-from odoo.addons.hr_expense.models.hr_expense import EXPENSE_APPROVAL_STATE
+from ..models.hr_expense import EXPENSE_APPROVAL_STATE
 
 
 class HrExpenseSplit(models.TransientModel):
@@ -33,8 +33,8 @@ class HrExpenseSplit(models.TransientModel):
 
     name = fields.Char(string='Description', required=True)
     wizard_id = fields.Many2one(comodel_name='hr.expense.split.wizard')
-    expense_id = fields.Many2one(comodel_name='hr.expense', string='Expense')
-    product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True, check_company=True, domain=[('can_be_expensed', '=', True)],)
+    expense_id = fields.Many2one(comodel_name='hr.expense')
+    product_id = fields.Many2one(comodel_name='product.product', required=True, check_company=True, domain=[('can_be_expensed', '=', True)],)
     tax_ids = fields.Many2many(
         comodel_name='account.tax',
         check_company=True,
@@ -46,7 +46,7 @@ class HrExpenseSplit(models.TransientModel):
         compute='_compute_from_product_id', store=True, readonly=False,
     )
     tax_amount_currency = fields.Monetary(string='Tax amount in Currency', compute='_compute_tax_amount_currency')
-    employee_id = fields.Many2one(comodel_name='hr.employee', string="Employee", required=True)
+    employee_id = fields.Many2one(comodel_name='hr.employee', required=True)
     company_id = fields.Many2one(comodel_name='res.company')
     currency_id = fields.Many2one(comodel_name='res.currency')
     product_has_tax = fields.Boolean(
@@ -58,10 +58,9 @@ class HrExpenseSplit(models.TransientModel):
         compute='_compute_from_product_id', store=True,
     )
     approval_state = fields.Selection(selection=EXPENSE_APPROVAL_STATE, copy=False, readonly=True)
-    approval_date = fields.Datetime(string="Approval Date", readonly=True)
+    approval_date = fields.Datetime(readonly=True)
     manager_id = fields.Many2one(
         comodel_name='res.users',
-        string="Manager",
         readonly=True,
         domain=lambda self: [('all_group_ids', 'in', self.env.ref('hr_expense.group_hr_expense_team_approver').id)],
     )

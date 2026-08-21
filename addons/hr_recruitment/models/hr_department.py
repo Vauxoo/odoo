@@ -9,9 +9,9 @@ class HrDepartment(models.Model):
     new_applicant_count = fields.Integer(
         compute='_compute_new_applicant_count', string='New Applicant', compute_sudo=True)
     new_hired_employee = fields.Integer(
-        compute='_compute_recruitment_stats', string='New Hired Employee')
+        compute='_compute_recruitment_stats')
     expected_employee = fields.Integer(
-        compute='_compute_recruitment_stats', string='Expected Employee')
+        compute='_compute_recruitment_stats')
 
     def _compute_new_applicant_count(self):
         if self.env.user.has_group('hr_recruitment.group_hr_recruitment_interviewer'):

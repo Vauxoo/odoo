@@ -3,7 +3,6 @@
 {
     "name": "Portal Discuss",
     "category": "Services",
-    "description": "Bridge module adding Discuss access from portal.",
     "depends": ["mail", "portal"],
     "data": [
         "data/portal_entry_data.xml",

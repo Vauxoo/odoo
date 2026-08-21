@@ -2,7 +2,7 @@
 
 from odoo.http import request
 from odoo.addons.mail.controllers.message_reaction import MessageReactionController
-from odoo.addons.portal.utils import get_portal_partner
+from ..utils import get_portal_partner
 
 
 class PortalMessageReactionController(MessageReactionController):

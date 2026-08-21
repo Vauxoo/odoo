@@ -23,7 +23,7 @@ class MailComposerMixin(models.AbstractModel):
     _description = 'Mail Composer Mixin'
 
     # Content
-    subject = fields.Char('Subject', compute='_compute_subject', readonly=False, store=True, compute_sudo=False)
+    subject = fields.Char(compute='_compute_subject', readonly=False, store=True, compute_sudo=False)
     body = fields.Html(
         'Contents', compute='_compute_body', readonly=False, store=True, compute_sudo=False,
         render_engine='qweb', render_options={'post_process': True}, sanitize='email_outgoing')
@@ -36,7 +36,7 @@ class MailComposerMixin(models.AbstractModel):
     lang = fields.Char(compute='_compute_lang', precompute=True, readonly=False, store=True, compute_sudo=False)
     # Access
     is_mail_template_editor = fields.Boolean('Is Editor', compute='_compute_is_mail_template_editor')
-    can_edit_body = fields.Boolean('Can Edit Body', compute='_compute_can_edit_body')
+    can_edit_body = fields.Boolean(compute='_compute_can_edit_body')
 
     @api.depends('template_id')
     def _compute_subject(self):
@@ -158,7 +158,7 @@ class MailComposerMixin(models.AbstractModel):
         value when it has not been modified in the composer. """
         if field not in self:
             raise ValueError(
-                _('Rendering of %(field_name)s is not possible as not defined on template.',
+                self.env._('Rendering of %(field_name)s is not possible as not defined on template.',
                   field_name=field
                  )
             )
@@ -173,7 +173,7 @@ class MailComposerMixin(models.AbstractModel):
         }.get(field, field)
         if template_field not in self.template_id:
             raise ValueError(
-                _('Rendering of %(field_name)s is not possible as no counterpart on template.',
+                self.env._('Rendering of %(field_name)s is not possible as no counterpart on template.',
                   field_name=field
                  )
             )

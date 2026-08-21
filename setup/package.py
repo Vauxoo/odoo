@@ -451,7 +451,7 @@ class DockerIot(DockerWine):
     def build_image(self):
         shutil.copy(os.path.join(self.args.build_dir, 'setup/iot_box_builder/configuration/requirements.txt'), self.docker_dir / 'requirements-iot.txt')
         self.tag = f'{self.tag}-iot'
-        super().build_image()
+        return super().build_image()
 
 
 def parse_args():

@@ -4,7 +4,7 @@ from odoo import fields, models
 class EventRegistration(models.Model):
     _inherit = 'event.registration'
 
-    sale_status = fields.Selection(string="Sale Status", selection=[
+    sale_status = fields.Selection(selection=[
             ('to_pay', 'Not Sold'),
             ('sold', 'Sold'),
             ('free', 'Free'),

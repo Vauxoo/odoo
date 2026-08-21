@@ -59,16 +59,16 @@ class SurveyQuestion(models.Model):
         return res
 
     # question generic data
-    title = fields.Char('Title', required=True, translate=True)
+    title = fields.Char(required=True, translate=True)
     description = fields.Html(
-        'Description', translate=True, sanitize=True, sanitize_overridable=True,
+        translate=True, sanitize=True, sanitize_overridable=True,
         help="Use this field to add additional explanations about your question or to illustrate it with pictures or a video")
     question_placeholder = fields.Char("Placeholder", translate=True, compute="_compute_question_placeholder", store=True, readonly=False)
-    background_image = fields.Image("Background Image", compute="_compute_background_image", store=True, readonly=False)
+    background_image = fields.Image(compute="_compute_background_image", store=True, readonly=False)
     background_image_url = fields.Char("Background Url", compute="_compute_background_image_url")
-    survey_id = fields.Many2one('survey.survey', string='Survey', ondelete='cascade', index='btree_not_null')
+    survey_id = fields.Many2one('survey.survey', ondelete='cascade', index='btree_not_null')
     scoring_type = fields.Selection(related='survey_id.scoring_type', string='Scoring Type', readonly=True)
-    sequence = fields.Integer('Sequence', default=10)
+    sequence = fields.Integer(default=10)
     session_available = fields.Boolean(related='survey_id.session_available', string='Live Session available', readonly=True)
     survey_session_speed_rating = fields.Boolean(related="survey_id.session_speed_rating")
     survey_session_speed_rating_time_limit = fields.Integer(related="survey_id.session_speed_rating_time_limit", string="General Time limit (seconds)")
@@ -83,7 +83,7 @@ class SurveyQuestion(models.Model):
         '# Questions Randomly Picked', default=1,
         help="Used on randomized sections to take X random questions from all the questions of that section.")
     # question specific
-    page_id = fields.Many2one('survey.question', string='Page', compute="_compute_page_id", store=True)
+    page_id = fields.Many2one('survey.question', compute="_compute_page_id", store=True)
     question_type = fields.Selection([
         ('simple_choice', 'Single-Select'),
         ('multiple_choice', 'Multi-Select'),
@@ -93,8 +93,7 @@ class SurveyQuestion(models.Model):
         ('scale', 'Scale'),
         ('date', 'Date'),
         ('datetime', 'Datetime'),
-        ('matrix', 'Matrix')], string='Question Type',
-        compute='_compute_question_type', readonly=False, store=True)
+        ('matrix', 'Matrix')], compute='_compute_question_type', readonly=False, store=True)
     is_scored_question = fields.Boolean(
         'Scored', compute='_compute_is_scored_question',
         readonly=False, store=True, copy=True,
@@ -237,7 +236,7 @@ class SurveyQuestion(models.Model):
     def _check_question_type_for_pages(self):
         invalid_pages = self.filtered(lambda question: question.is_page and question.question_type)
         if invalid_pages:
-            raise ValidationError(_("Question type should be empty for these pages: %s", ', '.join(invalid_pages.mapped('title'))))
+            raise ValidationError(self.env._("Question type should be empty for these pages: %s", ', '.join(invalid_pages.mapped('title'))))
 
     # -------------------------------------------------------------------------
     # COMPUTE METHODS
@@ -253,12 +252,12 @@ class SurveyQuestion(models.Model):
     @api.depends('scale_min')
     def _compute_scale_min_label_placeholder(self):
         for question in self:
-            question.scale_min_label_placeholder = _("Label for %s", question.scale_min)
+            question.scale_min_label_placeholder = self.env._("Label for %s", question.scale_min)
 
     @api.depends('scale_max')
     def _compute_scale_max_label_placeholder(self):
         for question in self:
-            question.scale_max_label_placeholder = _("Label for %s", question.scale_max)
+            question.scale_max_label_placeholder = self.env._("Label for %s", question.scale_max)
 
     @api.depends('is_page')
     def _compute_background_image(self):
@@ -444,7 +443,7 @@ class SurveyQuestion(models.Model):
     def _unlink_except_live_sessions_in_progress(self):
         running_surveys = self.survey_id.filtered(lambda survey: survey.session_state == 'in_progress')
         if running_surveys:
-            raise UserError(_(
+            raise UserError(self.env._(
                 'You cannot delete questions from surveys "%(survey_names)s" while live sessions are in progress.',
                 survey_names=', '.join(running_surveys.mapped('title')),
             ))
@@ -473,7 +472,7 @@ class SurveyQuestion(models.Model):
         # because in choices question types, comment can count as answer
         if not answer and self.question_type not in ['simple_choice', 'multiple_choice']:
             if self.constr_mandatory and not self.survey_id.users_can_go_back:
-                return {self.id: self.constr_error_msg or _('This question requires an answer.')}
+                return {self.id: self.constr_error_msg or self.env._('This question requires an answer.')}
         else:
             if self.question_type == 'char_box':
                 return self._validate_char_box(answer)
@@ -494,26 +493,26 @@ class SurveyQuestion(models.Model):
         # all the strings of the form "<something>@<anything>.<extension>" will be accepted
         if self.validation_email:
             if not tools.email_normalize(answer):
-                return {self.id: _('This answer must be an email address')}
+                return {self.id: self.env._('This answer must be an email address')}
 
         # Answer validation (if properly defined)
         # Length of the answer must be in a range
         if self.validation_required:
             if not (self.validation_length_min <= len(answer) <= self.validation_length_max):
-                return {self.id: self.validation_error_msg or _('The answer you entered is not valid.')}
+                return {self.id: self.validation_error_msg or self.env._('The answer you entered is not valid.')}
         return {}
 
     def _validate_numerical_box(self, answer):
         try:
             floatanswer = float(answer)
         except ValueError:
-            return {self.id: _('This is not a number')}
+            return {self.id: self.env._('This is not a number')}
 
         if self.validation_required:
             # Answer is not in the right range
             with contextlib.suppress(Exception):
                 if not (self.validation_min_float_value <= floatanswer <= self.validation_max_float_value):
-                    return {self.id: self.validation_error_msg  or _('The answer you entered is not valid.')}
+                    return {self.id: self.validation_error_msg  or self.env._('The answer you entered is not valid.')}
         return {}
 
     def _validate_date(self, answer):
@@ -522,7 +521,7 @@ class SurveyQuestion(models.Model):
         try:
             dateanswer = fields.Datetime.from_string(answer) if isDatetime else fields.Date.from_string(answer)
         except ValueError:
-            return {self.id: _('This is not a date')}
+            return {self.id: self.env._('This is not a date')}
         if self.validation_required:
             # Check if answer is in the right range
             if isDatetime:
@@ -537,7 +536,7 @@ class SurveyQuestion(models.Model):
             if (min_date and max_date and not (min_date <= dateanswer <= max_date))\
                     or (min_date and not min_date <= dateanswer)\
                     or (max_date and not dateanswer <= max_date):
-                return {self.id: self.validation_error_msg or _('The answer you entered is not valid.')}
+                return {self.id: self.validation_error_msg or self.env._('The answer you entered is not valid.')}
         return {}
 
     def _validate_choice(self, answer, comment):
@@ -552,24 +551,24 @@ class SurveyQuestion(models.Model):
             valid_answers_count += 1
 
         if valid_answers_count == 0 and self.constr_mandatory and not self.survey_id.users_can_go_back:
-            return {self.id: self.constr_error_msg or _('This question requires an answer.')}
+            return {self.id: self.constr_error_msg or self.env._('This question requires an answer.')}
 
         if valid_answers_count > 1 and self.question_type == 'simple_choice':
-            return {self.id: _('For this question, you can only select one answer.')}
+            return {self.id: self.env._('For this question, you can only select one answer.')}
 
         return {}
 
     def _validate_matrix(self, answers):
         # Validate that each line has been answered
         if self.constr_mandatory and len(self.matrix_row_ids) != len(answers):
-            return {self.id: self.constr_error_msg or _('This question requires an answer.')}
+            return {self.id: self.constr_error_msg or self.env._('This question requires an answer.')}
         return {}
 
     def _validate_scale(self, answer):
         if not self.survey_id.users_can_go_back \
                 and self.constr_mandatory \
                 and not answer:
-            return {self.id: self.constr_error_msg or _('This question requires an answer.')}
+            return {self.id: self.constr_error_msg or self.env._('This question requires an answer.')}
         return {}
 
     def _index(self):
@@ -688,7 +687,7 @@ class SurveyQuestion(models.Model):
                 count_data[line.suggested_answer_id] += 1
 
         table_data = [{
-            'value': _('Other (see comments)') if not suggested_answer else suggested_answer.value_label,
+            'value': self.env._('Other (see comments)') if not suggested_answer else suggested_answer.value_label,
             'suggested_answer': suggested_answer,
             'count': count_data[suggested_answer],
             'count_text': self.env._("%s Votes", count_data[suggested_answer]),
@@ -745,7 +744,7 @@ class SurveyQuestion(models.Model):
             table_data.append({'value': str(sug_answer),
                                'suggested_answer': self.env['survey.question.answer'],
                                'count': count_data[sug_answer],
-                               'count_text': _("%s Votes", count_data[sug_answer]),
+                               'count_text': self.env._("%s Votes", count_data[sug_answer]),
                                })
             graph_data.append({'text': str(sug_answer),
                                'count': count_data[sug_answer]
@@ -856,7 +855,7 @@ class SurveyQuestionAnswer(models.Model):
     MAX_ANSWER_NAME_LENGTH = 90  # empirically tested in client dropdown
 
     # question and question related fields
-    question_id = fields.Many2one('survey.question', string='Question', ondelete='cascade', index='btree_not_null')
+    question_id = fields.Many2one('survey.question', ondelete='cascade', index='btree_not_null')
     matrix_question_id = fields.Many2one('survey.question', string='Question (as matrix row)', ondelete='cascade', index='btree_not_null')
     question_type = fields.Selection(related='question_id.question_type')
     sequence = fields.Integer('Label Sequence order', default=10)
@@ -865,7 +864,7 @@ class SurveyQuestionAnswer(models.Model):
     value = fields.Char('Suggested value', translate=True)
     value_image = fields.Image('Image', max_width=1024, max_height=1024)
     value_image_filename = fields.Char('Image Filename')
-    value_label = fields.Char('Value Label', compute='_compute_value_label',
+    value_label = fields.Char(compute='_compute_value_label',
                               help="Answer label as either the value itself if not empty "
                                    "or a letter representing the index of the answer otherwise.")
     is_correct = fields.Boolean('Correct')
@@ -889,7 +888,7 @@ class SurveyQuestionAnswer(models.Model):
             if not answer.question_id or answer.question_id.question_type == 'matrix':
                 answer.display_name = answer_label
                 continue
-            title = answer.question_id.title or _("[Question Title]")
+            title = answer.question_id.title or self.env._("[Question Title]")
             n_extra_characters = len(title) + len(answer_label) + 3 - self.MAX_ANSWER_NAME_LENGTH  # 3 for `" : "`
             if n_extra_characters <= 0:
                 answer.display_name = f'{title} : {answer_label}'
@@ -916,7 +915,7 @@ class SurveyQuestionAnswer(models.Model):
         """Ensure that field question_id XOR field matrix_question_id is not null"""
         for label in self:
             if not bool(label.question_id) != bool(label.matrix_question_id):
-                raise ValidationError(_("A label must be attached to only one question."))
+                raise ValidationError(self.env._("A label must be attached to only one question."))
 
     def _get_answer_matching_domain(self, row_id=False):
         self.ensure_one()

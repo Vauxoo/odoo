@@ -73,7 +73,7 @@ def urlopen(url):
     os.makedirs('/tmp/package_versions_cache/', exist_ok=True)
     file_path = f'/tmp/package_versions_cache/{file_name}'
     if not os.path.isfile(file_path):
-        response = _urlopen(url)
+        response = _urlopen(url, timeout=120)
         with open(file_path, 'wb') as fw:
             fw.write(response.read())
     return open(file_path, 'rb')   # noqa: SIM115

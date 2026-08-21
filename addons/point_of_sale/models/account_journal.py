@@ -15,12 +15,12 @@ class AccountJournal(models.Model):
     def _check_type(self):
         methods = self.env['pos.payment.method'].sudo().search([("journal_id", "in", self.ids)])
         if methods:
-            raise ValidationError(_("This journal is associated with a payment method. You cannot modify its type"))
+            raise ValidationError(self.env._("This journal is associated with a payment method. You cannot modify its type"))
 
     def _check_no_active_payments(self):
         linked_payment_methods = self.env['pos.payment.method'].sudo().search([('journal_id', 'in', self.ids)], limit=1)
         if linked_payment_methods:
-            raise ValidationError(_("You can not archive this journal because it is set on the following payment method : %s.", linked_payment_methods.name))
+            raise ValidationError(self.env._("You can not archive this journal because it is set on the following payment method : %s.", linked_payment_methods.name))
 
     @api.ondelete(at_uninstall=False)
     def _unlink_journal_except_with_active_payments(self):
@@ -52,7 +52,7 @@ class AccountJournal(models.Model):
         ], limit=1)
         if not journal:
             journal = self.create({
-                'name': _('Point of Sale'),
+                'name': self.env._('Point of Sale'),
                 'code': 'POSS',
                 'type': 'sale',
                 'company_id': self.env.company.id,

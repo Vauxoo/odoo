@@ -3,10 +3,10 @@ import inspect
 import logging
 from threading import Thread, Event
 
-from odoo.addons.iot_drivers.interface import Interface
-from odoo.addons.iot_drivers.main import drivers, iot_devices
-from odoo.addons.iot_drivers.event_manager import event_manager
-from odoo.addons.iot_drivers.tools.helpers import toggleable
+from .interface import Interface
+from .main import drivers, iot_devices
+from .event_manager import event_manager
+from .tools.helpers import toggleable
 from odoo.tools.lru import LRU
 
 from typing import TYPE_CHECKING

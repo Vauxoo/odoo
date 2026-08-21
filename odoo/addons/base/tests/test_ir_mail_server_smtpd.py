@@ -132,7 +132,7 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
                     context = ssl._create_stdlib_context()  # what SMTP_SSL does
                     # context = ssl.create_default_context()  # what it should do
                 context.load_verify_locations(cafile=str(cls.ssl_ca.cert))
-                super().starttls(context=context)
+                return super().starttls(context=context)
         class TEST_SMTP_SSL(smtplib.SMTP_SSL):
             def _get_socket(self, *args, **kwargs):
                 # self.context = ssl.create_default_context()  # what it should do

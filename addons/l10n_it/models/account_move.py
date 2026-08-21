@@ -9,4 +9,4 @@ class AccountMove(models.Model):
     def _message_set_main_attachment_id(self, attachments, force=False, filter_xml=True):
         if self.message_main_attachment_id.mimetype == "application/pkcs7-mime":
             force = True
-        super()._message_set_main_attachment_id(attachments, force, filter_xml)
+        return super()._message_set_main_attachment_id(attachments, force, filter_xml)

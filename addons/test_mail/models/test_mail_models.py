@@ -106,7 +106,7 @@ class MailTestGatewayCompany(models.Model):
     _name = "mail.test.gateway.company"
     _inherit = ['mail.test.gateway']
 
-    company_id = fields.Many2one('res.company', 'Company')
+    company_id = fields.Many2one('res.company')
 
 
 class MailTestGatewayMainAttachment(models.Model):
@@ -117,7 +117,7 @@ class MailTestGatewayMainAttachment(models.Model):
     _name = "mail.test.gateway.main.attachment"
     _inherit = ['mail.test.gateway', 'mail.thread.main.attachment']
 
-    company_id = fields.Many2one('res.company', 'Company')
+    company_id = fields.Many2one('res.company')
 
 
 class MailTestGatewayGroups(models.Model):
@@ -132,7 +132,7 @@ class MailTestGatewayGroups(models.Model):
     name = fields.Char()
     email_from = fields.Char()
     custom_field = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
 
     def _alias_get_creation_values(self):
         values = super(MailTestGatewayGroups, self)._alias_get_creation_values()
@@ -181,9 +181,9 @@ class MailTestComposerMixin(models.Model):
     _name = "mail.test.composer.mixin"
     _inherit = ['mail.composer.mixin']
 
-    name = fields.Char('Name')
+    name = fields.Char()
     author_id = fields.Many2one('res.partner')
-    description = fields.Html('Description', render_engine="qweb", render_options={"post_process": True}, sanitize='email_outgoing')
+    description = fields.Html(render_engine="qweb", render_options={"post_process": True}, sanitize='email_outgoing')
     source_ids = fields.Many2many('mail.test.composer.source', string='Invite source')
 
     def _compute_render_model(self):
@@ -197,7 +197,7 @@ class MailTestComposerSource(models.Model):
     _inherit = ['mail.thread.blacklist']
     _primary_email = 'email_from'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     customer_id = fields.Many2one('res.partner', 'Main customer')
     email_from = fields.Char(
         'Email',

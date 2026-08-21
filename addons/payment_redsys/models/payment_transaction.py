@@ -9,8 +9,8 @@ from odoo.tools.urls import urljoin
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.const import COUNTRY_NUMERIC_CODES
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_redsys import const
-from odoo.addons.payment_redsys.controllers.main import RedsysController
+from .. import const
+from ..controllers.main import RedsysController
 
 _logger = get_payment_logger(__name__)
 

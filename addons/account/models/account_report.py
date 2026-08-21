@@ -49,9 +49,9 @@ class AccountReport(models.Model):
 
     #  CORE ==========================================================================================================================================
 
-    name = fields.Char(string="Name", required=True, translate=True)
-    sequence = fields.Integer(string="Sequence")
-    active = fields.Boolean(string="Active", default=True)
+    name = fields.Char(required=True, translate=True)
+    sequence = fields.Integer()
+    active = fields.Boolean(default=True)
     line_ids = fields.One2many(string="Lines", comodel_name='account.report.line', inverse_name='report_id')
     groupby = fields.Char(
         string="Group By",
@@ -64,7 +64,7 @@ class AccountReport(models.Model):
             When set, the report lines will generate sublines grouped by those keys except when specified on the report line.",
     )
     column_ids = fields.One2many(string="Columns", comodel_name='account.report.column', inverse_name='report_id')
-    root_report_id = fields.Many2one(string="Root Report", comodel_name='account.report', index='btree_not_null', help="The report this report is a variant of.")
+    root_report_id = fields.Many2one(comodel_name='account.report', index='btree_not_null', help="The report this report is a variant of.")
     variant_report_ids = fields.One2many(string="Variants", comodel_name='account.report', inverse_name='root_report_id')
     section_report_ids = fields.Many2many(string="Sections", comodel_name='account.report', relation="account_report_section_rel", column1="main_report_id", column2="sub_report_id")
     section_main_report_ids = fields.Many2many(string="Section Of", comodel_name='account.report', relation="account_report_section_rel", column1="sub_report_id", column2="main_report_id")
@@ -74,7 +74,7 @@ class AccountReport(models.Model):
         help="Create a structured report with multiple sections for convenient navigation and simultaneous printing.",
     )
     chart_template = fields.Selection(string="Chart of Accounts", selection=lambda self: self.env['account.chart.template']._select_chart_template())
-    country_id = fields.Many2one(string="Country", comodel_name='res.country')
+    country_id = fields.Many2one(comodel_name='res.country')
     only_tax_exigible = fields.Boolean(
         string="Only Tax Exigible Lines",
         compute=lambda x: x._compute_report_option_filter('only_tax_exigible'),
@@ -86,9 +86,9 @@ class AccountReport(models.Model):
         selection=[('country', "Country Matches"), ('coa', "Chart of Accounts Matches"), ('always', "Always")],
         compute='_compute_default_availability_condition', readonly=False, store=True,
     )
-    load_more_limit = fields.Integer(string="Load More Limit", default=500)
-    search_bar = fields.Boolean(string="Search Bar")
-    integer_rounding = fields.Selection(string="Integer Rounding", selection=[('HALF-UP', "Nearest"), ('UP', "Up"), ('DOWN', "Down")])
+    load_more_limit = fields.Integer(default=500)
+    search_bar = fields.Boolean()
+    integer_rounding = fields.Selection(selection=[('HALF-UP', "Nearest"), ('UP', "Up"), ('DOWN', "Down")])
     allow_foreign_vat = fields.Boolean(
         string="Allow Foreign Tax ID",
         compute=lambda x: x._compute_report_option_filter('allow_foreign_vat'),
@@ -120,7 +120,6 @@ class AccountReport(models.Model):
     )
 
     currency_translation = fields.Selection(
-        string="Currency Translation",
         selection=[
             ('current', "Use the most recent rate at the date of the report"),
             ('cta', "Use CTA"),
@@ -131,7 +130,6 @@ class AccountReport(models.Model):
     )
 
     enable_snapshots = fields.Boolean(
-        string="Enable Snapshots",
         compute=lambda x: x._compute_report_option_filter('enable_snapshots'),
         precompute=True,
         readonly=False, store=True, depends=['root_report_id', 'section_main_report_ids'],
@@ -262,7 +260,7 @@ class AccountReport(models.Model):
     def _validate_root_report_id(self):
         for report in self:
             if report.root_report_id.root_report_id:
-                raise ValidationError(_("Only a report without a root report of its own can be selected as root report."))
+                raise ValidationError(self.env._("Only a report without a root report of its own can be selected as root report."))
 
     @api.constrains('line_ids')
     def _validate_parent_sequence(self):
@@ -270,7 +268,7 @@ class AccountReport(models.Model):
         for line in self.line_ids.sorted('sequence'):
             if line.parent_id and line.parent_id not in previous_lines:
                 raise ValidationError(
-                    _('Line "%(line)s" defines line "%(parent_line)s" as its parent, but appears before it in the report. '
+                    self.env._('Line "%(line)s" defines line "%(parent_line)s" as its parent, but appears before it in the report. '
                       'The parent must always come first.', line=line.name, parent_line=line.parent_id.name))
             previous_lines |= line
 
@@ -278,13 +276,13 @@ class AccountReport(models.Model):
     def _validate_section_report_ids(self):
         for record in self:
             if any(section.section_report_ids for section in record.section_report_ids):
-                raise ValidationError(_("The sections defined on a report cannot have sections themselves."))
+                raise ValidationError(self.env._("The sections defined on a report cannot have sections themselves."))
 
     @api.constrains('availability_condition', 'country_id')
     def _validate_availability_condition(self):
         for record in self:
             if record.availability_condition == 'country' and not record.country_id:
-                raise ValidationError(_("The Availability is set to 'Country Matches' but the field Country is not set."))
+                raise ValidationError(self.env._("The Availability is set to 'Country Matches' but the field Country is not set."))
 
     @api.onchange('availability_condition')
     def _onchange_availability_condition(self):
@@ -351,7 +349,7 @@ class AccountReport(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_if_no_variant(self):
         if self.variant_report_ids:
-            raise UserError(_("You can't delete a report that has variants."))
+            raise UserError(self.env._("You can't delete a report that has variants."))
 
     def _get_copied_name(self):
         '''Return a copied name of the account.report record by adding the suffix (copy) at the end
@@ -360,9 +358,9 @@ class AccountReport(models.Model):
         :return: an unique name for the copied account.report
         '''
         self.ensure_one()
-        name = self.name + ' ' + _('(copy)')
+        name = self.name + ' ' + self.env._('(copy)')
         while self.search_count([('name', '=', name)]) > 0:
-            name += ' ' + _('(copy)')
+            name += ' ' + self.env._('(copy)')
         return name
 
     @api.depends('name', 'country_id')
@@ -379,7 +377,7 @@ class AccountReportLine(models.Model):
     _description = "Accounting Report Line"
     _order = 'sequence, id'
 
-    name = fields.Char(string="Name", translate=True, required=True)
+    name = fields.Char(translate=True, required=True)
     expression_ids = fields.One2many(string="Expressions", comodel_name='account.report.expression', inverse_name='report_line_id')
     report_id = fields.Many2one(
         string="Parent Report",
@@ -410,8 +408,8 @@ class AccountReportLine(models.Model):
         compute='_compute_user_groupby', store=True, readonly=False, precompute=True,
         help="Comma-separated list of fields from account.move.line (Journal Item). When set, this line will generate sublines grouped by those keys.",
     )
-    sequence = fields.Integer(string="Sequence")
-    code = fields.Char(string="Code", help="Unique identifier for this line.")
+    sequence = fields.Integer()
+    code = fields.Char(help="Unique identifier for this line.")
     foldability = fields.Selection(
         selection=[
             ('always_unfolded', 'Always Unfolded'),
@@ -422,14 +420,14 @@ class AccountReportLine(models.Model):
         store=True,
         readonly=False,
     )
-    print_on_new_page = fields.Boolean('Print On New Page', help='When checked this line and everything after it will be printed on a new page.')
-    action_id = fields.Many2one(string="Action", comodel_name='ir.actions.actions', help="Setting this field will turn the line into a link, executing the action when clicked.")
+    print_on_new_page = fields.Boolean(help='When checked this line and everything after it will be printed on a new page.')
+    action_id = fields.Many2one(comodel_name='ir.actions.actions', help="Setting this field will turn the line into a link, executing the action when clicked.")
     hide_if_zero = fields.Boolean(string="Hide if Zero", help="This line and its children will be hidden when all of their columns are 0.")
     domain_formula = fields.Char(string="Domain Formula Shortcut", help="Internal field to shorten expression_ids creation for the domain engine", inverse='_inverse_domain_formula', store=False)
     account_codes_formula = fields.Char(string="Account Codes Formula Shortcut", help="Internal field to shorten expression_ids creation for the account_codes engine", inverse='_inverse_account_codes_formula', store=False)
     aggregation_formula = fields.Char(string="Aggregation Formula Shortcut", help="Internal field to shorten expression_ids creation for the aggregation engine", inverse='_inverse_aggregation_formula', store=False)
     external_formula = fields.Char(string="External Formula Shortcut", help="Internal field to shorten expression_ids creation for the external engine", inverse='_inverse_external_formula', store=False)
-    horizontal_split_side = fields.Selection(string="Horizontal Split Side", selection=[('left', "Left"), ('right', "Right")], compute='_compute_horizontal_split_side', readonly=False, store=True, recursive=True)
+    horizontal_split_side = fields.Selection(selection=[('left', "Left"), ('right', "Right")], compute='_compute_horizontal_split_side', readonly=False, store=True, recursive=True)
     tax_tags_formula = fields.Char(string="Tax Tags Formula Shortcut", help="Internal field to shorten expression_ids creation for the tax_tags engine", inverse='_inverse_aggregation_tax_formula', store=False)
 
     _code_uniq = models.Constraint(
@@ -492,7 +490,7 @@ class AccountReportLine(models.Model):
     def _validate_groupby_no_child(self):
         for report_line in self:
             if report_line.parent_id.groupby or report_line.parent_id.user_groupby:
-                raise ValidationError(_("A line cannot have both children and a groupby value (line '%s').", report_line.parent_id.name))
+                raise ValidationError(self.env._("A line cannot have both children and a groupby value (line '%s').", report_line.parent_id.name))
 
     @api.constrains('groupby', 'user_groupby')
     def _validate_groupby(self):
@@ -501,7 +499,7 @@ class AccountReportLine(models.Model):
     @api.constrains('parent_id')
     def _check_parent_line(self):
         for line in self.filtered(lambda x: x.parent_id == x):
-            raise ValidationError(_('Line "%s" defines itself as its parent.', line.name))
+            raise ValidationError(self.env._('Line "%s" defines itself as its parent.', line.name))
 
     def _copy_hierarchy(self, copied_report, parent=None, code_mapping=None):
         ''' Copy the whole hierarchy from this line by copying each line children recursively and adapting the
@@ -638,9 +636,9 @@ class AccountReportExpression(models.Model):
     _description = "Accounting Report Expression"
     _rec_name = 'report_line_name'
 
-    report_line_id = fields.Many2one(string="Report Line", comodel_name='account.report.line', required=True, index=True, ondelete='cascade')
+    report_line_id = fields.Many2one(comodel_name='account.report.line', required=True, index=True, ondelete='cascade')
     report_line_name = fields.Char(string="Report Line Name", related="report_line_id.name")
-    label = fields.Char(string="Label", required=True, copy=True)
+    label = fields.Char(required=True, copy=True)
     engine = fields.Selection(
         string="Computation Engine",
         selection=[
@@ -655,16 +653,14 @@ class AccountReportExpression(models.Model):
         ],
         required=True
     )
-    formula = fields.Text(string="Formula", required=True)
+    formula = fields.Text(required=True)
     model_id = fields.Many2one(
-        string="Model",
         comodel_name="ir.model",
         compute="_compute_model_id",
         inverse="_inverse_model_id",
     )
-    subformula = fields.Text(string="Subformula")
+    subformula = fields.Text()
     date_scope = fields.Selection(
-        string="Date Scope",
         selection=[
             ('from_beginning', 'From the very start'),
             ('from_fiscalyear', 'From the start of the fiscal year'),
@@ -676,10 +672,10 @@ class AccountReportExpression(models.Model):
         required=True,
         default='strict_range',
     )
-    figure_type = fields.Selection(string="Figure Type", selection=FIGURE_TYPE_SELECTION_VALUES)
+    figure_type = fields.Selection(selection=FIGURE_TYPE_SELECTION_VALUES)
     green_on_positive = fields.Boolean(string="Is Growth Good when Positive", default=True)
     blank_if_zero = fields.Boolean(string="Blank if Zero", help="When checked, 0 values will not show when displaying this expression's value.")
-    auditable = fields.Boolean(string="Auditable", store=True, readonly=False, compute='_compute_auditable')
+    auditable = fields.Boolean(store=True, readonly=False, compute='_compute_auditable')
 
     # Carryover fields
     carryover_target = fields.Char(
@@ -701,9 +697,9 @@ class AccountReportExpression(models.Model):
     def _check_carryover_target(self):
         for expression in self:
             if expression.carryover_target and not expression.label.startswith('_carryover_'):
-                raise UserError(_("You cannot use the field carryover_target in an expression that does not have the label starting with _carryover_"))
+                raise UserError(self.env._("You cannot use the field carryover_target in an expression that does not have the label starting with _carryover_"))
             elif expression.carryover_target and not expression.carryover_target.split('.')[1].startswith('_applied_carryover_'):
-                raise UserError(_("When targeting an expression for carryover, the label of that expression must start with _applied_carryover_"))
+                raise UserError(self.env._("When targeting an expression for carryover, the label of that expression must start with _applied_carryover_"))
 
     @api.constrains('formula')
     def _check_formula(self):
@@ -765,7 +761,7 @@ class AccountReportExpression(models.Model):
         for expression in self:
             if expression.engine == 'external' and (expression.report_line_id.groupby or expression.report_line_id.user_groupby):
                 engine_description = dict(expression._fields['engine']._description_selection(self.env))
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "Groupby feature isn't supported by '%(engine)s' engine. Please remove the groupby value on '%(report_line)s'",
                         engine=engine_description[expression.engine],
                         report_line=expression.report_line_id.display_name
@@ -895,7 +891,7 @@ class AccountReportExpression(models.Model):
                             continue
                         subformula_match = CROSS_REPORT_REGEX.match(candidate_expr.subformula)
                         if not subformula_match:
-                            raise UserError(_(
+                            raise UserError(self.env._(
                                 "In report '%(report_name)s', on line '%(line_name)s', with label '%(label)s',\n"
                                 "The format of the cross report expression is invalid. \n"
                                 "Expected: cross_report(<report_id>|<xml_id>[,force_date_sope])"
@@ -911,7 +907,7 @@ class AccountReportExpression(models.Model):
                             report_id = report.id if (report := self.env.ref(cross_report_value, raise_if_not_found=False)) else None
 
                         if not report_id:
-                            raise UserError(_(
+                            raise UserError(self.env._(
                                 "In report '%(report_name)s', on line '%(line_name)s', with label '%(label)s',\n"
                                 "Failed to parse the cross report id or xml_id.\n",
                                 report_name=candidate_expr.report_line_id.report_id.display_name,
@@ -919,7 +915,7 @@ class AccountReportExpression(models.Model):
                                 label=candidate_expr.label,
                             ))
                         elif report_id == candidate_expr.report_line_id.report_id.id:
-                            raise UserError(_("You cannot use cross report on itself"))
+                            raise UserError(self.env._("You cannot use cross report on itself"))
 
                         cross_report_domain = [('report_line_id.report_id', '=', report_id)]
                     else:
@@ -947,7 +943,7 @@ class AccountReportExpression(models.Model):
         totals_by_code = defaultdict(set)
         for expression in self:
             if expression.engine != 'aggregation':
-                raise UserError(_("Cannot get aggregation details from a line not using 'aggregation' engine"))
+                raise UserError(self.env._("Cannot get aggregation details from a line not using 'aggregation' engine"))
 
             expression_terms = re.split('[-+/*]', re.sub(r'[\s()]', '', expression.formula))
             for term in expression_terms:
@@ -1004,7 +1000,7 @@ class AccountReportExpression(models.Model):
         auto_chosen_target = self.report_line_id.expression_ids.filtered(lambda x: x.label == target_label)
 
         if not auto_chosen_target:
-            raise UserError(_("Could not determine carryover target automatically for expression %s.", self.label))
+            raise UserError(self.env._("Could not determine carryover target automatically for expression %s.", self.label))
 
         return auto_chosen_target
 
@@ -1014,14 +1010,14 @@ class AccountReportColumn(models.Model):
     _description = "Accounting Report Column"
     _order = 'sequence, id'
 
-    name = fields.Char(string="Name", translate=True, required=True)
-    expression_label = fields.Char(string="Expression Label", required=True)
-    sequence = fields.Integer(string="Sequence")
-    report_id = fields.Many2one(string="Report", comodel_name='account.report', index='btree_not_null', required=True, ondelete='cascade')
-    sortable = fields.Boolean(string="Sortable")
-    figure_type = fields.Selection(string="Figure Type", selection=FIGURE_TYPE_SELECTION_VALUES, default="monetary", required=True)
+    name = fields.Char(translate=True, required=True)
+    expression_label = fields.Char(required=True)
+    sequence = fields.Integer()
+    report_id = fields.Many2one(comodel_name='account.report', index='btree_not_null', required=True, ondelete='cascade')
+    sortable = fields.Boolean()
+    figure_type = fields.Selection(selection=FIGURE_TYPE_SELECTION_VALUES, default="monetary", required=True)
     blank_if_zero = fields.Boolean(string="Blank if Zero", help="When checked, 0 values will not show in this column.")
-    custom_audit_action_id = fields.Many2one(string="Custom Audit Action", comodel_name="ir.actions.act_window")
+    custom_audit_action_id = fields.Many2one(comodel_name="ir.actions.act_window")
 
     _expression_label_uniq = models.Constraint(
         "unique(report_id, expression_label)",
@@ -1038,7 +1034,7 @@ class AccountReportExternalValue(models.Model):
 
     name = fields.Char(required=True)
     value = fields.Float(string="Numeric Value")
-    text_value = fields.Char(string="Text Value")
+    text_value = fields.Char()
     date = fields.Date(required=True)
 
     target_report_expression_id = fields.Many2one(string="Target Expression", comodel_name="account.report.expression", required=True, ondelete="cascade")
@@ -1046,7 +1042,7 @@ class AccountReportExternalValue(models.Model):
     target_report_expression_label = fields.Char(string="Target Expression Label", related="target_report_expression_id.label")
     report_country_id = fields.Many2one(string="Country", related='target_report_line_id.report_id.country_id')
 
-    company_id = fields.Many2one(string='Company', comodel_name='res.company', required=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one(comodel_name='res.company', required=True, default=lambda self: self.env.company)
 
     # Carryover fields
     carryover_origin_expression_label = fields.Char(string="Origin Expression Label")

@@ -2,9 +2,6 @@
     'author': 'Odoo S.A.',
     'name': 'Serbia - eFaktura E-invoicing',
     'category': 'Accounting/Localizations/EDI',
-    'description': """
-eFaktura E-invoice implementation for Serbia
-    """,
     'summary': "E-Invoice implementation for Serbia",
     'countries': ['rs'],
     'depends': [

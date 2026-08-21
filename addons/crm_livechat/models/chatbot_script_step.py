@@ -67,5 +67,5 @@ class ChatbotScriptStep(models.Model):
         create_values.update(self._chatbot_crm_prepare_lead_values(
             discuss_channel, customer_values['description']))
         new_leads = self.env["crm.lead"].create(create_values)
-        new_leads._assign_userless_lead_in_team(_('livechat discussion'))
+        new_leads._assign_userless_lead_in_team(self.env._('livechat discussion'))
         return new_leads

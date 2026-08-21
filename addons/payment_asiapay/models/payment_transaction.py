@@ -6,8 +6,8 @@ from odoo.tools import urls
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_asiapay import const
-from odoo.addons.payment_asiapay.controllers.main import AsiaPayController
+from .. import const
+from ..controllers.main import AsiaPayController
 
 _logger = get_payment_logger(__name__)
 

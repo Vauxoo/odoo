@@ -45,13 +45,15 @@ class Binary(Controller):
 
     @route('/web/filestore/<path:_path>', type='http', auth='none')
     def content_filestore(self, _path):
+        # ruff: disable[logging-string-format]
         if odoo.tools.config['x_sendfile']:
-            # pylint: disable=logging-format-interpolation
             _logger.error(BAD_X_SENDFILE_ERROR.format(
                 data_dir=odoo.tools.config['data_dir'],
             ))
+        # ruff: enable[logging-string-format]
         raise request.not_found()
 
+    # ruff: disable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
     @route([
         '/web/content',
         '/web/content/<string:xmlid>',
@@ -61,7 +63,7 @@ class Binary(Controller):
         '/web/content/<string:model>/<int:id>/<string:field>',
         '/web/content/<string:model>/<int:id>/<string:field>/<string:filename>',
     ], type='http', auth='public', readonly=True)
-    # pylint: disable=redefined-builtin,invalid-name
+    # pylint: disable=invalid-name
     def content_common(self, xmlid=None, model='ir.attachment', id=None, field='raw',
                        filename=None, filename_field='name', mimetype=None, unique=False,
                        download=False, access_token=None, nocache=False):
@@ -80,6 +82,7 @@ class Binary(Controller):
             send_file_kwargs['max_age'] = None
 
         return stream.get_response(**send_file_kwargs)
+    # ruff: enable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
 
     @route([
         '/web/assets/<string:unique>/<string:filename>'], type='http', auth="public", readonly=True)
@@ -163,6 +166,7 @@ class Binary(Controller):
 
         return stream.get_response(**send_file_kwargs)
 
+    # ruff: disable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
     @route([
         '/web/image',
         '/web/image/<string:xmlid>',
@@ -182,7 +186,7 @@ class Binary(Controller):
         '/web/image/<int:id>-<string:unique>/<int:width>x<int:height>',
         '/web/image/<int:id>-<string:unique>/<int:width>x<int:height>/<string:filename>',
     ], type='http', auth='public', readonly=True, save_session=False)
-    # pylint: disable=redefined-builtin,invalid-name
+    # pylint: disable=invalid-name
     def content_image(self, xmlid=None, model='ir.attachment', id=None, field='raw',
                       filename_field='name', filename=None, mimetype=None, unique=False,
                       download=False, width=0, height=0, crop=False, access_token=None,
@@ -216,6 +220,7 @@ class Binary(Controller):
             send_file_kwargs['max_age'] = None
 
         return stream.get_response(**send_file_kwargs)
+    # ruff: enable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
 
     @route('/web/binary/upload_attachment', type='http', auth="user")
     def upload_attachment(self, model, id, ufile):
@@ -239,9 +244,9 @@ class Binary(Controller):
                 })
                 attachment._post_add_create()
             except AccessError:
-                args.append({'error': _("You are not allowed to upload an attachment here.")})
+                args.append({'error': self.env._("You are not allowed to upload an attachment here.")})
             except Exception:
-                args.append({'error': _("Something horrible happened")})
+                args.append({'error': self.env._("Something horrible happened")})
                 _logger.exception("Fail to upload attachment %s", ufile.filename)
             else:
                 args.append({

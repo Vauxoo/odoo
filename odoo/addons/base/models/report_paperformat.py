@@ -166,7 +166,7 @@ class ReportPaperformat(models.Model):
     _name = 'report.paperformat'
     _description = "Paper Format Config"
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char(required=True)
     default = fields.Boolean('Default paper format?')
     format = fields.Selection([(ps['key'], ps['description']) for ps in PAPER_SIZES], 'Paper size', default='A4', help="Select Proper Paper size")
     margin_top = fields.Float('Top Margin (mm)', default=40)
@@ -178,7 +178,7 @@ class ReportPaperformat(models.Model):
     orientation = fields.Selection([
         ('Landscape', 'Landscape'),
         ('Portrait', 'Portrait')
-        ], 'Orientation', default='Landscape')
+        ], default='Landscape')
     header_line = fields.Boolean('Display a header line', default=False)
     header_spacing = fields.Integer('Header spacing', default=35)
     disable_shrinking = fields.Boolean('Disable smart shrinking')

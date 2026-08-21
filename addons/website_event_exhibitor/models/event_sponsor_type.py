@@ -13,7 +13,7 @@ class EventSponsorType(models.Model):
         return (self.search([], order="sequence desc", limit=1).sequence or 0) + 1
 
     name = fields.Char('Sponsor Level', required=True, translate=True)
-    sequence = fields.Integer('Sequence', default=_default_sequence)
+    sequence = fields.Integer(default=lambda self: self._default_sequence())
     display_ribbon_style = fields.Selection(
         [('no_ribbon', 'No Ribbon'), ('Gold', 'Gold'),
          ('Silver', 'Silver'), ('Bronze', 'Bronze')],

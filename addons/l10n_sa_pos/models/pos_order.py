@@ -23,7 +23,7 @@ class PosOrder(models.Model):
         if self.company_id.country_id.code == 'SA':
             mapped_reasons = self.mapped('l10n_sa_reason')
             if len(set(mapped_reasons)) > 1:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "You cannot create a consolidated invoice for POS orders with different"
                     " ZATCA refund reasons.",
                 ))

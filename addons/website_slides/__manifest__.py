@@ -5,19 +5,6 @@
     'summary': 'Manage and publish an eLearning platform',
     'website': 'https://www.odoo.com/app/elearning',
     'category': 'Website/eLearning',
-    'description': """
-Create Online Courses
-=====================
-
-Featuring
-
- * Integrated course and lesson management
- * Fullscreen navigation
- * Support Youtube videos, Google documents, PDF, images, articles
- * Test knowledge with quizzes
- * Filter and Tag
- * Statistics
-""",
     'depends': [
         'portal_rating',
         'website',

@@ -6,7 +6,7 @@ class TransactionLipaNaMpesa(models.Model):
     _description = 'Transaction Lipa na M-PESA'
 
     trans_id = fields.Char(string="Transaction ID")
-    name = fields.Char(string="Name")
-    amount = fields.Integer(string="Amount")
-    number = fields.Char(string="Number")
-    received_at = fields.Datetime(string="Received At")
+    name = fields.Char()
+    amount = fields.Integer()
+    number = fields.Char()
+    received_at = fields.Datetime()

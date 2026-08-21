@@ -25,7 +25,7 @@ class HrExpensePostWizard(models.TransientModel):
         ], limit=1)
         return journal.id
 
-    company_id = fields.Many2one(comodel_name='res.company', default=lambda self: self.env.company, string='Company', readonly=True)
+    company_id = fields.Many2one(comodel_name='res.company', default=lambda self: self.env.company, readonly=True)
 
     accounting_date = fields.Date(  # The date used for the accounting entries or the one we'd like to use if not yet posted
         string="Bill Date",
@@ -35,7 +35,7 @@ class HrExpensePostWizard(models.TransientModel):
     employee_journal_id = fields.Many2one(
         comodel_name='account.journal',
         string="Journal",
-        default=_default_journal_id,
+        default=lambda self: self._default_journal_id(),
         check_company=True,
         domain=[('type', '=', 'purchase')],
         help="The journal used when the expense is paid by employee.",
@@ -44,7 +44,7 @@ class HrExpensePostWizard(models.TransientModel):
     def action_post_entry(self):
         expenses = self.env['hr.expense'].browse(self.env.context['active_ids'])
         if not self.env['account.move'].has_access('create'):
-            raise UserError(_("You don't have the rights to create accounting entries."))
+            raise UserError(self.env._("You don't have the rights to create accounting entries."))
         expense_receipt_vals_list = [
             {
                 **new_receipt_vals,
@@ -77,7 +77,7 @@ class HrExpensePostWizard(models.TransientModel):
         else:
             list_view = self.env.ref('hr_expense.view_move_list_expense', raise_if_not_found=False)
             action.update({
-                'name': _("New expense entries"),
+                'name': self.env._("New expense entries"),
                 'view_mode': 'list,form',
                 'views': [(list_view and list_view.id, 'list'), (False, 'form')],
                 'domain': [('id', 'in', moves_ids)],

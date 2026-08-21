@@ -9,8 +9,8 @@ from odoo.exceptions import UserError
 
 from odoo.tools import float_compare, float_round, frozendict, html2plaintext
 
-from odoo.addons.l10n_tr_nilvera_einvoice.tools.clean_node_dict import clean_node_dict
-from odoo.addons.l10n_tr_nilvera_einvoice.tools.ubl_tr_invoice import TrInvoice
+from ..tools.clean_node_dict import clean_node_dict
+from ..tools.ubl_tr_invoice import TrInvoice
 
 
 class AccountEdiXmlUblTr(models.AbstractModel):

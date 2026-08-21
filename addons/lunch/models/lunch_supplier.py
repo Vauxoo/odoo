@@ -38,7 +38,7 @@ class LunchSupplier(models.Model):
     country_id = fields.Many2one('res.country', related='partner_id.country_id', readonly=False)
     company_id = fields.Many2one('res.company', related='partner_id.company_id', readonly=False, store=True)
 
-    responsible_id = fields.Many2one('res.users', string="Responsible", domain=lambda self: [('all_group_ids', 'in', self.env.ref('lunch.group_lunch_manager').id)],
+    responsible_id = fields.Many2one('res.users', domain=lambda self: [('all_group_ids', 'in', self.env.ref('lunch.group_lunch_manager').id)],
                                      default=lambda self: self.env.user,
                                      help="The responsible is the person that will order lunch for everyone. It will be used as the 'from' when sending the automatic email.")
 
@@ -233,7 +233,7 @@ class LunchSupplier(models.Model):
             return
 
         if self.send_by != 'mail':
-            raise UserError(_("Cannot send an email to this supplier!"))
+            raise UserError(self.env._("Cannot send an email to this supplier!"))
 
         orders = self._get_current_orders()
         if not orders:
@@ -345,7 +345,7 @@ class LunchSupplier(models.Model):
             'tag': 'display_notification',
             'params': {
                 'type': 'success',
-                'message': _('The orders have been sent!'),
+                'message': self.env._('The orders have been sent!'),
                 'next': {'type': 'ir.actions.act_window_close'},
             }
         }
@@ -359,7 +359,7 @@ class LunchSupplier(models.Model):
             'tag': 'display_notification',
             'params': {
                 'type': 'success',
-                'message': _('The orders have been confirmed!'),
+                'message': self.env._('The orders have been confirmed!'),
                 'next': {'type': 'ir.actions.act_window_close'},
             }
         }

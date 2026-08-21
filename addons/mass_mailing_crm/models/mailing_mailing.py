@@ -8,7 +8,7 @@ from odoo import api, fields, models, tools, _
 class MailingMailing(models.Model):
     _inherit = 'mailing.mailing'
 
-    use_leads = fields.Boolean('Use Leads', compute='_compute_use_leads')
+    use_leads = fields.Boolean(compute='_compute_use_leads')
     crm_lead_count = fields.Integer('Leads/Opportunities Count', compute='_compute_crm_lead_count')
 
     def _compute_use_leads(self):
@@ -34,7 +34,7 @@ class MailingMailing(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'mailing.mailing',
-            'name': _('Lead Recall'),
+            'name': self.env._('Lead Recall'),
             'views': [(False, 'form')],
             'context': {
                 'default_mailing_model_id': self.env['ir.model']._get_id('res.partner'),
@@ -44,9 +44,9 @@ class MailingMailing(models.Model):
         }
 
     def action_redirect_to_leads_and_opportunities(self):
-        text = _("Leads") if self.use_leads else _("Opportunities")
-        helper_header = _("No %s yet!", text)
-        helper_message = _("Note that Odoo cannot track replies if they are sent towards email addresses to this database.")
+        text = self.env._("Leads") if self.use_leads else self.env._("Opportunities")
+        helper_header = self.env._("No %s yet!", text)
+        helper_message = self.env._("Note that Odoo cannot track replies if they are sent towards email addresses to this database.")
         return {
             'context': {
                 'active_test': False,
@@ -58,7 +58,7 @@ class MailingMailing(models.Model):
             'help': Markup('<p class="o_view_nocontent_smiling_face">%s</p><p>%s</p>') % (
                 helper_header, helper_message,
             ),
-            'name': _("Leads Analysis"),
+            'name': self.env._("Leads Analysis"),
             'res_model': 'crm.lead',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,pivot,graph,form',
@@ -73,13 +73,13 @@ class MailingMailing(models.Model):
             return values
         values['kpi_data'][1]['kpi_col1'] = {
             'value': tools.misc.format_decimalized_number(self.crm_lead_count, decimal=0),
-            'col_subtitle': _('LEADS'),
+            'col_subtitle': self.env._('LEADS'),
         }
         values['kpi_data'][1]['kpi_name'] = 'lead'
         if not self.crm_lead_count:
             values['kpi_data'][1]['kpi_tip'] = Markup("{crm_lead_tip_text} <a href='{doc_url}'>{doc_url_text}</a>").format(
-                    crm_lead_tip_text=_("Looking to turn your mailings into leads? Use your sales team's email as the reply-to address."),
+                    crm_lead_tip_text=self.env._("Looking to turn your mailings into leads? Use your sales team's email as the reply-to address."),
                     doc_url='https://www.odoo.com/documentation/latest/applications/sales/crm/acquire_leads/email_manual.html',
-                    doc_url_text=_('Learn More'),
+                    doc_url_text=self.env._('Learn More'),
                 )
         return values

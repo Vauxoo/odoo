@@ -10,4 +10,4 @@ class ResPartner(models.Model):
         for partner in l10n_uz_partners:
             partner.is_company = bool(len(partner.vat) == 9 and partner.commercial_partner_id == partner)
 
-        super(ResPartner, self - l10n_uz_partners)._compute_is_company()
+        return super(ResPartner, self - l10n_uz_partners)._compute_is_company()

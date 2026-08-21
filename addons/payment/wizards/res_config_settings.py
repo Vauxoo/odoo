@@ -8,7 +8,6 @@ class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
     installed_provider_id = fields.Many2one(
-        string="Installed Provider",
         comodel_name="payment.provider",
         compute="_compute_installed_provider_id",
     )

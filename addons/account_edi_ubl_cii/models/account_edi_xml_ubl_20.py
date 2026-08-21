@@ -6,9 +6,9 @@ from odoo.tools.float_utils import float_is_zero, float_round
 from odoo.addons.account.tools import dict_to_xml
 from odoo.tools.partner_identifiers import get_tin_metadata_of_country
 
-from odoo.addons.account_edi_ubl_cii.models.account_edi_common import FloatFmt
-from odoo.addons.account_edi_ubl_cii.tools import Invoice, CreditNote, DebitNote
-from odoo.addons.account_edi_ubl_cii.tools.ubl_20_optional_fields import PEPPOL_INVOICE_OPTIONAL_FIELDS, PEPPOL_INVOICE_OPTIONAL_LINE_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_LINE_FIELDS
+from .account_edi_common import FloatFmt
+from ..tools import Invoice, CreditNote, DebitNote
+from ..tools.ubl_20_optional_fields import PEPPOL_INVOICE_OPTIONAL_FIELDS, PEPPOL_INVOICE_OPTIONAL_LINE_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_FIELDS, PEPPOL_CREDIT_NOTE_OPTIONAL_LINE_FIELDS
 
 
 UBL_NAMESPACES = {
@@ -884,7 +884,7 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         return {
             'cbc:ChargeIndicator': {'_text': 'false' if base_amount < 0.0 else 'true'},
             'cbc:AllowanceChargeReasonCode': {'_text': '66' if base_amount < 0.0 else 'ZZZ'},
-            'cbc:AllowanceChargeReason': {'_text': _("Conditional cash/payment discount")},
+            'cbc:AllowanceChargeReason': {'_text': self.env._("Conditional cash/payment discount")},
             'cbc:Amount': {
                 '_text': self.format_float(abs(base_amount), vals['currency_dp']),
                 'currencyID': vals['currency_name']
@@ -1145,7 +1145,7 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         logs = []
         invoice_values = {}
         if qty_factor == -1:
-            logs.append(_("The invoice has been converted into a credit note and the quantities have been reverted."))
+            logs.append(self.env._("The invoice has been converted into a credit note and the quantities have been reverted."))
         role = "AccountingCustomer" if invoice.journal_id.type == 'sale' else "AccountingSupplier"
         partner, partner_logs = self._import_partner(invoice.company_id, **self._import_retrieve_partner_vals(tree, role))
         # Need to set partner before to compute bank and lines properly

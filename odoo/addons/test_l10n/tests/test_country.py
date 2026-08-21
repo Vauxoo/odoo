@@ -4,7 +4,6 @@ from odoo.modules.registry import Registry
 from odoo.tests import tagged, BaseCase
 from odoo.tests.common import get_db_name
 
-_logger = logging.getLogger(__name__)
 
 
 class TestL10n(BaseCase):  # fallback if module is not installed

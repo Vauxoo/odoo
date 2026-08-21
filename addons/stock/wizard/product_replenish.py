@@ -12,21 +12,21 @@ class ProductReplenish(models.TransientModel):
     _description = 'Product Replenish'
     _check_company_auto = True
 
-    product_id = fields.Many2one('product.product', string='Product', required=True)
+    product_id = fields.Many2one('product.product', required=True)
     product_tmpl_id = fields.Many2one('product.template', string='Product Template', required=True)
     product_has_variants = fields.Boolean('Has variants', default=False, required=True)
     allowed_uom_ids = fields.Many2many('uom.uom', compute='_compute_allowed_uom_ids')
     uom_id = fields.Many2one('uom.uom', string='Unity of measure', domain="[('id', 'in', allowed_uom_ids)]", required=True)
     forecast_uom_id = fields.Many2one(related='product_id.uom_id')
-    quantity = fields.Float('Quantity', default=1, required=True)
+    quantity = fields.Float(default=1, required=True)
     date_planned = fields.Datetime('Scheduled Date', required=True, compute="_compute_date_planned", readonly=False,
         help="Date at which the replenishment should take place.", store=True, precompute=True)
     warehouse_id = fields.Many2one(
-        'stock.warehouse', string='Warehouse', required=True,
+        'stock.warehouse', required=True,
         check_company=True,
     )
     company_id = fields.Many2one('res.company')
-    forecasted_quantity = fields.Float(string="Forecasted Quantity", compute="_compute_forecasted_quantity")
+    forecasted_quantity = fields.Float(compute="_compute_forecasted_quantity")
 
     @api.onchange('product_id', 'warehouse_id')
     def _onchange_product_id(self):
@@ -95,8 +95,8 @@ class ProductReplenish(models.TransientModel):
                     self.quantity,
                     self.uom_id,
                     self.warehouse_id.lot_stock_id,  # Location
-                    _("Manual Replenishment"),  # Name
-                    _("Manual Replenishment"),  # Origin
+                    self.env._("Manual Replenishment"),  # Name
+                    self.env._("Manual Replenishment"),  # Origin
                     self.warehouse_id.company_id,
                     self._prepare_run_values()  # Values
                 )
@@ -149,7 +149,7 @@ class ProductReplenish(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _('The following replenishment order have been generated'),
+                'title': self.env._('The following replenishment order have been generated'),
                 'message': '%s',
                 'links': link,
                 'sticky': False,

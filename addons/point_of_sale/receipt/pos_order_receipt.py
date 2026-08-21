@@ -80,9 +80,9 @@ class PosOrderReceipt(models.AbstractModel):
     def _get_common_extra_data(self):
         company = self.company_id
         return {
-            'vat_label': company.country_id.vat_label or _("Tax ID"),
+            'vat_label': company.country_id.vat_label or self.env._("Tax ID"),
             'preset_datetime': format_datetime(self.env, self.preset_time) if self.preset_time else False,
-            'partner_vat_label': self.partner_id.country_id.vat_label if self.partner_id.country_id else _("Tax ID"),
+            'partner_vat_label': self.partner_id.country_id.vat_label if self.partner_id.country_id else self.env._("Tax ID"),
             'self_invoicing_url': f"{self.env.company.get_base_url()}/pos/ticket",
             'prices': self._order_receipt_generate_taxe_data(),
             'cashier_name': self._order_receipt_generate_cashier_name(),
@@ -160,7 +160,7 @@ class PosOrderReceipt(models.AbstractModel):
                 # nothing to qualify on a flat amount.
                 description = ''
                 if is_percent:
-                    description = _(" (before discount)") if preset_id.service_fee_based_on == 'pre_discount' else _(" (after discount)")
+                    description = self.env._(" (before discount)") if preset_id.service_fee_based_on == 'pre_discount' else self.env._(" (after discount)")
                 data['is_service_fee_line'] = True
                 data['service_fee_display_info'] = {
                     'amount': (is_percent and f"{preset_id.service_fee_amount * 100}%") or self._order_receipt_format_currency(line.price_subtotal_incl),
@@ -419,7 +419,7 @@ class PosOrderReceipt(models.AbstractModel):
         if order_change["added_quantity"]:
             receipts_data.append(
                 self._prepare_preparation_grouped_data({
-                    "title": _("NEW"),
+                    "title": self.env._("NEW"),
                     "data": order_change["added_quantity"],
                 }),
             )
@@ -427,7 +427,7 @@ class PosOrderReceipt(models.AbstractModel):
         if order_change["removed_quantity"]:
             receipts_data.append(
                 self._prepare_preparation_grouped_data({
-                    "title": _("CANCELLED"),
+                    "title": self.env._("CANCELLED"),
                     "data": order_change["removed_quantity"],
                 }),
             )
@@ -437,7 +437,7 @@ class PosOrderReceipt(models.AbstractModel):
             print_note_update_data = order_change.get("print_note_update_data", True)
             receipts_data.append(
                 self._prepare_preparation_grouped_data({
-                    "title": note_update_title or _("NOTE UPDATE"),
+                    "title": note_update_title or self.env._("NOTE UPDATE"),
                     "data": order_change["note_update"] if print_note_update_data else [],
                 }),
             )
@@ -457,7 +457,7 @@ class PosOrderReceipt(models.AbstractModel):
                 "changes": change,
                 "extra_data": {
                     **self._get_common_extra_data(),
-                    'prefix': _("Order"),
+                    'prefix': self.env._("Order"),
                     'order_label': self.floating_order_name,
                     "reprint": False,
                     "time": datetime.now().strftime("%H:%M"),

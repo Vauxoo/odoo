@@ -4,12 +4,6 @@
 {
     'name': 'Delivery - Stock',
     'category': 'Shipping Connectors',
-    'description': """
-Allows you to add delivery methods in pickings.
-===============================================
-
-When creating invoices from picking, the system is able to add and compute the shipping line.
-""",
     'depends': ['printer', 'sale_stock', 'delivery'],
     'data': [
         "data/mail_template_data.xml",

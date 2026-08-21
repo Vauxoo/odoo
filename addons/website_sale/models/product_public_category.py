@@ -5,7 +5,7 @@ from odoo.fields import Domain
 from odoo.tools.sql import SQL
 from odoo.tools.translate import html_translate
 
-from odoo.addons.website_sale.const import SHOP_PATH
+from ..const import SHOP_PATH
 
 
 class ProductPublicCategory(models.Model):
@@ -29,7 +29,7 @@ class ProductPublicCategory(models.Model):
 
     name = fields.Char(required=True, translate=True)
     cover_image = fields.Image(
-        string="Cover Image", help="Displayed only in the Category List Snippet."
+        help="Displayed only in the Category List Snippet."
     )
     is_published = fields.Boolean(compute="_compute_is_published")
     not_in_shop = fields.Boolean(
@@ -40,10 +40,10 @@ class ProductPublicCategory(models.Model):
         readonly=False,
         recursive=True,
     )
-    sequence = fields.Integer(default=_default_sequence, index=True)
+    sequence = fields.Integer(default=lambda self: self._default_sequence(), index=True)
 
     parent_id = fields.Many2one(
-        string="Parent", comodel_name="product.public.category", ondelete="cascade", index=True
+        comodel_name="product.public.category", ondelete="cascade", index=True
     )
     child_id = fields.One2many(
         string="Children Categories",
@@ -80,21 +80,18 @@ class ProductPublicCategory(models.Model):
     )
 
     show_category_title = fields.Boolean(
-        string="Show Category Title",
         default=False,
         help="Display the category title on the shop page. Corresponds to the 'Show Title' editor"
         " option.",
     )
 
     show_category_description = fields.Boolean(
-        string="Show Category Description",
         default=True,
         help="Display the category description on the shop page. Corresponds to the"
         " 'Show Description' editor option.",
     )
 
     align_category_content = fields.Boolean(
-        string="Align Category Content",
         default=False,
         help="Align the category content on the shop page. Corresponds to the 'Center Content'"
         " editor option.",

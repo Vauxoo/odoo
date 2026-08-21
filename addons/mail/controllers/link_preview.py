@@ -2,7 +2,7 @@
 
 from odoo import http
 from odoo.http import request
-from odoo.addons.mail.tools.discuss import mail_route
+from ..tools.discuss import mail_route
 
 
 class LinkPreviewController(http.Controller):

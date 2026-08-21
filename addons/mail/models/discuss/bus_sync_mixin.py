@@ -4,7 +4,7 @@ import copy
 
 from odoo import models
 from odoo.addons.web.models.models import lazymapping
-from odoo.addons.mail.tools.discuss import Store
+from ...tools.discuss import Store
 
 
 class BusSyncMixin(models.AbstractModel):

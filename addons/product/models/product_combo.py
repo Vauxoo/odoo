@@ -10,9 +10,9 @@ class ProductCombo(models.Model):
     _description = "Product Combo"
     _order = 'sequence, id'
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(default=10, copy=False)
-    company_id = fields.Many2one(string="Company", comodel_name='res.company', index=True)
+    company_id = fields.Many2one(comodel_name='res.company', index=True)
     combo_item_ids = fields.One2many(
         comodel_name='product.combo.item',
         inverse_name='combo_id',
@@ -69,13 +69,13 @@ class ProductCombo(models.Model):
     @api.constrains('combo_item_ids')
     def _check_combo_item_ids_not_empty(self):
         if any(not combo.combo_item_ids for combo in self):
-            raise ValidationError(_("A combo choice must contain at least 1 product."))
+            raise ValidationError(self.env._("A combo choice must contain at least 1 product."))
 
     @api.constrains('combo_item_ids')
     def _check_combo_item_ids_no_duplicates(self):
         for combo in self:
             if len(combo.combo_item_ids.mapped('product_id')) < len(combo.combo_item_ids):
-                raise ValidationError(_("A combo choice can't contain duplicate products."))
+                raise ValidationError(self.env._("A combo choice can't contain duplicate products."))
 
     @api.constrains('company_id')
     def _check_company_id(self):

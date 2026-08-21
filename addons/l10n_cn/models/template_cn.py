@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('cn')
     def _get_cn_template_data(self):
         return {
-            'name': _('Accounting Standards for Small Business Enterprises'),
+            'name': self.env._('Accounting Standards for Small Business Enterprises'),
             'code_digits': 4,
             'parent': 'cn_common',
         }

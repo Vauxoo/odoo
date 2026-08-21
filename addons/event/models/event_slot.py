@@ -16,14 +16,14 @@ class EventSlot(models.Model):
     _description = "Event Slot"
     _order = "event_id, date, start_hour, end_hour, id"
 
-    event_id = fields.Many2one("event.event", "Event", required=True, ondelete="cascade", index=True)
-    color = fields.Integer("Color", default=0)
-    date = fields.Date("Date", required=True)
+    event_id = fields.Many2one("event.event", required=True, ondelete="cascade", index=True)
+    color = fields.Integer(default=0)
+    date = fields.Date(required=True)
     date_tz = fields.Selection(related="event_id.date_tz")
     start_hour = fields.Float("Starting Hour", required=True, help="Expressed in the event timezone.")
     end_hour = fields.Float("Ending Hour", required=True, help="Expressed in the event timezone.")
-    start_datetime = fields.Datetime("Start Datetime", compute="_compute_datetimes", store=True)
-    end_datetime = fields.Datetime("End Datetime", compute="_compute_datetimes", store=True)
+    start_datetime = fields.Datetime(compute="_compute_datetimes", store=True)
+    end_datetime = fields.Datetime(compute="_compute_datetimes", store=True)
 
     # Registrations
     is_sold_out = fields.Boolean(
@@ -47,9 +47,9 @@ class EventSlot(models.Model):
     def _check_hours(self):
         for slot in self:
             if not (0 <= slot.start_hour <= 23.99 and 0 <= slot.end_hour <= 23.99):
-                raise ValidationError(_("A slot hour must be between 0:00 and 23:59."))
+                raise ValidationError(self.env._("A slot hour must be between 0:00 and 23:59."))
             if slot.end_hour <= slot.start_hour:
-                raise ValidationError(_("A slot end hour must be later than its start hour.\n%s", slot.display_name))
+                raise ValidationError(self.env._("A slot end hour must be later than its start hour.\n%s", slot.display_name))
 
     @api.constrains("date", "start_hour", "end_hour")
     def _check_time_range(self):
@@ -57,7 +57,7 @@ class EventSlot(models.Model):
             event_start = slot.event_id.date_begin
             event_end = slot.event_id.date_end
             if not (event_start <= slot.start_datetime <= event_end) or not (event_start <= slot.end_datetime <= event_end):
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "A slot cannot be scheduled outside of its event time range.\n\n"
                     "Event:\t%(event_start_date)s, %(event_start_time)s - %(event_end_date)s, %(event_end_time)s\n"
                     "Slot:\t%(slot_name)s",
@@ -94,8 +94,8 @@ class EventSlot(models.Model):
                 self.env.context.get('name_with_seats_availability') and slot.event_id.seats_limited
                 and not slot.event_id.is_multi_slots
             ):
-                name = _('%(slot_name)s (Sold out)', slot_name=name) if not slot.seats_available else \
-                    _(
+                name = self.env._('%(slot_name)s (Sold out)', slot_name=name) if not slot.seats_available else \
+                    self.env._(
                         '%(slot_name)s (%(count)s seats remaining)',
                         slot_name=name,
                         count=formatLang(self.env, slot.seats_available, digits=0),
@@ -140,6 +140,6 @@ class EventSlot(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_if_registrations(self):
         if self.registration_ids:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "The following slots cannot be deleted while they have one or more registrations linked to them:\n- %s",
                 '\n- '.join(self.mapped('display_name'))))

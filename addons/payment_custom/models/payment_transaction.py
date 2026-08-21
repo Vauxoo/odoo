@@ -6,8 +6,8 @@ from odoo import models
 from odoo.tools import is_html_empty
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_custom import const
-from odoo.addons.payment_custom.controllers.main import CustomController
+from .. import const
+from ..controllers.main import CustomController
 
 _logger = get_payment_logger(__name__)
 
@@ -57,7 +57,7 @@ class PaymentTransaction(models.Model):
         :return: None
         """
         other_provider_txs = self.filtered(lambda t: t.provider_code != "custom")
-        super(PaymentTransaction, other_provider_txs)._log_received_message()
+        return super(PaymentTransaction, other_provider_txs)._log_received_message()
 
     def _get_sent_message(self):
         """Override of payment to return a different message.

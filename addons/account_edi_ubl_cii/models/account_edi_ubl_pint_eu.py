@@ -1,6 +1,6 @@
 from odoo import _, models
 from odoo.addons.account.tools import dict_to_xml
-from odoo.addons.account_edi_ubl_cii.models.account_edi_common import EUROPEAN_ECONOMIC_AREA_COUNTRY_CODES
+from .account_edi_common import EUROPEAN_ECONOMIC_AREA_COUNTRY_CODES
 
 
 class AccountEdiUBLPintEU(models.AbstractModel):
@@ -103,7 +103,7 @@ class AccountEdiUBLPintEU(models.AbstractModel):
                 not vals['document_node']['cbc:BuyerReference']
                 and not vals['document_node']['cac:OrderReference']
             ):
-                constraints['cen_en16931_buyer_reference_and_order_reference_must_not_be_both_present'] = _("A buyer reference or purchase order reference must be provided.")
+                constraints['cen_en16931_buyer_reference_and_order_reference_must_not_be_both_present'] = self.env._("A buyer reference or purchase order reference must be provided.")
 
         if (
             self._is_document(vals, 'invoice', 'credit_note')
@@ -121,7 +121,7 @@ class AccountEdiUBLPintEU(models.AbstractModel):
             # [NL-R-003] For suppliers in the Netherlands, the legal entity identifier MUST be either a
             # KVK or OIN number (schemeID 0106 or 0190)
             if all((node.get('cbc:CompanyID') or {}).get('schemeID') not in ('0106', '0190') for node in document_node['cac:AccountingSupplierParty']['cac:Party']['cac:PartyLegalEntity']):
-                constraints['nl_r_003'] = _("%s should have a KVK or OIN number set.", vals['supplier'].display_name)
+                constraints['nl_r_003'] = self.env._("%s should have a KVK or OIN number set.", vals['supplier'].display_name)
 
             # [NL-R-007] For suppliers in the Netherlands, the supplier MUST provide a means of payment
             # (cac:PaymentMeans) if the payment is from customer to supplier
@@ -141,7 +141,7 @@ class AccountEdiUBLPintEU(models.AbstractModel):
                 # [NL-R-005] For suppliers in the Netherlands, if the customer is in the Netherlands,
                 # the customer's legal entity identifier MUST be either a KVK or OIN number (schemeID 0106 or 0190)
                 if all((node.get('cbc:CompanyID') or {}).get('schemeID') not in ('0106', '0190') for node in document_node['cac:AccountingCustomerParty']['cac:Party']['cac:PartyLegalEntity']):
-                    constraints['nl_r_005'] = _("%s should have a KVK or OIN number set.", vals['customer'].display_name)
+                    constraints['nl_r_005'] = self.env._("%s should have a KVK or OIN number set.", vals['customer'].display_name)
 
         if (
             self._is_document(vals, 'credit_note')

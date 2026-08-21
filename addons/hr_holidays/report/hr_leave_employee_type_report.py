@@ -10,11 +10,11 @@ class HrLeaveEmployeeTypeReport(models.Model):
     _auto = False
     _order = "date_from DESC, employee_id"
 
-    employee_id = fields.Many2one('hr.employee', string="Employee", readonly=True)
+    employee_id = fields.Many2one('hr.employee', readonly=True)
     active_employee = fields.Boolean(readonly=True)
     number_of_days = fields.Float('Number of Days', readonly=True, aggregator="sum")
     number_of_hours = fields.Float('Number of Hours', readonly=True, aggregator="sum")
-    department_id = fields.Many2one('hr.department', string='Department', readonly=True)
+    department_id = fields.Many2one('hr.department', readonly=True)
     work_entry_type_id = fields.Many2one("hr.work.entry.type", string="Time Type", readonly=True)
     holiday_status = fields.Selection([
         ('taken', 'Taken'), #taken = validated
@@ -30,7 +30,7 @@ class HrLeaveEmployeeTypeReport(models.Model):
         ], string='Status', readonly=True)
     date_from = fields.Datetime('Start Date', readonly=True)
     date_to = fields.Datetime('End Date', readonly=True)
-    company_id = fields.Many2one('res.company', string="Company", readonly=True)
+    company_id = fields.Many2one('res.company', readonly=True)
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, 'hr_leave_employee_type_report')
@@ -250,13 +250,13 @@ class HrLeaveEmployeeTypeReport(models.Model):
                       ('state', '!=', 'cancel')]
 
         return {
-            'name': _('Balance'),
+            'name': self.env._('Balance'),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.leave.employee.type.report',
             'view_mode': 'pivot',
             'search_view_id': [self.env.ref('hr_holidays.view_search_hr_holidays_employee_type_report').id],
             'domain': domain,
-            'help': _("""
+            'help': self.env._("""
                 <p class="o_view_nocontent_empty_folder">
                     No Balance yet!
                 </p>

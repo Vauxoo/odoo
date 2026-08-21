@@ -93,8 +93,8 @@ class FetchmailServer(models.Model):
     _order = 'priority'
     _email_field = 'user'
 
-    name = fields.Char('Name', required=True)
-    active = fields.Boolean('Active', default=True)
+    name = fields.Char(required=True)
+    active = fields.Boolean(default=True)
     state = fields.Selection([
         ('draft', 'Not Confirmed'),
         ('done', 'Confirmed'),
@@ -105,8 +105,8 @@ class FetchmailServer(models.Model):
         ('imap', 'IMAP Server'),
         ('pop', 'POP Server'),
         ('local', 'Local Server'),
-    ], string='Server Type', index=True, required=True, default='imap')
-    server_type_info = fields.Text('Server Type Info', compute='_compute_server_type_info')
+    ], index=True, required=True, default='imap')
+    server_type_info = fields.Text(compute='_compute_server_type_info')
     is_ssl = fields.Boolean('SSL/TLS', help="Connections are encrypted with SSL/TLS through a dedicated port (default: IMAPS=993, POP3S=995)")
     attach = fields.Boolean('Keep Attachments', help="Whether attachments should be downloaded. "
                                                      "If not enabled, incoming emails will be stripped of any attachments before being processed", default=True)
@@ -124,14 +124,14 @@ class FetchmailServer(models.Model):
                                                                                 "emails to the existing conversations (documents).")
     priority = fields.Integer(string='Server Priority', readonly=False, help="Defines the order of processing, lower values mean higher priority", default=5)
     message_ids = fields.One2many('mail.mail', 'fetchmail_server_id', string='Messages', readonly=True)
-    configuration = fields.Text('Configuration', readonly=True)
+    configuration = fields.Text(readonly=True)
     script = fields.Char(readonly=True, default='/mail/static/scripts/odoo-mailgate.py')
 
     @api.depends('server_type')
     def _compute_server_type_info(self):
         for server in self:
             if server.server_type == 'local':
-                server.server_type_info = _('Use a local script to fetch your emails and create new records.')
+                server.server_type_info = self.env._('Use a local script to fetch your emails and create new records.')
             else:
                 server.server_type_info = False
 
@@ -183,7 +183,7 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
         """
         self.ensure_one()
         if not allow_archived and not self.active:
-            raise UserError(_('The server "%s" cannot be used because it is archived.', self.display_name))
+            raise UserError(self.env._('The server "%s" cannot be used because it is archived.', self.display_name))
         connection_type = self._get_connection_type()
         if connection_type == 'imap':
             server, port, is_ssl = self.server, int(self.port), self.is_ssl
@@ -215,16 +215,16 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                 connection = server._connect__(allow_archived=True)
                 server.write({'state': 'done'})
             except UnicodeError as e:
-                raise UserError(_("Invalid server name!\n %s", tools.exception_to_unicode(e)))
+                raise UserError(self.env._("Invalid server name!\n %s", tools.exception_to_unicode(e)))
             except (gaierror, timeout, IMAP4.abort) as e:
-                raise UserError(_("No response received. Check server information.\n %s", tools.exception_to_unicode(e)))
+                raise UserError(self.env._("No response received. Check server information.\n %s", tools.exception_to_unicode(e)))
             except (IMAP4.error, poplib.error_proto) as err:
-                raise UserError(_("Server replied with following exception:\n %s", tools.exception_to_unicode(err)))
+                raise UserError(self.env._("Server replied with following exception:\n %s", tools.exception_to_unicode(err)))
             except SSLError as e:
-                raise UserError(_("An SSL exception occurred. Check SSL/TLS configuration on server port.\n %s", tools.exception_to_unicode(e)))
+                raise UserError(self.env._("An SSL exception occurred. Check SSL/TLS configuration on server port.\n %s", tools.exception_to_unicode(e)))
             except (OSError, Exception) as err:
                 _logger.info("Failed to connect to %s server %s.", server.server_type, server.name, exc_info=True)
-                raise UserError(_("Connection test failed: %s", tools.exception_to_unicode(err)))
+                raise UserError(self.env._("Connection test failed: %s", tools.exception_to_unicode(err)))
             finally:
                 try:
                     if connection:

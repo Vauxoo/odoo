@@ -12,7 +12,7 @@ class StockRoute(models.Model):
 
 class StockMove(models.Model):
     _inherit = "stock.move"
-    sale_line_id = fields.Many2one('sale.order.line', 'Sale Line', index='btree_not_null')
+    sale_line_id = fields.Many2one('sale.order.line', index='btree_not_null')
 
     @api.depends('sale_line_id', 'sale_line_id.product_uom_id')
     def _compute_packaging_uom_id(self):

@@ -12,7 +12,7 @@ class HrResumeLine(models.Model):
         store=True, readonly=True, index='btree_not_null'
     )
     course_url = fields.Char(related='channel_id.website_absolute_url')
-    duration = fields.Integer(string="Duration", compute='_compute_duration', readonly=False, store=True)
+    duration = fields.Integer(compute='_compute_duration', readonly=False, store=True)
     course_type = fields.Selection(
         selection_add=[('elearning', 'eLearning')],
         ondelete={'elearning': 'cascade'}

@@ -14,7 +14,7 @@ class AccountPayment(models.Model):
         expense_company_payments = self.filtered(lambda payment: payment.expense_ids.payment_mode == 'company_account')
         for payment in expense_company_payments:
             payment.outstanding_account_id = payment.expense_ids._get_expense_account_destination()
-        super(AccountPayment, self - expense_company_payments)._compute_outstanding_account_id()
+        return super(AccountPayment, self - expense_company_payments)._compute_outstanding_account_id()
 
     def _compute_show_require_partner_bank(self):
         expense_payments = self.filtered(lambda pay: pay.move_id.expense_ids)
@@ -28,17 +28,17 @@ class AccountPayment(models.Model):
             'memo', 'payment_method_line_id'
         }
         if self.expense_ids and any(field_name in trigger_fields for field_name in vals):
-            raise UserError(_("You cannot do this modification since the payment is linked to an expense."))
+            raise UserError(self.env._("You cannot do this modification since the payment is linked to an expense."))
         return super().write(vals)
 
     def action_open_expense(self):
         self.ensure_one()
-        return self.expense_ids._get_records_action(name=_("Expenses"))
+        return self.expense_ids._get_records_action(name=self.env._("Expenses"))
 
     def _creation_message(self):
         # EXTENDS mail
         self.ensure_one()
         if self.move_id.expense_ids:
-            return _("Payment created for: %s", self.move_id.expense_ids._get_html_link())
+            return self.env._("Payment created for: %s", self.move_id.expense_ids._get_html_link())
         return super()._creation_message()
 

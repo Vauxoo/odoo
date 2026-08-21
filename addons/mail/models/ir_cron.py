@@ -18,4 +18,4 @@ class IrCron(models.AbstractModel):
         channel_admin = self.env.ref("mail.channel_admin", raise_if_not_found=False)
         if channel_admin:
             channel_admin.with_user(SUPERUSER_ID).message_post(body=message)
-        super()._notify_admin(message)
+        return super()._notify_admin(message)

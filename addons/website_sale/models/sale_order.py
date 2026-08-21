@@ -11,7 +11,7 @@ from odoo.fields import Command, Domain
 from odoo.http import request
 from odoo.tools import float_round
 
-from odoo.addons.website_sale.models.website import (
+from .website import (
     FISCAL_POSITION_SESSION_CACHE_KEY,
     PRICELIST_SELECTED_SESSION_CACHE_KEY,
     PRICELIST_SESSION_CACHE_KEY,
@@ -56,8 +56,8 @@ class SaleOrder(models.Model):
         compute="_compute_amount_delivery",
         help="Tax included or excluded depending on the website configuration.",
     )
-    cart_quantity = fields.Integer(string="Cart Quantity", compute="_compute_cart_info")
-    only_services = fields.Boolean(string="Only Services", compute="_compute_cart_info")
+    cart_quantity = fields.Integer(compute="_compute_cart_info")
+    only_services = fields.Boolean(compute="_compute_cart_info")
     is_abandoned_cart = fields.Boolean(
         string="Abandoned Cart", compute="_compute_abandoned_cart", search="_search_abandoned_cart"
     )
@@ -121,7 +121,7 @@ class SaleOrder(models.Model):
     def _compute_require_signature(self):
         website_orders = self.filtered("website_id")
         website_orders.require_signature = False
-        super(SaleOrder, self - website_orders)._compute_require_signature()
+        return super(SaleOrder, self - website_orders)._compute_require_signature()
 
     def _compute_payment_term_id(self):
         super()._compute_payment_term_id()
@@ -203,7 +203,7 @@ class SaleOrder(models.Model):
         website_orders = self.filtered(lambda order: order.website_id and not order.journal_id)
         for order in website_orders:
             order.journal_id = order.website_id.journal_id
-        super(SaleOrder, self - website_orders)._compute_journal_id()
+        return super(SaleOrder, self - website_orders)._compute_journal_id()
 
     def _default_team_id(self):
         return super()._default_team_id() or self.website_id.salesteam_id.id

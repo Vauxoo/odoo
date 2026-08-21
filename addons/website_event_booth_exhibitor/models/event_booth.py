@@ -9,7 +9,7 @@ class EventBooth(models.Model):
 
     use_sponsor = fields.Boolean(related='booth_category_id.use_sponsor')
     sponsor_type_id = fields.Many2one(related='booth_category_id.sponsor_type_id')
-    sponsor_id = fields.Many2one('event.sponsor', string='Sponsor', copy=False, index='btree_not_null')
+    sponsor_id = fields.Many2one('event.sponsor', copy=False, index='btree_not_null')
     sponsor_name = fields.Char(string='Sponsor Name', related='sponsor_id.name')
     sponsor_email = fields.Char(string='Sponsor Email', related='sponsor_id.email')
     sponsor_phone = fields.Char(string='Sponsor Phone', related='sponsor_id.phone')
@@ -49,4 +49,4 @@ class EventBooth(models.Model):
         for booth in self:
             if booth.use_sponsor and booth.partner_id:
                 booth.sponsor_id = booth._get_or_create_sponsor(write_vals)
-        super(EventBooth, self)._action_post_confirm(write_vals)
+        return super(EventBooth, self)._action_post_confirm(write_vals)

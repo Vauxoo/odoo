@@ -13,7 +13,7 @@ class ProductTemplate(models.Model):
 
     def _prepare_service_tracking_tooltip(self):
         if self.service_tracking == 'course':
-            return _("Grant access to the eLearning course linked to this product.")
+            return self.env._("Grant access to the eLearning course linked to this product.")
         return super()._prepare_service_tracking_tooltip()
 
     @api.model

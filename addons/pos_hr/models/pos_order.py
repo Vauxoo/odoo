@@ -24,4 +24,4 @@ class PosOrder(models.Model):
             cashier = employee.name
         else:
             cashier = self.session_id.employee_id.name if self.session_id.employee_id else self.cashier
-        return Markup("%s<br/>%s") % (super()._prepare_pos_log(body), _("Cashier %s", cashier))
+        return Markup("%s<br/>%s") % (super()._prepare_pos_log(body), self.env._("Cashier %s", cashier))

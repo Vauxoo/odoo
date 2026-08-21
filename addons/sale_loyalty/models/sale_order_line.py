@@ -19,7 +19,7 @@ class SaleOrderLine(models.Model):
     def _compute_name(self):
         # Avoid computing the name for reward lines
         reward = self.filtered("reward_id")
-        super(SaleOrderLine, self - reward)._compute_name()
+        return super(SaleOrderLine, self - reward)._compute_name()
 
     def _compute_discount(self):
         rewards = self.filtered("reward_id")

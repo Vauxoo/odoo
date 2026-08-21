@@ -1,9 +1,6 @@
 {
     'name': 'Croatia - e-invoicing',
     'category': 'Accounting/Localizations/Reporting',
-    'description': """
-e-invoicing for Croatia
-    """,
     'depends': [
         'l10n_hr',
         'account_edi_ubl_cii',

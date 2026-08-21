@@ -2,7 +2,7 @@
 
 from odoo import api, fields, models
 
-from odoo.addons.delivery import const
+from .. import const
 from odoo.addons.payment import utils as payment_utils
 
 

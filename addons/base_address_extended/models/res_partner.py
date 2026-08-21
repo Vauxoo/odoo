@@ -8,7 +8,7 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     street_name = fields.Char(
-        'Street Name', compute='_compute_street_data', inverse='_inverse_street_data', store=True)
+        compute='_compute_street_data', inverse='_inverse_street_data', store=True)
     street_number = fields.Char(
         'House', compute='_compute_street_data', inverse='_inverse_street_data', store=True)
     street_number2 = fields.Char(

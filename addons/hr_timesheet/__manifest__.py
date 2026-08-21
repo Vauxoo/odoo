@@ -6,17 +6,6 @@
     'category': 'Services/Timesheets',
     'sequence': 23,
     'summary': 'Track employee time on tasks',
-    'description': """
-This module implements a timesheet system.
-==========================================
-
-Each employee can encode and track their time spent on the different projects.
-
-Lots of reporting on time and employee tracking are provided.
-
-It is completely integrated with the cost accounting module. It allows you to set
-up a management by affair.
-    """,
     'website': 'https://www.odoo.com/app/timesheet',
     'depends': ['hr', 'analytic', 'project', 'uom'],
     'data': [

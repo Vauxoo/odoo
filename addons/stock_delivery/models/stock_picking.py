@@ -22,11 +22,11 @@ class StockPicking(models.Model):
     carrier_price = fields.Float(string="Shipping Cost")
     delivery_type = fields.Selection(related='carrier_id.delivery_type', readonly=True)
     allowed_carrier_ids = fields.Many2many('delivery.carrier', compute='_compute_allowed_carrier_ids')
-    carrier_id = fields.Many2one("delivery.carrier", string="Carrier", domain="[('id', 'in', allowed_carrier_ids)]", check_company=True, index='btree_not_null', tracking=True)
+    carrier_id = fields.Many2one("delivery.carrier", domain="[('id', 'in', allowed_carrier_ids)]", check_company=True, index='btree_not_null', tracking=True)
     weight = fields.Float(compute='_cal_weight', digits='Stock Weight', store=True, help="Total weight of the products in the picking.", compute_sudo=True)
     carrier_tracking_ref = fields.Char(string='Tracking Reference', copy=False)
     carrier_tracking_url = fields.Char(string='Tracking URL', compute='_compute_carrier_tracking_url')
-    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', readonly=True, default=_get_default_weight_uom)
+    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', readonly=True, default=lambda self: self._get_default_weight_uom())
     is_return_picking = fields.Boolean(compute='_compute_return_picking')
     return_label_ids = fields.One2many('ir.attachment', compute='_compute_return_label')
     destination_country_code = fields.Char(related='partner_id.country_id.code', string="Destination Country")
@@ -87,9 +87,9 @@ class StockPicking(models.Model):
 
     def _carrier_exception_note(self, exception):
         self.ensure_one()
-        line_1 = _("Exception occurred with respect to carrier on the transfer")
-        line_2 = _("Manual actions might be needed.")
-        line_3 = _("Exception:")
+        line_1 = self.env._("Exception occurred with respect to carrier on the transfer")
+        line_2 = self.env._("Manual actions might be needed.")
+        line_3 = self.env._("Exception:")
         return Markup('<div> {line_1} <a href="#" data-oe-model="stock.picking" data-oe-id="{picking_id}"> {picking_name}</a>. {line_2}<div class="mt16"><p>{line_3} {exception}</p></div></div>').format(line_1=line_1, line_2=line_2, line_3=line_3, picking_id=self.id, picking_name=self.name, exception=exception)
 
     def _send_confirmation_email(self):
@@ -147,11 +147,11 @@ class StockPicking(models.Model):
             for p in related_pickings - without_tracking:
                 p.carrier_tracking_ref += "," + res['tracking_number']
         order_currency = self.sale_id.currency_id or self.company_id.currency_id
-        msg = _("Shipment sent to carrier %(carrier_name)s for shipping with tracking number %(ref)s",
+        msg = self.env._("Shipment sent to carrier %(carrier_name)s for shipping with tracking number %(ref)s",
                 carrier_name=self.carrier_id.name,
                 ref=self.carrier_tracking_ref) + \
               Markup("<br/>") + \
-              _("Cost: %(price).2f %(currency)s",
+              self.env._("Cost: %(price).2f %(currency)s",
                 price=self.carrier_price,
                 currency=order_currency.name)
         self.message_post(body=msg)
@@ -188,7 +188,7 @@ class StockPicking(models.Model):
     def open_website_url(self):
         self.ensure_one()
         if not self.carrier_tracking_url:
-            raise UserError(_("Your delivery method has no redirect on courier provider's website to track this order."))
+            raise UserError(self.env._("Your delivery method has no redirect on courier provider's website to track this order."))
 
         carrier_trackers = []
         try:
@@ -196,7 +196,7 @@ class StockPicking(models.Model):
         except ValueError:
             carrier_trackers = self.carrier_tracking_url
         else:
-            msg = _("Tracking links for shipment:") + Markup("<br/>")
+            msg = self.env._("Tracking links for shipment:") + Markup("<br/>")
             for tracker in carrier_trackers:
                 msg += Markup('<a href="%s">%s</a><br/>') % (tracker[1], tracker[0])
             self.message_post(body=msg)
@@ -273,11 +273,9 @@ class StockPickingType(models.Model):
     _inherit = "stock.picking.type"
 
     auto_print_carrier_labels = fields.Boolean(
-        "Auto Print Carrier Labels",
         help="Automatically print the carrier labels of the picking when they are created.",
     )
     auto_print_export_documents = fields.Boolean(
-        "Auto Print Export Documents",
         help=(
             "Automatically print the export documents of the picking when they are created. "
             "Availability of export documents depends on the carrier and the destination."

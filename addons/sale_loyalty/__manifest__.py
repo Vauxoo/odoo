@@ -3,7 +3,6 @@
 {
     "name": "Sale Loyalty",
     "summary": "Use discounts and loyalty programs in sales orders",
-    "description": "Integrate discount and loyalty programs mechanisms in sales orders.",
     "category": "Sales/Sales",
     "depends": ["sale", "loyalty"],
     "auto_install": True,

@@ -8,7 +8,6 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools.translate import LazyTranslate
 
-_logger = logging.getLogger(__name__)
 _lt = LazyTranslate(__name__)
 
 emails_split = re.compile(r"[;,\n\r]+")
@@ -21,7 +20,7 @@ class SlideChannelInvite(models.TransientModel):
 
     # composer content
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', bypass_search_access=True)
-    send_email = fields.Boolean('Send Email', compute="_compute_send_email", readonly=False, store=True)
+    send_email = fields.Boolean(compute="_compute_send_email", readonly=False, store=True)
     # recipients
     partner_ids = fields.Many2many('res.partner', string='Recipients')
     # slide channel
@@ -61,9 +60,9 @@ class SlideChannelInvite(models.TransientModel):
         if not self.send_email:
             return
         if not self.env.user.email:
-            raise UserError(_("Unable to post message, please configure the sender's email address."))
+            raise UserError(self.env._("Unable to post message, please configure the sender's email address."))
         if not self.partner_ids:
-            raise UserError(_("Please select at least one recipient."))
+            raise UserError(self.env._("Please select at least one recipient."))
 
         mail_values = []
         attendees_to_reinvite = self.env['slide.channel.partner'].search([

@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.tests import HttpCase, tagged
-from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+from ..common import MailCommon, mail_new_test_user
 
 
 @tagged("discuss_action")

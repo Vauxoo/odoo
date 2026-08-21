@@ -15,7 +15,7 @@ from odoo.exceptions import UserError
 from odoo.http import Controller, request, route
 from odoo.http.dispatcher import serialize_exception
 from odoo.http.stream import content_disposition
-from odoo.tools import BinaryBytes, BinaryValue, osutil
+from odoo.tools import BinaryBytes, BinaryValue, osutil, groupby
 from odoo.tools.misc import split_every
 from odoo.tools.constants import PREFETCH_MAX
 
@@ -483,7 +483,7 @@ class Export(Controller):
         # export lists with no sub-fields (e.g. import_compatible lists with
         # no o2m) are even more efficient (from the same 6s to ~170ms, as
         # there's a single fields_get to execute)
-        for (base, length), subfields in itertools.groupby(
+        for (base, length), subfields in groupby(
                 sorted(export_fields),
                 lambda field: (field.split('/', 1)[0], len(field.split('/', 1)))):
             subfields = list(subfields)

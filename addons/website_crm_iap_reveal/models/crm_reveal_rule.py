@@ -44,19 +44,19 @@ class CrmRevealRule(models.Model):
 
     # Contact Generation Filter
     contact_filter_type = fields.Selection([('role', 'Role'), ('seniority', 'Seniority')], string="Filter On", required=True, default='role')
-    preferred_role_id = fields.Many2one('crm.iap.lead.role', string='Preferred Role')
+    preferred_role_id = fields.Many2one('crm.iap.lead.role')
     other_role_ids = fields.Many2many('crm.iap.lead.role', string='Other Roles')
-    seniority_id = fields.Many2one('crm.iap.lead.seniority', string='Seniority')
+    seniority_id = fields.Many2one('crm.iap.lead.seniority')
     extra_contacts = fields.Integer(string='Number of Contacts', help='This is the number of contacts to track if their role/seniority match your criteria. Their details will show up in the history thread of generated leads/opportunities. One credit is consumed per tracked contact.', default=1)
 
     # Lead / Opportunity Data
     lead_for = fields.Selection([('companies', 'Companies'), ('people', 'Companies and their Contacts')], string='Data Tracking', required=True, default='companies', help='Choose whether to track companies only or companies and their contacts')
     lead_type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity')], string='Type', required=True, default='opportunity')
-    suffix = fields.Char(string='Suffix', help='This will be appended in name of generated lead so you can identify lead/opportunity is generated with this rule')
+    suffix = fields.Char(help='This will be appended in name of generated lead so you can identify lead/opportunity is generated with this rule')
     team_id = fields.Many2one('crm.team', string='Sales Team', ondelete="set null")
     tag_ids = fields.Many2many('crm.tag', string='Tags')
     user_id = fields.Many2one('res.users', string='Salesperson')
-    priority = fields.Selection(crm_stage.AVAILABLE_PRIORITIES, string='Priority')
+    priority = fields.Selection(crm_stage.AVAILABLE_PRIORITIES)
     lead_ids = fields.One2many('crm.lead', 'reveal_rule_id', string='Generated Lead / Opportunity')
     lead_count = fields.Integer(compute='_compute_lead_count', string='Number of Generated Leads')
     opportunity_count = fields.Integer(compute='_compute_lead_count', string='Number of Generated Opportunity')
@@ -83,7 +83,7 @@ class CrmRevealRule(models.Model):
             if self.regex_url:
                 re.compile(self.regex_url)
         except Exception:
-            raise ValidationError(_('Enter Valid Regex.'))
+            raise ValidationError(self.env._('Enter Valid Regex.'))
 
     def action_get_lead_tree_view(self):
         action = self.env["ir.actions.actions"]._for_xml_id("crm.crm_lead_all_leads")
@@ -350,7 +350,7 @@ class CrmRevealRule(models.Model):
 
         template_values = result['reveal_data']
         template_values.update({
-            'flavor_text': _("Opportunity created by Odoo Lead Generation"),
+            'flavor_text': self.env._("Opportunity created by Odoo Lead Generation"),
             'people_data': result.get('people_data'),
         })
         lead.message_post_with_source(

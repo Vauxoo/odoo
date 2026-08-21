@@ -5,9 +5,6 @@
     "version": "1.2",
     "category": "Sales/Sales",
     "summary": "Sales internal machinery",
-    "description": """
-This module contains all the common features of Sales Management and eCommerce.
-    """,
     "depends": [
         "sales_team",
         "account_payment",  # -> account, payment, portal

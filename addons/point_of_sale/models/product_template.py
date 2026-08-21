@@ -45,7 +45,7 @@ class ProductTemplate(models.Model):
     pos_sequence = fields.Integer(
         string="POS Sequence",
         help="Determine the display order in the POS Terminal",
-        default=_default_pos_sequence,
+        default=lambda self: self._default_pos_sequence(),
         copy=False,
     )
 
@@ -288,7 +288,7 @@ class ProductTemplate(models.Model):
     def _ensure_unused_in_pos(self):
         if products_in_pos := self.filtered(lambda p: p.available_in_pos):
             if products_in_pos.pos_categ_ids._check_linked_active_pos_session():
-                raise UserError(_(
+                raise UserError(self.env._(
                     "You cannot archive/delete product(s) that are available in an active Point of Sale session.\n\n"
                     "Archiving/Deleting a product available in a session would be like attempting to snatch a hamburger from a customer’s hand mid-bite; chaos will ensue as ketchup and mayo go flying everywhere!",
                 ))
@@ -297,7 +297,7 @@ class ProductTemplate(models.Model):
         special_products = self.env['pos.config'].sudo()._get_special_products().product_tmpl_id
         for product in self:
             if product in special_products:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "You cannot archive/delete a product that is set as a special "
                     "product in a Point of Sale configuration. Please change "
                     "the configuration first.",
@@ -332,7 +332,7 @@ class ProductTemplate(models.Model):
             if not product.available_in_pos:
                 combo_name = self.env['product.combo.item'].sudo().search([('product_id', 'in', product.product_variant_ids.ids)], limit=1).combo_id.name
                 if combo_name:
-                    raise UserError(_('You must first remove this product from the %s combo', combo_name))
+                    raise UserError(self.env._('You must first remove this product from the %s combo', combo_name))
 
     def get_product_info_pos(self, price, quantity, pos_config_id, product_variant_id=False):
         self.ensure_one()

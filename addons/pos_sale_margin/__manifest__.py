@@ -6,10 +6,6 @@
     'version': '1.1',
     'category': 'Sales/Point of Sale',
     'summary': 'Link module between Point of Sale and Sales Margin',
-    'description': """
-
-This module adds enable you to view the margin of your Point of Sale orders in the Sales Margin report.
-""",
     'depends': ['pos_sale', 'sale_margin'],
     'auto_install': True,
     'author': 'Odoo S.A.',

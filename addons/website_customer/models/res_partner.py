@@ -34,7 +34,7 @@ class ResPartnerTag(models.Model):
     name = fields.Char('Category Name', required=True, translate=True)
     partner_ids = fields.Many2many('res.partner', 'res_partner_res_partner_tag_rel', 'tag_id', 'partner_id', string='Partners')
     classname = fields.Selection('get_selection_class', 'Class', default='info', help="Bootstrap class to customize the color", required=True)
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
 
     def _default_is_published(self):
         return True

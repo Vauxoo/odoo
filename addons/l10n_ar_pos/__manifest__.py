@@ -2,10 +2,6 @@
 {
     'name': 'Argentinean - Point of Sale with AR Doc',
     'category': 'Accounting/Localizations/Point of Sale',
-    'description': """
-This module brings the technical requirement for the Argentinean regulation.
-Install this if you are using the Point of Sale app in Argentina.
-    """,
     'depends': [
         'l10n_ar',
         'point_of_sale',

@@ -118,20 +118,20 @@ class CrmLead(models.Model):
         'Properties', definition='team_id.lead_properties_definition',
         copy=True)
     company_id = fields.Many2one(
-        'res.company', string='Company', index=True,
+        'res.company', index=True,
         compute='_compute_company_id', readonly=False, store=True)
     referred = fields.Char('Referred By')
     description = fields.Html('Notes')
-    active = fields.Boolean('Active', default=True, tracking=72)
+    active = fields.Boolean(default=True, tracking=72)
     type = fields.Selection([
         ('lead', 'Lead'), ('opportunity', 'Opportunity')], required=True, tracking=15, index=True,
         default=lambda self: 'lead' if self.env.user.has_group('crm.group_use_lead') else 'opportunity')
     # Pipeline management
     priority = fields.Selection(
-        crm_stage.AVAILABLE_PRIORITIES, string='Priority', index=True,
+        crm_stage.AVAILABLE_PRIORITIES, index=True,
         default=crm_stage.AVAILABLE_PRIORITIES[0][0])
     stage_id = fields.Many2one(
-        'crm.stage', string='Stage', index=True, tracking=True,
+        'crm.stage', index=True, tracking=True,
         compute='_compute_stage_id', readonly=False, store=True,
         copy=False, group_expand='_read_group_stage_ids', ondelete='restrict',
         domain="['|', ('team_ids', '=', False), ('team_ids', 'in', team_id)]")
@@ -140,10 +140,10 @@ class CrmLead(models.Model):
         help="Classify and analyze your lead/opportunity categories like: Training, Service")
     color = fields.Integer('Color Index', default=0)
     # Revenues
-    expected_revenue = fields.Monetary('Expected Revenue', currency_field='company_currency', tracking=True, default=0.0)
-    prorated_revenue = fields.Monetary('Prorated Revenue', currency_field='company_currency', store=True, compute="_compute_prorated_revenue")
+    expected_revenue = fields.Monetary(currency_field='company_currency', tracking=True, default=0.0)
+    prorated_revenue = fields.Monetary(currency_field='company_currency', store=True, compute="_compute_prorated_revenue")
     recurring_revenue = fields.Monetary('Recurring Revenues', currency_field='company_currency', tracking=True, default=0.0)
-    recurring_plan = fields.Many2one('crm.recurring.plan', string="Recurring Plan", index='btree_not_null')
+    recurring_plan = fields.Many2one('crm.recurring.plan', index='btree_not_null')
     recurring_revenue_monthly = fields.Monetary('Expected MRR', currency_field='company_currency', store=True,
                                                 compute="_compute_recurring_revenue_monthly")
     recurring_revenue_monthly_prorated = fields.Monetary('Prorated MRR', currency_field='company_currency', store=True,
@@ -169,7 +169,7 @@ class CrmLead(models.Model):
         help="Linked partner (optional). Usually created when converting the lead. You can find a partner by its Name, TIN, Email or Internal Reference.")
     partner_is_blacklisted = fields.Boolean('Partner is blacklisted', related='partner_id.is_blacklisted', readonly=True)
     contact_name = fields.Char(
-        'Contact Name', index='trigram', tracking=30,
+        index='trigram', tracking=30,
         compute='_compute_contact_name', readonly=False, store=True)
     partner_name = fields.Char(
         'Company Name', index='trigram', tracking=20,
@@ -181,13 +181,12 @@ class CrmLead(models.Model):
         compute='_compute_email_from', inverse='_inverse_email_from', readonly=False, store=True)
     email_normalized = fields.Char(index='trigram')  # inherited via mail.thread.blacklist
     email_domain_criterion = fields.Char(
-        string='Email Domain Criterion',
         compute="_compute_email_domain_criterion",
         index='btree_not_null',  # used for exact match, void value do not matter
         store=True,
     )
     phone = fields.Char(
-        'Phone', tracking=50,
+        tracking=50,
         compute='_compute_phone', inverse='_inverse_phone', readonly=False, store=True)
     phone_sanitized = fields.Char(index='btree_not_null')  # inherited via mail.thread.phone
     phone_state = fields.Selection([
@@ -196,29 +195,27 @@ class CrmLead(models.Model):
     email_state = fields.Selection([
         ('correct', 'Correct'),
         ('incorrect', 'Incorrect')], string='Email Quality', compute="_compute_email_state", store=True)
-    website = fields.Char('Website', help="Website of the contact", compute="_compute_website", readonly=False, store=True, tracking=35)
+    website = fields.Char(help="Website of the contact", compute="_compute_website", readonly=False, store=True, tracking=35)
     lang_id = fields.Many2one(
         'res.lang', string='Language',
         compute='_compute_lang_id', readonly=False, store=True, index=True)
     lang_code = fields.Char(related='lang_id.code')
     lang_active_count = fields.Integer(compute='_compute_lang_active_count')
     # Address fields
-    street = fields.Char('Street', compute='_compute_partner_address_values', readonly=False, store=True, tracking=60)
-    street2 = fields.Char('Street2', compute='_compute_partner_address_values', readonly=False, store=True, tracking=61)
-    zip = fields.Char('Zip', change_default=True, compute='_compute_partner_address_values', readonly=False, store=True, tracking=62)
-    city = fields.Char('City', compute='_compute_partner_address_values', readonly=False, store=True, tracking=63)
+    street = fields.Char(compute='_compute_partner_address_values', readonly=False, store=True, tracking=60)
+    street2 = fields.Char(compute='_compute_partner_address_values', readonly=False, store=True, tracking=61)
+    zip = fields.Char(change_default=True, compute='_compute_partner_address_values', readonly=False, store=True, tracking=62)
+    city = fields.Char(compute='_compute_partner_address_values', readonly=False, store=True, tracking=63)
     state_id = fields.Many2one(
-        "res.country.state", string='State',
-        compute='_compute_partner_address_values', readonly=False, store=True,
+        "res.country.state", compute='_compute_partner_address_values', readonly=False, store=True,
         domain="[('country_id', '=?', country_id)]", tracking=64)
     country_id = fields.Many2one(
-        'res.country', string='Country',
-        compute='_compute_partner_address_values', readonly=False, store=True, index=True, tracking=65)
+        'res.country', compute='_compute_partner_address_values', readonly=False, store=True, index=True, tracking=65)
     # Probability (Opportunity only)
     probability = fields.Float(
-        'Probability', aggregator="avg", copy=False,
+        aggregator="avg", copy=False,
         compute='_compute_probabilities', readonly=False, store=True)
-    automated_probability = fields.Float('Automated Probability', compute='_compute_probabilities', readonly=True, store=True)
+    automated_probability = fields.Float(compute='_compute_probabilities', readonly=True, store=True)
     is_automated_probability = fields.Boolean('Is automated probability?', compute="_compute_is_automated_probability")
     # Won/Lost
     won_status = fields.Selection(
@@ -228,8 +225,7 @@ class CrmLead(models.Model):
             ('pending', 'Pending'),
         ], string='Won/Lost', compute='_compute_won_status', store=True, tracking=70)
     lost_reason_id = fields.Many2one(
-        'crm.lost.reason', string='Lost Reason',
-        index=True, ondelete='restrict', tracking=71)
+        'crm.lost.reason', index=True, ondelete='restrict', tracking=71)
     # Statistics
     calendar_event_ids = fields.One2many('calendar.event', 'opportunity_id', string='Meetings')
     duplicate_lead_ids = fields.Many2many("crm.lead", compute="_compute_potential_lead_duplicates", string="Potential Duplicate Lead",
@@ -389,7 +385,7 @@ class CrmLead(models.Model):
     def _compute_name(self):
         for lead in self:
             if not lead.name and lead.partner_id and lead.partner_id.name:
-                lead.name = _("%s's opportunity") % lead.partner_id.name
+                lead.name = _("%s's opportunity", lead.partner_id.name)
 
     @api.depends('partner_id')
     def _compute_contact_name(self):

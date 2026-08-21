@@ -19,7 +19,7 @@ class HrRecruitmentSurveyInvite(models.TransientModel):
     _description = 'Wizard for sending interview invitations to job applicants during recruitment process'
 
     # Allow multiple applicants with different survey_ids
-    applicant_ids = fields.Many2many('hr.applicant', string='Applicant')
+    applicant_ids = fields.Many2many('hr.applicant')
     survey_ids = fields.Many2many('survey.survey', string='Surveys')
     single_survey_id = fields.Many2one('survey.survey', compute='_compute_single_survey', store=False)  # If all applicants associate with the same survey, otherwise False
     has_many_applicants = fields.Boolean(compute="_compute_has_many_applicants", store=False)
@@ -142,8 +142,7 @@ class HrRecruitmentSurveyInvite(models.TransientModel):
                 valid.extend(email_check)
         if error:
             raise UserError(self.env._(
-                "The following emails you just entered are invalid:\n%s"
-            ) % '\n'.join(error))
+                "The following emails you just entered are invalid:\n%s", '\n'.join(error)))
 
         self.emails = '\n'.join(valid)
 

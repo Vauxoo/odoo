@@ -4,7 +4,7 @@ from odoo.tests import TransactionCase
 from odoo.addons.populate import start_populate
 from odoo.addons.populate.generators import RelationMany, RelationOne
 from odoo.addons.populate.utils.orm import DynamicDomain, ValueTarget
-from odoo.addons.test_populate.tests.common import PopulateTestCase
+from ..common import PopulateTestCase
 
 
 class TestRelationOne(TransactionCase):

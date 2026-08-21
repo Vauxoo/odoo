@@ -2,11 +2,6 @@
 {
     'name': "Sales - Project",
     'summary': "Task Generation from Sales Orders",
-    'description': """
-Allows to create task from your sales order
-=============================================
-This module allows to generate a project/task from sales orders.
-""",
     'category': 'Sales/Sales',
     'depends': ['sale_management', 'sale_service', 'project_account'],
     'auto_install': ['sale_management', 'project_account'],

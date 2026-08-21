@@ -53,8 +53,7 @@ class MailActivityMixin(models.AbstractModel):
     activity_state = fields.Selection([
         ('overdue', 'Overdue'),
         ('today', 'Today'),
-        ('planned', 'Planned')], string='Activity State',
-        compute='_compute_activity_state',
+        ('planned', 'Planned')], compute='_compute_activity_state',
         compute_sql='_compute_sql_activity_state',
         compute_sudo=False,
         groups="base.group_user",
@@ -95,7 +94,6 @@ class MailActivityMixin(models.AbstractModel):
         compute='_compute_activity_exception_type')
     activity_plans_ids = fields.Many2many(
         'mail.activity.plan',
-        string="Activity Plans",
         compute='_compute_activity_plans_ids',
         search='_search_activity_plans_ids',
     )

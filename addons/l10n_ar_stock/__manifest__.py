@@ -1,6 +1,5 @@
 {
     'name': 'Argentinean - Stock',
-    'description': """Argentinean - Stock""",
     'category': 'Accounting/Localizations',
     'depends': ['l10n_ar', 'stock_account'],
     'data': [

@@ -12,7 +12,7 @@ class Test_UninstallModel(models.Model):
     _name = 'test_uninstall.model'
     _description = 'Testing Uninstall Model'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     ref = fields.Many2one('res.users', string='User')
     rel = fields.Many2many('res.users', string='Users')
 

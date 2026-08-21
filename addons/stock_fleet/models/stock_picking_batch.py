@@ -8,12 +8,11 @@ from odoo import fields, models, api
 class StockPickingBatch(models.Model):
     _inherit = 'stock.picking.batch'
 
-    vehicle_id = fields.Many2one('fleet.vehicle', string="Vehicle")
+    vehicle_id = fields.Many2one('fleet.vehicle')
     vehicle_category_id = fields.Many2one(
-        'fleet.vehicle.model.category', string="Vehicle Category",
-        compute='_compute_vehicle_category_id', store=True, readonly=False, index='btree_not_null')
+        'fleet.vehicle.model.category', compute='_compute_vehicle_category_id', store=True, readonly=False, index='btree_not_null')
     allowed_dock_ids = fields.Many2many(related='picking_type_id.dock_ids', string="Allowed Docks")
-    dock_id = fields.Many2one('stock.location', string="Dock", domain="[('id', 'child_of', allowed_dock_ids)]",
+    dock_id = fields.Many2one('stock.location', domain="[('id', 'child_of', allowed_dock_ids)]",
         compute='_compute_dock_id', store=True, readonly=False)
     vehicle_weight_capacity = fields.Float(string="Vehcilce Payload Capacity",
                               related='vehicle_category_id.weight_capacity')
@@ -22,12 +21,12 @@ class StockPickingBatch(models.Model):
                               related='vehicle_category_id.volume_capacity')
     volume_uom_name = fields.Char(string='Volume unit of measure label', compute='_compute_volume_uom_name')
     driver_id = fields.Many2one(
-        'res.partner', compute="_compute_driver_id", string="Driver", store=True, readonly=False)
+        'res.partner', compute="_compute_driver_id", store=True, readonly=False)
     used_weight_percentage = fields.Float(
         string="Weight %", compute='_compute_capacity_percentage')
     used_volume_percentage = fields.Float(
         string="Volume %", compute='_compute_capacity_percentage')
-    end_date = fields.Datetime('End Date', compute='_compute_end_date', store=True)
+    end_date = fields.Datetime(compute='_compute_end_date', store=True)
     has_dispatch_management = fields.Boolean(string="Dispatch Management", related='picking_type_id.dispatch_management')
 
     # Compute

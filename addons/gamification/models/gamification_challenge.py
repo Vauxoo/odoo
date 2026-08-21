@@ -10,7 +10,6 @@ from markupsafe import Markup
 from odoo import _, api, exceptions, fields, models
 from odoo.http.session import SESSION_LIFETIME
 
-_logger = logging.getLogger(__name__)
 
 # display top 3 in ranking, could be db variable
 MAX_VISIBILITY_RANKING = 3
@@ -74,13 +73,13 @@ class GamificationChallenge(models.Model):
 
     # description
     name = fields.Char("Challenge Name", required=True, translate=True)
-    description = fields.Text("Description", translate=True)
+    description = fields.Text(translate=True)
     state = fields.Selection([
             ('draft', "Draft"),
             ('inprogress', "In Progress"),
             ('done', "Done"),
         ], default='draft', copy=False,
-        string="State", required=True, tracking=True)
+        required=True, tracking=True)
     manager_id = fields.Many2one(
         'res.users', default=lambda self: self.env.uid,
         string="Responsible")
@@ -99,8 +98,8 @@ class GamificationChallenge(models.Model):
         string="Periodicity",
         help="Period of automatic goal assignment. If none is selected, should be launched manually.",
         required=True)
-    start_date = fields.Date("Start Date", help="The day a new challenge will be automatically started. If no periodicity is set, will use this date as the goal start date.")
-    end_date = fields.Date("End Date", help="The day a new challenge will be automatically closed. If no periodicity is set, will use this date as the goal end date.")
+    start_date = fields.Date(help="The day a new challenge will be automatically started. If no periodicity is set, will use this date as the goal start date.")
+    end_date = fields.Date(help="The day a new challenge will be automatically closed. If no periodicity is set, will use this date as the goal end date.")
 
     invited_user_ids = fields.Many2many('res.users', 'gamification_invited_user_ids_rel', string="Suggest to users")
 
@@ -132,10 +131,10 @@ class GamificationChallenge(models.Model):
         ], default='never',
         string="Report Frequency", required=True)
     report_message_group_id = fields.Many2one('discuss.channel', string="Send a copy to", help="Group that will receive a copy of the report in addition to the user")
-    report_template_id = fields.Many2one('mail.template', default=lambda self: self._get_report_template(), string="Report Template", required=True)
+    report_template_id = fields.Many2one('mail.template', default=lambda self: self._get_report_template(), required=True)
     remind_update_delay = fields.Integer("Non-updated manual goals will be reminded after", help="Never reminded if no value or zero is specified.")
-    last_report_date = fields.Date("Last Report Date", default=fields.Date.today)
-    next_report_date = fields.Date("Next Report Date", compute='_get_next_report_date', store=True)
+    last_report_date = fields.Date(default=fields.Date.today)
+    next_report_date = fields.Date(compute='_get_next_report_date', store=True)
 
     challenge_category = fields.Selection([
         ('hr', 'Human Resources / Engagement'),
@@ -221,7 +220,7 @@ class GamificationChallenge(models.Model):
         elif vals.get('state') == 'draft':
             # resetting progress
             if self.env['gamification.goal'].search_count([('challenge_id', 'in', self.ids), ('state', '=', 'inprogress')], limit=1):
-                raise exceptions.UserError(_("You can not reset a challenge with unfinished goals."))
+                raise exceptions.UserError(self.env._("You can not reset a challenge with unfinished goals."))
 
         return write_res
 
@@ -521,7 +520,7 @@ class GamificationChallenge(models.Model):
 
             if self.visibility_mode == 'personal':
                 if not user:
-                    raise exceptions.UserError(_("Retrieving progress for personal challenge without user information"))
+                    raise exceptions.UserError(self.env._("Retrieving progress for personal challenge without user information"))
 
                 domain.append(('user_id', '=', user.id))
 
@@ -640,7 +639,7 @@ class GamificationChallenge(models.Model):
     def accept_challenge(self):
         user = self.env.user
         sudoed = self.sudo()
-        sudoed.message_post(body=_("%s has joined the challenge", user.name))
+        sudoed.message_post(body=self.env._("%s has joined the challenge", user.name))
         sudoed.write({'invited_user_ids': [(3, user.id)], 'user_ids': [(4, user.id)]})
         return sudoed._generate_goals_from_challenge()
 
@@ -648,7 +647,7 @@ class GamificationChallenge(models.Model):
         """The user discard the suggested challenge"""
         user = self.env.user
         sudoed = self.sudo()
-        sudoed.message_post(body=_("%s has refused the challenge", user.name))
+        sudoed.message_post(body=self.env._("%s has refused the challenge", user.name))
         return sudoed.write({'invited_user_ids': (3, user.id)})
 
     def _check_challenge_reward(self, force=False):
@@ -695,16 +694,16 @@ class GamificationChallenge(models.Model):
 
             if challenge_ended:
                 # open chatter message
-                message_body = _("The challenge %s is finished.", challenge.name)
+                message_body = self.env._("The challenge %s is finished.", challenge.name)
 
                 if rewarded_users:
-                    message_body += Markup("<br/>") + _(
+                    message_body += Markup("<br/>") + self.env._(
                         "Reward (badge %(badge_name)s) for every succeeding user was sent to %(users)s.",
                         badge_name=challenge.reward_id.name,
                         users=", ".join(rewarded_users.mapped('display_name'))
                     )
                 else:
-                    message_body += Markup("<br/>") + _("Nobody has succeeded to reach every goal, no badge is rewarded for this challenge.")
+                    message_body += Markup("<br/>") + self.env._("Nobody has succeeded to reach every goal, no badge is rewarded for this challenge.")
 
                 # reward bests
                 reward_message = Markup("<br/> %(rank)d. %(user_name)s - %(reward_name)s")
@@ -712,14 +711,14 @@ class GamificationChallenge(models.Model):
                     (first_user, second_user, third_user) = challenge._get_topN_users(MAX_VISIBILITY_RANKING)
                     if first_user:
                         challenge._reward_user(first_user, challenge.reward_first_id)
-                        message_body += Markup("<br/>") + _("Special rewards were sent to the top competing users. The ranking for this challenge is:")
+                        message_body += Markup("<br/>") + self.env._("Special rewards were sent to the top competing users. The ranking for this challenge is:")
                         message_body += reward_message % {
                             'rank': 1,
                             'user_name': first_user.name,
                             'reward_name': challenge.reward_first_id.name,
                         }
                     else:
-                        message_body += _("Nobody reached the required conditions to receive special badges.")
+                        message_body += self.env._("Nobody reached the required conditions to receive special badges.")
 
                     if second_user and challenge.reward_second_id:
                         challenge._reward_user(second_user, challenge.reward_second_id)

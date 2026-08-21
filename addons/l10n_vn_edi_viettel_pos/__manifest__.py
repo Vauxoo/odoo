@@ -11,11 +11,6 @@
         "point_of_sale",
     ],
     "summary": "POS E-invoicing using SInvoice by Viettel",
-    "description": """
-Vietnam - POS E-invoicing
-=========================
-Using SInvoice by Viettel
-    """,
     'data': [
         "data/res_partner_data.xml",
         "views/res_config_settings_views.xml",

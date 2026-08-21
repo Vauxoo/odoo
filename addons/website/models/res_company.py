@@ -24,7 +24,7 @@ class ResCompany(models.Model):
         super()._check_active()
         for company in self:
             if not company.active and company.website_id:
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     'The company “%(company_name)s” cannot be archived because it has a linked website “%(website_name)s”.'
                     '\nChange that website\'s company first.',
                     company_name=company.name,

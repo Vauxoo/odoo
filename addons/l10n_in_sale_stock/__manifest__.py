@@ -5,13 +5,6 @@
 
     'summary': "Get warehouse address if the invoice is created from Sale Order",
 
-    'description': """
-Get the warehouse address if the invoice is created from the Sale Order
-In Indian EDI we send shipping address details if available
-
-So this module is to get the warehouse address if the invoice is created from Sale Order
-    """,
-
     'category': 'Accounting/Localizations/Sale',
 
     'depends': [

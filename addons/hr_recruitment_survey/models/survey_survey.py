@@ -8,7 +8,7 @@ class SurveySurvey(models.Model):
 
     survey_type = fields.Selection(selection_add=[('recruitment', 'Recruitment')], ondelete={'recruitment': 'set default'})
     hr_job_ids = fields.One2many("hr.job", "survey_id", string="Job Position")
-    job_count = fields.Integer("Job Count", compute='_compute_job_count')
+    job_count = fields.Integer(compute='_compute_job_count')
 
     @api.depends_context('uid')
     def _compute_allowed_survey_types(self):

@@ -17,13 +17,11 @@ class PosConfig(models.Model):
         'crm.team', string="Sales Team", ondelete="set null", index='btree_not_null',
         help="This Point of sale's sales will be related to this Sales Team.")
     down_payment_product_id = fields.Many2one('product.product',
-        string="Down Payment Product",
-        default=_get_default_down_payment_product,
+        default=lambda self: self._get_default_down_payment_product(),
         help="This product will be used as down payment on a sale order.")
     default_product_id = fields.Many2one(
         'product.product',
-        string="Default Product",
-        default=_get_default_sol_product,
+        default=lambda self: self._get_default_sol_product(),
         help="This product will be used as default product on productless SOLs."
     )
 

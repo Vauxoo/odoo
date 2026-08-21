@@ -131,7 +131,7 @@ class StockReplenishmentInfo(models.TransientModel):
             x_axis_vals = ['']
             curve_line_vals = [{'x': '', 'y': self.product_max_qty}]
             for i in range(1, 4):
-                date_string = _("In %s day(s)", int(i * ordering_period))
+                date_string = self.env._("In %s day(s)", int(i * ordering_period))
                 x_axis_vals.append(date_string)
                 curve_line_vals.append({'x': date_string, 'y': self.product_min_qty})
                 curve_line_vals.append({'x': date_string, 'y': self.product_max_qty})
@@ -224,14 +224,14 @@ class StockReplenishmentOption(models.TransientModel):
                 orderpoint.location_id, route_ids=record.route_id
             )
             delay = rules._get_lead_days(record.product_id, **orderpoint._get_lead_days_values())[0]['total_delay'] if rules else 0
-            record.lead_time = _("%s days", delay)
+            record.lead_time = self.env._("%s days", delay)
 
     @api.depends('warehouse_id', 'free_qty', 'uom', 'qty_to_order')
     def _compute_warning_message(self):
         self.warning_message = ''
         for record in self:
             if record.free_qty < record.qty_to_order:
-                record.warning_message = _(
+                record.warning_message = self.env._(
                     '%(warehouse)s can only provide %(free_qty)s %(uom)s, while the quantity to order is %(qty_to_order)s %(uom)s.',
                     warehouse=record.warehouse_id.name,
                     free_qty=record.free_qty,
@@ -247,7 +247,7 @@ class StockReplenishmentOption(models.TransientModel):
                 "res_id": self.id,
                 "views": [[self.env.ref('stock.replenishment_option_warning_view').id, "form"]],
                 "target": "new",
-                "name": _("Quantity available too low")
+                "name": self.env._("Quantity available too low")
             }
         return self.order_all()
 

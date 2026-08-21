@@ -8,13 +8,6 @@
         'account',
     ],
     'auto_install': ['account'],
-    'description': """
-    Tanzanian localisation containing:
-    - COA
-    - Taxes
-    - Tax report
-    - Fiscal position
-    """,
     'data': [
         'data/l10n_tz_chart_data.xml',
         'data/account_tax_report_data.xml',

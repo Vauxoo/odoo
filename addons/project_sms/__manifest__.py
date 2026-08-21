@@ -3,7 +3,6 @@
 {
     'name': "Project - SMS",
     'summary': 'Send text messages when project/task stage move',
-    'description': "Send text messages when project/task stage move",
     'category': 'Services/Project',
     'version': '1.1',
     'depends': ['project', 'sms'],

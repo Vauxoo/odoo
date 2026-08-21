@@ -46,7 +46,6 @@ class IrActionsServer(models.Model):
             - Specific Followers: select specific contacts to add/remove from record's followers.
             - Dynamic Followers: all contacts of the chosen record's field will be added/removed from followers.
         """,
-        string='Followers Type',
         compute='_compute_followers_type',
         readonly=False, store=True
     )
@@ -82,8 +81,7 @@ class IrActionsServer(models.Model):
     # Next Activity: plan-based
     has_activity_plans = fields.Boolean(compute='_compute_has_activity_plans')
     activity_plan_id = fields.Many2one(
-        'mail.activity.plan', string='Activity Plan',
-        domain="['|', ('res_model', '=', False), ('res_model', '=', model_name)]",
+        'mail.activity.plan', domain="['|', ('res_model', '=', False), ('res_model', '=', model_name)]",
         compute='_compute_activity_plan_id', readonly=False, store=True)
     activity_plan_has_user_on_demand = fields.Boolean(related="activity_plan_id.has_user_on_demand")
     # Next Activity: activity-based
@@ -128,18 +126,18 @@ class IrActionsServer(models.Model):
     def _generate_action_name(self):
         self.ensure_one()
         if self.state == 'mail_post' and self.template_id:
-            return _('Send %(template_name)s', template_name=self.template_id.name)
+            return self.env._('Send %(template_name)s', template_name=self.template_id.name)
         if self.state == 'next_activity' and self.activity_type_id:
-            return _('Create %(activity_name)s', activity_name=self.activity_type_id.name)
+            return self.env._('Create %(activity_name)s', activity_name=self.activity_type_id.name)
         if self.state == 'next_activity' and self.activity_plan_id:
-            return _('Plan activities: %(activity_plan_name)s', activity_plan_name=self.activity_plan_id.name)
+            return self.env._('Plan activities: %(activity_plan_name)s', activity_plan_name=self.activity_plan_id.name)
         return super()._generate_action_name()
 
     @api.constrains('activity_plan_id', 'activity_type_id')
     def _check_activity_plan_and_type(self):
         for action in self.filtered(lambda act: act.state == 'next_activity'):
             if action.activity_plan_id and action.activity_type_id:
-                raise models.ValidationError(_("You cannot set both an activity type and an activity plan on a server action."))
+                raise models.ValidationError(self.env._("You cannot set both an activity type and an activity plan on a server action."))
 
     @api.depends('state')
     def _compute_available_model_ids(self):
@@ -150,7 +148,7 @@ class IrActionsServer(models.Model):
             mail_models = self.env['ir.model'].search([('is_mail_thread', '=', True), ('transient', '=', False)])
             for action in mail_thread_based:
                 action.available_model_ids = mail_models.ids
-        super(IrActionsServer, self - mail_thread_based)._compute_available_model_ids()
+        return super(IrActionsServer, self - mail_thread_based)._compute_available_model_ids()
 
     @api.depends('model_id', 'state')
     def _compute_template_id(self):
@@ -296,28 +294,28 @@ class IrActionsServer(models.Model):
         warnings = super()._get_warning_messages()
 
         if self.activity_date_deadline_range < 0:
-            warnings.append(_("The 'Due In' value can't be negative."))
+            warnings.append(self.env._("The 'Due In' value can't be negative."))
 
         if self.state == 'mail_post' and self.template_id and self.template_id.model_id != self.model_id:
-            warnings.append(_("Mail template model of $(action_name)s does not match action model.", action_name=self.name))
+            warnings.append(self.env._("Mail template model of $(action_name)s does not match action model.", action_name=self.name))
 
         if self.state in {'mail_post', 'followers', 'remove_followers', 'next_activity'} and self.model_id.transient:
-            warnings.append(_("This action cannot be done on transient models."))
+            warnings.append(self.env._("This action cannot be done on transient models."))
 
         if (
             (self.state in {"followers", "remove_followers"}
             or (self.state == "mail_post" and self.mail_post_method != "email"))
             and not self.model_id.is_mail_thread
         ):
-            warnings.append(_("This action can only be done on a mail thread models"))
+            warnings.append(self.env._("This action can only be done on a mail thread models"))
 
         if self.state == 'next_activity' and not self.model_id.is_mail_activity:
-            warnings.append(_("A next activity can only be planned on models that use activities."))
+            warnings.append(self.env._("A next activity can only be planned on models that use activities."))
 
         if self.state in ('followers', 'remove_followers') and self.followers_type == 'generic' and self.followers_partner_field_name:
             fields, field_chain_str, _property = self._get_relation_chain("followers_partner_field_name")
             if fields and (not fields[-1].relational or fields[-1].comodel_name != "res.partner"):
-                warnings.append(_(
+                warnings.append(self.env._(
                     "The field '%(field_chain_str)s' is not a partner field.",
                     field_chain_str=field_chain_str,
                 ))
@@ -325,7 +323,7 @@ class IrActionsServer(models.Model):
         if self.state == 'next_activity' and self.activity_user_type == 'generic' and self.activity_user_field_name:
             fields, field_chain_str, _property = self._get_relation_chain("activity_user_field_name")
             if fields and (not fields[-1].relational or fields[-1].comodel_name != "res.users"):
-                warnings.append(_(
+                warnings.append(self.env._(
                     "The field '%(field_chain_str)s' is not a user field.",
                     field_chain_str=field_chain_str,
                 ))

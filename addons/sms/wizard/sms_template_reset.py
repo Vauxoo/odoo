@@ -23,7 +23,7 @@ class SmsTemplateReset(models.TransientModel):
             'tag': 'display_notification',
             'params': {
                 'type': 'success',
-                'message': _('SMS Templates have been reset'),
+                'message': self.env._('SMS Templates have been reset'),
                 'next': next_action,
             }
         }

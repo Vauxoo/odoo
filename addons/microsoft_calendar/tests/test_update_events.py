@@ -17,7 +17,6 @@ from odoo.tests import tagged
 
 from odoo.exceptions import UserError, ValidationError
 
-_logger = logging.getLogger(__name__)
 
 
 @patch.object(ResUsers, '_get_microsoft_calendar_token', mock_get_token)

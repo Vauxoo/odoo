@@ -7,7 +7,7 @@ from urllib.parse import quote_plus
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.payment_ecpay import const
+from .. import const
 
 
 class PaymentProvider(models.Model):

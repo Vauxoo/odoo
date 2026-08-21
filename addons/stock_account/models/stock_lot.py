@@ -8,7 +8,7 @@ class StockLot(models.Model):
 
     lot_valuated = fields.Boolean(related='product_id.lot_valuated', readonly=True, store=False)
     avg_cost = fields.Monetary(string="Average Cost", compute='_compute_value', compute_sudo=True, readonly=True, currency_field='company_currency_id')
-    total_value = fields.Monetary(string="Total Value", compute='_compute_value', compute_sudo=True, currency_field='company_currency_id')
+    total_value = fields.Monetary(compute='_compute_value', compute_sudo=True, currency_field='company_currency_id')
     company_currency_id = fields.Many2one('res.currency', 'Valuation Currency', compute='_compute_value', compute_sudo=True)
     standard_price = fields.Float(
         "Cost", company_dependent=True,
@@ -95,7 +95,7 @@ class StockLot(models.Model):
                 'value': lot.standard_price,
                 'company_id': product.company_id.id or self.env.company.id,
                 'date': fields.Datetime.now(),
-                'description': _('%(lot)s price update from %(old_price)s to %(new_price)s by %(user)s',
+                'description': self.env._('%(lot)s price update from %(old_price)s to %(new_price)s by %(user)s',
                     lot=lot.name, old_price=old_price, new_price=lot.standard_price, user=self.env.user.name)
             })
         self.env['product.value'].sudo().create(product_values)

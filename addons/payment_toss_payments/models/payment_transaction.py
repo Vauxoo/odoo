@@ -5,7 +5,7 @@ from odoo.tools.urls import urljoin
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_toss_payments import const
+from .. import const
 
 _logger = get_payment_logger(__name__, const.SENSITIVE_KEYS)
 
@@ -14,7 +14,7 @@ class PaymentTransaction(models.Model):
     _inherit = "payment.transaction"
 
     toss_payments_payment_secret = fields.Char(
-        string="Toss Payments Payment Secret", groups="base.group_system"
+        groups="base.group_system"
     )
 
     @api.model

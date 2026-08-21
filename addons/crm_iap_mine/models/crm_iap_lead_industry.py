@@ -22,7 +22,7 @@ class CrmIapLeadIndustry(models.Model):
         help="SIC Division code to which Major Group belongs.",
     )
     color = fields.Integer(string='Color Index')
-    sequence = fields.Integer('Sequence')
+    sequence = fields.Integer()
 
     _name_uniq = models.Constraint(
         'unique (name)',

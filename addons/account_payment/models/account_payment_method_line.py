@@ -66,7 +66,7 @@ class AccountPaymentMethodLine(models.Model):
         if active_providers := self.payment_provider_id.filtered(
             lambda p: p.module_state != "to remove"
         ):
-            raise UserError(_(
+            raise UserError(self.env._(
                 "You can't delete a payment method that is linked to an installed provider."
                 "\nLinked providers(s): %s",
                 ', '.join(a.display_name for a in active_providers),
@@ -76,7 +76,7 @@ class AccountPaymentMethodLine(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Provider'),
+            'name': self.env._('Provider'),
             'view_mode': 'form',
             'res_model': 'payment.provider',
             'target': 'current',

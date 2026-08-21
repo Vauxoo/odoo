@@ -6,13 +6,13 @@ class EventTypeTicket(models.Model):
     _description = 'Event Template Ticket'
     _order = 'sequence, name, id'
 
-    sequence = fields.Integer('Sequence', default=10)
+    sequence = fields.Integer(default=10)
     # description
     name = fields.Char(
-        string='Name', default=lambda self: _('Registration'),
+        default=lambda self: _('Registration'),
         required=True, translate=True)
     description = fields.Text(
-        'Description', translate=True,
+        translate=True,
         help="A description of the ticket that you want to communicate to your customers.")
     event_type_id = fields.Many2one(
         'event.type', string='Event Category', ondelete='cascade', required=True)

@@ -33,7 +33,7 @@ class IrAttachment(models.Model):
         for attachment in audit_trail_attachments:
             move = id2move.get(attachment.res_id)
             if move and move.posted_before and move.company_id.restrictive_audit_trail:
-                ue = UserError(_("You cannot remove parts of a restricted audit trail."))
+                ue = UserError(self.env._("You cannot remove parts of a restricted audit trail."))
                 ue._audit_trail = True
                 raise ue
 
@@ -71,7 +71,7 @@ class IrAttachment(models.Model):
                 if dot_index > 0:
                     attachment_name = attachment.name[:dot_index]
                     attachment_extension = attachment.name[dot_index:]
-                attachment.name = _(
+                attachment.name = self.env._(
                     '%(attachment_name)s (detached by %(user)s on %(date)s)%(attachment_extension)s',
                     attachment_name=attachment_name,
                     attachment_extension=attachment_extension,
@@ -86,4 +86,4 @@ class IrAttachment(models.Model):
             files_data = move._to_files_data(attachments)
             files_data.extend(move._unwrap_attachments(files_data))
             move._extend_with_attachments(files_data)
-        super()._post_add_create(**kwargs)
+        return super()._post_add_create(**kwargs)

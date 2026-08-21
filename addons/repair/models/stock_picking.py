@@ -104,7 +104,7 @@ class StockPickingType(models.Model):
                 continue
             stock_location = picking_type.warehouse_id.lot_stock_id
             picking_type.default_location_src_id = stock_location.id
-        super(StockPickingType, remaining_picking_type)._compute_default_location_src_id()
+        return super(StockPickingType, remaining_picking_type)._compute_default_location_src_id()
 
     def _compute_default_location_dest_id(self):
         repair_picking_type = self.filtered(lambda pt: pt.code == 'repair_operation')
@@ -116,7 +116,7 @@ class StockPickingType(models.Model):
         prod_locations = {l[0].id: l[1] for l in prod_locations}
         for picking_type in repair_picking_type:
             picking_type.default_location_dest_id = prod_locations.get(picking_type.company_id.id)
-        super(StockPickingType, (self - repair_picking_type))._compute_default_location_dest_id()
+        return super(StockPickingType, (self - repair_picking_type))._compute_default_location_dest_id()
 
     @api.depends('code')
     def _compute_default_product_location_id(self):
@@ -187,7 +187,7 @@ class StockPicking(models.Model):
             'default_partner_id': self.partner_id and self.partner_id.id or False,
         })
         return {
-            'name': _('Create Repair'),
+            'name': self.env._('Create Repair'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'repair.order',
@@ -208,7 +208,7 @@ class StockPicking(models.Model):
                 })
             else:
                 action.update({
-                    'name': _('Repair Orders'),
+                    'name': self.env._('Repair Orders'),
                     'view_mode': 'list,form',
                     'domain': [('id', 'in', self.repair_ids.ids)],
                 })

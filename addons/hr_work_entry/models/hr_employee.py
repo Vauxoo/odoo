@@ -6,7 +6,7 @@ from odoo import models, fields
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    external_code = fields.Char("External Code", copy=False, help="Use this code to export your data to a third party", groups="hr.group_hr_user")
+    external_code = fields.Char(copy=False, help="Use this code to export your data to a third party", groups="hr.group_hr_user")
 
     # YTI TODO: Rename private method into _get_work_entries_vals()
     # Public method probably to drop

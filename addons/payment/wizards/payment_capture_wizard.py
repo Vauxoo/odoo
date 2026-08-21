@@ -15,7 +15,7 @@ class PaymentCaptureWizard(models.TransientModel):
         readonly=True,
     )
     authorized_amount = fields.Monetary(
-        string="Authorized Amount", compute="_compute_authorized_amount"
+        compute="_compute_authorized_amount"
     )
     captured_amount = fields.Monetary(string="Already Captured", compute="_compute_captured_amount")
     voided_amount = fields.Monetary(string="Already Voided", compute="_compute_voided_amount")

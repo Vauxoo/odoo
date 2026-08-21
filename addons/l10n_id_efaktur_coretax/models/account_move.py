@@ -238,35 +238,35 @@ class AccountMove(models.Model):
 
             # Multiple tax groups check
             if len(ppn_tax_groups) > 1:
-                err_messages.append(_("Invoice %s: can only have one PPN tax group (excluding STLG).", move.name or ''))
+                err_messages.append(self.env._("Invoice %s: can only have one PPN tax group (excluding STLG).", move.name or ''))
             if len(stlg_tax_groups) > 1:
-                err_messages.append(_("Invoice %s: can only have one STLG group.", move.name or ''))
+                err_messages.append(self.env._("Invoice %s: can only have one STLG group.", move.name or ''))
             if not (ppn_tax_groups or stlg_tax_groups):
-                err_messages.append(_("Invoice %s: need to have at least one PPN or STLG tax group.", move.name or ''))
+                err_messages.append(self.env._("Invoice %s: need to have at least one PPN or STLG tax group.", move.name or ''))
 
             # Allowed codes (01-06, 09, 10)
             if kode in allowed_codes:
                 for line in product_lines:
                     line_tax_groups = set(line.tax_ids.mapped('tax_group_id'))
                     if luxury_group and non_luxury_group and {luxury_group, non_luxury_group}.issubset(line_tax_groups):
-                        err_messages.append(_(
+                        err_messages.append(self.env._(
                             "Invoice %(inv)s: line '%(line)s' contains both Luxury-Goods and Non-Luxury-Goods taxes.",
                             inv=move.name or '', line=line.product_id.display_name or '')
                         )
                     if non_luxury_group and stlg_group and {non_luxury_group, stlg_group}.issubset(line_tax_groups):
-                        err_messages.append(_(
+                        err_messages.append(self.env._(
                             "Invoice %(inv)s: line '%(line)s' contains both Non-Luxury-Goods and STLG taxes.",
                             inv=move.name or '', line=line.product_id.display_name or '')
                         )
                     if stlg_group and stlg_group in line_tax_groups:
                         if not (luxury_group and luxury_group in line_tax_groups):
-                            err_messages.append(_(
+                            err_messages.append(self.env._(
                                 "Invoice %(inv)s: line '%(line)s' has STLG tax but missing the required Luxury-Goods tax.",
                                 inv=move.name or '', line=line.product_id.display_name or '')
                             )
                     for tax in line.tax_ids:
                         if ((hasattr(tax, 'amount') and float(tax.amount) == 0.0) or (tax.tax_group_id in {zero_group, exempt_group})):
-                            err_messages.append(_(
+                            err_messages.append(self.env._(
                                 "Invoice %(inv)s: transaction code %(kode)s does not allow 0%% (Zero-rated or Exempt) taxes.",
                                 inv=move.name or '', kode=kode)
                             )
@@ -276,7 +276,7 @@ class AccountMove(models.Model):
                 for line in product_lines:
                     for tax in line.tax_ids:
                         if hasattr(tax, 'amount') and float(tax.amount) != 0.0:
-                            err_messages.append(_(
+                            err_messages.append(self.env._(
                                 "Invoice %(inv)s: transaction code %(kode)s must always have tax amount 0%%.",
                                 inv=move.name or '', kode=kode)
                             )
@@ -293,45 +293,45 @@ class AccountMove(models.Model):
         # Should prevent users from generating e-Faktur document on invoices across multi-company.
         # Allowing it will cause issues on the invoice/eFaktur document record rule
         if len(self.company_id) > 1:
-            raise UserError(_("You are not allowed to generate e-Faktur document from invoices coming from different companies"))
+            raise UserError(self.env._("You are not allowed to generate e-Faktur document from invoices coming from different companies"))
 
         err_messages = []
 
         if not self.company_id.vat:
-            err_messages.append(_("Your company's VAT hasn't been configured yet"))
+            err_messages.append(self.env._("Your company's VAT hasn't been configured yet"))
 
         # check for every customer
         for partner in self.partner_id:
             comm = partner.commercial_partner_id
             if comm.l10n_id_buyer_document_type != 'TIN' and not comm.l10n_id_buyer_document_number:
-                err_messages.append(_("Document number for customer %s hasn't been filled in", comm.name))
+                err_messages.append(self.env._("Document number for customer %s hasn't been filled in", comm.name))
             if not comm.vat:
-                err_messages.append(_("NPWP for customer %s hasn't been filled in yet", comm.name))
+                err_messages.append(self.env._("NPWP for customer %s hasn't been filled in yet", comm.name))
             if not comm.country_id:
-                err_messages.append(_("No country is set for customer %s", comm.name))
+                err_messages.append(self.env._("No country is set for customer %s", comm.name))
 
         # check for every invoice
         for record in self:
             if record.state == 'draft':
-                err_messages.append(_('Invoice %s is in draft state', record.name))
+                err_messages.append(self.env._('Invoice %s is in draft state', record.name))
             if not record.country_code == 'ID':
-                err_messages.append(_("Invoice %s is not under Indonesian company", record.name))
+                err_messages.append(self.env._("Invoice %s is not under Indonesian company", record.name))
             if not record.move_type == 'out_invoice':
-                err_messages.append(_("Entry %s is not an invoice", record.name))
+                err_messages.append(self.env._("Entry %s is not an invoice", record.name))
             if not record.line_ids.tax_ids:
-                err_messages.append(_("Invoice %s does not contain any taxes", record.name))
+                err_messages.append(self.env._("Invoice %s does not contain any taxes", record.name))
             if record.l10n_id_kode_transaksi == "07":
                 if not (record.l10n_id_coretax_add_info_07 and record.l10n_id_coretax_facility_info_07):
-                    err_messages.append(_("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 07)", record.name))
+                    err_messages.append(self.env._("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 07)", record.name))
             if record.l10n_id_kode_transaksi == "08":
                 if not (record.l10n_id_coretax_add_info_08 and record.l10n_id_coretax_facility_info_08):
-                    err_messages.append(_("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 08)", record.name))
+                    err_messages.append(self.env._("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 08)", record.name))
             if record.invoice_line_ids._get_downpayment_lines():
-                err_messages.append(_("Coretax e-Faktur does not support XML uploads for transactions involving down payments. Please enter these transactions manually into the Coretax system"))
+                err_messages.append(self.env._("Coretax e-Faktur does not support XML uploads for transactions involving down payments. Please enter these transactions manually into the Coretax system"))
             if record.invoice_line_ids.filtered(lambda line: line.tax_ids and line._l10n_id_coretax_is_negative_line()):
                 _base_lines, remaining_negative_base_lines = record._l10n_id_coretax_dispatch_negative_lines()
                 if remaining_negative_base_lines:
-                    err_messages.append(_(
+                    err_messages.append(self.env._(
                         "Invoice %s contains a negative line that could not be distributed over the other lines, "
                         "because no other line carries the same taxes or because it exceeds their total. Please "
                         "align the taxes or enter this transaction manually into the Coretax system",
@@ -342,7 +342,7 @@ class AccountMove(models.Model):
         err_messages.extend(self._validate_tax_groups())
 
         if err_messages:
-            err_messages = [_('Unable to download E-faktur for the following reason(s):')] + err_messages
+            err_messages = [self.env._('Unable to download E-faktur for the following reason(s):')] + err_messages
             raise ValidationError('\n - '.join(err_messages))
 
         # All invoices in self have no documents; we can create a new one for them.
@@ -358,16 +358,16 @@ class AccountMove(models.Model):
         # They could get a file with additional invoices for example. In this case, we redirect them to the document view to make it clearer.
         elif len(self.l10n_id_coretax_document) > 1 or set(self.l10n_id_coretax_document.invoice_ids.ids) != set(self.ids):
             action_error = {
-                'name': _('Document Mismatch'),
+                'name': self.env._('Document Mismatch'),
                 'view_mode': 'list',
                 'res_model': 'l10n_id_efaktur_coretax.document',
                 'type': 'ir.actions.act_window',
                 'views': [[False, 'list'], [False, 'form']],
                 'domain': [('id', 'in', self.l10n_id_coretax_document.ids)],
             }
-            msg = _("The selected invoices are partially part of one or more e-faktur documents.\n"
+            msg = self.env._("The selected invoices are partially part of one or more e-faktur documents.\n"
                     "Please download them from the e-faktur documents directly.")
-            raise RedirectWarning(msg, action_error, _("Display Related Documents"))
+            raise RedirectWarning(msg, action_error, self.env._("Display Related Documents"))
 
         return self.download_xml()
 

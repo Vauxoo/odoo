@@ -4,7 +4,6 @@
     'name': 'Website Events CRM',
     'category': 'Website/Website',
     'website': 'https://www.odoo.com/app/events',
-    'description': "Allow per-order lead creation mode",
     'depends': ['event_crm', 'website_event'],
     'data': [
         'views/event_lead_rule_views.xml',

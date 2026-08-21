@@ -4,7 +4,6 @@
     'name': 'Event CRM',
     'category': 'Marketing/Events',
     'website': 'https://www.odoo.com/app/events',
-    'description': "Create leads from event registrations.",
     'depends': ['event', 'crm'],
     'data': [
         'data/crm_lead_merge_template.xml',

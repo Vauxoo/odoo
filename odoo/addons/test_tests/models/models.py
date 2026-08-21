@@ -120,7 +120,7 @@ class Test_Testing_UtilitiesF(models.Model):
 
     m2m = fields.Many2many(
         'test_testing_utilities.sub2',
-        default=_get_some,
+        default=lambda self: self._get_some(),
     )
     m2o = fields.Many2one('test_testing_utilities.sub2')
 

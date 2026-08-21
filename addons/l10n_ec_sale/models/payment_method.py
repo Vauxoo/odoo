@@ -17,7 +17,7 @@ class PaymentMethod(models.Model):
         readonly=False,
     )
 
-    fiscal_country_codes = fields.Char(store=False, default=_get_fiscal_country_codes)
+    fiscal_country_codes = fields.Char(store=False, default=lambda self: self._get_fiscal_country_codes())
 
     @api.depends('code')
     def _compute_l10n_ec_sri_payment_id(self):

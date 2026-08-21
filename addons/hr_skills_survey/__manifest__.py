@@ -4,13 +4,6 @@
     'name': 'Skills Certification',
     'category': 'Human Resources/Employees',
     'summary': 'Add certification to resume of your employees',
-    'description':
-        """
-Certification and Skills for HR
-===============================
-
-This module adds certification to resume for employees.
-        """,
     'depends': ['hr_skills', 'survey'],
     'data': [
         'data/hr_resume_data.xml',

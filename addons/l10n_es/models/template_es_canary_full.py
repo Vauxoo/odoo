@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('es_canary_full')
     def _get_es_canary_full_template_data(self):
         return {
-            'name': _('Canary Islands - Complete (2008)'),
+            'name': self.env._('Canary Islands - Complete (2008)'),
             'parent': 'es_canary_common',
         }
 

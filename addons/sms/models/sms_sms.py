@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from uuid import uuid4
 
 from odoo import api, fields, models, tools, _
-from odoo.addons.sms.tools.sms_api import SmsApi
+from ..tools.sms_api import SmsApi
 from odoo.fields import Domain
 from odoo.tools.urls import urljoin as url_join
 
@@ -40,7 +40,7 @@ class SmsSms(models.Model):
 
     uuid = fields.Char('UUID', copy=False, readonly=True, default=lambda self: uuid4().hex,
                        help='Alternate way to identify a SMS record, used for delivery reports')
-    number = fields.Char('Number')
+    number = fields.Char()
     body = fields.Text()
     partner_id = fields.Many2one('res.partner', 'Customer')
     mail_message_id = fields.Many2one('mail.message', index=True)
@@ -129,20 +129,20 @@ class SmsSms(models.Model):
     def resend_failed(self):
         sms_to_send = self.filtered(lambda sms: sms.state == 'error' and not sms.to_delete)
         sms_to_send.state = 'outgoing'
-        notification_title = _('Warning')
+        notification_title = self.env._('Warning')
         notification_type = 'danger'
 
         if sms_to_send:
             sms_to_send.send()
             success_sms = len(sms_to_send) - len(sms_to_send.exists())
             if success_sms > 0:
-                notification_title = _('Success')
+                notification_title = self.env._('Success')
                 notification_type = 'success'
-                notification_message = _('%(count)s out of the %(total)s selected SMS Text Messages have successfully been resent.', count=success_sms, total=len(self))
+                notification_message = self.env._('%(count)s out of the %(total)s selected SMS Text Messages have successfully been resent.', count=success_sms, total=len(self))
             else:
-                notification_message = _('The SMS Text Messages could not be resent.')
+                notification_message = self.env._('The SMS Text Messages could not be resent.')
         else:
-            notification_message = _('There are no SMS Text Messages to resend.')
+            notification_message = self.env._('There are no SMS Text Messages to resend.')
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -241,7 +241,7 @@ class SmsSms(models.Model):
             if result["state"] == "insufficient_credit":
                 self.env["iap.account"]._send_no_credit_notification(
                     service_name="sms",
-                    title=_("Not enough credits to send SMS"),
+                    title=self.env._("Not enough credits to send SMS"),
                 )
         pass
 

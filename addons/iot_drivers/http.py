@@ -2,7 +2,7 @@
 
 import odoo.http.router
 
-from odoo.addons.iot_drivers.tools.system import IS_TEST
+from .tools.system import IS_TEST
 
 if not IS_TEST:
     # Test IoT system is expected to handle Odoo database unlike "real" IoT systems.

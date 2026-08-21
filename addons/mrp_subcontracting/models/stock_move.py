@@ -110,7 +110,7 @@ class StockMove(models.Model):
         }
         if len(productions) > 1:
             action.update({
-                'name': _('Subcontracting MOs'),
+                'name': self.env._('Subcontracting MOs'),
                 'views': [
                     (self.env.ref('mrp_subcontracting.mrp_production_subcontracting_tree_view').id, 'list'),
                     (form_view_id.id, 'form'),
@@ -215,7 +215,7 @@ class StockMove(models.Model):
     def _check_access_if_subcontractor(self, vals):
         if self.env.user._is_portal() and not self.env.su:
             if vals.get('state') == 'done' or self.env.context.get('default_state') == 'done':
-                raise AccessError(_("Portal users cannot create a stock move with a state 'Done' or change the current state to 'Done'."))
+                raise AccessError(self.env._("Portal users cannot create a stock move with a state 'Done' or change the current state to 'Done'."))
 
     def _is_subcontract_return(self):
         self.ensure_one()

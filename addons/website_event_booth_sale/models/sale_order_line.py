@@ -11,4 +11,4 @@ class SaleOrderLine(models.Model):
         wbooth = self.filtered(lambda line: line.event_booth_pending_ids)
         for record in wbooth:
             record.name_short = record.event_booth_pending_ids.event_id.name
-        super(SaleOrderLine, self - wbooth)._compute_name_short()
+        return super(SaleOrderLine, self - wbooth)._compute_name_short()

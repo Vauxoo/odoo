@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, Command
 from odoo.tools.misc import formatLang
 from odoo.exceptions import UserError, ValidationError
-from odoo.addons.account.models.chart_template import template
+from ..models.chart_template import template
 from odoo.tools import BinaryBytes, file_open
 
 

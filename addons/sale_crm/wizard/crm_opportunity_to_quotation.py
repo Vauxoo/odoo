@@ -15,7 +15,7 @@ class CrmQuotationPartner(models.TransientModel):
 
         active_model = self.env.context.get('active_model')
         if active_model != 'crm.lead':
-            raise UserError(_('You can only apply this action from a lead.'))
+            raise UserError(self.env._('You can only apply this action from a lead.'))
 
         lead = False
         if result.get('lead_id'):

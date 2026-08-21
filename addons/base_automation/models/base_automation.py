@@ -115,9 +115,9 @@ class BaseAutomation(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string="Automation Rule Name", required=True, translate=True, tracking=True)
-    description = fields.Html(string="Description")
+    description = fields.Html()
     model_id = fields.Many2one(
-        "ir.model", string="Model", domain=[("abstract", "=", False)], required=True, ondelete="cascade", tracking=True
+        "ir.model", domain=[("abstract", "=", False)], required=True, ondelete="cascade", tracking=True
     )
     model_name = fields.Char(related="model_id.model", string="Model Name", readonly=True, inverse="_inverse_model_name")
     model_is_mail_thread = fields.Boolean(related="model_id.is_mail_thread")
@@ -139,7 +139,7 @@ class BaseAutomation(models.Model):
     def _check_trigger(self):
         for automation in self:
             if automation.trigger in MAIL_TRIGGERS and not automation.model_id.is_mail_thread:
-                raise exceptions.ValidationError(_("Mail event can not be configured on model %s. Only models with discussion feature can be used.", automation.model_id.name))
+                raise exceptions.ValidationError(self.env._("Mail event can not be configured on model %s. Only models with discussion feature can be used.", automation.model_id.name))
 
     trigger = fields.Selection(
         [
@@ -165,8 +165,7 @@ class BaseAutomation(models.Model):
             ("on_message_sent", "On outgoing message"),
 
             ('on_webhook', "On webhook"),
-        ], string='Trigger',
-        compute='_compute_trigger', readonly=False, store=True, required=True, tracking=True)
+        ], compute='_compute_trigger', readonly=False, store=True, required=True, tracking=True)
     trg_selection_field_id = fields.Many2one(
         'ir.model.fields.selection',
         string='Trigger Field',
@@ -247,7 +246,7 @@ class BaseAutomation(models.Model):
             )
             if failing_actions:
                 raise exceptions.ValidationError(
-                    _('Target model of actions %(action_names)s are different from rule model.',
+                    self.env._('Target model of actions %(action_names)s are different from rule model.',
                       action_names=', '.join(failing_actions.mapped('name'))
                      )
                 )
@@ -268,7 +267,7 @@ class BaseAutomation(models.Model):
     def _check_time_trigger(self):
         for record in self:
             if record.trigger in TIME_TRIGGERS and record.trg_date_range < 0:
-                raise exceptions.ValidationError(_("Delay must be positive. Set 'Delay mode' to 'Before' to negate the delay."))
+                raise exceptions.ValidationError(self.env._("Delay must be positive. Set 'Delay mode' to 'Before' to negate the delay."))
 
     @api.constrains('trigger', 'action_server_ids')
     def _check_trigger_state(self):
@@ -276,19 +275,19 @@ class BaseAutomation(models.Model):
             warning_actions = record.action_server_ids.filtered('warning')
             if warning_actions:
                 raise exceptions.ValidationError(
-                    _("Following child actions have warnings: %(children)s", children=', '.join(warning_actions.mapped('name')))
+                    self.env._("Following child actions have warnings: %(children)s", children=', '.join(warning_actions.mapped('name')))
                 )
             no_code_actions = record.action_server_ids.filtered(lambda a: a.state != 'code')
             if record.trigger == 'on_change' and no_code_actions:
                 raise exceptions.ValidationError(
-                    _('"On live update" automation rules can only be used with "Execute Python Code" action type.')
+                    self.env._('"On live update" automation rules can only be used with "Execute Python Code" action type.')
                 )
             mail_actions = record.action_server_ids.filtered(
                 lambda a: a.state in ['mail_post', 'followers', 'next_activity']
             )
             if record.trigger == 'on_unlink' and mail_actions:
                 raise exceptions.ValidationError(
-                    _('Email, follower or activity action types cannot be used when deleting records, '
+                    self.env._('Email, follower or activity action types cannot be used when deleting records, '
                       'as there are no more records to apply these changes to!')
                 )
 
@@ -435,8 +434,8 @@ class BaseAutomation(models.Model):
             trigger_field = self._fields['trigger']
             action_states = dict(self.action_server_ids._fields['state']._description_selection(self.env))
             return {'warning': {
-                'title': _("Warning"),
-                'message': _(
+                'title': self.env._("Warning"),
+                'message': self.env._(
                     "The \"%(trigger_value)s\" %(trigger_label)s can only be "
                     "used with the \"%(state_value)s\" action type",
                     trigger_value=dict(trigger_field._description_selection(self.env))['on_change'],
@@ -448,8 +447,8 @@ class BaseAutomation(models.Model):
         mail_actions = self.action_server_ids.filtered(lambda a: a.state in MAIL_STATES)
         if self.trigger == 'on_unlink' and len(mail_actions) > 0:
             return {'warning': {
-                'title': _("Warning"),
-                'message': _(
+                'title': self.env._("Warning"),
+                'message': self.env._(
                     "You cannot send an email, add followers or create an activity "
                     "for a deleted record.  It simply does not work."
                 ),
@@ -506,11 +505,11 @@ class BaseAutomation(models.Model):
     def action_open_scheduled_action(self):
         cron = self.env.ref('base_automation.ir_cron_data_base_automation_check', raise_if_not_found=False)
         if not cron:
-            message = _("The scheduled action for Automation Rules seems to have vanished.")
+            message = self.env._("The scheduled action for Automation Rules seems to have vanished.")
             raise exceptions.MissingError(message)
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Scheduled Action'),
+            'name': self.env._('Scheduled Action'),
             'view_mode': 'form',
             'res_model': 'ir.cron',
             'res_id': cron.id,
@@ -524,7 +523,7 @@ class BaseAutomation(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Webhook Logs'),
+            'name': self.env._('Webhook Logs'),
             'res_model': 'ir.logging',
             'view_mode': 'list,form',
             'domain': [('path', '=', "base_automation(%s)" % self.id)],
@@ -563,7 +562,7 @@ class BaseAutomation(models.Model):
     def _prepare_loggin_values(self, **values):
         self.ensure_one()
         defaults = {
-            'name': _("Webhook Log"),
+            'name': self.env._("Webhook Log"),
             'type': 'server',
             'dbname': self.env.cr.dbname,
             'level': 'INFO',
@@ -607,7 +606,7 @@ class BaseAutomation(models.Model):
             _logger.warning(msg, *msg_args)
             if self.log_webhook_calls:
                 ir_logging_sudo.create(self._prepare_loggin_values(message=msg % msg_args, level="ERROR"))
-            raise exceptions.ValidationError(_("No record to run the automation on was found."))
+            raise exceptions.ValidationError(self.env._("No record to run the automation on was found."))
 
         try:
             return self._process(record)

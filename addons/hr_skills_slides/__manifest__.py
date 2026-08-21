@@ -4,13 +4,6 @@
     'name': 'Skills e-learning',
     'category': 'Human Resources/Employees',
     'summary': 'Add completed courses to resume of your employees',
-    'description':
-        """
-E-learning and Skills for HR
-============================
-
-This module add completed courses to resume for employees.
-        """,
     'depends': ['hr_skills', 'website_slides'],
     'data': [
         'views/hr_employee_views.xml',

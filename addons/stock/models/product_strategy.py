@@ -9,8 +9,8 @@ class ProductRemoval(models.Model):
     _name = 'product.removal'
     _description = 'Removal Strategy'
 
-    name = fields.Char('Name', required=True, translate=True)
-    method = fields.Char("Method", required=True, translate=True, help="FIFO, LIFO...")
+    name = fields.Char(required=True, translate=True)
+    method = fields.Char(required=True, translate=True, help="FIFO, LIFO...")
 
 
 class StockPutawayRule(models.Model):
@@ -41,31 +41,30 @@ class StockPutawayRule(models.Model):
             return self.env.context.get('active_id')
 
     product_id = fields.Many2one(
-        'product.product', 'Product', check_company=True,
-        default=_default_product_id,
+        'product.product', check_company=True,
+        default=lambda self: self._default_product_id(),
         index='btree_not_null',
         domain="[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else [('type', '!=', 'service')]",
         ondelete='cascade')
     category_id = fields.Many2one('product.category', 'Product Category', index='btree_not_null',
-        default=_default_category_id, domain=[('filter_for_stock_putaway_rule', '=', True)], ondelete='cascade')
+        default=lambda self: self._default_category_id(), domain=[('filter_for_stock_putaway_rule', '=', True)], ondelete='cascade')
     location_in_id = fields.Many2one(
         'stock.location', 'When product arrives in', check_company=True,
         domain="[('child_ids', '!=', False)]",
-        default=_default_location_id, required=True, ondelete='cascade', index=True)
+        default=lambda self: self._default_location_id(), required=True, ondelete='cascade', index=True)
     location_out_id = fields.Many2one(
         'stock.location', 'Store to sublocation', check_company=True,
         domain="[('id', 'child_of', location_in_id)]",
         required=True, ondelete='cascade')
     sequence = fields.Integer('Priority', help="Give to the more specialized category, a higher priority to have them in top of the list.")
     company_id = fields.Many2one(
-        'res.company', 'Company', required=True,
+        'res.company', required=True,
         default=lambda s: s.env.company.id, index=True)
-    package_type_ids = fields.Many2many('stock.package.type', string='Package Type', check_company=True)
+    package_type_ids = fields.Many2many('stock.package.type', check_company=True)
     storage_category_id = fields.Many2one(
-        'stock.storage.category', 'Storage Category',
-        compute='_compute_storage_category', store=True, readonly=False,
+        'stock.storage.category', compute='_compute_storage_category', store=True, readonly=False,
         ondelete='cascade', check_company=True)
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     sublocation = fields.Selection([
         ('no', 'No'),
         ('last_used', 'Last Used'),
@@ -88,8 +87,8 @@ class StockPutawayRule(models.Model):
             if not child_location_ids:
                 return {
                     'warning': {
-                        'title': _("Warning"),
-                        'message': _("Selected storage category does not exist in the 'store to' location or any of its sublocations"),
+                        'title': self.env._("Warning"),
+                        'message': self.env._("Selected storage category does not exist in the 'store to' location or any of its sublocations"),
                     },
                 }
 
@@ -108,7 +107,7 @@ class StockPutawayRule(models.Model):
         if 'company_id' in vals:
             for rule in self:
                 if rule.company_id.id != vals['company_id']:
-                    raise UserError(_("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
+                    raise UserError(self.env._("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
         return super().write(vals)
 
     def _get_last_used_search_domain(self, product):

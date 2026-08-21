@@ -3,7 +3,6 @@
 {
     'name': "Sale - SMS",
     'summary': "Ease SMS integration with sales capabilities",
-    'description': "Ease SMS integration with sales capabilities",
     'category': 'Sales/Sales',
     'depends': ['sale', 'sms'],
     'data': [

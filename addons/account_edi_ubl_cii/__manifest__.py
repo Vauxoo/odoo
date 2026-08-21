@@ -1,19 +1,6 @@
 {
     'name': "Import/Export electronic invoices with UBL/CII",
     'category': 'Accounting/Accounting',
-    'description': """
-Electronic invoicing module
-===========================
-
-Allows to export and import formats: E-FFF, UBL Bis 3, EHF3, NLCIUS, Factur-X (CII), XRechnung (UBL).
-When generating the PDF on the invoice, the PDF will be embedded inside the xml for all UBL formats. This allows the
-receiver to retrieve the PDF with only the xml file. Note that **EHF3 is fully implemented by UBL Bis 3** (`reference
-<https://anskaffelser.dev/postaward/g3/spec/current/billing-3.0/norway/#_implementation>`_).
-
-Note that E-FFF, NLCIUS and XRechnung (UBL) are only available for Belgian, Dutch and German companies,
-respectively. UBL Bis 3 is only available for companies which country is present in the `EAS list
-<https://docs.peppol.eu/poacc/billing/3.0/codelist/eas/>`_.
-    """,
     'depends': ['account'],
     'data': [
         'data/uom_data.xml',

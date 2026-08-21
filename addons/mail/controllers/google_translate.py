@@ -3,7 +3,7 @@
 import babel
 import requests
 
-from odoo.addons.mail.tools.discuss import mail_route
+from ..tools.discuss import mail_route
 from odoo.http import request, Controller
 
 

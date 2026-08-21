@@ -7,8 +7,8 @@ import serial
 from threading import Lock
 import time
 
-from odoo.addons.iot_drivers.driver import Driver
-from odoo.addons.iot_drivers.iot_handlers.interfaces.serial_interface import SerialInterface
+from ...driver import Driver
+from ..interfaces.serial_interface import SerialInterface
 
 _logger = logging.getLogger(__name__)
 

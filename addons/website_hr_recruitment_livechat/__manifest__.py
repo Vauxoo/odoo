@@ -6,9 +6,6 @@
         'website_hr_recruitment',
         'im_livechat'
     ],
-    'description': """
-A chatbot to help the user be guided through recruitment process on the website and land on the right jobs position.
-    """,
     'demo': [
         'data/website_hr_recruitment_livechat_chatbot_demo.xml'
     ],

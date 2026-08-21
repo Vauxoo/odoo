@@ -7,11 +7,9 @@ class AccountAnalyticAccount(models.Model):
     _inherit = 'account.analytic.account'
 
     invoice_count = fields.Integer(
-        "Invoice Count",
         compute='_compute_invoice_count',
     )
     vendor_bill_count = fields.Integer(
-        "Vendor Bill Count",
         compute='_compute_vendor_bill_count',
     )
 
@@ -58,7 +56,7 @@ class AccountAnalyticAccount(models.Model):
             "res_model": "account.move",
             "domain": [('id', 'in', account_move_lines.move_id.ids)],
             "context": {"create": False, 'default_move_type': 'out_invoice'},
-            "name": _("Customer Invoices"),
+            "name": self.env._("Customer Invoices"),
             'view_mode': 'list,form',
         }
 
@@ -73,6 +71,6 @@ class AccountAnalyticAccount(models.Model):
             "res_model": "account.move",
             "domain": [('id', 'in', account_move_lines.move_id.ids)],
             "context": {"create": False, 'default_move_type': 'in_invoice'},
-            "name": _("Vendor Bills"),
+            "name": self.env._("Vendor Bills"),
             'view_mode': 'list,form',
         }

@@ -12,13 +12,13 @@ class FleetVehicleLogServices(models.Model):
     _description = 'Services for vehicles'
 
     active = fields.Boolean(default=True)
-    vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', required=True, index=True)
+    vehicle_id = fields.Many2one('fleet.vehicle', required=True, index=True)
     model_id = fields.Many2one('fleet.vehicle.model', 'Model', related='vehicle_id.model_id', store=True)
     brand_id = fields.Many2one('fleet.vehicle.model.brand', 'Brand', related='vehicle_id.model_id.brand_id', store=True)
     manager_id = fields.Many2one('res.users', 'Fleet Manager', related='vehicle_id.manager_id', store=True)
     amount = fields.Monetary('Cost')
-    description = fields.Char('Description')
-    odometer_id = fields.Many2one('fleet.vehicle.odometer', 'Odometer', help='Odometer measure of the vehicle at the moment of this log')
+    description = fields.Char()
+    odometer_id = fields.Many2one('fleet.vehicle.odometer', help='Odometer measure of the vehicle at the moment of this log')
     odometer = fields.Float(
         compute="_get_odometer", inverse='_set_odometer', string='Odometer Value',
         help='Odometer measure of the vehicle at the moment of this log')
@@ -26,14 +26,14 @@ class FleetVehicleLogServices(models.Model):
     date_from = fields.Date(string='Start of Service', help='Date when the cost has been executed',
         default=fields.Date.context_today)
     date_to = fields.Date(string='End of Service')
-    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company, index=True)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, index=True)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
     purchaser_id = fields.Many2one('res.partner', string="Driver", compute='_compute_purchaser_id', readonly=False, store=True)
     inv_ref = fields.Char('Vendor Reference')
-    vendor_id = fields.Many2one('res.partner', 'Vendor')
+    vendor_id = fields.Many2one('res.partner')
     notes = fields.Text()
     service_type_id = fields.Many2one(
-        'fleet.service.type', 'Service Type', required=True,
+        'fleet.service.type', required=True,
         default=lambda self: self.env.ref('fleet.type_service_service_7', raise_if_not_found=False),
     )
     state = fields.Selection([
@@ -61,7 +61,7 @@ class FleetVehicleLogServices(models.Model):
     def _set_odometer(self):
         for record in self:
             if not record.odometer:
-                raise UserError(_('Emptying the odometer value of a vehicle is not allowed.'))
+                raise UserError(self.env._('Emptying the odometer value of a vehicle is not allowed.'))
             odometer = self.env['fleet.vehicle.odometer'].create({
                 'value': record.odometer,
                 'date': record.date_from or fields.Date.context_today(record),

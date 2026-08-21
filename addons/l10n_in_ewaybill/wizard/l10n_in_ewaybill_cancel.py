@@ -13,10 +13,9 @@ class L10nInEwaybillCancel(models.TransientModel):
     l10n_in_ewaybill_id = fields.Many2one('l10n.in.ewaybill', string='Ewaybill', required=True)
     cancel_reason = fields.Selection(
         selection=list(EDI_CANCEL_REASON.items()),
-        string="Cancel Reason",
         required=True
     )
-    cancel_remarks = fields.Char("Cancel Remarks")
+    cancel_remarks = fields.Char()
 
     def cancel_ewaybill(self):
         self.l10n_in_ewaybill_id.write({

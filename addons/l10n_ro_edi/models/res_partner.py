@@ -40,4 +40,4 @@ class ResPartner(models.Model):
                 and stdnum.util.get_cc_module('ro', 'vat').is_valid(vat_number):
                 partner.is_company = True
 
-        super(ResPartner, self - l10n_ro_partners)._compute_is_company()
+        return super(ResPartner, self - l10n_ro_partners)._compute_is_company()

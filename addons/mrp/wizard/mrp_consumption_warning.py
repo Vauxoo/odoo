@@ -60,7 +60,7 @@ class MrpConsumptionWarningLine(models.TransientModel):
     mrp_consumption_warning_id = fields.Many2one('mrp.consumption.warning', "Parent Wizard", readonly=True, required=True, ondelete="cascade")
     mrp_production_id = fields.Many2one('mrp.production', "Manufacturing Order", readonly=True, required=True, ondelete="cascade")
 
-    product_id = fields.Many2one('product.product', "Product", readonly=True, required=True)
+    product_id = fields.Many2one('product.product', readonly=True, required=True)
     uom_id = fields.Many2one('uom.uom', "Unit", readonly=True)
     product_consumed_qty_uom = fields.Float("Consumed", readonly=True)
     product_expected_qty_uom = fields.Float("To Consume", readonly=True)

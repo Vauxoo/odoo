@@ -3,7 +3,7 @@
 from odoo import models
 
 from odoo.addons.bus.models.bus import SKIP_NOTIFICATION
-from odoo.addons.mail.tools.discuss import Store
+from ...tools.discuss import Store
 
 
 class BusBus(models.Model):

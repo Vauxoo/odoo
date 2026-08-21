@@ -5,9 +5,6 @@
     'category': 'Accounting/Localizations/EDI',
     'icon': '/account/static/description/l10n.png',
     "summary": "E-invoicing using MyInvois",
-    'description': """
-    This modules allows the user to send their invoices to the MyInvois system.
-    """,
     # The export does not depend on the pint format, but we need to reuse the fields defined there.
     'depends': ['l10n_my', 'l10n_my_ubl_pint', 'account_edi_proxy_client'],
     'auto_install': ['l10n_my'],

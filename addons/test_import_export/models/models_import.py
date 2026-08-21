@@ -93,11 +93,11 @@ class ImportPreview(models.Model):
     _name = 'import.preview'
     _description = 'Tests: Base Import Model Preview'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     somevalue = fields.Integer(string='Some Value', required=True)
     othervalue = fields.Integer(string='Other Variable')
-    date = fields.Date(string='Date')
-    datetime = fields.Datetime(string='Datetime')
+    date = fields.Date()
+    datetime = fields.Datetime()
 
 
 class ImportFloat(models.Model):

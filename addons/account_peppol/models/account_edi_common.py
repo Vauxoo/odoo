@@ -15,4 +15,4 @@ class AccountEdiCommon(models.AbstractModel):
         # EXTENDS 'account_edi_ubl_cii'
         if invoice.peppol_message_uuid:
             title_logs = self.env._("Peppol invoice received")
-        super()._log_import_invoice_ubl_cii(invoice, title_logs=title_logs, invoice_logs=invoice_logs, attachments=attachments)
+        return super()._log_import_invoice_ubl_cii(invoice, title_logs=title_logs, invoice_logs=invoice_logs, attachments=attachments)

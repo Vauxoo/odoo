@@ -9,11 +9,6 @@
         "l10n_vn",
     ],
     "summary": "E-invoicing using SInvoice by Viettel",
-    "description": """
-Vietnam - E-invoicing
-=====================
-Using SInvoice by Viettel
-    """,
     "data": [
         "views/account_move_views.xml",
         "views/account_journal_views.xml",

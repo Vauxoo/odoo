@@ -3,13 +3,6 @@
 {
     'name': 'Mass mailing on course members',
     'category': 'Marketing/Email Marketing',
-    'description':
-        """
-Mass mail course members
-========================
-
-Bridge module adding UX requirements to ease mass mailing of course members.
-        """,
     'depends': ['website_slides', 'mass_mailing'],
     'data': [
         'views/slide_channel_views.xml'

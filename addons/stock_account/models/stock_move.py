@@ -22,7 +22,7 @@ class StockMove(models.Model):
         help='Trigger a decrease of the delivered/received quantity in the associated Sale Order/Purchase Order')
     company_currency_id = fields.Many2one('res.currency', related='company_id.currency_id', string='Company Currency', readonly=True)
     value = fields.Monetary(
-        "Value", currency_field='company_currency_id', copy=False,
+        currency_field='company_currency_id', copy=False,
         help="The current value of the move. It's zero if the move is not valued.")
     value_justification = fields.Text(
         "Value Description", compute="_compute_value_justification")
@@ -32,27 +32,27 @@ class StockMove(models.Model):
     value_manual = fields.Monetary(
         "Manual Value", currency_field='company_currency_id',
         compute="_compute_value_manual", inverse="_inverse_value_manual")
-    standard_price = fields.Float(compute='_compute_standard_price', string='Standard Price')
+    standard_price = fields.Float(compute='_compute_standard_price')
 
     # To remove and only use value
-    price_unit = fields.Float("Price Unit")
+    price_unit = fields.Float()
     is_in = fields.Boolean(string='Is Incoming (valued)', compute='_compute_is_in', store=True)
     is_out = fields.Boolean(string='Is Outgoing (valued)', compute='_compute_is_out', store=True)
-    is_dropship = fields.Boolean(string='Is Dropship', compute='_compute_is_dropship', store=True)
-    is_valued = fields.Boolean(string='Is Valued', compute='_compute_is_valued')
+    is_dropship = fields.Boolean(compute='_compute_is_dropship', store=True)
+    is_valued = fields.Boolean(compute='_compute_is_valued')
     remaining_qty = fields.Float(
         string='Remaining Quantity', compute='_compute_remaining_qty', search='search_remaining_qty')
     remaining_value = fields.Monetary(
         currency_field='company_currency_id',
-        string='Remaining Value', compute='_compute_remaining_value')
+        compute='_compute_remaining_value')
 
     analytic_account_line_ids = fields.Many2many('account.analytic.line', copy=False)
     account_move_id = fields.Many2one('account.move', 'stock_move_id', copy=False, index="btree_not_null")
-    invoice_line_ids = fields.One2many('account.move.line', 'stock_move_id', 'Invoice Line', index='btree_not_null')
+    invoice_line_ids = fields.One2many('account.move.line', 'stock_move_id', index='btree_not_null')
 
     def search_remaining_qty(self, operator, value):
         if operator != '=' or not isinstance(value, bool) or value is not True:
-            raise UserError(_("Only is set (= True) is supported in search for remaining_qty."))
+            raise UserError(self.env._("Only is set (= True) is supported in search for remaining_qty."))
         products = 'default_product_id' in self.env.context and self.env['product.product'].browse(self.env.context['default_product_id']) or self.env['product.product']
         if not products:
             products = self.env['product.product'].search([('is_storable', '=', True), ('qty_available', '>', 0)])
@@ -177,11 +177,11 @@ class StockMove(models.Model):
 
     def action_adjust_valuation(self):
         if len(self) != 1:
-            raise UserError(_("You can only adjust valuation for one move at a time."))
+            raise UserError(self.env._("You can only adjust valuation for one move at a time."))
         action = self.env['ir.actions.act_window']._for_xml_id("stock_account.product_value_action")
         product = self.product_id if len(self.product_id) == 1 else False
         if product:
-            action['name'] = _('Adjust Valuation: %(product)s', product=product.display_name)
+            action['name'] = self.env._('Adjust Valuation: %(product)s', product=product.display_name)
         action['target'] = 'new'
         action['context'] = {
             'default_move_id': self.id,
@@ -462,7 +462,7 @@ class StockMove(models.Model):
         if manual_value:
             valuation_data['value'] = manual_value.value
             valuation_data['quantity'] = quantity
-            description = _("Adjusted on %(date)s by %(user)s",
+            description = self.env._("Adjusted on %(date)s by %(user)s",
                 date=manual_value.date,
                 user=manual_value.user_id.name,
             )
@@ -487,7 +487,7 @@ class StockMove(models.Model):
             return {
                 'value': 0 if self.uom_id.is_zero(origin_valued_qty) else origin_move.value * quantity / origin_valued_qty,
                 'quantity': quantity,
-                'description': _('Value based on original move %(reference)s', reference=origin_move.reference),
+                'description': self.env._('Value based on original move %(reference)s', reference=origin_move.reference),
             }
         return dict(VALUATION_DICT)
 

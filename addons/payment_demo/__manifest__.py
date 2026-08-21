@@ -6,7 +6,7 @@
     "category": "Accounting/Accounting",
     "sequence": 350,
     "summary": "A payment provider for running fake payment flows for demo purposes.",
-    "description": " ",  # Non-empty string to avoid loading the README file.
+    # Non-empty string to avoid loading the README file.
     "depends": ["payment"],
     "data": [
         "views/payment_demo_templates.xml",

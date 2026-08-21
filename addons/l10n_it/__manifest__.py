@@ -8,12 +8,6 @@
     ],
     'auto_install': ['account'],
     'author': 'OpenERP Italian Community',
-    'description': """
-Piano dei conti italiano di un'impresa generica.
-================================================
-
-Italian accounting chart and localization.
-    """,
     'category': 'Accounting/Localizations/Account Charts',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/italy.html',
     'data': [

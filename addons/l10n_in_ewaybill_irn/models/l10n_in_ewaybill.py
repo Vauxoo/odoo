@@ -60,7 +60,7 @@ class L10nInEwaybill(models.Model):
         for ewaybill in irn_ewaybill:
             ewaybill_json = ewaybill._ewaybill_generate_irn_json()
             ewaybill.content = BinaryBytes(json.dumps(ewaybill_json).encode())
-        super(L10nInEwaybill, self - irn_ewaybill)._compute_content()
+        return super(L10nInEwaybill, self - irn_ewaybill)._compute_content()
 
     def action_generate_ewaybill(self):
         irn_ewaybill = self.filtered('is_process_through_irn')
@@ -68,7 +68,7 @@ class L10nInEwaybill(models.Model):
             if errors := ewaybill._check_configuration():
                 raise UserError('\n'.join(errors))
             ewaybill._generate_ewaybill_by_irn()
-        super(L10nInEwaybill, self - irn_ewaybill).action_generate_ewaybill()
+        return super(L10nInEwaybill, self - irn_ewaybill).action_generate_ewaybill()
 
     def action_reset_to_pending(self):
         res = super().action_reset_to_pending()

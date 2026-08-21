@@ -10,8 +10,8 @@ from odoo.http import request
 from odoo.tools import consteq, float_round
 from odoo.tools.misc import hmac as hmac_tool
 
-from odoo.addons.payment.const import CURRENCY_MINOR_UNITS, SENSITIVE_KEYS
-from odoo.addons.payment.logging import get_payment_logger
+from .const import CURRENCY_MINOR_UNITS, SENSITIVE_KEYS
+from .logging import get_payment_logger
 
 # Pass the possibly empty set of sensitive keys to the logger in case a provider module extends it.
 _logger = get_payment_logger(__name__, sensitive_keys=SENSITIVE_KEYS)

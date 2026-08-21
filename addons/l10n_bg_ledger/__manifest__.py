@@ -4,9 +4,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['bg'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Report ledger for Bulgaria
-    """,
     'depends': [
         'l10n_bg'
     ],

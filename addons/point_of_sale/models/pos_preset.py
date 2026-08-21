@@ -11,11 +11,11 @@ class PosPreset(models.Model):
     _description = 'Easily load a set of configuration options'
 
     name = fields.Char(string='Label', required=True, translate=True)
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist')
-    fiscal_position_id = fields.Many2one('account.fiscal.position', string='Fiscal Position')
-    identification = fields.Selection([('none', 'Not required'), ('address', 'Address'), ('name', 'Name')], default="none", string='Identification', required=True)
+    pricelist_id = fields.Many2one('product.pricelist')
+    fiscal_position_id = fields.Many2one('account.fiscal.position')
+    identification = fields.Selection([('none', 'Not required'), ('address', 'Address'), ('name', 'Name')], default="none", required=True)
     is_return = fields.Boolean(string='Return mode', default=False, help="All quantity in the cart will be in negative. Ideal for return managment.")
-    color = fields.Integer(string='Color', default=0)
+    color = fields.Integer(default=0)
     image_512 = fields.Image(string='Image', max_width=512, max_height=512)
     image_128 = fields.Image(string='Image 128', related="image_512", max_width=128, max_height=128, store=True)
     has_image = fields.Boolean(compute='_compute_has_image')
@@ -23,8 +23,8 @@ class PosPreset(models.Model):
     count_linked_config = fields.Integer(compute='_compute_count_linked_config')
 
     # Service Fee
-    service_fee = fields.Boolean(string='Service Fee', default=False)
-    service_fee_product_id = fields.Many2one('product.product', string='Service Fee Product', default=lambda self: self.env.ref('point_of_sale.product_product_service_fee', raise_if_not_found=False))
+    service_fee = fields.Boolean(default=False)
+    service_fee_product_id = fields.Many2one('product.product', default=lambda self: self.env.ref('point_of_sale.product_product_service_fee', raise_if_not_found=False))
     service_fee_type = fields.Selection([('fixed', 'Fixed Price'), ('percent', 'Percent')], string='Type', default='percent')
     service_fee_amount = fields.Float(string='Amount', default=0.0)
     service_fee_based_on = fields.Selection([('pre_discount', 'Order total before discount(s)'), ('post_discount', 'Order total after discount(s)')], string='Based on', default='pre_discount')
@@ -35,11 +35,11 @@ class PosPreset(models.Model):
             if not preset.service_fee:
                 continue
             if not preset.service_fee_product_id:
-                raise ValidationError(_("A service fee requires a service fee product."))
+                raise ValidationError(self.env._("A service fee requires a service fee product."))
             if preset.service_fee_type == 'percent' and not (0 <= preset.service_fee_amount <= 1):
-                raise ValidationError(_("A percentage service fee must be between 0% and 100%."))
+                raise ValidationError(self.env._("A percentage service fee must be between 0% and 100%."))
             if preset.service_fee_amount < 0:
-                raise ValidationError(_("A service fee requires a non-negative amount."))
+                raise ValidationError(self.env._("A service fee requires a non-negative amount."))
 
     # Timing options
     use_timing = fields.Boolean(string='Manage orders by time', default=False)
@@ -53,7 +53,7 @@ class PosPreset(models.Model):
         for preset in self:
             for attendance in preset.attendance_ids:
                 if attendance.hour_from % 24 >= attendance.hour_to % 24:
-                    raise ValidationError(_('The start time must be before the end time.'))
+                    raise ValidationError(self.env._('The start time must be before the end time.'))
 
     @api.model
     def _load_pos_data_domain(self, data, config):
@@ -116,13 +116,13 @@ class PosPreset(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for preset, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", preset.name)
+                vals['name'] = self.env._("%s (copy)", preset.name)
         return vals_list
 
     def action_open_linked_orders(self):
         self.ensure_one()
         return {
-            'name': _('Linked Orders'),
+            'name': self.env._('Linked Orders'),
             'view_mode': 'list',
             'res_model': 'pos.order',
             'type': 'ir.actions.act_window',
@@ -132,7 +132,7 @@ class PosPreset(models.Model):
     def action_open_linked_config(self):
         self.ensure_one()
         return {
-            'name': _('Linked POS Configurations'),
+            'name': self.env._('Linked POS Configurations'),
             'view_mode': 'list',
             'res_model': 'pos.config',
             'type': 'ir.actions.act_window',
@@ -143,4 +143,4 @@ class PosPreset(models.Model):
     def _unlink_except_used_preset(self):
         for preset in self:
             if preset.count_linked_config:
-                raise UserError(_('You cannot delete a preset that is linked to a POS configuration.'))
+                raise UserError(self.env._('You cannot delete a preset that is linked to a POS configuration.'))

@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 from odoo.http import Controller, request, route
 from odoo.tools.urls import urljoin
 
-from odoo.addons.marketing_card.utils.linkedin_api import LinkedInAPI
+from ..utils.linkedin_api import LinkedInAPI
 
 _logger = logging.getLogger(__name__)
 

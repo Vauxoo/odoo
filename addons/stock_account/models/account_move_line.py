@@ -26,7 +26,7 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('product_id')
     def _inverse_product_id(self):
-        super(AccountMoveLine, self.filtered(lambda l: l.display_type != 'cogs'))._inverse_product_id()
+        return super(AccountMoveLine, self.filtered(lambda l: l.display_type != 'cogs'))._inverse_product_id()
 
     def _eligible_for_stock_account(self):
         self.ensure_one()

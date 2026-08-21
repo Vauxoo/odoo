@@ -11,7 +11,7 @@ class VendorDelayReport(models.Model):
     _auto = False
 
     partner_id = fields.Many2one('res.partner', 'Vendor', readonly=True)
-    product_id = fields.Many2one('product.product', 'Product', readonly=True)
+    product_id = fields.Many2one('product.product', readonly=True)
     category_id = fields.Many2one('product.category', 'Product Category', readonly=True)
     date = fields.Datetime('Effective Date', readonly=True)
     qty_total = fields.Float('Total Quantity', readonly=True)

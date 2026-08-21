@@ -15,21 +15,21 @@ class ProductTag(models.Model):
     def _get_default_variant_id(self):
         return self.env['product.product'].browse(self.env.context.get('product_variant_id'))
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(default=10)
-    color = fields.Char(string="Color", default='#3C3C3C')
+    color = fields.Char(default='#3C3C3C')
     product_template_ids = fields.Many2many(
         string="Product Templates",
         comodel_name='product.template',
         relation='product_tag_product_template_rel',
-        default=_get_default_template_id,
+        default=lambda self: self._get_default_template_id(),
     )
     product_product_ids = fields.Many2many(
         string="Product Variants",
         comodel_name='product.product',
         relation='product_tag_product_product_rel',
         domain="[('attribute_line_ids', '!=', False), ('product_tmpl_id', 'not in', product_template_ids)]",
-        default=_get_default_variant_id,
+        default=lambda self: self._get_default_variant_id(),
     )
     product_ids = fields.Many2many(
         'product.product', string='All Product Variants using this Tag',
@@ -40,7 +40,7 @@ class ProductTag(models.Model):
         help="Whether the tag is displayed to customers.",
         default=True,
     )
-    image = fields.Image(string="Image", max_width=200, max_height=200)
+    image = fields.Image(max_width=200, max_height=200)
 
     _name_uniq = models.Constraint(
         'unique (name)',

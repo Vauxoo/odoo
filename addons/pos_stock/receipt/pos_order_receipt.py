@@ -11,7 +11,7 @@ class PosOrderReceipt(models.AbstractModel):
         for data, line in zip(line_data, self.lines):
             data['lot_names'] = False
             if line.pack_lot_ids:
-                lot_label = _("Lot") if line.product_id.tracking == "lot" else _("SN")
+                lot_label = self.env._("Lot") if line.product_id.tracking == "lot" else self.env._("SN")
                 data['lot_names'] = ["%s %s" % (lot_label, lot.lot_name) for lot in line.pack_lot_ids]
 
         return line_data
@@ -25,7 +25,7 @@ class PosOrderReceipt(models.AbstractModel):
         details = super()._generate_preparation_output_data(line, quantity)
         details['pack_lot_lines'] = []
         if line.pack_lot_ids:
-            lot_label = _("Lot:") if line.product_id.tracking == "lot" else _("SN:")
+            lot_label = self.env._("Lot:") if line.product_id.tracking == "lot" else self.env._("SN:")
             lots = ["%s %s" % (lot_label, lot.lot_name) for lot in line.pack_lot_ids]
             details['pack_lot_lines'] = lots
         return details

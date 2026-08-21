@@ -6,7 +6,7 @@ from werkzeug import urls
 
 from odoo import fields, models
 
-from odoo.addons.payment_buckaroo import const
+from .. import const
 
 
 class PaymentProvider(models.Model):
@@ -16,13 +16,11 @@ class PaymentProvider(models.Model):
         selection_add=[("buckaroo", "Buckaroo")], ondelete={"buckaroo": "set default"}
     )
     buckaroo_website_key = fields.Char(
-        string="Buckaroo Website Key",
         help="The key solely used to identify the website with Buckaroo",
         required_if_provider="buckaroo",
         copy=False,
     )
     buckaroo_secret_key = fields.Char(
-        string="Buckaroo Secret Key",
         required_if_provider="buckaroo",
         copy=False,
         groups="base.group_system",

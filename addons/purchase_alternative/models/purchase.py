@@ -34,7 +34,7 @@ class PurchaseOrder(models.Model):
             if alternative_po_ids:
                 view = self.env.ref('purchase_alternative.purchase_alternative_warning_form')
                 return {
-                    'name': _("What about the alternative Requests for Quotations?"),
+                    'name': self.env._("What about the alternative Requests for Quotations?"),
                     'type': 'ir.actions.act_window',
                     'view_mode': 'form',
                     'res_model': 'purchase.alternative.warning',
@@ -84,7 +84,7 @@ class PurchaseOrder(models.Model):
     def action_create_alternative(self):
         ctx = dict(**self.env.context, default_origin_po_id=self.id)
         return {
-            'name': _('Create alternative'),
+            'name': self.env._('Create alternative'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'purchase.alternative.create',
@@ -101,7 +101,7 @@ class PurchaseOrder(models.Model):
         )
         view_id = self.env.ref('purchase_alternative.purchase_order_line_view_compare_list').id
         return {
-            'name': _('Compare Order Lines'),
+            'name': self.env._('Compare Order Lines'),
             'type': 'ir.actions.act_window',
             'view_mode': 'list',
             'res_model': 'purchase.order.line',
@@ -188,8 +188,8 @@ class PurchaseOrderLine(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _("Some not cleared"),
-                    'message': _("Some quantities were not cleared because their status is not a RFQ status."),
+                    'title': self.env._("Some not cleared"),
+                    'message': self.env._("Some quantities were not cleared because their status is not a RFQ status."),
                     'sticky': False,
                 }
             }
@@ -204,8 +204,8 @@ class PurchaseOrderLine(models.Model):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _("Nothing to clear"),
-                'message': _("There are no quantities to clear."),
+                'title': self.env._("Nothing to clear"),
+                'message': self.env._("There are no quantities to clear."),
                 'sticky': False,
             }
         }

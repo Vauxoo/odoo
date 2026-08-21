@@ -9,7 +9,7 @@ class SmsComposer(models.TransientModel):
 
     # mass mode with mass sms
     mass_sms_allow_unsubscribe = fields.Boolean('Include opt-out link', default=True)
-    mailing_id = fields.Many2one('mailing.mailing', string='Mailing')
+    mailing_id = fields.Many2one('mailing.mailing')
     utm_campaign_id = fields.Many2one('utm.campaign', string='Campaign', ondelete='set null')
 
     # ------------------------------------------------------------
@@ -26,7 +26,7 @@ class SmsComposer(models.TransientModel):
 
     @api.model
     def _get_unsubscribe_info(self, url):
-        return _('STOP SMS: %(unsubscribe_url)s', unsubscribe_url=url)
+        return self.env._('STOP SMS: %(unsubscribe_url)s', unsubscribe_url=url)
 
     def _prepare_mass_sms_trace_values(self, record, sms_values):
         trace_code = self.env['mailing.trace']._get_random_code()

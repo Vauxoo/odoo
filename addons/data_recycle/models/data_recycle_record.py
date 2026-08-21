@@ -10,9 +10,9 @@ class Data_RecycleRecord(models.Model):
     _name = 'data_recycle.record'
     _description = 'Recycling Record'
 
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     name = fields.Char('Record Name', compute='_compute_name', compute_sudo=True)
-    recycle_model_id = fields.Many2one('data_recycle.model', string='Recycle Model', index='btree_not_null', ondelete='cascade')
+    recycle_model_id = fields.Many2one('data_recycle.model', index='btree_not_null', ondelete='cascade')
 
     res_id = fields.Many2oneReference('Record ID', index=True, model_field='res_model_name')
     res_model_id = fields.Many2one(related='recycle_model_id.res_model_id', store=True, readonly=True)
@@ -33,9 +33,9 @@ class Data_RecycleRecord(models.Model):
         for record in self:
             original_record = original_records.get((record.res_model_name, record.res_id))
             if original_record:
-                record.name = original_record.display_name or _('Undefined Name')
+                record.name = original_record.display_name or self.env._('Undefined Name')
             else:
-                record.name = _('**Record Deleted**')
+                record.name = self.env._('**Record Deleted**')
 
     @api.depends('res_id')
     def _compute_company_id(self):

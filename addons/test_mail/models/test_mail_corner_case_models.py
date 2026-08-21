@@ -29,7 +29,7 @@ class MailPerformanceThreadRecipients(models.Model):
 
     name = fields.Char()
     value = fields.Integer()
-    email_from = fields.Char('Email From')
+    email_from = fields.Char()
     partner_id = fields.Many2one('res.partner', string='Customer')
     user_id = fields.Many2one('res.users', 'Responsible', tracking=1)
 
@@ -55,7 +55,7 @@ class MailTestFieldType(models.Model):
     name = fields.Char()
     email_from = fields.Char()
     datetime = fields.Datetime(default=fields.Datetime.now)
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
     type = fields.Selection([('first', 'First'), ('second', 'Second')])
     user_id = fields.Many2one('res.users', 'Responsible', tracking=True)
 
@@ -80,7 +80,7 @@ class MailTestLang(models.Model):
     name = fields.Char()
     email_from = fields.Char()
     customer_id = fields.Many2one('res.partner')
-    lang = fields.Char('Lang')
+    lang = fields.Char()
 
     def _mail_get_partner_fields(self, introspect_fields=False):
         return ['customer_id']
@@ -111,7 +111,7 @@ class MailTestTrack(models.Model):
     company_id = fields.Many2one('res.company')
     track_fields_tofilter = fields.Char()  # comma-separated list of field names
     track_enable_default_log = fields.Boolean(default=False)
-    parent_id = fields.Many2one('mail.test.track', string='Parent')
+    parent_id = fields.Many2one('mail.test.track')
 
     def _track_log_get_default_body(self, track_init_values):
         tracked_fields = set(track_init_values.keys())
@@ -126,7 +126,7 @@ class MailTestTrackAllM2m(models.Model):
     _name = "mail.test.track.all.m2m"
     _inherit = ['mail.thread']
 
-    name = fields.Char('Name')
+    name = fields.Char()
 
 
 class MailTestTrackAllO2m(models.Model):
@@ -134,7 +134,7 @@ class MailTestTrackAllO2m(models.Model):
     _name = "mail.test.track.all.o2m"
     _inherit = ['mail.thread']
 
-    name = fields.Char('Name')
+    name = fields.Char()
     mail_track_all_id = fields.Many2one('mail.test.track.all')
 
 
@@ -172,14 +172,14 @@ class MailTestTrackAll(models.Model):
         string='One2Many',
         tracking=12)
     properties_parent_id = fields.Many2one('mail.test.track.all.properties.parent', tracking=13)
-    properties = fields.Properties('Properties', definition='properties_parent_id.definition_properties')
+    properties = fields.Properties(definition='properties_parent_id.definition_properties')
     selection_field = fields.Selection(
         string='Selection',
         selection=[('first', 'FIRST'), ('second', 'SECOND')],
         tracking=14)
     text_field = fields.Text('Text', tracking=15)
 
-    name = fields.Char('Name')
+    name = fields.Char()
 
 
 class MailTestTrackCompute(models.Model):
@@ -200,7 +200,7 @@ class MailTestTrackDurationMixin(models.Model):
     _inherit = ['mail.tracking.duration.mixin']
 
     name = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer', tracking=True)
+    customer_id = fields.Many2one('res.partner', tracking=True)
     stage_id = fields.Many2one(
         'mail.test.track.duration.mixin.stage', compute='_compute_stage_id',
         readonly=False, store=True, tracking=True,
@@ -261,7 +261,7 @@ class MailTestTrackMixin(models.Model):
         tracking=11)
     text_field = fields.Text('Text', tracking=12)
 
-    name = fields.Char('Name')
+    name = fields.Char()
 
 
 class MailTestTrackMonetary(models.Model):
@@ -271,7 +271,7 @@ class MailTestTrackMonetary(models.Model):
 
     company_id = fields.Many2one('res.company')
     company_currency = fields.Many2one("res.currency", string='Currency', related='company_id.currency_id', readonly=True, tracking=True)
-    revenue = fields.Monetary('Revenue', currency_field='company_currency', tracking=True)
+    revenue = fields.Monetary(currency_field='company_currency', tracking=True)
 
 
 class MailTestTrackSelection(models.Model):

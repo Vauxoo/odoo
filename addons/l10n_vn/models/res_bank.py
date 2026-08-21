@@ -19,19 +19,19 @@ class ResPartnerBank(models.Model):
     def _check_vn_proxy(self):
         for bank in self.filtered(lambda b: b.country_code == 'VN'):
             if bank.proxy_type not in ['merchant_id', 'payment_service', 'atm_card', 'bank_acc', 'none', False]:
-                raise ValidationError(_("The QR Code Type must be either Merchant ID, ATM Card Number or Bank Account to generate a Vietnam Bank QR code for account number %s.", bank.account_number))
+                raise ValidationError(self.env._("The QR Code Type must be either Merchant ID, ATM Card Number or Bank Account to generate a Vietnam Bank QR code for account number %s.", bank.account_number))
 
     @api.depends('country_code')
     def _compute_country_proxy_keys(self):
         bank_vn = self.filtered(lambda b: b.country_code == 'VN')
         bank_vn.country_proxy_keys = 'merchant_id,payment_service,atm_card,bank_acc'
-        super(ResPartnerBank, self - bank_vn)._compute_country_proxy_keys()
+        return super(ResPartnerBank, self - bank_vn)._compute_country_proxy_keys()
 
     @api.depends('country_code')
     def _compute_display_qr_setting(self):
         bank_vn = self.filtered(lambda b: b.country_code == 'VN')
         bank_vn.display_qr_setting = True
-        super(ResPartnerBank, self - bank_vn)._compute_display_qr_setting()
+        return super(ResPartnerBank, self - bank_vn)._compute_display_qr_setting()
 
     def _get_merchant_account_info(self):
 
@@ -72,9 +72,9 @@ class ResPartnerBank(models.Model):
     def _get_error_messages_for_qr(self, qr_method, debtor_partner, currency):
         if qr_method == 'emv_qr' and self.country_code == 'VN':
             if currency.name not in ['VND']:
-                return _("Can't generate a Vietnamese QR banking code with a currency other than VND.")
+                return self.env._("Can't generate a Vietnamese QR banking code with a currency other than VND.")
             if not self.bank_bic:
-                return _("Missing Bank Identifier Code.\n"
+                return self.env._("Missing Bank Identifier Code.\n"
                          "Please configure the Bank Identifier Code inside the bank settings.")
             return None
 
@@ -85,12 +85,12 @@ class ResPartnerBank(models.Model):
             return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
 
         if not (self.partner_id.city or self.partner_id.state_id):
-            return _("Missing Merchant City or State.")
+            return self.env._("Missing Merchant City or State.")
         if not self.proxy_type:
-            return _("Missing Proxy Type.")
+            return self.env._("Missing Proxy Type.")
         if self.proxy_type not in ['merchant_id', 'payment_service', 'atm_card', 'bank_acc']:
-            return _("The proxy type %s is not supported for Vietnamese partners. It must be either Merchant ID, ATM Card Number or Bank Account", self.proxy_type)
+            return self.env._("The proxy type %s is not supported for Vietnamese partners. It must be either Merchant ID, ATM Card Number or Bank Account", self.proxy_type)
         if not self.proxy_value:
-            return _("Missing Proxy Value.")
+            return self.env._("Missing Proxy Value.")
         if not self._get_merchant_account_info():
-            return _("Missing Merchant Account Information.")
+            return self.env._("Missing Merchant Account Information.")

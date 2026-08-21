@@ -147,7 +147,7 @@ class CalendarRecurrence(models.Model):
 
     def _cancel_microsoft(self):
         self.calendar_event_ids.with_context(dont_notify=True)._cancel_microsoft()
-        super()._cancel_microsoft()
+        return super()._cancel_microsoft()
 
     @api.model
     def _microsoft_to_odoo_values(self, microsoft_recurrence, default_reminders=(), default_values=None, with_ids=False):

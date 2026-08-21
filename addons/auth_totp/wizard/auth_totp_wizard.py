@@ -12,7 +12,7 @@ from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools import BinaryBytes
 
-from odoo.addons.auth_totp.models.totp import ALGORITHM, DIGITS, TIMESTEP
+from ..models.totp import ALGORITHM, DIGITS, TIMESTEP
 
 compress = functools.partial(re.sub, r'\s', '')
 
@@ -59,7 +59,7 @@ class Auth_TotpWizard(models.TransientModel):
         try:
             c = int(compress(self.env.context.get('code', '')))
         except ValueError:
-            raise UserError(_("The verification code should only contain numbers"))
+            raise UserError(self.env._("The verification code should only contain numbers"))
         if self.user_id._totp_try_setting(self.secret, c):
             self.secret = '' # empty it, because why keep it until GC?
             return {
@@ -67,8 +67,8 @@ class Auth_TotpWizard(models.TransientModel):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'success',
-                    'message': _("2-Factor authentication is now enabled."),
+                    'message': self.env._("2-Factor authentication is now enabled."),
                     'next': {'type': 'ir.actions.act_window_close'},
                 }
             }
-        raise UserError(_('Verification failed, please double-check the 6-digit code'))
+        raise UserError(self.env._('Verification failed, please double-check the 6-digit code'))

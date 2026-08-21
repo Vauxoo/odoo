@@ -9,4 +9,4 @@ class ProductTemplate(models.Model):
     @api.depends("product_variant_ids.free_qty")
     def _compute_is_published(self):
         """Override of `website_sale` to add `free_qty` in depends."""
-        super()._compute_is_published()
+        return super()._compute_is_published()

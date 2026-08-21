@@ -271,4 +271,4 @@ class AccountChartTemplate(models.AbstractModel):
             )
             for move in invoices:
                 move.action_post()
-        super()._post_load_demo_data(template_code)
+        return super()._post_load_demo_data(template_code)

@@ -13,12 +13,12 @@ class AccountAnalyticLine(models.Model):
     def _compute_category_report(self):
         picking_revenues = self.filtered(lambda t: t.billable_type == '15_picking_entry_positive')
         picking_revenues.category_report = 'revenues'
-        super(AccountAnalyticLine, self - picking_revenues)._compute_category_report()
+        return super(AccountAnalyticLine, self - picking_revenues)._compute_category_report()
 
     def _set_billable_cost(self):
         aals_delivery = self.filtered(lambda aal: aal.category == 'picking_entry')
         aals_delivery.billable_type = '16_picking_entry_negative'
-        super(AccountAnalyticLine, self - aals_delivery)._set_billable_cost()
+        return super(AccountAnalyticLine, self - aals_delivery)._set_billable_cost()
 
     def _get_invoice_type(self, invoice_type):
         if self.category == 'picking_entry':

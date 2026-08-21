@@ -14,7 +14,6 @@ from odoo.tools.mimetypes import get_extension, guess_file_mimetype, guess_mimet
 from odoo.tools.misc import verify_limited_field_access_token
 
 DEFAULT_PLACEHOLDER_PATH = 'web/static/img/placeholder.png'
-_logger = logging.getLogger(__name__)
 
 
 class IrBinary(models.AbstractModel):

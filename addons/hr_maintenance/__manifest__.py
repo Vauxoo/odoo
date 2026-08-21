@@ -3,8 +3,6 @@
     'name': 'Maintenance - HR',
     'sequence': 125,
     'category': 'Human Resources',
-    'description': """
-Bridge between HR and Maintenance.""",
     'depends': ['hr', 'maintenance'],
     'summary': 'Equipment, Assets, Internal Hardware, Allocation Tracking',
     'data': [

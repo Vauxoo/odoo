@@ -13,9 +13,9 @@ class CardCampaign(models.Model):
                 and model_name in self._get_allowed_event_model_names()
             ):
                 if isinstance(self.env[model_name], self.env.registry['website.published.mixin']):
-                    campaigns.target_url_placeholder = _("Target record (if published) or Event page")
+                    campaigns.target_url_placeholder = self.env._("Target record (if published) or Event page")
                 else:
-                    campaigns.target_url_placeholder = _("Event page")
+                    campaigns.target_url_placeholder = self.env._("Event page")
 
     def _get_allowed_event_model_names(self):
         """Get list of event models that are allowed in card campaigns."""

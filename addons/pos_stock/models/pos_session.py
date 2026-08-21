@@ -221,7 +221,7 @@ class PosSession(models.Model):
                 balance = stock_move.value if stock_move.is_out else -stock_move.value
 
                 reverse_move_lines.append(Command.create({
-                    'name': _("Stock variation for %s", stock_move.product_id.name),
+                    'name': self.env._("Stock variation for %s", stock_move.product_id.name),
                     'account_id': expense_account.id,
                     'partner_id': commercial_partner.id,
                     'currency_id': order.company_id.currency_id.id,
@@ -229,7 +229,7 @@ class PosSession(models.Model):
                     'balance': -balance,
                 }))
                 reverse_move_lines.append(Command.create({
-                    'name': _("Stock variation for %s", stock_move.product_id.name),
+                    'name': self.env._("Stock variation for %s", stock_move.product_id.name),
                     'account_id': stock_account.id,
                     'partner_id': commercial_partner.id,
                     'currency_id': order.company_id.currency_id.id,

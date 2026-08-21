@@ -1,7 +1,7 @@
 # TODO: remove this file when v19.0 is deprecated (/hw_proxy/hello still used in v19.0)
 
 from odoo import http
-from odoo.addons.iot_drivers.tools import route
+from ..tools import route
 
 
 class ProxyController(http.Controller):

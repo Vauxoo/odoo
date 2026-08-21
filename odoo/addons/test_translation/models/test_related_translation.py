@@ -6,7 +6,7 @@ class TestTranslationRelated_Translation_1(models.Model):
     _name = 'test_translation.related_translation_1'
     _description = 'A model to test translation for related fields'
 
-    name = fields.Char('Name', translate=True)
+    name = fields.Char(translate=True)
     html = fields.Html('HTML', translate=html_translate)
 
 

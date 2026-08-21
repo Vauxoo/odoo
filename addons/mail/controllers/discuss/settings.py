@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import fields
 from odoo.http import request, Controller
-from odoo.addons.mail.tools.discuss import mail_route
+from ...tools.discuss import mail_route
 
 
 class DiscussSettingsController(Controller):

@@ -8,7 +8,7 @@ class GamificationBadge(models.Model):
     _inherit = 'gamification.badge'
 
     survey_ids = fields.One2many('survey.survey', 'certification_badge_id', 'Survey Ids')
-    survey_id = fields.Many2one('survey.survey', 'Survey', compute='_compute_survey_id', store=True)
+    survey_id = fields.Many2one('survey.survey', compute='_compute_survey_id', store=True)
 
     @api.depends('survey_ids.certification_badge_id')
     def _compute_survey_id(self):

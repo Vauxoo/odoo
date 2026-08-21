@@ -77,7 +77,7 @@ class TaxFormulaValidator(ast.NodeVisitor):
     def visit(self, node):
         if not isinstance(node, _NODE_WHITELIST):
             raise ValidationError(self.env._("Invalid AST node: %s", type(node).__name__))
-        super().visit(node)
+        return super().visit(node)
 
     def visit_Constant(self, node: ast.Constant):
         if not isinstance(node.value, _ALLOWED_CONSTANT_T):

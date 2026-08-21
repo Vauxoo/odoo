@@ -5,7 +5,6 @@ import logging
 
 from odoo import api, models
 
-_logger = logging.getLogger(__name__)
 
 
 class MailMessageSubtype(models.Model):

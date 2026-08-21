@@ -13,7 +13,7 @@ class MailingTestCustomer(models.Model):
 
     name = fields.Char()
     email_from = fields.Char(compute='_compute_email_from', readonly=False, store=True)
-    customer_id = fields.Many2one('res.partner', 'Customer', tracking=True)
+    customer_id = fields.Many2one('res.partner', tracking=True)
 
     @api.depends('customer_id')
     def _compute_email_from(self):
@@ -57,7 +57,7 @@ class MailingTestBlacklist(models.Model):
 
     name = fields.Char()
     email_from = fields.Char()
-    customer_id = fields.Many2one('res.partner', 'Customer', tracking=True)
+    customer_id = fields.Many2one('res.partner', tracking=True)
     user_id = fields.Many2one('res.users', 'Responsible', tracking=True)
 
     def _mail_get_partner_fields(self, introspect_fields=False):
@@ -75,7 +75,7 @@ class MailingTestOptout(models.Model):
     name = fields.Char()
     email_from = fields.Char()
     opt_out = fields.Boolean()
-    customer_id = fields.Many2one('res.partner', 'Customer', tracking=True)
+    customer_id = fields.Many2one('res.partner', tracking=True)
     user_id = fields.Many2one('res.users', 'Responsible', tracking=True)
 
     def _mail_get_partner_fields(self, introspect_fields=False):

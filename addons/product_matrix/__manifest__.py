@@ -2,9 +2,6 @@
 {
     "name": "Product Matrix",
     "summary": "Technical module: Matrix Implementation",
-    "description": """
-Please refer to Sale Matrix or Purchase Matrix for the use of this module.
-    """,
     "category": "Sales/Sales",
     "depends": ["account"],
     # Account dependency for section_and_note widget.

@@ -89,7 +89,7 @@ class ReportMrpReport_Bom_Structure(models.AbstractModel):
         if data.get('subcontracting'):
             subcontract_info = data['subcontracting']
             lines.append({
-                'name': _("Subcontracting: %s", subcontract_info['name']),
+                'name': self.env._("Subcontracting: %s", subcontract_info['name']),
                 'type': 'subcontract',
                 'uom': False,
                 'quantity': subcontract_info['quantity'],

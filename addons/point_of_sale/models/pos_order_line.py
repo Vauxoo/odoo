@@ -19,7 +19,7 @@ class PosOrderLine(models.Model):
     company_id = fields.Many2one('res.company', string='Company', related='order_id.company_id', store=True)
     name = fields.Char(string='Line No', required=True, copy=False)
     notice = fields.Char(string='Discount Notice')
-    product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)], required=True, index=True)
+    product_id = fields.Many2one('product.product', domain=[('sale_ok', '=', True)], required=True, index=True)
     attribute_value_ids = fields.Many2many('product.template.attribute.value', string="Selected Attributes")
     custom_attribute_value_ids = fields.One2many(
         comodel_name='product.attribute.custom.value', inverse_name='pos_order_line_id',
@@ -36,8 +36,8 @@ class PosOrderLine(models.Model):
         ('original', 'Original'),
         ('manual', 'Manual'),
         ('automatic', 'Automatic'),
-    ], string='Price Type', default='original')
-    margin = fields.Monetary(string="Margin", compute='_compute_margin')
+    ], default='original')
+    margin = fields.Monetary(compute='_compute_margin')
     margin_percent = fields.Float(string="Margin (%)", compute='_compute_margin', digits=(12, 4))
     total_cost = fields.Float(string='Total cost', min_display_digits='Product Price', readonly=True)
     is_total_cost_computed = fields.Boolean(help="Allows to know if the total cost has already been computed or not")
@@ -47,18 +47,18 @@ class PosOrderLine(models.Model):
     tax_ids_after_fiscal_position = fields.Many2many('account.tax', compute='_get_tax_ids_after_fiscal_position', string='Taxes to Apply')
     product_uom_id = fields.Many2one('uom.uom', string='Product Unit', related='product_id.uom_id')
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
-    full_product_name = fields.Char('Full Product Name')
-    customer_note = fields.Char('Customer Note')
+    full_product_name = fields.Char()
+    customer_note = fields.Char()
     refund_orderline_ids = fields.One2many('pos.order.line', 'refunded_orderline_id', 'Refund Order Lines', help='Orderlines in this field are the lines that refunded this orderline.')
     refunded_orderline_id = fields.Many2one('pos.order.line', 'Refunded Order Line', index='btree_not_null', help='If this orderline is a refund, then the refunded orderline is specified in this field.')
     refunded_qty = fields.Float('Refunded Quantity', compute='_compute_refund_qty', help='Number of items refunded in this orderline.')
-    uuid = fields.Char(string='Uuid', readonly=True, default=lambda self: str(uuid4()), copy=False)
+    uuid = fields.Char(readonly=True, default=lambda self: str(uuid4()), copy=False)
     note = fields.Char('Product Note')
 
-    combo_parent_id = fields.Many2one('pos.order.line', string='Combo Parent', index='btree_not_null')  # FIXME rename to parent_line_id
+    combo_parent_id = fields.Many2one('pos.order.line', index='btree_not_null')  # FIXME rename to parent_line_id
     combo_line_ids = fields.One2many('pos.order.line', 'combo_parent_id', string='Combo Lines')  # FIXME rename to child_line_ids
 
-    combo_item_id = fields.Many2one('product.combo.item', string='Combo Item')
+    combo_item_id = fields.Many2one('product.combo.item')
     is_edited = fields.Boolean('Edited')
     # Technical field holding custom data for the taxes computation engine.
     extra_tax_data = fields.Json()
@@ -100,7 +100,7 @@ class PosOrderLine(models.Model):
         """
         self.ensure_one()
         return {
-            'name': _('%(name)s REFUND', name=self.name),
+            'name': self.env._('%(name)s REFUND', name=self.name),
             'qty': -(self.qty - self.refunded_qty),
             'order_id': refund_order.id,
             'is_total_cost_computed': False,
@@ -124,7 +124,7 @@ class PosOrderLine(models.Model):
     def write(self, vals):
         if self.order_id.config_id.order_edit_tracking and vals.get('qty') is not None and vals.get('qty') < self.qty:
             self.is_edited = True
-            body = _("%(product_name)s: Ordered quantity: %(old_qty)s", product_name=self.full_product_name, old_qty=self.qty)
+            body = self.env._("%(product_name)s: Ordered quantity: %(old_qty)s", product_name=self.full_product_name, old_qty=self.qty)
             body += Markup("&rarr;") + str(vals.get('qty'))
             for line in self:
                 line.order_id.message_post(body=line.order_id._prepare_pos_log(body))
@@ -133,10 +133,10 @@ class PosOrderLine(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_order_state(self):
         if self.filtered(lambda x: x.order_id.state not in ["draft", "cancel"]):
-            raise UserError(_("You can only unlink PoS order lines that are related to orders in new or cancelled state."))
+            raise UserError(self.env._("You can only unlink PoS order lines that are related to orders in new or cancelled state."))
         for line in self.filtered(lambda line: line.order_id.config_id.order_edit_tracking):
             line.order_id.has_deleted_line = True
-            body = _("%(product_name)s: Deleted line (quantity: %(qty)s)", product_name=line.full_product_name, qty=line.qty)
+            body = self.env._("%(product_name)s: Deleted line (quantity: %(qty)s)", product_name=line.full_product_name, qty=line.qty)
             line.order_id.message_post(body=line.order_id._prepare_pos_log(body))
 
     @api.onchange('price_unit', 'tax_ids', 'qty', 'discount', 'product_id')
@@ -275,7 +275,7 @@ class PosOrderLine(models.Model):
             product_name = line.with_context(lang=lang).full_product_name or line.product_id.with_context(lang=lang).display_name
 
             if not account:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Please define income account for this product: '%(product)s' (id:%(id)d).",
                     product=line.product_id.name, id=line.product_id.id,
                 ))

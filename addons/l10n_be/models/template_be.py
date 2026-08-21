@@ -10,7 +10,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('be')
     def _get_be_template_data(self):
         return {
-            'name': _('Base'),
+            'name': self.env._('Base'),
             'visible': False,
             'code_digits': '6',
         }

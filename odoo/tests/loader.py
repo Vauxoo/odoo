@@ -12,7 +12,6 @@ from .suite import OdooSuite
 from .result import OdooTestResult
 
 
-_logger = logging.getLogger(__name__)
 
 
 def get_module_test_cases(module):

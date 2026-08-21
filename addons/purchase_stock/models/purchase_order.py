@@ -20,7 +20,7 @@ class PurchaseOrder(models.Model):
     incoming_picking_count = fields.Integer("Incoming Shipment count", compute='_compute_incoming_picking_count')
     picking_ids = fields.Many2many('stock.picking', compute='_compute_picking_ids', string='Receptions', copy=False, store=True)
     dest_address_id = fields.Many2one('res.partner', compute='_compute_dest_address_id', store=True, readonly=False)
-    picking_type_id = fields.Many2one('stock.picking.type', 'Deliver To', required=True, index=True, default=_default_picking_type, domain="['|', ('warehouse_id', '=', False), ('warehouse_id.company_id', '=', company_id)]",
+    picking_type_id = fields.Many2one('stock.picking.type', 'Deliver To', required=True, index=True, default=lambda self: self._default_picking_type(), domain="['|', ('warehouse_id', '=', False), ('warehouse_id.company_id', '=', company_id)]",
         help="This will determine operation type of incoming shipment")
     default_location_dest_id_usage = fields.Selection(related='picking_type_id.default_location_dest_id.usage', string='Destination Location Type',
         help="Technical field used to display the Drop Ship Address", readonly=True)
@@ -289,8 +289,8 @@ class PurchaseOrder(models.Model):
             if po.user_id == self.env.user:
                 my_otd_purchase_count += 1
 
-        result['global']['otd'] = _("%(otd)s %%", otd=float_repr(otd_purchase_count / len(purchases) * 100 if purchases else 100, precision_digits=0))
-        result['my']['otd'] = _("%(otd)s %%", otd=float_repr(my_otd_purchase_count / my_purchase_count * 100 if my_purchase_count else 100, precision_digits=0))
+        result['global']['otd'] = self.env._("%(otd)s %%", otd=float_repr(otd_purchase_count / len(purchases) * 100 if purchases else 100, precision_digits=0))
+        result['my']['otd'] = self.env._("%(otd)s %%", otd=float_repr(my_otd_purchase_count / my_purchase_count * 100 if my_purchase_count else 100, precision_digits=0))
         result['days_to_purchase'] = self.env.company.days_to_purchase
         return result
 
@@ -411,16 +411,17 @@ class PurchaseOrder(models.Model):
         """
         validated_picking = self.picking_ids.filtered(lambda p: p.state == 'done')
         if validated_picking:
-            message = _("Those dates couldn’t be modified accordingly on the receipt %s which had already been validated.", validated_picking[0].name)
+            message = self.env._("Those dates couldn’t be modified accordingly on the receipt %s which had already been validated.", validated_picking[0].name)
         elif not self.picking_ids:
-            message = _("Corresponding receipt not found.")
+            message = self.env._("Corresponding receipt not found.")
         else:
-            message = _("Those dates have been updated accordingly on the receipt %s.", self.picking_ids[0].name)
+            message = self.env._("Those dates have been updated accordingly on the receipt %s.", self.picking_ids[0].name)
         activity.note += Markup('<p>{}</p>').format(message)
 
     def _create_update_date_activity(self, updated_dates):
         activity = super()._create_update_date_activity(updated_dates)
         self._add_picking_info(activity)
+        return activity
 
     def _update_update_date_activity(self, updated_dates, activity):
         # remove old picking info to update it

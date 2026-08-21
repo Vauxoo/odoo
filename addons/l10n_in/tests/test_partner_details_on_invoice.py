@@ -3,7 +3,6 @@ import logging
 
 from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
 
-_logger = logging.getLogger(__name__)
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class TestReports(L10nInTestInvoicingCommon):

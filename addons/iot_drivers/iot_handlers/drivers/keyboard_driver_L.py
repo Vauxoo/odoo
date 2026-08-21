@@ -14,10 +14,10 @@ from threading import Lock
 import time
 from usb import util
 
-from odoo.addons.iot_drivers.driver import Driver
-from odoo.addons.iot_drivers.event_manager import event_manager
-from odoo.addons.iot_drivers.tools import helpers, system
-from odoo.addons.iot_drivers.iot_handlers.interfaces.usb_interface_L import USBInterface
+from ...driver import Driver
+from ...event_manager import event_manager
+from ...tools import helpers, system
+from ..interfaces.usb_interface_L import USBInterface
 
 _logger = logging.getLogger(__name__)
 xlib = ctypes.cdll.LoadLibrary('libX11.so.6')

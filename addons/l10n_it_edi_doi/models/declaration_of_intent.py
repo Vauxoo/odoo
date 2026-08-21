@@ -17,7 +17,6 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
          ('revoked', 'Revoked'),
          ('terminated', 'Terminated'),
         ],
-        string="State",
         tracking=True,
         default='draft',
         required=True,
@@ -30,7 +29,6 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
 
     company_id = fields.Many2one(
         comodel_name='res.company',
-        string='Company',
         index=True,
         required=True,
         default=lambda self: self.env.company._accessible_branches()[:1],
@@ -38,7 +36,6 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
 
     partner_id = fields.Many2one(
         comodel_name='res.partner',
-        string='Partner',
         index=True,
         required=True,
         domain="['&', ('vat', '!=', False), ('parent_id', '=', False)]",
@@ -46,7 +43,6 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
 
     currency_id = fields.Many2one(
         comodel_name='res.currency',
-        string='Currency',
         default=lambda self: self.env.ref('base.EUR', raise_if_not_found=False).id,
         required=True,
         readonly=True,
@@ -61,27 +57,23 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
     )
 
     start_date = fields.Date(
-        string='Start Date',
         required=True,
         copy=False,
         help="First date on which the Declaration of Intent is valid",
     )
 
     end_date = fields.Date(
-        string='End Date',
         required=True,
         copy=False,
         help="Last date on which the Declaration of Intent is valid",
     )
 
     threshold = fields.Monetary(
-        string='Threshold',
         required=True,
         help="Total amount of allowed sales without VAT under this Declaration of Intent",
     )
 
     invoiced = fields.Monetary(
-        string='Invoiced',
         compute='_compute_invoiced',
         store=True,
         readonly=True,
@@ -89,7 +81,6 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
     )
 
     not_yet_invoiced = fields.Monetary(
-        string='Not Yet Invoiced',
         compute='_compute_not_yet_invoiced',
         store=True,
         readonly=True,
@@ -97,7 +88,6 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
     )
 
     remaining = fields.Monetary(
-        string='Remaining',
         compute='_compute_remaining',
         store=True,
         readonly=True,
@@ -182,7 +172,7 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
         updated_remaining = self.threshold - invoiced - not_yet_invoiced
         if self.currency_id.compare_amounts(updated_remaining, 0) >= 0:
             return ''
-        return _(
+        return self.env._(
             'Pay attention, the threshold of your Declaration of Intent %(name)s of %(threshold)s is exceeded by %(exceeded)s, this document included.\n'
             'Invoiced: %(invoiced)s; Not Yet Invoiced: %(not_yet_invoiced)s',
             name=self.display_name,
@@ -201,13 +191,13 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
         errors = []
         for declaration in self:
             if not company or declaration.company_id != company:
-                errors.append(_("The Declaration of Intent belongs to company %(declaration_company)s, not %(company)s.",
+                errors.append(self.env._("The Declaration of Intent belongs to company %(declaration_company)s, not %(company)s.",
                                 declaration_company=declaration.company_id.name, company=company.name))
             if not currency or declaration.currency_id != currency:
-                errors.append(_("The Declaration of Intent uses currency %(declaration_currency)s, not %(currency)s.",
+                errors.append(self.env._("The Declaration of Intent uses currency %(declaration_currency)s, not %(currency)s.",
                                 declaration_currency=declaration.currency_id.name, currency=currency.name))
             if not partner or declaration.partner_id != partner.commercial_partner_id:
-                errors.append(_("The Declaration of Intent belongs to partner %(declaration_partner)s, not %(partner)s.",
+                errors.append(self.env._("The Declaration of Intent belongs to partner %(declaration_partner)s, not %(partner)s.",
                                 declaration_partner=declaration.partner_id.name, partner=partner.commercial_partner_id.name))
         return errors
 
@@ -225,12 +215,12 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
         for declaration in self:
             errors.extend(declaration._get_validity_errors(company, partner, currency))
             if declaration.state == 'draft':
-                errors.append(_("The Declaration of Intent is in draft."))
+                errors.append(self.env._("The Declaration of Intent is in draft."))
             if declaration.currency_id.compare_amounts(invoiced_amount, 0) > 0 or not only_blocking:
                 if declaration.state != 'active':
-                    errors.append(_("The Declaration of Intent must be active."))
+                    errors.append(self.env._("The Declaration of Intent must be active."))
                 if not sales_order and (not date or declaration.start_date > date or declaration.end_date < date):
-                    errors.append(_("The Declaration of Intent is valid from %(start_date)s to %(end_date)s, not on %(date)s.",
+                    errors.append(self.env._("The Declaration of Intent is valid from %(start_date)s to %(end_date)s, not on %(date)s.",
                                     start_date=declaration.start_date, end_date=declaration.end_date, date=date))
         return errors
 
@@ -253,7 +243,7 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_linked_to_document(self):
         if self.invoice_ids or self.sale_order_ids:
-            raise UserError(_('You cannot delete Declarations of Intents that are already used on at least one Invoice or Sales Order.'))
+            raise UserError(self.env._('You cannot delete Declarations of Intents that are already used on at least one Invoice or Sales Order.'))
 
     def action_validate(self):
         """ Move a 'draft' Declaration of Intent to 'active'."""
@@ -287,7 +277,7 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
     def action_open_sale_order_ids(self):
         self.ensure_one()
         return {
-            'name': _("Sales Orders using Declaration of Intent %s", self.display_name),
+            'name': self.env._("Sales Orders using Declaration of Intent %s", self.display_name),
             'type': 'ir.actions.act_window',
             'res_model': 'sale.order',
             'domain': [('id', 'in', self.sale_order_ids.ids)],
@@ -301,7 +291,7 @@ class L10n_It_Edi_DoiDeclaration_Of_Intent(models.Model):
     def action_open_invoice_ids(self):
         self.ensure_one()
         return {
-            'name': _("Invoices using Declaration of Intent %s", self.display_name),
+            'name': self.env._("Invoices using Declaration of Intent %s", self.display_name),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'domain': [('id', 'in', self.invoice_ids.ids)],

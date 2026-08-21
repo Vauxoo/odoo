@@ -6,17 +6,6 @@
     'sequence': 165,
     'depends': ['base', 'mail'],
     'summary': "Schedule employees' meetings",
-    'description': """
-This is a full-featured calendar system.
-========================================
-
-It supports:
-------------
-    - Calendar of events
-    - Recurring events
-
-If you need to manage your meetings, you should install the CRM module.
-    """,
     'category': 'Productivity/Calendar',
     'demo': [
         'data/calendar_demo.xml'

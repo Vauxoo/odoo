@@ -16,26 +16,26 @@ class StockPackageType(models.Model):
         return self.env['product.template']._get_weight_uom_name_from_ir_config_parameter()
 
     name = fields.Char('Package Type', required=True)
-    sequence = fields.Integer('Sequence', default=1, help="The first in the sequence is the default one.")
+    sequence = fields.Integer(default=1, help="The first in the sequence is the default one.")
     sequence_id = fields.Many2one('ir.sequence', 'Reference Sequence', check_company=True, copy=False)
     sequence_code = fields.Char('Sequence Prefix', related="sequence_id.code", readonly=False)
-    height = fields.Float('Height', help="Packaging Height")
-    width = fields.Float('Width', help="Packaging Width")
+    height = fields.Float(help="Packaging Height")
+    width = fields.Float(help="Packaging Width")
     packaging_length = fields.Float('Length', help="Packaging Length")
     base_weight = fields.Float(string='Weight', help='Weight of the package type')
-    max_weight = fields.Float('Max Weight', help='Maximum weight shippable in this packaging')
-    barcode = fields.Char('Barcode', copy=False)
-    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', default=_get_default_weight_uom)
-    length_uom_name = fields.Char(string='Length unit of measure label', compute='_compute_length_uom_name', default=_get_default_length_uom)
-    company_id = fields.Many2one('res.company', 'Company', index=True)
+    max_weight = fields.Float(help='Maximum weight shippable in this packaging')
+    barcode = fields.Char(copy=False)
+    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', default=lambda self: self._get_default_weight_uom())
+    length_uom_name = fields.Char(string='Length unit of measure label', compute='_compute_length_uom_name', default=lambda self: self._get_default_length_uom())
+    company_id = fields.Many2one('res.company', index=True)
     package_use = fields.Selection([
         ('disposable', 'Disposable Box'),
         ('reusable', 'Reusable Box (totes)'),
-        ], string='Package Use', default='disposable', required=True,
+        ], default='disposable', required=True,
         help="""Reusable boxes are used for batch picking and emptied afterwards to be reused. In the barcode application, scanning a reusable box will add the products in this box.
         Disposable boxes aren't reused, when scanning a disposable box in the barcode application, the contained products are added to the transfer.""")
     has_quants = fields.Boolean('Has Contents', compute='_compute_has_quants')
-    storage_category_capacity_ids = fields.One2many('stock.storage.category.capacity', 'package_type_id', 'Storage Category Capacity', copy=True)
+    storage_category_capacity_ids = fields.One2many('stock.storage.category.capacity', 'package_type_id', copy=True)
     route_ids = fields.Many2many('stock.route', string='Routes', domain="[('package_type_selectable', '=', True)]")
 
     _barcode_uniq = models.Constraint(

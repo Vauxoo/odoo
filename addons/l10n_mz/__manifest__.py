@@ -2,9 +2,6 @@
 {
     'name': 'Mozambique - Accounting',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
-    'description': """
-Mozambican Accounting localization
-    """,
     'icon': '/account/static/description/l10n.png',
     'countries': ['mz'],
     'category': 'Accounting/Localizations/Account Charts',

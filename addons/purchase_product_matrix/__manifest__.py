@@ -2,10 +2,6 @@
 {
     'name': "Purchase Matrix",
     'summary': "Add variants to your purchase orders through an Order Grid Entry.",
-    'description': """
-This module allows to fill Purchase Orders rapidly
-by choosing product variants quantity through a Grid Entry.
-    """,
     'category': 'Supply Chain/Purchase',
     'depends': ['purchase', 'product_matrix'],
     'data': [

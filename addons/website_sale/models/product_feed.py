@@ -13,7 +13,7 @@ from odoo.fields import Domain
 from odoo.http import request
 from odoo.tools import BinaryBytes, float_is_zero, float_round, urls
 
-from odoo.addons.website_sale import const, utils
+from .. import const, utils
 
 
 class ProductFeed(models.Model):

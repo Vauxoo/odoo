@@ -24,7 +24,7 @@ class LunchAlert(models.Model):
     _order = 'write_date desc, id'
 
     name = fields.Char('Alert Name', required=True, translate=True)
-    message = fields.Html('Message', required=True, translate=True)
+    message = fields.Html(required=True, translate=True)
 
     mode = fields.Selection([
         ('alert', 'Alert in app'),
@@ -33,8 +33,8 @@ class LunchAlert(models.Model):
         ('everyone', 'Everyone'),
         ('last_week', 'Employee who ordered last week'),
         ('last_month', 'Employee who ordered last month'),
-        ('last_year', 'Employee who ordered last year')], string='Recipients', default='everyone')
-    notification_time = fields.Float(default=10.0, string='Notification Time')
+        ('last_year', 'Employee who ordered last year')], default='everyone')
+    notification_time = fields.Float(default=10.0)
     tz = fields.Selection(_tz_get, string='Timezone', required=True, default=lambda self: self.env.user.tz or 'UTC')
     cron_id = fields.Many2one('ir.cron', ondelete='cascade', required=True, readonly=True)
 
@@ -50,9 +50,9 @@ class LunchAlert(models.Model):
     available_today = fields.Boolean('Is Displayed Today',
                                      compute='_compute_available_today', search='_search_available_today')
 
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
 
-    location_ids = fields.Many2many('lunch.location', string='Location')
+    location_ids = fields.Many2many('lunch.location')
 
     _notification_time_range = models.Constraint(
         'CHECK(notification_time >= 0 and notification_time <= 24)',
@@ -186,5 +186,5 @@ class LunchAlert(models.Model):
                 res_id=self.id,
                 body=self.message,
                 partner_ids=partners.ids,
-                subject=_('Your Lunch Order'),
+                subject=self.env._('Your Lunch Order'),
             )

@@ -32,55 +32,55 @@ class CertificateCertificate(models.Model):
         return {
             "country_name": {
                 "value": company_id.country_id.code,
-                "name": _("Country Name"),
+                "name": self.env._("Country Name"),
             },
             "org_unit_name": {
                 "value": company_id.name if parent_company_id else company_id.vat[:10],
-                "name": _("Company Name"),
+                "name": self.env._("Company Name"),
             },
             "org_name": {
                 "value": parent_company_id.name if parent_company_id else company_id.name,
-                "name": _("Parent Company Name") if parent_company_id else _("Company Name"),
+                "name": self.env._("Parent Company Name") if parent_company_id else self.env._("Company Name"),
             },
             "common_name": {
                 "value": f"{journal.code}-{journal.name}-{company_id.name}",
-                "name": _("Common Name"),
+                "name": self.env._("Common Name"),
             },
             "org_id": {
                 "value": parent_company_id.vat if parent_company_id else company_id.vat,
-                "name": _("Parent Company VAT") if parent_company_id else _("Company VAT"),
+                "name": self.env._("Parent Company VAT") if parent_company_id else self.env._("Company VAT"),
             },
             "state_name": {
                 "value": company_id.state_id.name,
-                "name": _("State/Province Name"),
+                "name": self.env._("State/Province Name"),
             },
             "locality_name": {
                 "value": company_id.city,
-                "name": _("Locality Name"),
+                "name": self.env._("Locality Name"),
             },
             "egs_serial": {
                 "value": f"1-Odoo|2-{release.major_version}|3-{journal.id}",
-                "name": _("Journal Serial Number"),
+                "name": self.env._("Journal Serial Number"),
             },
             "org_uid": {
                 "value": company_id.vat,
-                "name": _("Company VAT"),
+                "name": self.env._("Company VAT"),
             },
             "invoice_type": {
                 "value": company_id._l10n_sa_get_csr_invoice_type(),
-                "name": _("Invoice Type"),
+                "name": self.env._("Invoice Type"),
             },
             "location": {
                 "value": company_id.street,
-                "name": _("Street"),
+                "name": self.env._("Street"),
             },
             "industry": {
-                "value": company_id.partner_id.industry_id.name or _("Other"),
-                "name": _("Partner Industry Name"),
+                "value": company_id.partner_id.industry_id.name or self.env._("Other"),
+                "name": self.env._("Partner Industry Name"),
             },
             "cert_tmp": {
                 "value": CERT_TEMPLATE_NAME[company_id.l10n_sa_api_mode],
-                "name": _("Certificate Template Name"),
+                "name": self.env._("Certificate Template Name"),
             },
         }
 
@@ -91,9 +91,9 @@ class CertificateCertificate(models.Model):
             if len(str(data['value']).encode('utf-8')) > MAX_ALLOWED_CSR_VALUE_LENGTH:
                 error_fields.add(data['name'])
         if error_fields:
-            company_fields = [_("Company Name"), _("Parent Company Name")]
-            company_msg = _("<br/><br/>Once the journal is onboarded, please update the company name to match the one listed on the VAT Registration Certificate.") if any(field in error_fields for field in company_fields) else ""
-            raise UserError(_(
+            company_fields = [self.env._("Company Name"), self.env._("Parent Company Name")]
+            company_msg = self.env._("<br/><br/>Once the journal is onboarded, please update the company name to match the one listed on the VAT Registration Certificate.") if any(field in error_fields for field in company_fields) else ""
+            raise UserError(self.env._(
                 "Please make sure the following fields are shorter than %(max_length)d bytes (note that Arabic or special characters take more space): %(error_fields_msg)s",
                 max_length=MAX_ALLOWED_CSR_VALUE_LENGTH,
                 error_fields_msg=" <br/>- " + " <br/>- ".join(error_fields) + company_msg

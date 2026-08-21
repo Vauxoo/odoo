@@ -29,7 +29,7 @@ class PoSOrder(models.Model):
     l10n_tw_edi_carrier_number = fields.Char(string="Carrier Number")
     l10n_tw_edi_carrier_number_2 = fields.Char(string="Carrier Number 2")
     l10n_tw_edi_is_b2b = fields.Boolean(string="Is B2B", compute="_compute_l10n_tw_edi_is_b2b")
-    invoice_month = fields.Char(string="Invoice Month")
+    invoice_month = fields.Char()
     iis_number = fields.Char(string="Invoice Number")
     iis_create_date = fields.Datetime(string="Creation Date")
     iis_random_number = fields.Char(string="Random Number")

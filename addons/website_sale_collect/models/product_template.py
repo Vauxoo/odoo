@@ -3,7 +3,7 @@
 from odoo import models
 from odoo.http import request
 
-from odoo.addons.website_sale_collect import utils
+from .. import utils
 
 
 class ProductTemplate(models.Model):

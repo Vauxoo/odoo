@@ -17,7 +17,7 @@ class HrLeaveEmployeeReport(models.Model):
     _auto = False
     _order = False
 
-    employee_id = fields.Many2one('hr.employee', string="Employee", readonly=True)
+    employee_id = fields.Many2one('hr.employee', readonly=True)
     leave_id = fields.Many2one('hr.leave', string="Time Off Request", readonly=True)
     working_schedule_aligned_date_from = fields.Datetime('Date From', readonly=True, store=True)
     number_of_days = fields.Float(compute='_compute_leave_duration', readonly=True, store=True)

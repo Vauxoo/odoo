@@ -18,27 +18,25 @@ class EventEventTicket(models.Model):
     @api.model
     def default_get(self, fields):
         res = super().default_get(fields)
-        if 'name' in fields and (not res.get('name') or res['name'] == _('Registration')) and self.env.context.get('default_event_name'):
-            res['name'] = _('Registration for %s', self.env.context['default_event_name'])
+        if 'name' in fields and (not res.get('name') or res['name'] == self.env._('Registration')) and self.env.context.get('default_event_name'):
+            res['name'] = self.env._('Registration for %s', self.env.context['default_event_name'])
         return res
 
     # description
     event_type_id = fields.Many2one(ondelete='set null', required=False)
     event_id = fields.Many2one(
-        'event.event', string="Event",
-        ondelete='cascade', required=True, index=True)
+        'event.event', ondelete='cascade', required=True, index=True)
     company_id = fields.Many2one('res.company', related='event_id.company_id')
     # sale
     start_sale_datetime = fields.Datetime(string="Registration Start")
     end_sale_datetime = fields.Datetime(string="Registration End")
     is_launched = fields.Boolean(string='Are sales launched', compute='_compute_is_launched')
-    is_expired = fields.Boolean(string='Is Expired', compute='_compute_is_expired')
+    is_expired = fields.Boolean(compute='_compute_is_expired')
     sale_available = fields.Boolean(
         string='Is Available', compute='_compute_sale_available', compute_sudo=True,
         help='Whether it is possible to sell these tickets')
     registration_ids = fields.One2many('event.registration', 'event_ticket_id', string='Registrations')
-    entry_limit = fields.Integer(default=0, string="Entry Limit",
-        help="Enable multi-entry tickets\n"
+    entry_limit = fields.Integer(default=0, help="Enable multi-entry tickets\n"
         "- Set to 0 or 1 to disable.\n"
         "- Enter 2 or more to define the maximum number of allowed entries.")
     # seats
@@ -51,7 +49,7 @@ class EventEventTicket(models.Model):
     is_sold_out = fields.Boolean(
         'Sold Out', compute='_compute_is_sold_out', help='Whether seats are not available for this ticket.')
     # reports
-    color = fields.Char('Color', default="#875A7B")
+    color = fields.Char(default="#875A7B")
 
     @api.depends('end_sale_datetime', 'event_id.date_tz')
     def _compute_is_expired(self):
@@ -123,27 +121,27 @@ class EventEventTicket(models.Model):
     def _constrains_dates_coherency(self):
         for ticket in self:
             if ticket.start_sale_datetime and ticket.end_sale_datetime and ticket.start_sale_datetime > ticket.end_sale_datetime:
-                raise UserError(_('The stop date cannot be earlier than the start date. '
+                raise UserError(self.env._('The stop date cannot be earlier than the start date. '
                                   'Please check ticket %(ticket_name)s', ticket_name=ticket.name))
 
     @api.constrains('limit_max_per_order', 'seats_max')
     def _constrains_limit_max_per_order(self):
         for ticket in self:
             if ticket.seats_max and ticket.limit_max_per_order > ticket.seats_max:
-                raise UserError(_('The limit per order cannot be greater than the maximum seats number. '
+                raise UserError(self.env._('The limit per order cannot be greater than the maximum seats number. '
                                   'Please check ticket %(ticket_name)s', ticket_name=ticket.name))
             if ticket.limit_max_per_order > ticket.event_id.EVENT_MAX_TICKETS:
-                raise UserError(_('The limit per order cannot be greater than %(limit_orderable)s. '
+                raise UserError(self.env._('The limit per order cannot be greater than %(limit_orderable)s. '
                                   'Please check ticket %(ticket_name)s', limit_orderable=ticket.event_id.EVENT_MAX_TICKETS, ticket_name=ticket.name))
             if ticket.limit_max_per_order < 0:
-                raise UserError(_('The limit per order must be positive. '
+                raise UserError(self.env._('The limit per order must be positive. '
                                   'Please check ticket %(ticket_name)s', ticket_name=ticket.name))
 
     @api.constrains('entry_limit')
     def _constrains_entry_limit(self):
         failing = self.filtered(lambda t: t.entry_limit < 0)
         if failing:
-            raise UserError(_('The Entry Limit of event tickets %(ticket_names)s cannot be lower than 0.', ticket_names=', '.join(failing.mapped('name'))))
+            raise UserError(self.env._('The Entry Limit of event tickets %(ticket_names)s cannot be lower than 0.', ticket_names=', '.join(failing.mapped('name'))))
 
     @api.depends('seats_max', 'seats_available')
     @api.depends_context('name_with_seats_availability')
@@ -159,9 +157,9 @@ class EventEventTicket(models.Model):
             if not ticket.seats_max or ticket.event_id.is_multi_slots:
                 name = ticket.name
             elif not ticket.seats_available:
-                name = _('%(ticket_name)s (Sold out)', ticket_name=ticket.name)
+                name = self.env._('%(ticket_name)s (Sold out)', ticket_name=ticket.name)
             else:
-                name = _(
+                name = self.env._(
                     '%(ticket_name)s (%(count)s seats remaining)',
                     ticket_name=ticket.name,
                     count=formatLang(self.env, ticket.seats_available, digits=0),
@@ -200,6 +198,6 @@ class EventEventTicket(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_if_registrations(self):
         if self.registration_ids:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "The following tickets cannot be deleted while they have one or more registrations linked to them:\n- %s",
                 '\n- '.join(self.mapped('name'))))

@@ -9,7 +9,6 @@ from ast import literal_eval
 from odoo import api, exceptions, fields, models, _
 from odoo.tools import float_round
 
-_logger = logging.getLogger(__name__)
 
 MEMBER_MAX_LEAD_ASSIGNMENT_QUOTA = 30000  # Arbitrarily large - 1000 per day (math.inf causes issues on runbot)
 
@@ -19,7 +18,7 @@ class CrmTeamMember(models.Model):
 
     # assignment
     assignment_enabled = fields.Boolean(related="crm_team_id.assignment_enabled")
-    assignment_domain = fields.Char('Assignment Domain', tracking=True)
+    assignment_domain = fields.Char(tracking=True)
     assignment_domain_preferred = fields.Char('Preference assignment Domain', tracking=True)
     assignment_max = fields.Integer('Average Leads Capacity (on 30 days)', default=MEMBER_MAX_LEAD_ASSIGNMENT_QUOTA)
     assignment_rules = fields.Selection([
@@ -92,7 +91,7 @@ class CrmTeamMember(models.Model):
                 if domain:
                     self.env['crm.lead'].search(domain, limit=1)
             except Exception:
-                raise exceptions.ValidationError(_(
+                raise exceptions.ValidationError(self.env._(
                     'Member assignment domain for user %(user)s and team %(team)s is incorrectly formatted',
                     user=member.user_id.name, team=member.crm_team_id.name
                 ))
@@ -105,7 +104,7 @@ class CrmTeamMember(models.Model):
                 if domain:
                     self.env['crm.lead'].search(domain, limit=1)
             except Exception:
-                raise exceptions.ValidationError(_(
+                raise exceptions.ValidationError(self.env._(
                     'Member preferred assignment domain for user %(user)s and team %(team)s is incorrectly formatted',
                     user=member.user_id.name, team=member.crm_team_id.name
                 ))

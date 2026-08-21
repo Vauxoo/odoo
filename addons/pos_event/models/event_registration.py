@@ -10,7 +10,7 @@ class EventRegistration(models.Model):
 
     pos_order_id = fields.Many2one(related='pos_order_line_id.order_id', string='PoS Order')
     pos_order_line_id = fields.Many2one('pos.order.line', string='PoS Order Line', ondelete='cascade', copy=False, index='btree_not_null')
-    uuid = fields.Char(string='Uuid', readonly=True, default=lambda self: str(uuid4()), copy=False)
+    uuid = fields.Char(readonly=True, default=lambda self: str(uuid4()), copy=False)
 
     def _has_order(self):
         return super()._has_order() or self.pos_order_id
@@ -28,7 +28,7 @@ class EventRegistration(models.Model):
                     registration.sale_status = 'sold'
                     registration.state = 'open'
 
-        super()._compute_registration_status()
+        return super()._compute_registration_status()
 
     @api.model
     def _load_pos_data_domain(self, data, config):

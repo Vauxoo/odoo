@@ -4,10 +4,9 @@ import urllib.parse
 from collections import defaultdict
 
 from odoo import _, api, fields, models
-from odoo.addons.l10n_tr_nilvera.lib.nilvera_client import _get_nilvera_client
+from ..lib.nilvera_client import _get_nilvera_client
 
 
-_logger = logging.getLogger(__name__)
 
 NILVERA_TEST_VAT_NUMS = {'1234567801', '1234567802'}
 L10N_TR_GIB_ALLOWED_NUMS = {'11111111111', '2222222222'}
@@ -54,7 +53,7 @@ class ResPartner(models.Model):
                 partner.is_company = True
             l10n_tr_partners += partner
 
-        super(ResPartner, self - l10n_tr_partners)._compute_is_company()
+        return super(ResPartner, self - l10n_tr_partners)._compute_is_company()
 
     def check_vat_tr(self, vat):
         # EXTENDS 'base'
@@ -90,16 +89,16 @@ class ResPartner(models.Model):
                 results['failure'] |= record
 
         if results['failure']:
-            self._send_user_notification('danger', _('Nilvera verification failed. Please try again.'))
+            self._send_user_notification('danger', self.env._('Nilvera verification failed. Please try again.'))
         if results['success']:
-            self._send_user_notification('success', _('Nilvera status verified successfully.'))
+            self._send_user_notification('success', self.env._('Nilvera status verified successfully.'))
         if multi_alias := results['multi_alias']:
             self._send_user_notification(
                 'warning',
-                _('Multiple alias entries were found for the following partners. Please verify the correct one manually.'),
+                self.env._('Multiple alias entries were found for the following partners. Please verify the correct one manually.'),
                 action_button={
-                    'name': _('View Partners'),
-                    'action_name': _('Partners in Error'),
+                    'name': self.env._('View Partners'),
+                    'action_name': self.env._('Partners in Error'),
                     'model': 'res.partner',
                     'res_ids': multi_alias.ids,
                 },

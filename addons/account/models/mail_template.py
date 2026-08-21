@@ -13,4 +13,4 @@ class MailTemplate(models.Model):
         }
         removed_xml_ids = set(self.get_external_id().values())
         if removed_xml_ids.intersection(master_xmlids):
-            raise UserError(_("You cannot delete this mail template, it is used in the invoice sending flow."))
+            raise UserError(self.env._("You cannot delete this mail template, it is used in the invoice sending flow."))

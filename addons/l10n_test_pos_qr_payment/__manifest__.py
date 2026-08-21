@@ -4,10 +4,6 @@
     'name': 'POS QR Tests',
     'category': 'Sales/Point of Sale',
     'sequence': 9876,
-    'description': """
-        This module contains tests related to point of sale QR code payment.
-        It tests all the supported qr codes: SEPA, Swiss QR and EMV QR (using the hk and br implementation)
-    """,
     'depends': [
         'point_of_sale',
         'account_qr_code_sepa',

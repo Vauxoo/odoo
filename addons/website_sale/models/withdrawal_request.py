@@ -15,8 +15,8 @@ class WithdrawalRequest(models.Model):
 
     email = fields.Char(string="Your Email", required=True)
     order_reference = fields.Char(related="order_id.name", store=True, readonly=False)
-    order_id = fields.Many2one(comodel_name="sale.order", string="Order", required=True, index=True)
-    recipient_emails = fields.Char(string="Recipient Emails")
+    order_id = fields.Many2one(comodel_name="sale.order", required=True, index=True)
+    recipient_emails = fields.Char()
     log_message = fields.Text(string="Message")
 
     def website_form_input_filter(self, request, values):

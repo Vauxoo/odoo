@@ -69,7 +69,7 @@ class AccountMove(models.Model):
     @api.depends('l10n_my_edi_state')
     def _compute_need_cancel_request(self):
         # EXTENDS 'account'
-        super()._compute_need_cancel_request()
+        return super()._compute_need_cancel_request()
 
     @api.depends('l10n_my_edi_state')
     def _compute_show_reset_to_draft_button(self):

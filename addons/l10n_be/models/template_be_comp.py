@@ -27,7 +27,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('be_comp')
     def _get_be_comp_template_data(self):
         return {
-            'name': _('Companies'),
+            'name': self.env._('Companies'),
             'parent': 'be',
             'code_digits': '6',
             'sequence': 0,

@@ -1,8 +1,8 @@
 from datetime import timedelta
 
 from odoo import fields
-from odoo.addons.mail.controllers.thread import ThreadController
-from odoo.addons.mail.tools.discuss import mail_route, Store
+from .thread import ThreadController
+from ..tools.discuss import mail_route, Store
 from odoo.fields import Command, Domain
 
 

@@ -3,7 +3,6 @@
 from odoo import api, fields, models
 
 import logging
-_logger = logging.getLogger(__name__)
 
 
 class DecimalPrecision(models.Model):
@@ -12,7 +11,7 @@ class DecimalPrecision(models.Model):
     _clear_cache_name = 'stable'
 
     name = fields.Char('Usage', required=True)
-    digits = fields.Integer('Digits', required=True, default=2)
+    digits = fields.Integer(required=True, default=2)
 
     _name_uniq = models.Constraint(
         'unique (name)',

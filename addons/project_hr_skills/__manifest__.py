@@ -3,9 +3,6 @@
 {
     'name': 'Project - Skills',
     'summary': 'Project skills',
-    'description': """
-        Search project tasks according to the assignees' skills
-    """,
     'category': 'Services/Project',
     'depends': ['project', 'hr_skills'],
     'auto_install': True,

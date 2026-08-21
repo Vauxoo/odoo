@@ -6,7 +6,6 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from odoo import models, fields, api
 
-_logger = logging.getLogger(__name__)
 
 
 class L10n_ArPaymentRegisterWithholding(models.TransientModel):

@@ -261,7 +261,7 @@ class IrQwebFieldDatetime(models.AbstractModel):
             datetime_format = f'{lg.date_format} {lg.time_format}'
             dt = datetime.strptime(value, datetime_format)
         except ValueError:
-            raise ValidationError(_("The datetime %(value)s does not match the format %(format)s", value=value, format=datetime_format))
+            raise ValidationError(self.env._("The datetime %(value)s does not match the format %(format)s", value=value, format=datetime_format))
 
         # convert back from user's timezone to UTC
         tz_name = element.attrib.get('data-oe-original-tz') or self.env.context.get('tz') or self.env.user.tz

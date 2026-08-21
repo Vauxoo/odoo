@@ -13,7 +13,6 @@ class HrPayrollStructureType(models.Model):
         domain=lambda self: [('company_id', 'in', [False] + self.env.companies.ids)])
     country_id = fields.Many2one(
         'res.country',
-        string='Country',
         default=lambda self: self.env.company.country_id,
         domain=lambda self: [('id', 'in', self.env.companies.country_id.ids)]
     )

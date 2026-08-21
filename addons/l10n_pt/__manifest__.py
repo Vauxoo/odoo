@@ -6,7 +6,6 @@
     'countries': ['pt'],
     'author': 'Odoo S.A.',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': 'Portugal - Accounting',
     'depends': [
         'base',
         'account',

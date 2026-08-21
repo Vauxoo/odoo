@@ -24,7 +24,7 @@ class PosConfig(models.Model):
                 other_configs = method.config_ids - config
                 if other_configs:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "The Bancontact sticker payment method '%(method_name)s' is already assigned to another POS configuration (%(config_names)s).\n"
                             "A sticker can only be linked to one POS configuration at a time.",
                             method_name=method.name,

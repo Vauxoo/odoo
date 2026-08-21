@@ -301,7 +301,7 @@ class HrAttendance(http.Controller):
                 continue
             field_name, operator, _value = condition  # Force '&' implicit syntax
             if field_name not in ('name', 'department_id') or operator not in ('=', 'ilike'):
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Invalid domain, use 'name' and/or 'department_id' fields "
                     "with '=' and/or 'ilike' operators.",
                 ))

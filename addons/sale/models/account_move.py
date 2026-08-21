@@ -24,7 +24,7 @@ class AccountMove(models.Model):
     medium_id = fields.Many2one(ondelete="set null")
     source_id = fields.Many2one(ondelete="set null")
     sale_order_count = fields.Integer(
-        compute="_compute_origin_so_count", string="Sale Order Count", compute_sudo=True
+        compute="_compute_origin_so_count", compute_sudo=True
     )
     sale_warning_text = fields.Text(
         string="Sale Warning",

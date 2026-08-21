@@ -4,7 +4,7 @@ from odoo import http
 from odoo.fields import Domain
 from odoo.http import request
 
-from odoo.addons.mail.tools.discuss import Store, mail_route
+from ...tools.discuss import Store, mail_route
 
 
 class SearchController(http.Controller):

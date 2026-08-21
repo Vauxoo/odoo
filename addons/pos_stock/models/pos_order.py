@@ -9,7 +9,7 @@ class PosOrder(models.Model):
     failed_pickings = fields.Boolean(compute='_compute_picking_count')
     picking_type_id = fields.Many2one('stock.picking.type', related='session_id.config_id.picking_type_id', string="Operation Type", readonly=False)
     stock_reference_ids = fields.Many2many('stock.reference', 'stock_reference_pos_order_rel', 'pos_order_id', 'reference_id', string="Reference")
-    shipping_date = fields.Date('Shipping Date')
+    shipping_date = fields.Date()
 
     @api.depends('picking_ids', 'picking_ids.state')
     def _compute_picking_count(self):
@@ -59,7 +59,7 @@ class PosOrder(models.Model):
         if order.get('shipping_date'):
             existing_order.write({'shipping_date': order.get('shipping_date')})
             existing_order.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel']).write({'scheduled_date': order.get('shipping_date')})
-        super().process_saved_payments(order, existing_order)
+        return super().process_saved_payments(order, existing_order)
 
     def _get_total_cost_in_real_time_lines(self):
         lines = super()._get_total_cost_in_real_time_lines()

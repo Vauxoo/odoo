@@ -8,8 +8,8 @@ class HrEmployeeDeleteWizard(models.TransientModel):
     _description = 'Employee Delete Wizard'
 
     employee_ids = fields.Many2many('hr.employee', string='Employees', context={'active_test': False}, export_string_translation=False)
-    has_active_employee = fields.Boolean(string='Has Active Employee', compute='_compute_has_active_employee', export_string_translation=False)
-    has_timesheet = fields.Boolean(string='Has Timesheet', compute='_compute_has_timesheet', compute_sudo=True, export_string_translation=False)
+    has_active_employee = fields.Boolean(compute='_compute_has_active_employee', export_string_translation=False)
+    has_timesheet = fields.Boolean(compute='_compute_has_timesheet', compute_sudo=True, export_string_translation=False)
 
     @api.depends('employee_ids')
     def _compute_has_timesheet(self):
@@ -40,7 +40,7 @@ class HrEmployeeDeleteWizard(models.TransientModel):
         self.ensure_one()
         employees = self.with_context(active_test=False).employee_ids
         action = {
-           'name': _('Employees\' Timesheets'),
+           'name': self.env._('Employees\' Timesheets'),
            'type': 'ir.actions.act_window',
            'res_model': 'account.analytic.line',
            'view_mode': 'list,form',
@@ -48,5 +48,5 @@ class HrEmployeeDeleteWizard(models.TransientModel):
            'domain': [('employee_id', 'in', employees.ids), ('project_id', '!=', False)],
         }
         if len(employees) == 1:
-            action['name'] = _('Timesheets of %(name)s', name=employees.name)
+            action['name'] = self.env._('Timesheets of %(name)s', name=employees.name)
         return action

@@ -90,7 +90,7 @@ class IrModuleModule(models.Model):
         imported_modules = self.filtered(lambda m: m.imported and m.latest_version)
         for module in imported_modules:
             module.installed_version = module.latest_version
-        super(IrModuleModule, self - imported_modules)._get_latest_version()
+        return super(IrModuleModule, self - imported_modules)._get_latest_version()
 
     @api.depends('icon')
     def _get_icon_image(self):
@@ -136,7 +136,7 @@ class IrModuleModule(models.Model):
         if unmet_dependencies:
             wrong_dependencies = unmet_dependencies.difference(known_mods.mapped("name"))
             if wrong_dependencies:
-                err = _("Unknown module dependencies:") + "\n - " + "\n - ".join(wrong_dependencies)
+                err = self.env._("Unknown module dependencies:") + "\n - " + "\n - ".join(wrong_dependencies)
                 raise UserError(err)
             to_install = known_mods.filtered(lambda mod: mod.name in unmet_dependencies)
             _logger.info("Unmet dependencies during import of %s: %s", module, to_install.mapped('name'))
@@ -144,7 +144,7 @@ class IrModuleModule(models.Model):
             # Rebrowse to use the new registry
             return self.env[self._name].browse(self._ids)._import_module(module, path, force=force, with_demo=with_demo)
         elif 'web_studio' not in installed_mods and _is_studio_custom(path):
-            raise UserError(_("Studio customizations require the Odoo Studio app."))
+            raise UserError(self.env._("Studio customizations require the Odoo Studio app."))
 
         mod = known_mods_names.get(module)
         if mod:
@@ -267,7 +267,7 @@ class IrModuleModule(models.Model):
             for command in commands:
                 directive, target, path = IrAsset._process_command(command)
                 if is_wildcard_glob(path):
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         "The assets path in the manifest of imported module '%(module_name)s' "
                         "cannot contain glob wildcards (e.g., *, **).", module_name=module))
                 path = path if path.startswith('/') else '/' + path # Ensures a '/' at the start
@@ -325,17 +325,17 @@ class IrModuleModule(models.Model):
     @api.model
     def _import_zipfile(self, module_file, force=False, with_demo=False):
         if not self.env.is_admin():
-            raise AccessError(_("Only administrators can install data modules."))
+            raise AccessError(self.env._("Only administrators can install data modules."))
         if not module_file:
-            raise Exception(_("No file sent."))
+            raise Exception(self.env._("No file sent."))
         if not zipfile.is_zipfile(module_file):
-            raise UserError(_('Only zip files are supported.'))
+            raise UserError(self.env._('Only zip files are supported.'))
 
         module_names = []
         with zipfile.ZipFile(module_file, "r") as z:
             for zf in z.infolist():
                 if zf.file_size > MAX_FILE_SIZE:
-                    raise UserError(_("File '%s' exceed maximum allowed file size", zf.filename))
+                    raise UserError(self.env._("File '%s' exceed maximum allowed file size", zf.filename))
 
             with file_open_temporary_directory(self.env) as module_dir:
                 manifest_files = sorted(
@@ -363,7 +363,7 @@ class IrModuleModule(models.Model):
                 dirs = {d for d in os.listdir(module_dir) if os.path.isdir(opj(module_dir, d))}
                 sorted_dirs = topological_sort(dependencies)
                 if wrong_modules := dirs.difference(sorted_dirs):
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         "No manifest found in '%(modules)s'. Can't import the zip file.",
                         modules=", ".join(wrong_modules)
                     ))
@@ -386,7 +386,7 @@ class IrModuleModule(models.Model):
                         # call import module after rebinding to the new registry
                         env_sudo[self._name]._import_module(mod_name, path, force=force, with_demo=with_demo)
                     except Exception as e:
-                        raise UserError(_(
+                        raise UserError(self.env._(
                             "Error while importing module '%(module)s'.\n\n %(error_message)s \n\n",
                             module=mod_name, error_message=traceback.format_exc(),
                         )) from e
@@ -423,7 +423,7 @@ class IrModuleModule(models.Model):
 
     def more_info(self):
         return {
-            'name': _('Apps'),
+            'name': self.env._('Apps'),
             'type': 'ir.actions.act_window',
             'res_model': 'ir.module.module',
             'view_mode': 'form',
@@ -463,9 +463,9 @@ class IrModuleModule(models.Model):
             resp = self._call_apps(json.dumps(payload))
             resp.raise_for_status()
         except requests.exceptions.HTTPError:
-            raise UserError(_('The list of industry applications cannot be fetched. Please try again later'))
+            raise UserError(self.env._('The list of industry applications cannot be fetched. Please try again later'))
         except requests.exceptions.ConnectionError:
-            raise UserError(_('Connection to %s failed The list of industry modules cannot be fetched') % APPS_URL)
+            raise UserError(self.env._('Connection to %s failed The list of industry modules cannot be fetched', APPS_URL))
 
         modules_list = resp.json().get('result', [])
         existing_modules = self.search_fetch(
@@ -552,7 +552,7 @@ class IrModuleModule(models.Model):
                 'modules_dependencies': missing_dependencies_description,
             })
             return {
-                'name': _("Install an Industry"),
+                'name': self.env._("Install an Industry"),
                 'view_mode': 'form',
                 'target': 'new',
                 'res_id': import_module.id,
@@ -561,28 +561,28 @@ class IrModuleModule(models.Model):
                 'context': {'data_module': True}
             }
         except requests.exceptions.HTTPError:
-            raise UserError(_('The module %s cannot be downloaded') % module_name)
+            raise UserError(self.env._('The module %s cannot be downloaded', module_name))
         except requests.exceptions.ConnectionError:
-            raise UserError(_('Connection to %(url)s failed, the module %(module)s cannot be downloaded.', url=APPS_URL, module=module_name))
+            raise UserError(self.env._('Connection to %(url)s failed, the module %(module)s cannot be downloaded.', url=APPS_URL, module=module_name))
 
     @api.model
     def _get_missing_dependencies(self, zip_data):
         _modules, unavailable_modules = self._get_missing_dependencies_modules(zip_data)
         description = ''
         if unavailable_modules:
-            description = _(
+            description = self.env._(
                 "The installation of the data module would fail as the following dependencies can't"
                 " be found in the addons-path:\n"
             )
             for module in unavailable_modules:
                 description += "- " + module + "\n"
-            description += _(
+            description += self.env._(
                 "\nYou may need the Enterprise version to install the data module. Please visit "
                 "https://www.odoo.com/pricing-plan for more information.\n"
                 "If you need Website themes, it can be downloaded from https://github.com/odoo/design-themes.\n"
             )
         else:
-            description = _(
+            description = self.env._(
                 "Load demo data to test the industry's features with sample records. "
                 "Do not load them if this is your production database.",
             )
@@ -603,7 +603,7 @@ class IrModuleModule(models.Model):
             modules_in_zip = {manifest.filename.split('/')[0] for manifest in manifest_files}
             for manifest_file in manifest_files:
                 if manifest_file.file_size > MAX_FILE_SIZE:
-                    raise UserError(_("File '%s' exceed maximum allowed file size", manifest_file.filename))
+                    raise UserError(self.env._("File '%s' exceed maximum allowed file size", manifest_file.filename))
                 try:
                     with z.open(manifest_file) as manifest:
                         terp = ast.literal_eval(manifest.read().decode())

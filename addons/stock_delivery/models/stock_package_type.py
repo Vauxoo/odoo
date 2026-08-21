@@ -30,4 +30,4 @@ class StockPackageType(models.Model):
                 package.length_uom_name = ""
             else:
                 package_without_carrier |= package
-        super(StockPackageType, package_without_carrier)._compute_length_uom_name()
+        return super(StockPackageType, package_without_carrier)._compute_length_uom_name()

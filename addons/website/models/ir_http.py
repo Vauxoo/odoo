@@ -268,7 +268,7 @@ class IrHttp(models.AbstractModel):
 
     @classmethod
     def _post_dispatch(cls, response):
-        super()._post_dispatch(response)
+        return super()._post_dispatch(response)
 
     @api.model
     def _get_default_lang(self):

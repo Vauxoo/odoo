@@ -37,7 +37,7 @@ class IrActionsReport(models.Model):
                     try:
                         output_pdf.append_pages_from_reader(attachment_reader)
                     except (PdfReadError, DependencyError) as e:
-                        expense._message_log(body=_(
+                        expense._message_log(body=self.env._(
                             "The attachment (%(attachment_name)s) has not been added to the report due to the following error: '%(error)s'",
                             attachment_name=attachment.name,
                             error=e

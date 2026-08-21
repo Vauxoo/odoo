@@ -10,8 +10,8 @@ class PosNote(models.Model):
     _order = "sequence"
 
     name = fields.Char(required=True)
-    sequence = fields.Integer('Sequence', default=1)
-    color = fields.Integer(string='Color')
+    sequence = fields.Integer(default=1)
+    color = fields.Integer()
 
     _name_unique = models.Constraint(
         'unique (name)',
@@ -23,7 +23,7 @@ class PosNote(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for note, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", note.name)
+                vals['name'] = self.env._("%s (copy)", note.name)
         return vals_list
 
     @api.model

@@ -17,15 +17,15 @@ class LunchProduct(models.Model):
 
     name = fields.Char('Product Name', required=True, translate=True)
     category_id = fields.Many2one('lunch.product.category', 'Product Category', check_company=True, required=True)
-    description = fields.Html('Description', translate=True)
-    price = fields.Float('Price', digits='Account', required=True)
+    description = fields.Html(translate=True)
+    price = fields.Float(digits='Account', required=True)
     supplier_id = fields.Many2one('lunch.supplier', 'Vendor', check_company=True, required=True, index=True)
     active = fields.Boolean(default=True)
 
     company_id = fields.Many2one('res.company', related='supplier_id.company_id', readonly=False, store=True, index='btree_not_null')
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
 
-    new_until = fields.Date('New Until')
+    new_until = fields.Date()
     is_new = fields.Boolean(compute='_compute_is_new')
 
     favorite_user_ids = fields.Many2many('res.users', 'lunch_product_favorite_user_rel', 'product_id', 'user_id', check_company=True)
@@ -93,13 +93,13 @@ class LunchProduct(models.Model):
     def _check_active_categories(self):
         invalid_products = self.filtered(lambda product: product.active and not product.category_id.active)
         if invalid_products:
-            raise UserError(_("The following product categories are archived. You should either unarchive the categories or change the category of the product.\n%s", '\n'.join(invalid_products.category_id.mapped('name'))))
+            raise UserError(self.env._("The following product categories are archived. You should either unarchive the categories or change the category of the product.\n%s", '\n'.join(invalid_products.category_id.mapped('name'))))
 
     @api.constrains('active', 'supplier_id')
     def _check_active_suppliers(self):
         invalid_products = self.filtered(lambda product: product.active and not product.supplier_id.active)
         if invalid_products:
-            raise UserError(_("The following suppliers are archived. You should either unarchive the suppliers or change the supplier of the product.\n%s", '\n'.join(invalid_products.supplier_id.mapped('name'))))
+            raise UserError(self.env._("The following suppliers are archived. You should either unarchive the suppliers or change the supplier of the product.\n%s", '\n'.join(invalid_products.supplier_id.mapped('name'))))
 
     def _inverse_is_favorite(self):
         """ Handled in the write() """

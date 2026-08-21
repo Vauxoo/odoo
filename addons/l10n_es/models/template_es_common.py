@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('es_common')
     def _get_es_common_template_data(self):
         return {
-            'name': _('Common'),
+            'name': self.env._('Common'),
             'visible': 0,
         }
 

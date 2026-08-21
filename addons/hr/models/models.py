@@ -16,6 +16,6 @@ class Base(models.AbstractModel):
             if not employee:
                 employee = self.env['hr.employee'].search([('user_id.email', 'ilike', email_address)], limit=1)
             if not employee:
-                return AliasError('error_hr_employee_restricted', _('restricted to employees'))
+                return AliasError('error_hr_employee_restricted', self.env._('restricted to employees'))
             return False
         return super()._alias_get_error(message, message_dict, alias)

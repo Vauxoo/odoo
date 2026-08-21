@@ -23,8 +23,8 @@ class IrMail_Server(models.Model):
     # Each minute, the time and the count will be reset
     # Used to throttle the number of emails we send for the personal
     # mail servers.
-    owner_limit_time = fields.Datetime('Owner Limit Time', copy=False)
-    owner_limit_count = fields.Integer('Owner Limit Count', copy=False)
+    owner_limit_time = fields.Datetime(copy=False)
+    owner_limit_count = fields.Integer(copy=False)
 
     _unique_owner_user_id = models.Constraint(
         "UNIQUE(owner_user_id)",
@@ -92,11 +92,11 @@ class IrMail_Server(models.Model):
 
         if mail_server.owner_user_id:
             if email_normalize(smtp_from) != mail_server.from_filter:
-                raise UserError(_('The server "%s" cannot be forced as it belongs to a user.', mail_server.display_name))
+                raise UserError(self.env._('The server "%s" cannot be forced as it belongs to a user.', mail_server.display_name))
             if not mail_server.active:
-                raise UserError(_('The server "%s" cannot be forced as it belongs to a user and is archived.', mail_server.display_name))
+                raise UserError(self.env._('The server "%s" cannot be forced as it belongs to a user and is archived.', mail_server.display_name))
             if mail_server.owner_user_id.outgoing_mail_server_id != mail_server:
-                raise UserError(_('The server "%s" cannot be forced as the owner does not use it anymore.', mail_server.display_name))
+                raise UserError(self.env._('The server "%s" cannot be forced as the owner does not use it anymore.', mail_server.display_name))
 
     def _get_personal_mail_servers_limit(self):
         """Return the number of email we can send in 1 minutes for this outgoing server.

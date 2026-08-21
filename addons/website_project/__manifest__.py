@@ -4,9 +4,6 @@
     'name': 'Online Task Submission',
     'category': 'Website/Website',
     'summary': 'Add a task suggestion form to your website',
-    'description': """
-Generate tasks in Project app from a form published on your website. This module requires the use of the *Form Builder* module in order to build the form.
-    """,
     'depends': ['website', 'project'],
     'data': [
         'data/website_project_data.xml',

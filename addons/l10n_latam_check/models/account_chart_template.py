@@ -16,7 +16,7 @@ class AccountChartTemplate(models.AbstractModel):
         if self.env.company.country_id.code in self._get_third_party_checks_country_codes():
             return {
                 "third_party_check": {
-                    'name': _('Third Party Checks'),
+                    'name': self.env._('Third Party Checks'),
                     'type': 'cash',
                     'outbound_payment_method_line_ids': [
                         Command.create({
@@ -36,7 +36,7 @@ class AccountChartTemplate(models.AbstractModel):
                     ],
                 },
                 "rejected_third_party_check": {
-                    'name': _('Rejected Third Party Checks'),
+                    'name': self.env._('Rejected Third Party Checks'),
                     'type': 'cash',
                     'outbound_payment_method_line_ids': [
                         Command.create({
@@ -62,14 +62,14 @@ class AccountChartTemplate(models.AbstractModel):
         if self.env.company.country_id.code in self._get_third_party_checks_country_codes():
             return {
                 'base_outstanding_receipts': {
-                    'name': _("Outstanding Receipts"),
+                    'name': self.env._("Outstanding Receipts"),
                     'parent_id': self._get_account_parent_xmlid('1.1.1.02.', template_code),
                     'code': '1.1.1.02.003',
                     'reconcile': True,
                     'account_type': 'asset_current',
                 },
                 'base_outstanding_payments': {
-                    'name': _("Outstanding Payments"),
+                    'name': self.env._("Outstanding Payments"),
                     'parent_id': self._get_account_parent_xmlid('1.1.1.02.', template_code),
                     'code': '1.1.1.02.004',
                     'reconcile': True,

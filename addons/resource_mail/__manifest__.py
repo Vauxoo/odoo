@@ -3,7 +3,6 @@
 {
     'name': 'Resource Mail',
     'category': 'Hidden',
-    'description': """Integrate features developped in Mail in use case involving resources instead of users""",
     'depends': ['resource', 'mail'],
     'auto_install': True,
     'assets': {

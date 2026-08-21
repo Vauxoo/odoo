@@ -13,17 +13,17 @@ class FetchmailServer(models.Model):
 
     def _compute_server_type_info(self):
         gmail_servers = self.filtered(lambda server: server.server_type == 'gmail')
-        gmail_servers.server_type_info = _(
+        gmail_servers.server_type_info = self.env._(
             'Connect your Gmail account with the OAuth Authentication process. \n'
             'You will be redirected to the Gmail login page where you will '
             'need to accept the permission.')
-        super(FetchmailServer, self - gmail_servers)._compute_server_type_info()
+        return super(FetchmailServer, self - gmail_servers)._compute_server_type_info()
 
     @api.constrains('server_type', 'is_ssl')
     def _check_use_google_gmail_service(self):
         for server in self:
             if server.server_type == 'gmail' and not server.is_ssl:
-                raise UserError(_('SSL is required for server “%s”.', server.name))
+                raise UserError(self.env._('SSL is required for server “%s”.', server.name))
 
     @api.onchange('server_type', 'is_ssl', 'object_id')
     def onchange_server_type(self):

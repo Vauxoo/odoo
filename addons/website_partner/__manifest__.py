@@ -5,9 +5,6 @@
     'category': 'Website/Website',
     'summary': 'Partner module for website',
     'version': '0.1',
-    'description': """
-This is a base module. It holds website-related stuff for Contact model (res.partner).
-    """,
     'depends': ['website'],
     'data': [
         'views/res_partner_views.xml',

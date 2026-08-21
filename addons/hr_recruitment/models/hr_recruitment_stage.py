@@ -11,25 +11,23 @@ class HrRecruitmentStage(models.Model):
 
     name = fields.Char("Stage Name", required=True, translate=True)
     sequence = fields.Integer(
-        "Sequence", default=10)
+        default=10)
     job_ids = fields.Many2many(
         'hr.job', string='Job Specific',
         help='Specific jobs that use this stage. Other jobs will not use this stage.')
-    requirements = fields.Text("Requirements")
+    requirements = fields.Text()
     template_id = fields.Many2one(
         'mail.template', "Email Template",
         help="If set, a message is posted on the applicant using the template when the applicant is set to the stage.")
     fold = fields.Boolean(
         "Folded in Kanban",
         help="This stage is folded in the kanban view when there are no records in that stage to display.")
-    hired_stage = fields.Boolean('Hired Stage',
-        help="If checked, this stage is used to determine the hire date of an applicant")
+    hired_stage = fields.Boolean(help="If checked, this stage is used to determine the hire date of an applicant")
     rotting_threshold_days = fields.Integer('Days to rot', default=0, help='Day count before applicants in this stage become stale. \
         Set to 0 to disable.  Changing this parameter will not affect the rotting status/date of resources last updated before this change.')
     is_warning_visible = fields.Boolean(compute='_compute_is_warning_visible')
     company_id = fields.Many2one(
-        'res.company', string='Company',
-        domain=lambda self: [('id', 'in', self.env.companies.ids)],
+        'res.company', domain=lambda self: [('id', 'in', self.env.companies.ids)],
         help="The company this stage is available to. If not set, it is available to all companies.")
 
     @api.model

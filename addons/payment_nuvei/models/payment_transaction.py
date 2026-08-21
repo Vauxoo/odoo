@@ -9,8 +9,8 @@ from odoo.tools import float_round
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_nuvei import const
-from odoo.addons.payment_nuvei.controllers.main import NuveiController
+from .. import const
+from ..controllers.main import NuveiController
 
 _logger = get_payment_logger(__name__)
 

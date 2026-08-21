@@ -19,7 +19,7 @@ class AccountMove(models.Model):
     def _check_fapiao(self):
         for record in self:
             if record.fapiao and not record.fapiao.isdecimal():
-                raise ValidationError(_("Please enter a correct fapiao number."))
+                raise ValidationError(self.env._("Please enter a correct fapiao number."))
 
     @api.model
     def check_cn2an(self):

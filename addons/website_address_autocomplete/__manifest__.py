@@ -4,7 +4,6 @@
     'name': 'Website Address Autocomplete',
     'category': 'Website/Website',
     'summary': 'Assist your users with automatic completion & suggestions when filling their address',
-    'description': "Assist your users with automatic completion & suggestions when filling their address",
     'depends': [
         'website',
         'google_address_autocomplete',

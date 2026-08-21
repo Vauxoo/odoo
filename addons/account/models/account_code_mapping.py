@@ -19,18 +19,15 @@ class AccountCodeMapping(models.Model):
 
     account_id = fields.Many2one(
         comodel_name='account.account',
-        string="Account",
         compute='_compute_account_id',
         search='_search_account_id',
     )
     company_id = fields.Many2one(
         comodel_name='res.company',
-        string="Company",
         compute='_compute_company_id',
         readonly=False,  # TODO remove in master (kept in stable because of view change)
     )
     code = fields.Char(
-        string="Code",
         compute='_compute_code',
         inverse='_inverse_code',
     )
@@ -61,7 +58,7 @@ class AccountCodeMapping(models.Model):
 
         remaining_domain = Domain(domain).map_conditions(get_accounts)
         if not account_ids:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "Account Code Mapping cannot be accessed directly. "
                 "It is designed to be used only through the Chart of Accounts."
             ))

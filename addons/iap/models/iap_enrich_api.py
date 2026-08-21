@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, api
-from odoo.addons.iap.tools import iap_tools
+from ..tools import iap_tools
 
 
 class IapEnrichApi(models.AbstractModel):

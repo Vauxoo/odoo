@@ -46,7 +46,7 @@ class PurchaseOrder(models.Model):
             })
         else:
             action.update({
-                'name': _('Sources Sale Orders %s', self.name),
+                'name': self.env._('Sources Sale Orders %s', self.name),
                 'domain': [('id', 'in', sale_order_ids)],
                 'view_mode': 'list,form',
             })

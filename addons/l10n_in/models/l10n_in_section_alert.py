@@ -9,7 +9,7 @@ class L10n_InSectionAlert(models.Model):
     tax_source_type = fields.Selection([
             ('tds', 'TDS'),
             ('tcs', 'TCS'),
-        ], string="Tax Source Type")
+        ])
     consider_amount = fields.Selection([
             ('untaxed_amount', 'Untaxed Amount'),
             ('total_amount', 'Total Amount'),
@@ -21,7 +21,7 @@ class L10n_InSectionAlert(models.Model):
     aggregate_period = fields.Selection([
             ('monthly', 'Monthly'),
             ('fiscal_yearly', 'Financial Yearly'),
-        ], string="Aggregate Period", default='fiscal_yearly')
+        ], default='fiscal_yearly')
     l10n_in_section_tax_ids = fields.One2many("account.tax", "l10n_in_section_id", string="Taxes")
 
     _per_transaction_limit = models.Constraint(
@@ -41,8 +41,8 @@ class L10n_InSectionAlert(models.Model):
     def _get_warning_message(self):
         warning = ", ".join(self.mapped('name'))
         section_type = next(iter(set(self.mapped('tax_source_type')))).upper()
-        action = _('collect') if section_type == 'TCS' else _('deduct')
-        return _("It's advisable to %(action)s %(section_type)s u/s %(warning)s on this transaction.",
+        action = self.env._('collect') if section_type == 'TCS' else self.env._('deduct')
+        return self.env._("It's advisable to %(action)s %(section_type)s u/s %(warning)s on this transaction.",
             action=action,
             section_type=section_type,
             warning=warning

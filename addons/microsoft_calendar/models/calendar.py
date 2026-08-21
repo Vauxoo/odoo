@@ -32,7 +32,6 @@ VIDEOCALL_URL_PATTERNS = (
 )
 MAX_RECURRENT_EVENT = 720
 
-_logger = logging.getLogger(__name__)
 
 
 class CalendarEvent(models.Model):
@@ -40,7 +39,7 @@ class CalendarEvent(models.Model):
     _inherit = ['calendar.event', 'microsoft.calendar.sync']
 
     microsoft_recurrence_master_id = fields.Char('Microsoft Recurrence Master Id')
-    microsoft_sync_active = fields.Boolean('Microsoft Sync Active', compute='_compute_microsoft_sync_active')
+    microsoft_sync_active = fields.Boolean(compute='_compute_microsoft_sync_active')
 
     @api.depends('user_id.microsoft_calendar_rtoken', 'user_id.microsoft_synchronization_stopped')
     def _compute_microsoft_sync_active(self):
@@ -123,11 +122,11 @@ class CalendarEvent(models.Model):
             sender_sync_status = self.with_user(sender_user)._check_microsoft_sync_status()
             if not sender_sync_status and current_sync_status:
                 raise ValidationError(
-                    _("For having a different organizer in your event, it is necessary that "
+                    self.env._("For having a different organizer in your event, it is necessary that "
                       "the organizer have its Odoo Calendar synced with Outlook Calendar."))
             elif sender_sync_status and not partner_included:
                 raise ValidationError(
-                    _("It is necessary adding the proposed organizer as attendee before saving the event."))
+                    self.env._("It is necessary adding the proposed organizer as attendee before saving the event."))
 
     def _check_recurrence_overlapping(self, new_start):
         """
@@ -147,7 +146,7 @@ class CalendarEvent(models.Model):
             lambda e: e.start.date() < new_start.date() and e != self
         ))
         if before_count != after_count:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "Outlook limitation: in a recurrence, an event cannot be moved to or before the day of the "
                 "previous event, and cannot be moved to or after the day of the following event."
             ))
@@ -169,10 +168,10 @@ class CalendarEvent(models.Model):
         """
         Suggest user to update recurrences in Outlook due to the Outlook Calendar spam limitation.
         """
-        error_msg = _("Due to an Outlook Calendar limitation, recurrence updates must be done directly in Outlook Calendar.")
+        error_msg = self.env._("Due to an Outlook Calendar limitation, recurrence updates must be done directly in Outlook Calendar.")
         if any(not record.ms_universal_event_id for record in self):
             # If any event is not synced, suggest deleting it in Odoo and recreating it in Outlook.
-            error_msg = _(
+            error_msg = self.env._(
                 "Due to an Outlook Calendar limitation, recurrence updates must be done directly in Outlook Calendar.\n"
                 "If this recurrence is not shown in Outlook Calendar, you must delete it in Odoo Calendar and recreate it in Outlook Calendar.")
 
@@ -182,7 +181,7 @@ class CalendarEvent(models.Model):
         """
         Suggest user to update recurrences in Outlook due to the Outlook Calendar spam limitation.
         """
-        raise UserError(_("Due to an Outlook Calendar limitation, recurrent events must be created directly in Outlook Calendar."))
+        raise UserError(self.env._("Due to an Outlook Calendar limitation, recurrent events must be created directly in Outlook Calendar."))
 
     def write(self, vals):
         values = vals
@@ -301,7 +300,7 @@ class CalendarEvent(models.Model):
         self.ensure_one()
         if self._check_microsoft_sync_status() and self.microsoft_id:
             self._forbid_recurrence_update()
-        super().action_mass_archive(recurrence_update_setting)
+        return super().action_mass_archive(recurrence_update_setting)
 
     def _get_microsoft_sync_domain(self):
         # in case of full sync, limit to a range of 1y in past and 1y in the future by default
@@ -350,7 +349,7 @@ class CalendarEvent(models.Model):
             stop = parse(microsoft_event.end.get('dateTime')).astimezone(timeZone_stop).replace(tzinfo=None)
         values = default_values or {}
         values.update({
-            'name': microsoft_event.subject or _("(No title)"),
+            'name': microsoft_event.subject or self.env._("(No title)"),
             'description': microsoft_event.body and microsoft_event.body['content'],
             'location': microsoft_event.location and microsoft_event.location.get('displayName') or False,
             'user_id': microsoft_event.owner_id(self.env),
@@ -469,7 +468,7 @@ class CalendarEvent(models.Model):
         reminders_commands = []
         if microsoft_event.isReminderOn:
             event_id = self.browse(microsoft_event.odoo_id(self.env))
-            alarm_type_label = _("Notification")
+            alarm_type_label = self.env._("Notification")
 
             minutes = microsoft_event.reminderMinutesBeforeStart or 0
             alarm = self.env['calendar.alarm'].search([
@@ -482,11 +481,11 @@ class CalendarEvent(models.Model):
                 if minutes == 0:
                     interval = 'minutes'
                     duration = minutes
-                    name = _("%s - At time of event", alarm_type_label)
+                    name = self.env._("%s - At time of event", alarm_type_label)
                 elif minutes % (60*24) == 0:
                     interval = 'days'
                     duration = minutes / 60 / 24
-                    name = _(
+                    name = self.env._(
                         "%(reminder_type)s - %(duration)s Days",
                         reminder_type=alarm_type_label,
                         duration=duration,
@@ -494,7 +493,7 @@ class CalendarEvent(models.Model):
                 elif minutes % 60 == 0:
                     interval = 'hours'
                     duration = minutes / 60
-                    name = _(
+                    name = self.env._(
                         "%(reminder_type)s - %(duration)s Hours",
                         reminder_type=alarm_type_label,
                         duration=duration,
@@ -502,7 +501,7 @@ class CalendarEvent(models.Model):
                 else:
                     interval = 'minutes'
                     duration = minutes
-                    name = _(
+                    name = self.env._(
                         "%(reminder_type)s - %(duration)s Minutes",
                         reminder_type=alarm_type_label,
                         duration=duration,
@@ -674,7 +673,7 @@ class CalendarEvent(models.Model):
                               for event in invalid_event_ids]
             invalid_events = '\n'.join(invalid_events)
             details = "(%d/%d)" % (list_length_limit, total_invalid_events) if list_length_limit < total_invalid_events else "(%d)" % total_invalid_events
-            raise ValidationError(_("For a correct synchronization between Odoo and Outlook Calendar, "
+            raise ValidationError(self.env._("For a correct synchronization between Odoo and Outlook Calendar, "
                                     "all attendees must have an email address. However, some events do "
                                     "not respect this condition. As long as the events are incorrect, "
                                     "the calendars will not be synchronized."

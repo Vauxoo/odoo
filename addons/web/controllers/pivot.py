@@ -19,7 +19,7 @@ class TableExporter(http.Controller):
         import xlsxwriter  # noqa: PLC0415
         jdata = json.load(data) if isinstance(data, FileStorage) else json.loads(data)
         if not jdata:
-            raise UnprocessableEntity(_('No data to export'))
+            raise UnprocessableEntity(self.env._('No data to export'))
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         worksheet = workbook.add_worksheet(jdata['title'])
@@ -89,7 +89,7 @@ class TableExporter(http.Controller):
 
         workbook.close()
         xlsx_data = output.getvalue()
-        filename = osutil.clean_filename(_("Pivot %(title)s (%(model_name)s)", title=jdata['title'], model_name=jdata['model']))
+        filename = osutil.clean_filename(self.env._("Pivot %(title)s (%(model_name)s)", title=jdata['title'], model_name=jdata['model']))
         response = request.make_response(xlsx_data,
             headers=[('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
                     ('Content-Disposition', content_disposition(filename + '.xlsx'))],

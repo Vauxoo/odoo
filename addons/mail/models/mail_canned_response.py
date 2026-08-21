@@ -2,7 +2,7 @@
 
 from odoo import fields, models, api
 from odoo.tools import LazyTranslate
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 
 _lt = LazyTranslate(__name__)
 
@@ -21,16 +21,15 @@ class MailCannedResponse(models.Model):
         " Type '::' followed by the name of your shortcut (e.g. ::hello) to use in your messages.",
     )
     substitution = fields.Text(
-        "Substitution",
         required=True,
         help="Content that will automatically replace the shortcut of your choosing. This content can still be adapted before sending your message.",
     )
-    last_used = fields.Datetime("Last Used", help="Last time this canned_response was used")
+    last_used = fields.Datetime(help="Last time this canned_response was used")
     group_ids = fields.Many2many(
         "res.groups",
         string="Authorized Groups",
         domain=lambda self: [("id", "in", self.env.user.all_group_ids.ids)],
-        falsy_value_label=_lt("🔒 Private"),
+        falsy_value_label="🔒 Private",
     )
     is_shared = fields.Boolean(
         string="Determines if the canned_response is currently shared with other users",

@@ -8,7 +8,7 @@ from odoo.exceptions import RedirectWarning, ValidationError
 from odoo.http import request
 from odoo.tools.urls import urljoin
 
-from odoo.addons.payment_payu import const
+from .. import const
 
 
 class PaymentProvider(models.Model):

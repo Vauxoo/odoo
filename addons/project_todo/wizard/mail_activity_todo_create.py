@@ -33,6 +33,6 @@ class MailActivityTodoCreate(models.TransientModel):
             'tag': 'display_notification',
             'params': {
                 'type': 'success',
-                'message': _("Your to-do has been successfully added to your pipeline."),
+                'message': self.env._("Your to-do has been successfully added to your pipeline."),
             },
         }

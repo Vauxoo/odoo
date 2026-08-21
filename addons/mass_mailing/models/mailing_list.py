@@ -20,7 +20,7 @@ class MailingList(models.Model):
 
     name = fields.Char(string='Mailing List', required=True)
     active = fields.Boolean(default=True)
-    color = fields.Integer(string='Color', default=0)
+    color = fields.Integer(default=0)
     contact_count = fields.Integer(compute="_compute_mailing_list_statistics", string='Number of Contacts')
     contact_count_email = fields.Integer(compute="_compute_mailing_list_statistics", string="Number of Emails")
     contact_count_opt_out = fields.Integer(compute="_compute_mailing_list_statistics", string="Number of Opted-out")
@@ -120,7 +120,7 @@ class MailingList(models.Model):
             ])
 
             if mass_mailings > 0:
-                raise UserError(_("At least one of the mailing list you are trying to archive is used in an ongoing mailing campaign."))
+                raise UserError(self.env._("At least one of the mailing list you are trying to archive is used in an ongoing mailing campaign."))
 
         return super().write(vals)
 
@@ -129,7 +129,7 @@ class MailingList(models.Model):
     def _compute_display_name(self):
         for mailing_list in self:
             if self.env.context.get('formatted_display_name'):
-                mailing_list.display_name = f"{mailing_list.name}\t --{mailing_list.contact_count} {_('Recipients')}--"
+                mailing_list.display_name = f"{mailing_list.name}\t --{mailing_list.contact_count} {self.env._('Recipients')}--"
             else:
                 mailing_list.display_name = mailing_list.name
 
@@ -218,7 +218,7 @@ class MailingList(models.Model):
         dest.action_merge(self - dest)
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Mailing Lists'),
+            'name': self.env._('Mailing Lists'),
             'res_model': 'mailing.list',
             'view_mode': 'form',
             'res_id': dest.id
@@ -400,12 +400,12 @@ class MailingList(models.Model):
                 body = force_message
             elif opt_out:
                 body = Markup('<p>%s</p><ul>%s</ul>') % (
-                    _('%(contact_name)s unsubscribed from the following mailing list(s)', contact_name=contact.display_name),
+                    self.env._('%(contact_name)s unsubscribed from the following mailing list(s)', contact_name=contact.display_name),
                     Markup().join(Markup('<li>%s</li>') % name for name in updated.mapped('name')),
                 )
             else:
                 body = Markup('<p>%s</p><ul>%s</ul>') % (
-                    _('%(contact_name)s subscribed to the following mailing list(s)', contact_name=contact.display_name),
+                    self.env._('%(contact_name)s subscribed to the following mailing list(s)', contact_name=contact.display_name),
                     Markup().join(Markup('<li>%s</li>') % name for name in updated.mapped('name')),
                 )
             contact.with_context(mail_post_autofollow_author_skip=True).message_post(

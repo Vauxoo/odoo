@@ -31,4 +31,4 @@ class StockMoveLine(models.Model):
             if not sol.currency_id.is_zero(sale_line_price_deviation[sol]):
                 move_line = (sol.move_ids.move_line_ids & kit_lines)[0]
                 move_line.sale_price = sol.currency_id.round(move_line.sale_price + sale_line_price_deviation[sol])
-        super(StockMoveLine, self - kit_lines)._compute_sale_price()
+        return super(StockMoveLine, self - kit_lines)._compute_sale_price()

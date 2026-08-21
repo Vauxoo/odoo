@@ -28,7 +28,7 @@ class MrpWorkorder(models.Model):
     def _prepare_analytic_line_values(self, account_field_values, amount, unit_amount):
         self.ensure_one()
         return {
-            'name': _("[WC] %s", self.display_name),
+            'name': self.env._("[WC] %s", self.display_name),
             'amount': amount,
             **account_field_values,
             'unit_amount': unit_amount,

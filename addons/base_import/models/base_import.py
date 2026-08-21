@@ -184,9 +184,9 @@ class Base_ImportImport(models.TransientModel):
     FUZZY_MATCH_DISTANCE = 0.2
 
     res_model = fields.Char('Model')
-    file = fields.Binary('File', help="File to check and/or import", attachment=False)
-    file_name = fields.Char('File Name')
-    file_type = fields.Char('File Type')
+    file = fields.Binary(help="File to check and/or import", attachment=False)
+    file_name = fields.Char()
+    file_type = fields.Char()
 
     @api.model
     def get_fields_tree(self, model, depth=FIELDS_RECURSION_LIMIT):
@@ -456,11 +456,7 @@ class Base_ImportImport(models.TransientModel):
                     values.append(u'True' if cell.value else u'False')
                 elif cell.ctype is xlrd.XL_CELL_ERROR:
                     raise ValueError(
-                        _("Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s") % {
-                            'row': rowx,
-                            'col': colx,
-                            'cell_value': xlrd.error_text_from_code.get(cell.value, _("unknown error code %s", cell.value))
-                        }
+                        _("Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s", row=rowx, col=colx, cell_value=xlrd.error_text_from_code.get(cell.value, _("unknown error code %s", cell.value)))
                     )
                 else:
                     if cell.ctype == xlrd.XL_CELL_TEXT and isinstance(cell.value, str):
@@ -1515,12 +1511,7 @@ class Base_ImportImport(models.TransientModel):
             return content
         except Exception as e:
             _logger.warning(e, exc_info=True)
-            raise ImportValidationError(_("Could not retrieve URL: %(url)s [%(field_name)s: L%(line_number)d]: %(error)s") % {
-                'url': url,
-                'field_name': field,
-                'line_number': line_number + 1,
-                'error': e
-            })
+            raise ImportValidationError(_("Could not retrieve URL: %(url)s [%(field_name)s: L%(line_number)d]: %(error)s", url=url, field_name=field, line_number=line_number + 1, error=e))
 
     @api.model
     def _stringify_date_like_objects(self, data, options, trim=False):

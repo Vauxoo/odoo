@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('es_assec')
     def _get_es_assec_template_data(self):
         return {
-            'name': _('Non-profit entities (2008)'),
+            'name': self.env._('Non-profit entities (2008)'),
             'parent': 'es_common_mainland',
         }
 

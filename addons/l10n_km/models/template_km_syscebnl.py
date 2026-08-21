@@ -8,7 +8,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('km_syscebnl')
     def _get_km_syscebnl_template_data(self):
         return {
-            'name': _('SYSCEBNL for Associations'),
+            'name': self.env._('SYSCEBNL for Associations'),
             'parent': 'syscebnl',
             'code_digits': '6',
         }

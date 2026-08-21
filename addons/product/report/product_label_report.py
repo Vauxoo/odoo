@@ -77,7 +77,7 @@ class ReportProductLabelBase(models.AbstractModel):
             return self.env['product.template'].with_context(display_default_code=False)
         if data.get('active_model') == 'product.product':
             return self.env['product.product'].with_context(display_default_code=False)
-        raise UserError(_('Product model not defined, Please contact your administrator.'))
+        raise UserError(self.env._('Product model not defined, Please contact your administrator.'))
 
     def _build_quantity_by_product(self, Product, docids, data):
         quantity_by_product = defaultdict(list)

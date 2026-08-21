@@ -2,7 +2,6 @@ import logging
 
 from . import controllers, models, tools, demo
 
-_logger = logging.getLogger(__name__)
 
 
 def _l10n_it_edi_post_init(env):

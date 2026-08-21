@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.hr_attendance.controllers.main import HrAttendance
+from ..controllers.main import HrAttendance
 from odoo import api, models
 
 

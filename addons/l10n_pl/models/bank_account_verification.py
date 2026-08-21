@@ -25,7 +25,6 @@ class BankAccountVerification(models.Model):
             ('not_found_partner', 'Partner not found'),  # API called, but cannot find the VAT number
             ('error', 'An error occurred during check with Government API'),  # API called -> error
         ],
-        string="Verification Status",
         readonly=True,
         required=True,
         help="Flag the payment verification status with one of the following:\n"
@@ -36,7 +35,7 @@ class BankAccountVerification(models.Model):
             "- Error: An error occurred during check with Government API.\n"
     )
     # Timestamp received in PL tz by the API, stored in UTC
-    verification_timestamp = fields.Datetime("Verification Timestamp", readonly=True)
+    verification_timestamp = fields.Datetime(readonly=True)
     # Technical field to ease search
     verification_date = fields.Date(
         compute='_compute_verification_date',
@@ -52,7 +51,7 @@ class BankAccountVerification(models.Model):
         store=True,
         index=False,
     )
-    partner_id = fields.Many2one('res.partner', readonly=True, string="Partner")
+    partner_id = fields.Many2one('res.partner', readonly=True)
     # We need to store the partner VAT itself to prevent changes on the res.partner record
     partner_vat = fields.Char(
         compute='_compute_partner_vat',

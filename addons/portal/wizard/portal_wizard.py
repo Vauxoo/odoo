@@ -9,7 +9,6 @@ from odoo.exceptions import UserError
 from odoo import api, fields, models, Command
 
 
-_logger = logging.getLogger(__name__)
 _lt = LazyTranslate(__name__)
 
 
@@ -30,7 +29,7 @@ class PortalWizard(models.TransientModel):
 
         return [Command.link(contact_id) for contact_id in contact_ids]
 
-    partner_ids = fields.Many2many('res.partner', string='Partners', default=_default_partner_ids)
+    partner_ids = fields.Many2many('res.partner', string='Partners', default=lambda self: self._default_partner_ids())
     user_ids = fields.One2many('portal.wizard.user', 'wizard_id', string='Users', compute='_compute_user_ids', store=True, readonly=False)
     welcome_message = fields.Text('Invitation Message', help="This text is included in the email sent to new users of the portal.")
 
@@ -79,14 +78,14 @@ class PortalWizardUser(models.TransientModel):
     _name = 'portal.wizard.user'
     _description = 'Portal User Config'
 
-    wizard_id = fields.Many2one('portal.wizard', string='Wizard', required=True, ondelete='cascade')
+    wizard_id = fields.Many2one('portal.wizard', required=True, ondelete='cascade')
     partner_id = fields.Many2one('res.partner', string='Contact', required=True, readonly=True, ondelete='cascade')
-    email = fields.Char('Email')
+    email = fields.Char()
 
-    user_id = fields.Many2one('res.users', string='User', compute='_compute_user_id', compute_sudo=True)
+    user_id = fields.Many2one('res.users', compute='_compute_user_id', compute_sudo=True)
     login_date = fields.Datetime(related='user_id.login_date', string='Latest Authentication')
-    is_portal = fields.Boolean('Is Portal', compute='_compute_group_details')
-    is_internal = fields.Boolean('Is Internal', compute='_compute_group_details')
+    is_portal = fields.Boolean(compute='_compute_group_details')
+    is_internal = fields.Boolean(compute='_compute_group_details')
     email_state = fields.Selection([
         ('ok', 'Valid'),
         ('ko', 'Invalid'),

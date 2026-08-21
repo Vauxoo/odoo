@@ -1,5 +1,5 @@
 from odoo import fields, models
-from odoo.addons.l10n_gr_edi.models.preferred_classification import TAX_EXEMPTION_CATEGORY_SELECTION
+from .preferred_classification import TAX_EXEMPTION_CATEGORY_SELECTION
 
 
 class AccountTax(models.Model):

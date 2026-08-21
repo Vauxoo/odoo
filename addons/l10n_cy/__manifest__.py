@@ -2,9 +2,6 @@
     'name': 'Cyprus - Accounting',
     'icon': '/account/static/description/l10n.png',
     'countries': ['cy'],
-    'description': """
-Basic package for Cyprus that contains the chart of accounts, taxes, tax reports,...
-    """,
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'category': 'Accounting/Localizations/Account Charts',

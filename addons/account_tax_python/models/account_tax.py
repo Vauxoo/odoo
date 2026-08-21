@@ -6,7 +6,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import expr_eval
 
-from odoo.addons.account_tax_python.tools.formula_utils import check_formula, normalize_formula
+from ..tools.formula_utils import check_formula, normalize_formula
 
 
 class AccountTax(models.Model):
@@ -17,7 +17,6 @@ class AccountTax(models.Model):
         ondelete={'code': lambda recs: recs.write({'amount_type': 'percent', 'active': False})},
     )
     formula = fields.Text(
-        string="Formula",
         default="price_unit * 0.10",
         help="Compute the amount of the tax.\n\n"
              ":param base: float, actual amount on which the tax is applied\n"
@@ -107,7 +106,7 @@ class AccountTax(models.Model):
         try:
             formula_context = json.loads(json.dumps(formula_context))
         except TypeError:
-            raise ValidationError(_("Only primitive types are allowed in python tax formula context."))
+            raise ValidationError(self.env._("Only primitive types are allowed in python tax formula context."))
         try:
             return expr_eval(normalized_formula, formula_context)
         except ZeroDivisionError:

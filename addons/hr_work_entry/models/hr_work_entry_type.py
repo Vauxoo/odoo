@@ -13,7 +13,7 @@ class HrWorkEntryType(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(required=True, translate=True, tracking=True)
-    display_code = fields.Char(string="Display Code", size=3, translate=True, tracking=True, help="This code can be changed, it is only for a display purpose (3 letters max)")
+    display_code = fields.Char(size=3, translate=True, tracking=True, help="This code can be changed, it is only for a display purpose (3 letters max)")
     code = fields.Char(
         string="Payroll Code",
         required=True,
@@ -23,12 +23,11 @@ class HrWorkEntryType(models.Model):
     color = fields.Integer(default=0)
     sequence = fields.Integer(default=25)
     active = fields.Boolean(
-        'Active', default=True,
+        default=True,
         tracking=True,
         help="If the active field is set to false, it will allow you to hide the time type without removing it.")
     country_id = fields.Many2one(
         'res.country',
-        string="Country",
         tracking=True,
         domain=lambda self: [('id', 'in', self.env.companies.country_id.ids)]
     )

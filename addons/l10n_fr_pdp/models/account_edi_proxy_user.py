@@ -11,9 +11,9 @@ from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
 from odoo.addons.account.models.mail_message import bypass_token
-from odoo.addons.l10n_fr_pdp.models.account_peppol_response import PEPPOL_TO_PDP_STATUS, PDP_STATUSES
-from odoo.addons.l10n_fr_pdp.tools.demo_utils import handle_demo
-from odoo.addons.l10n_fr_pdp.utils.cdar import _parse_datetime_node as _parse_cdar_datetime_node
+from .account_peppol_response import PEPPOL_TO_PDP_STATUS, PDP_STATUSES
+from ..tools.demo_utils import handle_demo
+from ..utils.cdar import _parse_datetime_node as _parse_cdar_datetime_node
 
 _logger = logging.getLogger(__name__)
 _lt = LazyTranslate(__name__)

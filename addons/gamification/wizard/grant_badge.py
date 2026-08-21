@@ -9,9 +9,9 @@ class GamificationBadgeUserWizard(models.TransientModel):
     _name = 'gamification.badge.user.wizard'
     _description = 'Gamification User Badge Wizard'
 
-    user_id = fields.Many2one("res.users", string='User', required=True)
-    badge_id = fields.Many2one("gamification.badge", string='Badge', required=True)
-    comment = fields.Text('Comment')
+    user_id = fields.Many2one("res.users", required=True)
+    badge_id = fields.Many2one("gamification.badge", required=True)
+    comment = fields.Text()
 
     def action_grant_badge(self):
         """Wizard action for sending a badge to a chosen user"""
@@ -21,7 +21,7 @@ class GamificationBadgeUserWizard(models.TransientModel):
         uid = self.env.uid
         for wiz in self:
             if uid == wiz.user_id.id:
-                raise exceptions.UserError(_('You can not grant a badge to yourself.'))
+                raise exceptions.UserError(self.env._('You can not grant a badge to yourself.'))
 
             #create the badge
             BadgeUser.create({

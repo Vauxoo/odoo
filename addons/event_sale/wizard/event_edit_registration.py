@@ -79,14 +79,14 @@ class RegistrationEditorLine(models.TransientModel):
 
     editor_id = fields.Many2one('registration.editor')
     sale_order_line_id = fields.Many2one('sale.order.line', string='Sales Order Line')
-    event_id = fields.Many2one('event.event', string='Event', required=True)
+    event_id = fields.Many2one('event.event', required=True)
     company_id = fields.Many2one(related="event_id.company_id")
     registration_id = fields.Many2one('event.registration', 'Original Registration')
-    event_slot_id = fields.Many2one('event.slot', string='Event Slot')
-    event_ticket_id = fields.Many2one('event.event.ticket', string='Event Ticket')
-    email = fields.Char(string='Email')
-    phone = fields.Char(string='Phone')
-    name = fields.Char(string='Name')
+    event_slot_id = fields.Many2one('event.slot')
+    event_ticket_id = fields.Many2one('event.event.ticket')
+    email = fields.Char()
+    phone = fields.Char()
+    name = fields.Char()
 
     def _prepare_registration_data(self, include_event_values=False):
         self.ensure_one()

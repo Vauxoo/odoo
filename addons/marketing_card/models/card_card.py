@@ -12,7 +12,7 @@ class CardCard(models.Model):
     def _lang_get(self):
         return self.env['res.lang'].get_installed()
 
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     lang = fields.Selection(string='Language', selection=_lang_get, required=True)
     campaign_id = fields.Many2one('card.campaign', required=True, index=True, ondelete="cascade")
     res_model = fields.Selection(related='campaign_id.res_model')

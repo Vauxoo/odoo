@@ -29,7 +29,7 @@ class DiscussChannel(models.Model):
         key = kwargs['body']
         lead_command = "/lead"
         if key.strip() == lead_command:
-            msg = _(
+            msg = self.env._(
                 "Create a new lead with: "
                 "%(pre_start)s%(lead_command)s %(i_start)slead title%(i_end)s%(pre_end)s",
                 lead_command=lead_command,

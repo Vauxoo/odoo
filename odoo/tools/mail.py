@@ -48,7 +48,6 @@ __all__ = [
     "single_email_re",
 ]
 
-_logger = logging.getLogger(__name__)
 
 
 # disable strict mode when present: we rely on original non-strict

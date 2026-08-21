@@ -18,7 +18,7 @@ class PurchaseAlternativeCreate(models.TransientModel):
         compute="_compute_purchase_warn_msg",
         groups="purchase.group_warning_purchase")
     copy_products = fields.Boolean(
-        "Copy Products", default=True,
+        default=True,
         help="If this is checked, the product quantities of the original PO will be copied")
 
     @api.depends('partner_ids', 'copy_products')
@@ -32,11 +32,11 @@ class PurchaseAlternativeCreate(models.TransientModel):
             if not partner.purchase_warn_msg:
                 partner = partner.parent_id
             if partner and partner.purchase_warn_msg:
-                self.purchase_warn_msg = _("Warning for %(partner)s:\n%(warning_message)s\n", partner=partner.name, warning_message=partner.purchase_warn_msg)
+                self.purchase_warn_msg = self.env._("Warning for %(partner)s:\n%(warning_message)s\n", partner=partner.name, warning_message=partner.purchase_warn_msg)
             if self.copy_products and self.origin_po_id.order_line:
                 for line in self.origin_po_id.order_line:
                     if line.product_id.purchase_line_warn_msg:
-                        self.purchase_warn_msg += _("Warning for %(product)s:\n%(warning_message)s\n", product=line.product_id.name, warning_message=line.product_id.purchase_line_warn_msg)
+                        self.purchase_warn_msg += self.env._("Warning for %(product)s:\n%(warning_message)s\n", product=line.product_id.name, warning_message=line.product_id.purchase_line_warn_msg)
 
     def action_create_alternative(self):
         vals = self._get_alternative_values()
@@ -51,7 +51,7 @@ class PurchaseAlternativeCreate(models.TransientModel):
             action['res_id'] = alt_purchase_orders.id
             action['view_mode'] = 'form'
         else:
-            action['name'] = _('Alternative Purchase Orders')
+            action['name'] = self.env._('Alternative Purchase Orders')
             action['domain'] = [('id', 'in', alt_purchase_orders.ids)]
         return action
 

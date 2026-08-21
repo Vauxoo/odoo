@@ -22,7 +22,7 @@ class TestOrmDomainExpressionPartner(models.Model):
     website = fields.Char()
     vat = fields.Char(compute='_compute_vat')
     commercial_partner_id = fields.Many2one('test_orm.domain_expression.partner', compute='_compute_commercial_partner', store=True, recursive=True)
-    category_id = fields.Many2many('test_orm.partner.category', relation='test_orm_domain_expression_partner_category_rel', column1='partner_id', column2='category_id', default=_default_category)
+    category_id = fields.Many2many('test_orm.partner.category', relation='test_orm_domain_expression_partner_category_rel', column1='partner_id', column2='category_id', default=lambda self: self._default_category())
     user_ids = fields.One2many('test_orm.domain_expression.users', 'partner_id', string="user_ids")
     parent_id = fields.Many2one('test_orm.domain_expression.partner')
     child_ids = fields.One2many('test_orm.domain_expression.partner', 'parent_id', domain=[('active', '=', True)])

@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.bus.tests.common import BusResult
-from odoo.addons.mail.tests.common import MailCommon
+from ..common import MailCommon
 from odoo.tests import HttpCase
 
 

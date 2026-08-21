@@ -4,8 +4,8 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.const import REPORT_REASONS_MAPPING
+from .. import utils as payment_utils
+from ..const import REPORT_REASONS_MAPPING
 
 
 class PaymentMethod(models.Model):
@@ -13,13 +13,12 @@ class PaymentMethod(models.Model):
     _description = "Payment Method"
     _order = "active desc, sequence, name"
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     code = fields.Char(
-        string="Code", help="The technical code of this payment method.", required=True
+        help="The technical code of this payment method.", required=True
     )
-    sequence = fields.Integer(string="Sequence", default=1000)
+    sequence = fields.Integer(default=1000)
     primary_payment_method_id = fields.Many2one(
-        string="Primary Payment Method",
         help="The primary payment method of the current payment method, if the latter is a brand."
         '\nFor example, "Card" is the primary payment method of the card brand "VISA".',
         comodel_name="payment.method",
@@ -38,16 +37,14 @@ class PaymentMethod(models.Model):
         search="_search_is_primary",
     )
     provider_id = fields.Many2one(
-        string="Provider",
         help="The provider supporting this payment method.",
         comodel_name="payment.provider",
         ondelete="cascade",
         required=True,
         index=True,
     )
-    active = fields.Boolean(string="Active")
+    active = fields.Boolean()
     image = fields.Image(
-        string="Image",
         help="The base image used for this payment method; in a 64x64 px format.",
         max_width=64,
         max_height=64,

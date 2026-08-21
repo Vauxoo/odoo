@@ -11,8 +11,8 @@ from odoo.exceptions import RedirectWarning, ValidationError
 from odoo.http import request
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_razorpay import const
-from odoo.addons.payment_razorpay.controllers.onboarding import RazorpayController
+from .. import const
+from ..controllers.onboarding import RazorpayController
 
 _logger = get_payment_logger(__name__)
 
@@ -29,10 +29,10 @@ class PaymentProvider(models.Model):
         copy=False,
     )
     razorpay_key_secret = fields.Char(
-        string="Razorpay Key Secret", copy=False, groups="base.group_system"
+        copy=False, groups="base.group_system"
     )
     razorpay_webhook_secret = fields.Char(
-        string="Razorpay Webhook Secret", copy=False, groups="base.group_system"
+        copy=False, groups="base.group_system"
     )
 
     # OAuth fields
@@ -40,16 +40,16 @@ class PaymentProvider(models.Model):
         string="Razorpay Account ID", copy=False, groups="base.group_system"
     )
     razorpay_refresh_token = fields.Char(
-        string="Razorpay Refresh Token", copy=False, groups="base.group_system"
+        copy=False, groups="base.group_system"
     )
     razorpay_public_token = fields.Char(
-        string="Razorpay Public Token", copy=False, groups="base.group_system"
+        copy=False, groups="base.group_system"
     )
     razorpay_access_token = fields.Char(
-        string="Razorpay Access Token", copy=False, groups="base.group_system"
+        copy=False, groups="base.group_system"
     )
     razorpay_access_token_expiry = fields.Datetime(
-        string="Razorpay Access Token Expiry", copy=False, groups="base.group_system"
+        copy=False, groups="base.group_system"
     )
     razorpay_is_oauth_supported = fields.Boolean(compute="_compute_razorpay_is_oauth_supported")
 

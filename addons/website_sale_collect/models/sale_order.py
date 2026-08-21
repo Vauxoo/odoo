@@ -35,7 +35,7 @@ class SaleOrder(models.Model):
             order.fiscal_position_id = AccountFiscalPosition.with_company(
                 order.company_id
             )._get_fiscal_position(order.partner_id, delivery=order.warehouse_id.partner_id)
-        super(SaleOrder, self - in_store_orders)._compute_fiscal_position_id()
+        return super(SaleOrder, self - in_store_orders)._compute_fiscal_position_id()
 
     def _set_delivery_method(self, delivery_method, rate=None):
         """Override of `website_sale` to recompute warehouse and fiscal position when a new

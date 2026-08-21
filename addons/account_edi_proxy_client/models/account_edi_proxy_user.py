@@ -35,11 +35,10 @@ class Account_Edi_Proxy_ClientUser(models.Model):
 
     active = fields.Boolean(default=True)
     id_client = fields.Char(required=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True, index=True,
+    company_id = fields.Many2one('res.company', required=True, index=True,
         default=lambda self: self.env.company)
     edi_identification = fields.Char(required=True, help="The unique id that identifies this user, typically the vat")
     private_key_id = fields.Many2one(
-        string='Private Key',
         comodel_name='certificate.key',
         required=True,
         domain=[('public', '=', False)],
@@ -51,9 +50,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
         help="This field is used to indicate that the edi user token is out of sync with the proxy server. "
              "It is set to True when the token needs to be refreshed or updated.",
     )
-    token_sync_version = fields.Integer(
-        string='Token Sync Version',
-    )
+    token_sync_version = fields.Integer()
     proxy_type = fields.Selection(selection=[], required=True)
     edi_mode = fields.Selection(
         selection=[
@@ -120,14 +117,14 @@ class Account_Edi_Proxy_ClientUser(models.Model):
         except (ValueError, requests.exceptions.ConnectionError, requests.exceptions.MissingSchema, requests.exceptions.Timeout, requests.exceptions.HTTPError) as e:
             _logger.warning('Connection error <%(url)s>: %(error)s', {'url': url, 'error': e})
             raise AccountEdiProxyError('connection_error',
-                _('The url that this service requested returned an error. The url it tried to contact was %s', url))
+                self.env._('The url that this service requested returned an error. The url it tried to contact was %s', url))
 
         if 'error' in response:
             if response['error']['code'] == 404:
-                message = _('The url that this service tried to contact does not exist. The url was “%s”', url)
+                message = self.env._('The url that this service tried to contact does not exist. The url was “%s”', url)
             else:
                 error_message = response['error'].get('data', {}).get('message') or response['error']['message']
-                message = _(
+                message = self.env._(
                     "The url that this service requested returned an error. The url it tried to contact was %(url)s. %(error_message)s",
                     url=url,
                     error_message=error_message,
@@ -147,7 +144,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
             if error_code == 'invalid_signature':
                 raise AccountEdiProxyError(
                     error_code,
-                    _("Failed to connect to Odoo Access Point server. This might be due to another connection to Odoo Access Point "
+                    self.env._("Failed to connect to Odoo Access Point server. This might be due to another connection to Odoo Access Point "
                       "server. It can occur if you have duplicated your database. \n\n"
                       "If you are not sure how to fix this, please contact our support."),
                 )
@@ -193,7 +190,7 @@ class Account_Edi_Proxy_ClientUser(models.Model):
                 if response['error'] == 'A user already exists with this identification.':
                     # Note: Peppol IAP errors weren't made properly with error code that are then translated on
                     # Odoo side. We are for now forced to check the error message.
-                    raise UserError(_('A user already exists with theses credentials on our server. Please check your information.'))
+                    raise UserError(self.env._('A user already exists with theses credentials on our server. Please check your information.'))
                 raise UserError(response['error'])
 
         return self.create({

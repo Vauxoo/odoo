@@ -647,10 +647,10 @@ class BaseCase(case.TestCase):
                 patcher.stop()
         cls.addClassCleanup(check_remaining_patchers)
         super().setUpClass()
+        # ruff: disable[unnecessary-lambda]
         if 'standard' in cls.test_tags or 'click_all' in cls.test_tags:
             # if the method is passed directly `patch` discards the session
             # object which we need
-            # pylint: disable=unnecessary-lambda
             patcher = patch.object(
                 requests.sessions.Session,
                 'send',
@@ -658,6 +658,7 @@ class BaseCase(case.TestCase):
             )
             patcher.start()
             cls.addClassCleanup(patcher.stop)
+        # ruff: enable[unnecessary-lambda]
 
         # cannot create new registries during testing, it would mess up test
         # runs, install other modules, reporting, etc.
@@ -1706,8 +1707,8 @@ class ChromeBrowser:
             self._logger.warning('Chrome executable not found')
             raise
 
+    # ruff: disable[subprocess-popen-preexec-fn]
     def _spawn_chrome(self, cmd):
-        # pylint: disable=subprocess-popen-preexec-fn
         proc = subprocess.Popen(
             cmd,
             stderr=subprocess.DEVNULL,
@@ -1741,6 +1742,7 @@ class ChromeBrowser:
         self.stop()
 
         raise unittest.SkipTest(f'Failed to detect chrome devtools port after {BROWSER_WAIT :.1f}s.')
+    # ruff: enable[subprocess-popen-preexec-fn]
 
     @contextlib.contextmanager
     def _chrome_start(
@@ -2040,7 +2042,7 @@ class ChromeBrowser:
             # this can happen if the browser is closed. Just ignore it.
             _logger.info("Websocket error while handling request %s", params['request']['url'])
 
-    def _handle_console(self, type, args=None, stackTrace=None, **kw): # pylint: disable=redefined-builtin
+    def _handle_console(self, type, args=None, stackTrace=None, **kw): # ruff: ignore[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
         # console formatting differs somewhat from Python's, if args[0] has
         # format modifiers that many of args[1:] get formatted in, missing
         # args are replaced by empty strings and extra args are concatenated

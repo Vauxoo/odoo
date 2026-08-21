@@ -71,7 +71,7 @@ class AccountMove(models.Model):
         # if the peppol_move_state is processing/done/has been replied to
         # then it means it has been already sent to peppol proxy and we can't cancel
         if any(move.peppol_is_sent for move in self):
-            raise UserError(_("Cannot cancel an entry that has already been sent to Peppol"))
+            raise UserError(self.env._("Cannot cancel an entry that has already been sent to Peppol"))
         self.peppol_move_state = False
         self.sending_data = False
 

@@ -22,13 +22,13 @@ class EventBooth(models.Model):
     sale_order_id = fields.Many2one(
         related='sale_order_line_id.order_id', store=True, readonly=True, index='btree_not_null',
         groups='sales_team.group_sale_salesman')
-    is_paid = fields.Boolean('Is Paid', copy=False)
+    is_paid = fields.Boolean(copy=False)
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_linked_sale_order(self):
         booth_with_so = self.sudo().filtered('sale_order_id')
         if booth_with_so:
-            raise UserError(_(
+            raise UserError(self.env._(
                 'You can\'t delete the following booths as they are linked to sales orders: '
                 '%(booths)s', booths=', '.join(booth_with_so.mapped('name'))))
 

@@ -2,8 +2,8 @@
 from odoo import http
 from odoo.http import request
 
-from odoo.addons.mail.tools.discuss import Store, mail_route
-from odoo.addons.mail.tools.store_handler import store_handler_registry
+from ..tools.discuss import Store, mail_route
+from ..tools.store_handler import store_handler_registry
 
 
 class StoreController(http.Controller):

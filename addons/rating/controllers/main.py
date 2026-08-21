@@ -8,13 +8,12 @@ from odoo import http
 from odoo.http import request
 from odoo.tools.translate import _
 from odoo.tools.misc import get_lang
-from odoo.addons.rating.models.rating_data import (
+from ..models.rating_data import (
     RATING_HAPPY_VALUE,
     RATING_NEUTRAL_VALUE,
     RATING_UNHAPPY_VALUE,
 )
 
-_logger = logging.getLogger(__name__)
 
 MAPPED_RATES = {
     1: RATING_UNHAPPY_VALUE,

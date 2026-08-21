@@ -18,7 +18,7 @@ from odoo.tools.float_utils import float_is_zero
 from odoo.tools.intervals import Intervals
 from odoo.tools.misc import SENTINEL
 
-from odoo.addons.hr.models.hr_version import format_date_abbr
+from .hr_version import format_date_abbr
 from odoo.addons.mail.tools.discuss import Store
 from odoo.addons.resource.models.utils import extract_comodel_domain, filter_map_domain
 
@@ -92,7 +92,7 @@ class HrEmployee(models.Model):
     def _get_hr_responsible_domain(self):
         return "[('share', '=', False), ('company_ids', 'in', company_id), ('all_group_ids', 'in', %s)]" % self.env.ref('hr.group_hr_user').id
 
-    hr_responsible_id = fields.Many2one(related='version_id.hr_responsible_id', readonly=False, inherited=True, domain=_get_hr_responsible_domain, groups="hr.group_hr_user")
+    hr_responsible_id = fields.Many2one(related='version_id.hr_responsible_id', readonly=False, inherited=True, domain=lambda self: self._get_hr_responsible_domain(), groups="hr.group_hr_user")
 
     @api.model
     def _lang_get(self):
@@ -139,14 +139,14 @@ class HrEmployee(models.Model):
         ('presence_other', 'At Other'),
         ('presence_undetermined', 'Undetermined')], compute='_compute_presence_icon')
     show_hr_icon_display = fields.Boolean(compute='_compute_presence_icon')
-    newly_hired = fields.Boolean('Newly Hired', compute='_compute_newly_hired', search='_search_newly_hired')
+    newly_hired = fields.Boolean(compute='_compute_newly_hired', search='_search_newly_hired')
 
     active = fields.Boolean('Active', related='resource_id.active', default=True, store=True, readonly=False)
     company_id = fields.Many2one('res.company', required=True, tracking=True)
     company_country_id = fields.Many2one('res.country', 'Company Country', related='company_id.country_id', readonly=True, groups="base.group_system,hr.group_hr_user")
     company_country_code = fields.Char(related='company_country_id.code', depends=['company_country_id'], readonly=True, groups="base.group_system,hr.group_hr_user", string='Company Country Code')
     parent_company_id = fields.Many2one(related="company_id.parent_id", groups="hr.group_hr_user", readonly=True)
-    work_phone = fields.Char('Work Phone', store=True, readonly=False, tracking=True, compute="_compute_work_contact_details", inverse='_inverse_work_contact_details')
+    work_phone = fields.Char(store=True, readonly=False, tracking=True, compute="_compute_work_contact_details", inverse='_inverse_work_contact_details')
     mobile_phone = fields.Char('Work Mobile')
     work_phone_sanitized = fields.Char(compute='_compute_phone_companion_fields', store=False, export_string_translation=False)
     work_phone_formatted = fields.Char(compute='_compute_phone_companion_fields', store=False, export_string_translation=False)
@@ -159,22 +159,22 @@ class HrEmployee(models.Model):
     phone_blacklisted = fields.Boolean(groups='hr.group_hr_user')
     phone_sanitized_blacklisted = fields.Boolean(groups='hr.group_hr_user')
     phone_mobile_search = fields.Char(groups='hr.group_hr_user')
-    work_email = fields.Char('Work Email', compute="_compute_work_contact_details", store=True, inverse='_inverse_work_contact_details')
-    work_contact_id = fields.Many2one('res.partner', 'Work Contact', copy=False, index='btree_not_null')
+    work_email = fields.Char(compute="_compute_work_contact_details", store=True, inverse='_inverse_work_contact_details')
+    work_contact_id = fields.Many2one('res.partner', copy=False, index='btree_not_null')
     # private info
     legal_name = fields.Char(compute='_compute_legal_name', store=True, readonly=False, groups="hr.group_hr_user", help="The employee's official name as per government-issued or legal documents.")
     split_legal_name = fields.Boolean(compute='_compute_split_legal_name', groups="hr.group_hr_user", help="Indicates whether the legal name is split into first and last name fields based on the employee's country.")
-    private_phone = fields.Char(string="Private Phone", groups="hr.group_hr_user")
+    private_phone = fields.Char(groups="hr.group_hr_user")
     private_phone_sanitized = fields.Char(compute='_compute_restricted_phone_companion_fields', store=False, export_string_translation=False, groups='hr.group_hr_user')
     private_phone_formatted = fields.Char(compute='_compute_restricted_phone_companion_fields', store=False, export_string_translation=False, groups='hr.group_hr_user')
-    private_email = fields.Char(string="Private Email", groups="hr.group_hr_user")
-    lang = fields.Selection(selection=_lang_get, string="Lang", groups="hr.group_hr_user")
+    private_email = fields.Char(groups="hr.group_hr_user")
+    lang = fields.Selection(selection=_lang_get, groups="hr.group_hr_user")
     place_of_birth = fields.Char('Place of Birth', groups="hr.group_hr_user", tracking=True)
     country_of_birth = fields.Many2one('res.country', string="Country of Birth", groups="hr.group_hr_user", tracking=True)
-    birthday = fields.Date('Birthday', groups="hr.group_hr_user", tracking=True)
+    birthday = fields.Date(groups="hr.group_hr_user", tracking=True)
     birthday_public_display = fields.Boolean('Show Birthday To Employees', groups="hr.group_hr_user", default=False)
     birthday_public_display_string = fields.Char("Public Date of Birth", compute="_compute_birthday_public_display_string", default="hidden")
-    age = fields.Integer('Age', groups='hr.group_hr_user', compute='_compute_age')
+    age = fields.Integer(groups='hr.group_hr_user', compute='_compute_age')
 
     # For birthday group by month
     birthday_month = fields.Selection(
@@ -193,7 +193,6 @@ class HrEmployee(models.Model):
             ('11', "November"),
             ('12', "December"),
         ],
-        string="Birthday Month",
         store=True,
         compute='_compute_birthday_month',
         groups="hr.group_hr_user"
@@ -213,7 +212,7 @@ class HrEmployee(models.Model):
     is_trusted_bank_account = fields.Boolean(compute="_compute_is_trusted_bank_account", groups="hr.group_hr_user")
     primary_bank_account_id = fields.Many2one('res.partner.bank', compute="_compute_primary_bank_account_id", groups="hr.group_hr_user")
     has_multiple_bank_accounts = fields.Boolean(compute="_compute_has_multiple_bank_accounts", default=False, groups="hr.group_hr_user")
-    salary_distribution = fields.Json(string="Salary Distribution", compute='_sync_salary_distribution', groups='hr.group_hr_user', store=True, readonly=False)
+    salary_distribution = fields.Json(compute='_sync_salary_distribution', groups='hr.group_hr_user', store=True, readonly=False)
     """
     {
     `bank_account_id`: {
@@ -225,9 +224,9 @@ class HrEmployee(models.Model):
     """
 
     permit_no = fields.Char('Work Permit No', groups="hr.group_hr_user", tracking=True)
-    visa_no = fields.Char('Visa No', groups="hr.group_hr_user", tracking=True)
+    visa_no = fields.Char(groups="hr.group_hr_user", tracking=True)
     visa_expire = fields.Date('Visa Expiration Date', groups="hr.group_hr_user", tracking=True)
-    work_permit_expiration_date = fields.Date('Work Permit Expiration Date', groups="hr.group_hr_user", tracking=True)
+    work_permit_expiration_date = fields.Date(groups="hr.group_hr_user", tracking=True)
     has_work_permit = fields.Binary(string="Work Permit", groups="hr.group_hr_user")
     work_permit_scheduled_activity = fields.Boolean(default=False, groups="hr.group_hr_user")
     work_permit_name = fields.Char('work_permit_name', compute='_compute_work_permit_name', groups="hr.group_hr_user")
@@ -239,7 +238,7 @@ class HrEmployee(models.Model):
     # (see _compute_restricted_phone_companion_fields) to keep the group invariant.
     emergency_phone_sanitized = fields.Char(compute='_compute_restricted_phone_companion_fields', store=False, export_string_translation=False, groups='hr.group_hr_user')
     emergency_phone_formatted = fields.Char(compute='_compute_restricted_phone_companion_fields', store=False, export_string_translation=False, groups='hr.group_hr_user')
-    work_location_name = fields.Char("Work Location Name", compute="_compute_work_location_name")
+    work_location_name = fields.Char(compute="_compute_work_location_name")
     work_location_type = fields.Selection([
         ("home", "Home"),
         ("office", "Office"),
@@ -273,7 +272,7 @@ class HrEmployee(models.Model):
     is_in_contract = fields.Boolean(related='version_id.is_in_contract', inherited=True, groups="hr.group_hr_user")
     structure_type_id = fields.Many2one(readonly=False, related='version_id.structure_type_id', inherited=True, groups="hr.group_hr_manager")
     employee_type_id = fields.Many2one(readonly=False, related='version_id.employee_type_id', inherited=True, groups="hr.group_hr_manager")
-    hourly_cost = fields.Monetary('Hourly Cost', groups="hr.group_hr_user", tracking=True)
+    hourly_cost = fields.Monetary(groups="hr.group_hr_user", tracking=True)
     nationality_country_code = fields.Char(
         string='Nationality',
         related='version_id.country_id.code',
@@ -295,7 +294,7 @@ class HrEmployee(models.Model):
     department_color = fields.Integer("Department Color", related="department_id.color")
 
     coach_id = fields.Many2one(
-        'hr.employee', 'Coach', compute='_compute_coach', store=True, readonly=False,
+        'hr.employee', compute='_compute_coach', store=True, readonly=False,
         domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]",
         help='Select the "Employee" who is the coach of this employee.\n'
              'The "Coach" has no specific rights or responsibilities by default.')
@@ -313,7 +312,7 @@ class HrEmployee(models.Model):
         help="PIN used to Check In/Out in the Kiosk Mode of the Attendance application (if enabled in Configuration) and to change the cashier in the Point of Sale application.")
     message_main_attachment_id = fields.Many2one(groups="hr.group_hr_user")
     id_card = fields.Binary(string="ID Card Copy", groups="hr.group_hr_user")
-    driving_license = fields.Binary(string="Driving License", groups="hr.group_hr_user")
+    driving_license = fields.Binary(groups="hr.group_hr_user")
     id_card_name = fields.Char(groups="hr.group_hr_user")
     driving_license_name = fields.Char(groups="hr.group_hr_user")
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, groups="hr.group_hr_user")
@@ -1174,23 +1173,23 @@ class HrEmployee(models.Model):
 
     @api.depends('name', 'user_id.avatar_1920', 'image_1920')
     def _compute_avatar_1920(self):
-        super()._compute_avatar_1920()
+        return super()._compute_avatar_1920()
 
     @api.depends('name', 'user_id.avatar_1024', 'image_1024')
     def _compute_avatar_1024(self):
-        super()._compute_avatar_1024()
+        return super()._compute_avatar_1024()
 
     @api.depends('name', 'user_id.avatar_512', 'image_512')
     def _compute_avatar_512(self):
-        super()._compute_avatar_512()
+        return super()._compute_avatar_512()
 
     @api.depends('name', 'user_id.avatar_256', 'image_256')
     def _compute_avatar_256(self):
-        super()._compute_avatar_256()
+        return super()._compute_avatar_256()
 
     @api.depends('name', 'user_id.avatar_128', 'image_128')
     def _compute_avatar_128(self):
-        super()._compute_avatar_128()
+        return super()._compute_avatar_128()
 
     def _compute_avatar(self, avatar_field, image_field):
         employee_wo_user_and_image = self.env['hr.employee']
@@ -1202,7 +1201,7 @@ class HrEmployee(models.Model):
             if not avatar and employee.user_id:
                 avatar = employee.user_id.sudo()[avatar_field]
             employee[avatar_field] = avatar
-        super(HrEmployee, employee_wo_user_and_image)._compute_avatar(avatar_field, image_field)
+        return super(HrEmployee, employee_wo_user_and_image)._compute_avatar(avatar_field, image_field)
 
     def _compute_exceptional_location_id(self):
         current_employee_locations = self.env['hr.employee.location'].search([
@@ -1869,9 +1868,9 @@ class HrEmployee(models.Model):
                 start = format_date_abbr(self.env, first_version_sudo.date_start) if first_version_sudo.date_start else False
                 end = format_date_abbr(self.env, last_version_sudo.date_end) if last_version_sudo.date_end else False
                 if start and end:
-                    msg = self.env._("As of %(start)s to %(end)s") % {'start': start, 'end': end}
+                    msg = self.env._("As of %(start)s to %(end)s", start=start, end=end)
                 elif start:
-                    msg = self.env._("As of %s") % (start)
+                    msg = self.env._("As of %s", start)
                 else:
                     msg = self.env._("As of")
                 employee._track_set_log_message(Markup("<b>%s</b>") % msg)

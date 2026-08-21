@@ -2,7 +2,7 @@
 
 from odoo import models
 
-from odoo.addons.website_sale import const
+from .. import const
 
 
 class ProductTemplateAttributeValue(models.Model):

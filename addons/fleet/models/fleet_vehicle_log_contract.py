@@ -17,13 +17,13 @@ class FleetVehicleLogContract(models.Model):
         start_date = fields.Date.from_string(strdate)
         return fields.Date.to_string(start_date + oneyear)
 
-    vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', required=True, check_company=True, tracking=True, index=True)
+    vehicle_id = fields.Many2one('fleet.vehicle', required=True, check_company=True, tracking=True, index=True)
     cost_subtype_id = fields.Many2one('fleet.service.type', 'Contract Type', help='Cost type purchased with this cost', domain=[('category', '=', 'contract')])
     amount = fields.Monetary('Cost', tracking=True)
     date = fields.Date(help='Date when the cost has been executed')
-    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company, index=True)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, index=True)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
-    name = fields.Char(string='Name', compute='_compute_contract_name', store=True, readonly=False)
+    name = fields.Char(compute='_compute_contract_name', store=True, readonly=False)
     active = fields.Boolean(default=True)
     user_id = fields.Many2one(
         comodel_name='res.users',

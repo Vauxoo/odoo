@@ -12,13 +12,13 @@ class EventBoothRegistration(models.Model):
     _name = 'event.booth.registration'
     _description = 'Event Booth Registration'
 
-    sale_order_line_id = fields.Many2one('sale.order.line', string='Sale Order Line', required=True, index=True, ondelete='cascade')
+    sale_order_line_id = fields.Many2one('sale.order.line', required=True, index=True, ondelete='cascade')
     event_booth_id = fields.Many2one('event.booth', string='Booth', required=True, index=True)
     partner_id = fields.Many2one(
         'res.partner', related='sale_order_line_id.order_partner_id', store=True)
-    contact_name = fields.Char(string='Contact Name', compute='_compute_contact_name', readonly=False, store=True)
-    contact_email = fields.Char(string='Contact Email', compute='_compute_contact_email', readonly=False, store=True)
-    contact_phone = fields.Char(string='Contact Phone', compute='_compute_contact_phone', readonly=False, store=True)
+    contact_name = fields.Char(compute='_compute_contact_name', readonly=False, store=True)
+    contact_email = fields.Char(compute='_compute_contact_email', readonly=False, store=True)
+    contact_phone = fields.Char(compute='_compute_contact_phone', readonly=False, store=True)
 
     _unique_registration = models.Constraint(
         'unique(sale_order_line_id, event_booth_id)',
@@ -58,7 +58,7 @@ class EventBoothRegistration(models.Model):
 
     def _cancel_pending_registrations(self):
         body = Markup('<p>%(message)s: <ul>%(booth_names)s</ul></p>') % {
-            'message': _('Your order has been cancelled because the following booths have been reserved'),
+            'message': self.env._('Your order has been cancelled because the following booths have been reserved'),
             'booth_names': Markup().join(Markup('<li>%s</li>') % booth.display_name for booth in self.event_booth_id)
         }
         other_registrations = self.search([

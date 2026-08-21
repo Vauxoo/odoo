@@ -34,4 +34,4 @@ class PartnerCategory(models.Model):
         for xml_id in _LEGACY_L10N_TR_CATEGORY_XML_IDS:
             legacy_categories |= self.env.ref(f"l10n_tr_nilvera_einvoice.{xml_id}", raise_if_not_found=False)
         if any(rec in legacy_categories for rec in self):
-            raise UserError(_("The Contact Tag(s) cannot be deleted because it is used in Türkiye electronic integrations."))
+            raise UserError(self.env._("The Contact Tag(s) cannot be deleted because it is used in Türkiye electronic integrations."))

@@ -13,7 +13,6 @@ from odoo.tools import SQL, BinaryBytes, file_open, html2plaintext, zeep
 from odoo.tools.image import image_process
 from odoo.tools.sql import table_columns
 
-_logger = logging.getLogger(__name__)
 
 
 def company_default_for(fname, target_model, target_fname):
@@ -95,7 +94,7 @@ class ResCompany(models.CachedModel):
     report_footer = fields.Html(string='Report Footer', translate=True, help="Footer text displayed at the bottom of all reports.")
     company_details = fields.Html(string='Company Details', translate=True, help="Header text displayed at the top of all reports.")
     is_company_details_empty = fields.Boolean(compute='_compute_empty_company_details')
-    logo = fields.Binary(related='partner_id.image_1920', default=_get_logo, string="Company Logo", readonly=False)
+    logo = fields.Binary(related='partner_id.image_1920', default=lambda self: self._get_logo(), string="Company Logo", readonly=False)
     logo_web = fields.Binary(compute='_compute_logo_web', store=True)
     uses_default_logo = fields.Boolean(compute='_compute_uses_default_logo', store=True)
     currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self._default_currency_id())
@@ -149,7 +148,7 @@ class ResCompany(models.CachedModel):
             def init_company_defaults(env):
                 env['res.company'].with_context(active_test=False).search([])._init_company_defaults()
             self.pool.post_init(init_company_defaults, self.env)
-        super().init()
+        return super().init()
 
     def _get_company_root_delegated_field_names(self):
         """Get the set of fields delegated to the root company.

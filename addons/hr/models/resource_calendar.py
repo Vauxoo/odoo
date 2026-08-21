@@ -14,7 +14,7 @@ class ResourceCalendar(models.Model):
         for res_calendar in self:
             if res_calendar.company_id:
                 if any(res_calendar.company_id not in version.company_id.parent_ids for version in res_calendar.version_ids):
-                    raise ValidationError(self.env._("The working schedule '%s' is linked to version(s) not compatible with its new company.") % res_calendar.name)
+                    raise ValidationError(self.env._("The working schedule '%s' is linked to version(s) not compatible with its new company.", res_calendar.name))
 
     def write(self, vals):
         if self.version_ids.company_id - self.env.companies:

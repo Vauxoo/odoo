@@ -100,7 +100,7 @@ class TestOrmPartnerCategory(models.Model):
 
     name = fields.Char(required=True, translate=True)
     active = fields.Boolean(default=True)
-    color = fields.Integer(default=_get_default_color)
+    color = fields.Integer(default=lambda self: self._get_default_color())
     parent_path = fields.Char(index=True)
     parent_id = fields.Many2one('test_orm.partner.category')
     child_ids = fields.One2many('test_orm.partner.category', 'parent_id')
@@ -119,7 +119,7 @@ class TestOrmPartner(models.Model):
     active = fields.Boolean(default=True)
     website = fields.Char()
     vat = fields.Char(compute='_compute_vat')
-    category_id = fields.Many2many('test_orm.partner.category', column1='partner_id', column2='category_id', default=_default_category)
+    category_id = fields.Many2many('test_orm.partner.category', column1='partner_id', column2='category_id', default=lambda self: self._default_category())
     business_id = fields.Many2one('test_orm.business')
     user_ids = fields.One2many('test_orm.users', 'partner_id', string="user_ids")
     parent_id = fields.Many2one('test_orm.partner')

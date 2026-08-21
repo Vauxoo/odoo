@@ -4,7 +4,6 @@
     'name': 'Forum on Courses',
     'category': 'Website/eLearning',
     'summary': 'Allows to link forum on a course',
-    'description': """A Slide channel can be linked to forum. Also, profiles from slide and forum are regrouped together""",
     'depends': [
         'website_slides',
         'website_forum'

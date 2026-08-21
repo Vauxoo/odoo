@@ -73,8 +73,8 @@ class BusBus(models.Model):
 
     _description = 'Communication Bus'
 
-    channel = fields.Char('Channel')
-    message = fields.Char('Message')
+    channel = fields.Char()
+    message = fields.Char()
     create_date = fields.Datetime(index=True)
 
     @api.autovacuum

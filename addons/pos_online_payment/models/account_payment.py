@@ -15,7 +15,7 @@ class AccountPayment(models.Model):
         self.ensure_one()
 
         action = {
-            'name': _("POS Order"),
+            'name': self.env._("POS Order"),
             'type': 'ir.actions.act_window',
             'res_model': 'pos.order',
             'target': 'current',

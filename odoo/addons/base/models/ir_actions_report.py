@@ -42,7 +42,7 @@ class IrActionsReport(models.Model):
     type = fields.Char(default='ir.actions.report')
     binding_type = fields.Selection(default='report')
     model = fields.Char(required=True, string='Model Name')
-    model_id = fields.Many2one('ir.model', string='Model', compute='_compute_model_id', search='_search_model_id')
+    model_id = fields.Many2one('ir.model', compute='_compute_model_id', search='_search_model_id')
 
     report_type = fields.Selection([
         ('qweb-html', 'HTML'),
@@ -401,7 +401,7 @@ class IrActionsReport(models.Model):
         return view_obj._render_template(template, values).encode()
 
     def _handle_merge_pdfs_error(self, error=None, error_stream=None):
-        raise UserError(_("Odoo is unable to merge the generated PDFs."))
+        raise UserError(self.env._("Odoo is unable to merge the generated PDFs."))
 
     @api.model
     def _merge_pdfs(self, streams, handle_error=None):
@@ -420,7 +420,7 @@ class IrActionsReport(models.Model):
         try:
             writer.write(result_stream)
         except PdfReadError:
-            raise UserError(_("Odoo is unable to merge the generated PDFs."))
+            raise UserError(self.env._("Odoo is unable to merge the generated PDFs."))
         return result_stream
 
     def _render_qweb_pdf_prepare_streams(self, report_ref, data, res_ids=None):
@@ -493,13 +493,13 @@ class IrActionsReport(models.Model):
                 # the call should be catched before (cf /report/get_pdf_engine_state) but
                 # if get_pdf is called manually (email template), the check could be
                 # bypassed
-                raise UserError(_("Unable to find the pdf engine on this system. The PDF can not be created."))
+                raise UserError(self.env._("Unable to find the pdf engine on this system. The PDF can not be created."))
             elif engine_state == 'broken':
                 # pdf engine is installed but not working
-                raise UserError(_("The pdf engine on this system is not working."))
+                raise UserError(self.env._("The pdf engine on this system is not working."))
             elif engine_state == 'workers':
                 # the pdf engine is installed but not enough workers are available
-                raise UserError(_("Not enough workers to generate the PDF. Please try another engine or upgrade your setup."))
+                raise UserError(self.env._("Not enough workers to generate the PDF. Please try another engine or upgrade your setup."))
 
             # Disable the debug mode in the PDF rendering in order to not split the assets bundle
             # into separated files to load. This is done because of an issue in wkhtmltopdf
@@ -515,7 +515,7 @@ class IrActionsReport(models.Model):
             pdf_content, html_ids = self._run_pdf_engine(engine_name, html, report_ref=report_ref, landscape=self.env.context.get('landscape'))
 
             if not has_duplicated_ids and report_sudo.attachment and set(res_ids_wo_stream) != set(html_ids):
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Report template “%s” has an issue, please contact your administrator. \n\n"
                     "Cannot separate file to save as attachment because the report's template does not contain the"
                     " attributes 'data-oe-model' and 'data-oe-id' as part of the div with 'article' classname.",
@@ -698,7 +698,7 @@ class IrActionsReport(models.Model):
         if error_record_ids:
             action = {
                 'type': 'ir.actions.act_window',
-                'name': _('Problematic record(s)'),
+                'name': self.env._('Problematic record(s)'),
                 'res_model': report_sudo.model,
                 'domain': [('id', 'in', error_record_ids)],
                 'views': [(False, 'list'), (False, 'form')],
@@ -710,9 +710,9 @@ class IrActionsReport(models.Model):
                     'res_id': error_record_ids[0],
                 })
             raise RedirectWarning(
-                message=_('Odoo is unable to merge the generated PDFs because of %(num_errors)s corrupted file(s)', num_errors=num_errors),
+                message=self.env._('Odoo is unable to merge the generated PDFs because of %(num_errors)s corrupted file(s)', num_errors=num_errors),
                 action=action,
-                button_text=_('View Problematic Record(s)'),
+                button_text=self.env._('View Problematic Record(s)'),
             )
 
         for stream in streams_to_merge:

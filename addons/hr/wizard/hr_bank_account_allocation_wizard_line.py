@@ -10,10 +10,10 @@ class BankAccountAllocationLineWizard(models.TransientModel):
     bank_account_id = fields.Many2one('res.partner.bank', required=True, readonly=True)
 
     account_number = fields.Char(related='bank_account_id.account_number', readonly=True)
-    amount = fields.Float(string="Amount", readonly=False, digits=(16, 2))
+    amount = fields.Float(readonly=False, digits=(16, 2))
     amount_type = fields.Selection(selection='_get_amount_type_selection_vals', readonly=False)
     symbol = fields.Char(compute="_compute_symbol", readonly=True)
-    trusted = fields.Boolean(string="Trusted")
+    trusted = fields.Boolean()
     sequence = fields.Integer(default=10)
 
     @api.depends('amount_type', 'bank_account_id.currency_symbol')

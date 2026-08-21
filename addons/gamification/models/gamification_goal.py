@@ -22,26 +22,26 @@ class GamificationGoal(models.Model):
     _order = 'start_date desc, end_date desc, definition_id, id'
 
     definition_id = fields.Many2one('gamification.goal.definition', string="Goal Definition", required=True, index=True, ondelete="cascade")
-    user_id = fields.Many2one('res.users', string="User", required=True, bypass_search_access=True, index=True, ondelete="cascade")
+    user_id = fields.Many2one('res.users', required=True, bypass_search_access=True, index=True, ondelete="cascade")
     user_partner_id = fields.Many2one('res.partner', related='user_id.partner_id')
     line_id = fields.Many2one('gamification.challenge.line', string="Challenge Line", index=True, ondelete="cascade")
     challenge_id = fields.Many2one(
         related='line_id.challenge_id', store=True, readonly=True, index=True,
         help="Challenge that generated the goal, assign challenge to users "
              "to generate goals with a value in this field.")
-    start_date = fields.Date("Start Date", default=fields.Date.today)
-    end_date = fields.Date("End Date")  # no start and end = always active
+    start_date = fields.Date(default=fields.Date.today)
+    end_date = fields.Date()  # no start and end = always active
     target_goal = fields.Float('To Reach', required=True)
 # no goal = global index
     current = fields.Float("Current Value", required=True, default=0)
-    completeness = fields.Float("Completeness", compute='_get_completion')
+    completeness = fields.Float(compute='_get_completion')
     state = fields.Selection([
         ('draft', "Draft"),
         ('inprogress', "In progress"),
         ('reached', "Reached"),
         ('failed', "Failed"),
         ('canceled', "Cancelled"),
-    ], default='draft', string='State', required=True)
+    ], default='draft', required=True)
     to_update = fields.Boolean('To update')
     closed = fields.Boolean('Closed goal')
 
@@ -52,7 +52,6 @@ class GamificationGoal(models.Model):
                              "assigned to a manual goal will be reminded. "
                              "Never reminded if no value is specified.")
     last_update = fields.Date(
-        "Last Update",
         help="In case of manual goal, reminders are sent if the goal as not "
              "been updated for a while (defined in challenge). Ignored in "
              "case of non-manual goal or goal not linked to a challenge.")
@@ -290,7 +289,7 @@ class GamificationGoal(models.Model):
         for goal in self:
             if goal.state != "draft" and ('definition_id' in vals or 'user_id' in vals):
                 # avoid drag&drop in kanban view
-                raise exceptions.UserError(_('Can not modify the configuration of a started goal'))
+                raise exceptions.UserError(self.env._('Can not modify the configuration of a started goal'))
 
             if vals.get('current') and 'no_remind_goal' not in self.env.context:
                 if goal.challenge_id.report_message_frequency == 'onchange':
@@ -324,7 +323,7 @@ class GamificationGoal(models.Model):
         if self.computation_mode == 'manually':
             # open a wizard window to update the value manually
             action = {
-                'name': _("Update %s", self.definition_id.name),
+                'name': self.env._("Update %s", self.definition_id.name),
                 'id': self.id,
                 'type': 'ir.actions.act_window',
                 'views': [[False, 'form']],

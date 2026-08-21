@@ -14,7 +14,7 @@ class ProjectTaskBurndownChartReport(models.AbstractModel):
     _order = 'date'
 
     allocated_hours = fields.Float(string='Allocated Time', readonly=True)
-    date = fields.Datetime('Date', readonly=True)
+    date = fields.Datetime(readonly=True)
     date_assign = fields.Datetime(string='Assignment Date', readonly=True)
     date_deadline = fields.Date(string='Deadline', readonly=True)
     date_last_stage_update = fields.Date(string='Last Stage Update', readonly=True)
@@ -25,7 +25,7 @@ class ProjectTaskBurndownChartReport(models.AbstractModel):
         ('03_approved', 'Approved'),
         ('1_canceled', 'Cancelled'),
         ('02_changes_requested', 'Changes Requested'),
-    ], string='State', readonly=True)
+    ], readonly=True)
     is_open = fields.Boolean(string='Open', readonly=True)
     is_done = fields.Boolean(string='Done', readonly=True)
     is_canceled = fields.Boolean(string='Cancelled', readonly=True)
@@ -143,7 +143,7 @@ class ProjectTaskBurndownChartReport(models.AbstractModel):
                 stage_in_groupby = True
 
         if not date_in_groupby or not stage_in_groupby:
-            raise UserError(_('The view must be grouped by date and by Stage - Burndown chart'))
+            raise UserError(self.env._('The view must be grouped by date and by Stage - Burndown chart'))
 
     @api.model
     def _determine_domains(self, domain):

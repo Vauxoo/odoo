@@ -9,8 +9,7 @@ class Test_Inherit_Daughter(models.Model):
     _description = 'Test Inherit Daughter'
     _inherits = {'test.inherit.mother': 'template_id'}
 
-    template_id = fields.Many2one('test.inherit.mother', 'Template',
-                                  delegate=True, required=True, ondelete='cascade')
+    template_id = fields.Many2one('test.inherit.mother', delegate=True, required=True, ondelete='cascade')
     field_in_daughter = fields.Char('Field1')
 
 
@@ -40,7 +39,7 @@ class Test_Inherit_Property(models.Model):
     _name = 'test_inherit_property'
     _description = 'Test Inherit Property'
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char(required=True)
     property_foo = fields.Integer(string='Foo', company_dependent=True)
     property_bar = fields.Integer(string='Bar', company_dependent=True)
 

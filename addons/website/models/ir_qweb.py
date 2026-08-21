@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from odoo import models
 from odoo.http import request
-from odoo.addons.website.tools import add_form_signature
+from ..tools import add_form_signature
 
 
 re_background_image = re.compile(r"(background-image\s*:\s*url\(\s*['\"]?\s*)([^)'\"]+)")
@@ -52,7 +52,7 @@ class IrQweb(models.AbstractModel):
 
     def _pre_processing_att(self, attrib):
         self._copy_translate_attributes(attrib)
-        super()._pre_processing_att(attrib)
+        return super()._pre_processing_att(attrib)
 
     def _copy_translate_attributes(self, atts):
         """

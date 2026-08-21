@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Argentina - Payment Withholdings',
-    'description': """Allows to register withholdings during the payment of an invoice.""",
     'author': 'ADHOC SA',
     'countries': ['ar'],
     'category': 'Accounting/Localizations',

@@ -5,7 +5,6 @@ import logging
 from odoo import models, fields, api
 import stdnum
 
-_logger = logging.getLogger(__name__)
 
 
 class L10n_LatamPaymentRegisterCheck(models.TransientModel):

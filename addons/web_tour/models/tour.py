@@ -13,7 +13,7 @@ class Web_TourTour(models.Model):
     sharing_url = fields.Char(compute="_compute_sharing_url", string="Sharing URL")
     rainbow_man_message = fields.Html(default="<b>Good job!</b> You went through all steps of this tour.", translate=True)
     sequence = fields.Integer(default=1000)
-    custom = fields.Boolean(string="Custom")
+    custom = fields.Boolean()
     user_consumed_ids = fields.Many2many("res.users")
 
     _uniq_name = models.Constraint(

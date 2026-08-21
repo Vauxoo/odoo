@@ -49,7 +49,7 @@ class HrLeaveAllocation(models.Model):
         if 'number_of_days' not in vals and 'work_entry_type_id' not in vals:
             return res
         if not self.env.user.has_group("hr_holidays.group_hr_holidays_user") and any(allocation.state not in ('draft', 'confirm') for allocation in self):
-            raise ValidationError(_('Only an Officer or Administrator is allowed to edit the allocation duration in this status.'))
+            raise ValidationError(self.env._('Only an Officer or Administrator is allowed to edit the allocation duration in this status.'))
         self._check_employee_overtime_balance()
         return res
 
@@ -63,7 +63,7 @@ class HrLeaveAllocation(models.Model):
                 continue
             deductible = allocation.employee_id._get_deductible_employee_overtime()
             if deductible[allocation.employee_id] < 0:
-                raise ValidationError(_('The employee does not have enough overtime hours to request this leave.'))
+                raise ValidationError(self.env._('The employee does not have enough overtime hours to request this leave.'))
 
     def _get_accrual_plan_level_work_entry_prorata(self, level, start_period, start_date, end_period, end_date):
         self.ensure_one()

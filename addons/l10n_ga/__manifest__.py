@@ -2,13 +2,6 @@
     'name': "Gabon - Accounting",
     'countries': ['ga'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This module implements the tax for Gabon.
-=================================================================
-
-The Chart of Accounts is from SYSCOHADA.
-
-    """,
     'depends': [
         'l10n_syscohada',
         'account',

@@ -4,13 +4,6 @@
     'name': 'Sales Expense',
     'category': 'Sales/Sales',
     'summary': 'Quotation, Sales Orders, Delivery & Invoicing Control',
-    'description': """
-Reinvoice Employee Expense
-==========================
-
-Create some products for which you can re-invoice the costs.
-This module allow to reinvoice employee expense, by setting the SO directly on the expense.
-""",
     'depends': ['sale_management', 'hr_expense'],
     'data': [
         'data/sale_expense_data.xml',

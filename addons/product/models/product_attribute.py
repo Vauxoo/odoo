@@ -46,7 +46,7 @@ class ProductAttribute(models.Model):
         default='radio',
         required=True,
         help="The display type used in the Product Configurator.")
-    sequence = fields.Integer(string="Sequence", help="Determine the display order", index=True, default=20)
+    sequence = fields.Integer(help="Determine the display order", index=True, default=20)
 
     value_ids = fields.One2many(
         comodel_name='product.attribute.value',
@@ -115,7 +115,7 @@ class ProductAttribute(models.Model):
         if 'create_variant' in vals:
             for pa in self:
                 if vals['create_variant'] != pa.create_variant and pa.number_related_products:
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         "You cannot change the Variants Creation Mode of the attribute %(attribute)s"
                         " because it is used on the following products:\n%(products)s",
                         attribute=pa.display_name,
@@ -134,7 +134,7 @@ class ProductAttribute(models.Model):
     def _unlink_except_used_on_product(self):
         for pa in self:
             if pa.number_related_products:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "You cannot delete the attribute %(attribute)s because it is used on the"
                     " following products:\n%(products)s",
                     attribute=pa.display_name,
@@ -146,7 +146,7 @@ class ProductAttribute(models.Model):
     def action_archive(self):
         for attribute in self:
             if attribute.number_related_products:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "You cannot archive this attribute as there are still products linked to it",
                 ))
         return super().action_archive()
@@ -156,7 +156,7 @@ class ProductAttribute(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Products"),
+            'name': self.env._("Products"),
             'res_model': 'product.template.attribute.line',
             'view_mode': 'list,form',
             'domain': [('attribute_id', '=', self.id), ('product_tmpl_id.active', '=', True)],

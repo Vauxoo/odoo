@@ -19,7 +19,7 @@ class PosDetailsWizard(models.TransientModel):
         mapping = dict(values)
         return (mapping and min(mapping.values())) or self.env.cr.now()
 
-    start_date = fields.Datetime(required=True, default=_default_start_date)
+    start_date = fields.Datetime(required=True, default=lambda self: self._default_start_date())
     end_date = fields.Datetime(required=True, default=fields.Datetime.now)
     pos_config_ids = fields.Many2many('pos.config', 'pos_detail_configs',
         default=lambda s: s.env['pos.config'].search([]))

@@ -10,11 +10,11 @@ from odoo.tools.misc import file_open
 class MailComposeMessage(models.TransientModel):
     _inherit = 'mail.compose.message'
 
-    mass_mailing_id = fields.Many2one('mailing.mailing', string='Mass Mailing', ondelete='cascade')
+    mass_mailing_id = fields.Many2one('mailing.mailing', ondelete='cascade')
     campaign_id = fields.Many2one('utm.campaign', string='Mass Mailing Campaign', ondelete='set null')
     mass_mailing_create = fields.Boolean('Create Mass Mailing',
                                          help='If set, a mass mailing will be created so that you can track its results in the Email Marketing app.')
-    mailing_list_ids = fields.Many2many('mailing.list', string='Mailing List')
+    mailing_list_ids = fields.Many2many('mailing.list')
 
     def _action_send_mail(self, auto_commit=False):
         """ Override to generate the mass mailing in case only the name was
@@ -65,7 +65,7 @@ class MailComposeMessage(models.TransientModel):
                     '{original_body}'
                     '</blockquote>'
                 ).format(
-                    mailing_sent_message=Markup(_(
+                    mailing_sent_message=Markup(self.env._(
                         'Received the mailing <b>{mailing_name}</b>',
                     )).format(
                         mailing_name=self.mass_mailing_id.display_name

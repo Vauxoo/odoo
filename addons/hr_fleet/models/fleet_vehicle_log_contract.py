@@ -15,7 +15,7 @@ class FleetVehicleLogContract(models.Model):
     def action_open_employee(self):
         self.ensure_one()
         return {
-            'name': _('Related Employee'),
+            'name': self.env._('Related Employee'),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.employee',
             'view_mode': 'form',

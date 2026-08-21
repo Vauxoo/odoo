@@ -20,7 +20,7 @@ class PosPayment(models.Model):
 
     name = fields.Char(string='Label', readonly=True)
     pos_order_id = fields.Many2one('pos.order', string='Order', required=True, index=True, ondelete='cascade')
-    amount = fields.Monetary(string='Amount', required=True, currency_field='currency_id', help="Total amount of the payment.")
+    amount = fields.Monetary(required=True, currency_field='currency_id', help="Total amount of the payment.")
     amount_currency = fields.Monetary(
         string='Amount in currency',
         currency_field='foreign_currency_id',
@@ -33,11 +33,10 @@ class PosPayment(models.Model):
     )
     foreign_currency_id = fields.Many2one(
         'res.currency',
-        string='Foreign Currency',
         help="The currency in which the payment was made, if different from the order's currency.",
     )
     currency_rate = fields.Float(string='Conversion Rate', help='Conversion rate from company currency to order currency.')
-    payment_method_id = fields.Many2one('pos.payment.method', string='Payment Method', required=True)
+    payment_method_id = fields.Many2one('pos.payment.method', required=True)
     payment_date = fields.Datetime(string='Date', required=True, readonly=True, default=lambda self: fields.Datetime.now())
     partner_id = fields.Many2one('res.partner', string='Customer', related='pos_order_id.partner_id')
     session_id = fields.Many2one('pos.session', string='Session', related='pos_order_id.session_id', store=True, index=True)
@@ -52,11 +51,11 @@ class PosPayment(models.Model):
     payment_method_issuer_bank = fields.Char(string='Payment Issuer Bank')
     payment_method_payment_mode = fields.Char(string='Payment Mode')
     transaction_id = fields.Char(string='Payment Transaction ID')
-    payment_status = fields.Char(string='Payment Status')
+    payment_status = fields.Char()
     ticket = fields.Char(string='Payment Receipt Info')
     is_change = fields.Boolean(string='Is this payment change?', default=False)
     account_move_id = fields.Many2one('account.move', index='btree_not_null')
-    uuid = fields.Char(string='Uuid', readonly=True, default=lambda self: str(uuid4()), copy=False)
+    uuid = fields.Char(readonly=True, default=lambda self: str(uuid4()), copy=False)
     qr_code = fields.Char(string='QR Code', readonly=True, copy=False)
 
     _unique_uuid = models.Constraint('unique (uuid)', 'A payment with this uuid already exists')
@@ -86,10 +85,10 @@ class PosPayment(models.Model):
     def _check_amount(self):
         for payment in self:
             if payment.pos_order_id.state == 'done' or payment.pos_order_id.account_move:
-                raise ValidationError(_('You cannot edit a payment for a posted order.'))
+                raise ValidationError(self.env._('You cannot edit a payment for a posted order.'))
 
     @api.constrains('payment_method_id')
     def _check_payment_method_id(self):
         for payment in self:
             if payment.payment_method_id not in payment.session_id.config_id.payment_method_ids:
-                raise ValidationError(_('The payment method selected is not allowed in the config of the POS session.'))
+                raise ValidationError(self.env._('The payment method selected is not allowed in the config of the POS session.'))

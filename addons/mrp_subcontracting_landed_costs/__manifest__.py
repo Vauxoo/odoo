@@ -3,10 +3,6 @@
 {
     'name': 'Landed Costs With Subcontracting order',
     'summary': 'Advanced views to manage landed cost for subcontracting orders',
-    'description': """
-This module allows users to more easily identify subcontracting orders when applying landed costs,
-by also displaying the associated picking reference in the search view.
-    """,
     'depends': ['mrp_landed_costs', 'mrp_subcontracting'],
     'category': 'Supply Chain/Manufacturing',
     'data': [

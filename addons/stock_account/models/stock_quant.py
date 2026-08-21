@@ -7,15 +7,13 @@ from odoo.tools.misc import groupby
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
 
-    value = fields.Monetary('Value', compute='_compute_value', groups='stock.group_stock_manager')
+    value = fields.Monetary(compute='_compute_value', groups='stock.group_stock_manager')
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id', groups='stock.group_stock_manager')
     accounting_date = fields.Date(
-        'Accounting Date',
         help="Date at which the accounting entries will be created"
              " in case of automated inventory valuation."
              " If empty, the inventory date will be used.")
     cost_method = fields.Selection(
-        string="Cost Method",
         selection=[
             ('standard', "Standard Price"),
             ('fifo', "First In First Out (FIFO)"),
@@ -92,12 +90,12 @@ class StockQuant(models.Model):
             force_period_date = self.env.context.get('force_period_date', False)
             if force_period_date:
                 if self.uom_id.is_zero(qty):
-                    name = _('Product Quantity Confirmed')
+                    name = self.env._('Product Quantity Confirmed')
                 else:
-                    name = _('Product Quantity Updated')
+                    name = self.env._('Product Quantity Updated')
                 if self.env.uid and self.env.uid != SUPERUSER_ID:
                     name += f' ({self.env.user.display_name})'
-                res_move['inventory_name'] = name + _(' [Accounted on %s]', force_period_date)
+                res_move['inventory_name'] = name + self.env._(' [Accounted on %s]', force_period_date)
         return res_move
 
     @api.model

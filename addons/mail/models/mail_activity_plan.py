@@ -16,7 +16,7 @@ class MailActivityPlan(models.Model):
                 ['&', ('is_mail_activity', '=', True), ('transient', '=', False)])
         ]
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char(required=True)
     company_id = fields.Many2one(
         'res.company', default=lambda self: self.env.company)
     template_ids = fields.One2many(
@@ -64,5 +64,5 @@ class MailActivityPlan(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for plan, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", plan.name)
+                vals['name'] = self.env._("%s (copy)", plan.name)
         return vals_list

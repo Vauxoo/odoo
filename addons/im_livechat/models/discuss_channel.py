@@ -40,7 +40,7 @@ class DiscussChannel(models.Model):
     _inherit = ['discuss.channel']
 
     channel_type = fields.Selection(selection_add=[("livechat", "Live Chat")], ondelete={"livechat": "cascade"})
-    duration = fields.Float('Duration', compute='_compute_duration', help='Duration of the session in hours')
+    duration = fields.Float(compute='_compute_duration', help='Duration of the session in hours')
     livechat_lang_id = fields.Many2one("res.lang", string="Language", help="Lang of the visitor of the channel.")
     livechat_end_dt = fields.Datetime(
         "Session end date",
@@ -171,9 +171,9 @@ class DiscussChannel(models.Model):
         compute="_compute_livechat_matches_self_expertise",
         search="_search_livechat_matches_self_expertise",
     )
-    chatbot_current_step_id = fields.Many2one('chatbot.script.step', string='Chatbot Current Step')
+    chatbot_current_step_id = fields.Many2one('chatbot.script.step')
     chatbot_message_ids = fields.One2many('chatbot.message', 'discuss_channel_id', string='Chatbot Messages', groups='im_livechat.im_livechat_group_manager')
-    country_id = fields.Many2one('res.country', string="Country", help="Country of the visitor of the channel")
+    country_id = fields.Many2one('res.country', help="Country of the visitor of the channel")
     livechat_failure = fields.Selection(
         selection=[
             ("no_answer", "Never Answered"),
@@ -602,7 +602,7 @@ class DiscussChannel(models.Model):
         :param cancel: whether the chat request has been cancelled
         :type cancel: bool
         """
-        return _('Visitor left the conversation.')
+        return self.env._('Visitor left the conversation.')
 
     def _close_livechat_session(self, message):
         """ Set deactivate the livechat channel and notify (the operator) the reason of closing the session."""
@@ -967,7 +967,7 @@ class DiscussChannel(models.Model):
         self.sudo().chatbot_message_ids.unlink()
         return self._chatbot_post_message(
             chatbot_script,
-            Markup('<div class="o_mail_notification">%s</div>') % _('Restarting conversation...'),
+            Markup('<div class="o_mail_notification">%s</div>') % self.env._('Restarting conversation...'),
         )
 
     def _get_allowed_channel_member_create_params(self):

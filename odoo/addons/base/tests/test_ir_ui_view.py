@@ -4291,12 +4291,12 @@ class TestViewCombined(ViewCase):
             'inherit_id': a.id,
             'arch': '<a position="after"><b/></a>'
         })
-        c = self.View.create({  # pylint: disable=unused-variable
+        c = self.View.create({  # ruff: ignore[unused-variable]
             'model': 'a',
             'inherit_id': a.id,
             'arch': '<a position="after"><c/></a>'
         })
-        d = self.View.create({  # pylint: disable=unused-variable
+        d = self.View.create({  # ruff: ignore[unused-variable]
             'model': 'a',
             'inherit_id': b.id,
             'mode': 'primary',

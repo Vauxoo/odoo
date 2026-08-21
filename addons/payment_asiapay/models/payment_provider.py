@@ -5,7 +5,7 @@ from hashlib import new as hashnew
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.payment_asiapay import const
+from .. import const
 
 
 class PaymentProvider(models.Model):
@@ -15,7 +15,6 @@ class PaymentProvider(models.Model):
         selection_add=[("asiapay", "AsiaPay")], ondelete={"asiapay": "set default"}
     )
     asiapay_brand = fields.Selection(
-        string="Asiapay Brand",
         help="The brand associated to your AsiaPay account.",
         selection=[
             ("paydollar", "PayDollar"),

@@ -22,7 +22,7 @@ class IrWebsocket(models.AbstractModel):
         # or a websocket request.
         req = request or wsrequest
         self.env["ir.http"]._set_session_inactivity(req.session, inactivity_period)
-        super()._update_mail_presence(inactivity_period)
+        return super()._update_mail_presence(inactivity_period)
 
     def _on_websocket_closed(self, cookies):
         """
@@ -41,4 +41,4 @@ class IrWebsocket(models.AbstractModel):
                 # which would create a new session file in the session filestore with an arbitrary name
                 # e.g. `env['ir.websocket']._on_websocket_closed({'session_id': 'A'*84})`
                 self.env["ir.http"]._set_session_inactivity(session, force=True)
-        super()._on_websocket_closed(cookies)
+        return super()._on_websocket_closed(cookies)

@@ -11,7 +11,7 @@ class BarcodeRule(models.Model):
         return 'gs1-128' if self.env.context.get('is_gs1') else 'any'
 
     encoding = fields.Selection(
-        selection_add=[('gs1-128', 'GS1-128')], default=_default_encoding,
+        selection_add=[('gs1-128', 'GS1-128')], default=lambda self: self._default_encoding(),
         ondelete={'gs1-128': 'set default'})
     type = fields.Selection(
         selection_add=[
@@ -57,13 +57,13 @@ class BarcodeRule(models.Model):
             try:
                 re.compile(rule.pattern)
             except re.error as error:
-                raise ValidationError(_("The rule pattern '%(rule)s' is not a valid Regex: %(error)s", rule=rule.name, error=error))
+                raise ValidationError(self.env._("The rule pattern '%(rule)s' is not a valid Regex: %(error)s", rule=rule.name, error=error))
             groups = re.findall(r'\([^)]*\)', rule.pattern)
             if len(groups) != 2:
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "The rule pattern \"%s\" is not valid, it needs two groups:"
                     "\n\t- A first one for the Application Identifier (usually 2 to 4 digits);"
                     "\n\t- A second one to catch the value.",
                     rule.name))
 
-        super(BarcodeRule, (self - gs1_rules))._check_pattern()
+        return super(BarcodeRule, (self - gs1_rules))._check_pattern()

@@ -9,7 +9,7 @@ class CrmIapLeadSeniority(models.Model):
     _name = 'crm.iap.lead.seniority'
     _description = 'People Seniority'
 
-    name = fields.Char(string='Name', required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     reveal_id = fields.Char(required=True)
 
     _name_uniq = models.Constraint(

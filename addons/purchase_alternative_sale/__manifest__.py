@@ -2,7 +2,6 @@
 
 {
     'name': 'Purchase Alternative Sale',
-    'description': "Bridge module for Purchase Alternative and Sales.",
     'category': 'Supply Chain/Purchase',
     'sequence': 70,
     'depends': ['purchase_alternative', 'sale_purchase'],

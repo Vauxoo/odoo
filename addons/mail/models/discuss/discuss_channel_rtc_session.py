@@ -8,8 +8,8 @@ from dateutil.relativedelta import relativedelta
 from markupsafe import Markup
 
 from odoo import api, fields, models
-from odoo.addons.mail.tools import discuss, jwt
-from odoo.addons.mail.tools.discuss import Store
+from ...tools import discuss, jwt
+from ...tools.discuss import Store
 
 _logger = logging.getLogger(__name__)
 

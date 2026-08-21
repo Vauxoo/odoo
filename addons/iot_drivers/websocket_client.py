@@ -7,8 +7,8 @@ import websocket
 
 from threading import Thread
 
-from odoo.addons.iot_drivers.tools import communication, helpers, system
-from odoo.addons.iot_drivers.tools.system import IOT_IDENTIFIER
+from .tools import communication, helpers, system
+from .tools.system import IOT_IDENTIFIER
 
 _logger = logging.getLogger(__name__)
 websocket.enableTrace(True, level=logging.getLevelName(_logger.getEffectiveLevel()))

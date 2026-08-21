@@ -3,7 +3,7 @@ import re
 from odoo import _, api, exceptions, fields, models
 from odoo.fields import Domain
 
-from odoo.addons.marketing_card.wizards.mail_compose_message import CARD_IMAGE_URL, CARD_PREVIEW_URL
+from ..wizards.mail_compose_message import CARD_IMAGE_URL, CARD_PREVIEW_URL
 
 
 class MailingMailing(models.Model):
@@ -25,7 +25,7 @@ class MailingMailing(models.Model):
         for mailing in self:
             if mailing.card_campaign_id:
                 if mailing.sudo().mailing_model_id.model != mailing.card_campaign_id.res_model:
-                    raise exceptions.ValidationError(_(
+                    raise exceptions.ValidationError(self.env._(
                         "Card Campaign Mailing should target model %(model_name)s",
                         model_name=self.env['ir.model']._get(mailing.card_campaign_id.res_model).display_name
                     ))
@@ -34,9 +34,9 @@ class MailingMailing(models.Model):
     def _check_mailing_lang(self):
         missing_lang_mailings = self.filtered(lambda mailing: mailing.card_campaign_id and not mailing.card_lang)
         if missing_lang_mailings:
-            raise exceptions.ValidationError(_(
+            raise exceptions.ValidationError(self.env._(
                 'Missing target language for card campaign mailings:\n\t- %(mailing_names)s',
-                mailing_names=_('\n\t- ').join(mailing.display_name for mailing in missing_lang_mailings),
+                mailing_names=self.env._('\n\t- ').join(mailing.display_name for mailing in missing_lang_mailings),
             ))
 
     @api.depends('card_campaign_id')
@@ -80,16 +80,16 @@ class MailingMailing(models.Model):
         """Detect mismatches before scheduling."""
         for mailing in self.filtered('card_campaign_id'):
             if mailing.card_requires_sync_count:
-                raise exceptions.UserError(_(
+                raise exceptions.UserError(self.env._(
                     'You should update all the cards for %(mailing)s before scheduling a mailing.',
                     mailing=mailing.display_name
                 ))
-        super().action_put_in_queue()
+        return super().action_put_in_queue()
 
     def action_send_mail(self, res_ids=None):
         for mailing in self.filtered('card_campaign_id'):
             if mailing.card_requires_sync_count:
-                raise exceptions.UserError(_(
+                raise exceptions.UserError(self.env._(
                     'You should update all the cards for %(mailing)s before scheduling a mailing.',
                     mailing=mailing.display_name
                 ))

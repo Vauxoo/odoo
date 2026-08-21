@@ -21,7 +21,7 @@ class MrpProduction(models.Model):
         expired_lot_ids = self.move_raw_ids.move_line_ids.filtered(lambda ml: ml.lot_id.product_expiry_alert).lot_id.ids
         if expired_lot_ids:
             return {
-                'name': _('Confirmation'),
+                'name': self.env._('Confirmation'),
                 'type': 'ir.actions.act_window',
                 'res_model': 'expiry.picking.confirmation',
                 'view_mode': 'form',

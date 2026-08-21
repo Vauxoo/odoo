@@ -27,21 +27,18 @@ class ResPartnerBank(models.Model):
         help="Bank account type: Normal, IBAN, CLABE, or other from localization. Inferred from the bank account number.",
         compute='_compute_account_type',
     )
-    account_number = fields.Char('Account Number', required=True, search='_search_account_number')
+    account_number = fields.Char(required=True, search='_search_account_number')
     sanitized_account_number = fields.Char(
-        string="Sanitized Account Number",
         compute='_compute_sanitized_account_number',
         readonly=True, store=True,
     )
     holder_name = fields.Char(
-        string="Holder Name",
         help="Account holder name in case it is different than the name of the partner.",
         compute='_compute_account_holder_name',
         readonly=False, store=True,
     )
     partner_id = fields.Many2one(
         comodel_name='res.partner',
-        string="Partner",
         ondelete='cascade',
         index=True,
         domain=['|', ('is_company', '=', True), ('parent_id', '=', False)],
@@ -76,13 +73,12 @@ class ResPartnerBank(models.Model):
         precompute=True, store=True, readonly=False,
     )
     clearing_number = fields.Char(
-        string="Clearing Number",
         help="A clearing number (or routing number) refers to a bank, branch, or location and is used by domestic money transfer protocols (from/to bank accounts in the same country).",
     )
     show_clearing_number = fields.Boolean(compute='_compute_show_clearing_number')
 
     sequence = fields.Integer(default=10)
-    company_id = fields.Many2one('res.company', 'Company', index=True)
+    company_id = fields.Many2one('res.company', index=True)
     note = fields.Text('Notes')
     color = fields.Integer(compute='_compute_color')
 
@@ -235,7 +231,7 @@ class ResPartnerBank(models.Model):
         ])
         if not bank_account:
             if not allow_company_account_creation and partner.id in self.env['res.company']._cached_data()['partner_id']:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Please add your own bank account manually: %(account_number)s (%(partner)s)",
                     account_number=account_number,
                     partner=partner.display_name,

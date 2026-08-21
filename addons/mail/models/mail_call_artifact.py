@@ -13,8 +13,7 @@ class MailCallArtifact(models.Model):
 
     # required=False as artifact can also owned by other call models (ensured by constraints)
     discuss_call_history_id = fields.Many2one(
-        "discuss.call.history", string="Discuss Call History",
-        ondelete="cascade", required=False, index=True,
+        "discuss.call.history", ondelete="cascade", required=False, index=True,
     )
     media_id = fields.Many2one(
         "ir.attachment", string="Media Attachment", compute="_compute_media_id",

@@ -56,7 +56,7 @@ class StockWarehouse(models.Model):
 
     def _update_global_route_resupply_subcontractor(self):
         route_id = self._find_or_create_global_route('mrp_subcontracting.route_resupply_subcontractor_mto',
-                                           _('Resupply Subcontractor on Order'))
+                                           self.env._('Resupply Subcontractor on Order'))
         if not route_id.sudo().rule_ids.filtered(lambda r: r.active):
             route_id.active = False
         else:
@@ -75,7 +75,7 @@ class StockWarehouse(models.Model):
                     'product_selectable': False,
                     'company_id': self.company_id.id,
                     'sequence': 10,
-                    'name': self._format_routename(name=_('Resupply Subcontractor'))
+                    'name': self._format_routename(name=self.env._('Resupply Subcontractor'))
                 },
                 'route_update_values': {
                     'active': self.subcontracting_to_resupply,
@@ -99,7 +99,7 @@ class StockWarehouse(models.Model):
                     'company_id': self.company_id.id,
                     'action': 'pull',
                     'auto': 'manual',
-                    'route_id': self._find_or_create_global_route('stock.route_warehouse0_mto', _('Replenish on Order (MTO)')).id,
+                    'route_id': self._find_or_create_global_route('stock.route_warehouse0_mto', self.env._('Replenish on Order (MTO)')).id,
                     'name': self._format_rulename(self.lot_stock_id, subcontract_location_id, 'MTO'),
                     'location_dest_id': subcontract_location_id.id,
                     'location_src_id': self.lot_stock_id.id,
@@ -116,7 +116,7 @@ class StockWarehouse(models.Model):
                     'company_id': self.company_id.id,
                     'action': 'pull',
                     'auto': 'manual',
-                    'route_id': self._find_or_create_global_route('mrp_subcontracting.route_resupply_subcontractor_mto', _('Resupply Subcontractor on Order')).id,
+                    'route_id': self._find_or_create_global_route('mrp_subcontracting.route_resupply_subcontractor_mto', self.env._('Resupply Subcontractor on Order')).id,
                     'name': self._format_rulename(subcontract_location_id, production_location_id, False),
                     'location_dest_id': production_location_id.id,
                     'location_src_id': subcontract_location_id.id,
@@ -133,14 +133,14 @@ class StockWarehouse(models.Model):
         data, next_sequence = super(StockWarehouse, self)._get_picking_type_create_values(max_sequence)
         data.update({
             'subcontracting_type_id': {
-                'name': _('Subcontracting'),
+                'name': self.env._('Subcontracting'),
                 'code': 'mrp_operation',
                 'use_create_components_lots': True,
                 'sequence': next_sequence + 2,
                 'company_id': self.company_id.id,
             },
             'subcontracting_resupply_type_id': {
-                'name': _('Resupply Subcontractor'),
+                'name': self.env._('Resupply Subcontractor'),
                 'code': 'internal',
                 'use_create_lots': False,
                 'use_existing_lots': True,
@@ -157,13 +157,13 @@ class StockWarehouse(models.Model):
         count = self.env['ir.sequence'].search_count([('prefix', '=like', self.code + '/SBC%/%')])
         values.update({
             'subcontracting_type_id': {
-                'name': _('%(name)s Sequence subcontracting', name=self.name),
+                'name': self.env._('%(name)s Sequence subcontracting', name=self.name),
                 'prefix': self.code + '/' + ('SBC' + str(count) if count else 'SBC') + '/',
                 'padding': 5,
                 'company_id': self.company_id.id
             },
             'subcontracting_resupply_type_id': {
-                'name': _('%(name)s Sequence Resupply Subcontractor', name=self.name),
+                'name': self.env._('%(name)s Sequence Resupply Subcontractor', name=self.name),
                 'prefix': self.code + '/' + ('RES' + str(count) if count else 'RES') + '/',
                 'padding': 5,
                 'company_id': self.company_id.id

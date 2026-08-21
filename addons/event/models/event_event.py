@@ -71,19 +71,19 @@ class EventEvent(models.Model):
         return self.env['event.type']._default_question_ids()
 
     name = fields.Char(string='Event', translate=True, required=True)
-    note = fields.Html(string='Note', store=True, compute="_compute_note", readonly=False)
-    description = fields.Html(string='Description', translate=html_translate, sanitize_attributes=False, sanitize_form=False, default=_default_description)
+    note = fields.Html(store=True, compute="_compute_note", readonly=False)
+    description = fields.Html(translate=html_translate, sanitize_attributes=False, sanitize_form=False, default=lambda self: self._default_description())
     active = fields.Boolean(default=True)
     user_id = fields.Many2one(
         'res.users', string='Responsible', tracking=True,
         default=lambda self: self.env.user)
     use_barcode = fields.Boolean(compute='_compute_use_barcode')
     company_id = fields.Many2one(
-        'res.company', string='Company', change_default=True,
+        'res.company', change_default=True,
         default=lambda self: self.env.company,
         required=False, index='btree_not_null')
     organizer_id = fields.Many2one(
-        'res.partner', string='Organizer', tracking=True,
+        'res.partner', tracking=True,
         default=lambda self: self.env.company.partner_id,
         check_company=True)
     event_type_id = fields.Many2one(
@@ -105,7 +105,7 @@ class EventEvent(models.Model):
         ('cancel', 'Cancelled')
     ], default='normal', copy=False, compute='_compute_kanban_state', readonly=False, store=True, tracking=True)
     stage_id = fields.Many2one(
-        'event.stage', ondelete='restrict', default=_get_default_stage_id,
+        'event.stage', ondelete='restrict', default=lambda self: self._get_default_stage_id(),
         group_expand='_read_group_expand_full', tracking=True, copy=False)
     # Seats and computation
     seats_max = fields.Integer(
@@ -129,14 +129,14 @@ class EventEvent(models.Model):
         store=False, readonly=True, compute='_compute_seats')
     # Registration fields
     registration_ids = fields.One2many('event.registration', 'event_id', string='Attendees')
-    is_multi_slots = fields.Boolean("Is Multi Slots", copy=True,
+    is_multi_slots = fields.Boolean(copy=True,
         help="Allow multiple time slots. "
         "The communications, the maximum number of attendees and the maximum number of tickets registrations "
         "are defined for each time slot instead of the whole event.")
     event_slot_ids = fields.One2many("event.slot", "event_id", "Slots", copy=True)
     event_slot_count = fields.Integer("Slots Count", compute="_compute_event_slot_count")
     event_ticket_ids = fields.One2many(
-        'event.event.ticket', 'event_id', string='Event Ticket', copy=True,
+        'event.event.ticket', 'event_id', copy=True,
         compute='_compute_event_ticket_ids', readonly=False, store=True, precompute=True)
     event_registrations_started = fields.Boolean(
         'Registrations started', compute='_compute_event_registrations_started',
@@ -162,7 +162,7 @@ class EventEvent(models.Model):
     date_begin = fields.Datetime(string='Start Date', required=True, tracking=True,
         help="When the event is scheduled to take place (expressed in your local timezone on the form view).")
     date_end = fields.Datetime(string='End Date', required=True, tracking=True)
-    is_ongoing = fields.Boolean('Is Ongoing', compute='_compute_is_ongoing', search='_search_is_ongoing')
+    is_ongoing = fields.Boolean(compute='_compute_is_ongoing', search='_search_is_ongoing')
     is_one_day = fields.Boolean(compute='_compute_field_is_one_day')
     is_finished = fields.Boolean(compute='_compute_is_finished', search='_search_is_finished')
     # Location and communication
@@ -197,7 +197,7 @@ class EventEvent(models.Model):
             ('four_per_sheet', '4 per sheet'),
         ], default='A6', required=True)
     badge_image = fields.Image('Badge Background', max_width=1024, max_height=1024)
-    ticket_instructions = fields.Html('Ticket Instructions', translate=True,
+    ticket_instructions = fields.Html(translate=True,
         compute='_compute_ticket_instructions', store=True, readonly=False,
         help="This information will be printed on your tickets.")
     # questions
@@ -592,7 +592,7 @@ class EventEvent(models.Model):
                 not (event.date_begin <= max_end <= event.date_end)):
                 events_w_slots_outside_bounds.append(event)
         if events_w_slots_outside_bounds:
-            raise ValidationError(_(
+            raise ValidationError(self.env._(
                 "These events cannot have slots scheduled outside of their time range:\n%(event_names)s",
                 event_names="\n".join(f"- {event.name}" for event in events_w_slots_outside_bounds)
             ))
@@ -601,14 +601,14 @@ class EventEvent(models.Model):
     def _check_closing_date(self):
         for event in self:
             if event.date_end < event.date_begin:
-                raise ValidationError(_('The closing date cannot be earlier than the beginning date.'))
+                raise ValidationError(self.env._('The closing date cannot be earlier than the beginning date.'))
 
     @api.constrains('event_url')
     def _check_event_url(self):
         for event in self.filtered('event_url'):
             url = urlparse(event.event_url)
             if not (url.scheme and url.netloc):
-                raise ValidationError(_('Please enter a valid event URL.'))
+                raise ValidationError(self.env._('Please enter a valid event URL.'))
 
     @api.onchange('event_url')
     def _onchange_event_url(self):
@@ -625,8 +625,8 @@ class EventEvent(models.Model):
                 (event.event_slot_ids if event.is_multi_slots else True):
                 return {
                     'warning': {
-                        'title': _("Update the limit of registrations?"),
-                        'message': _("There are more registrations than this limit, "
+                        'title': self.env._("Update the limit of registrations?"),
+                        'message': self.env._("There are more registrations than this limit, "
                                     "the event will be sold out and the extra registrations will remain."),
                     }
                 }
@@ -645,9 +645,9 @@ class EventEvent(models.Model):
         for event in self:
             # event or its tickets are sold out
             if event.event_registrations_sold_out:
-                name = _('%(event_name)s (Sold out)', event_name=event.name)
+                name = self.env._('%(event_name)s (Sold out)', event_name=event.name)
             elif event.seats_limited and event.seats_max:
-                name = _(
+                name = self.env._(
                     '%(event_name)s (%(count)s seats remaining)',
                     event_name=event.name,
                     count=formatLang(self.env, event.seats_available, digits=0),
@@ -742,9 +742,9 @@ class EventEvent(models.Model):
         if sold_out:
             info = []  # note: somehow using list comprehension make translate.py crash in default lang
             for item in sold_out:
-                info.append(_('%(slot_name)s: missing %(count)s seat(s)', slot_name=item[0], count=item[1]))
+                info.append(self.env._('%(slot_name)s: missing %(count)s seat(s)', slot_name=item[0], count=item[1]))
             raise ValidationError(
-                _('There are not enough seats available for %(event_name)s:\n%(sold_out_info)s',
+                self.env._('There are not enough seats available for %(event_name)s:\n%(sold_out_info)s',
                   event_name=self.name,
                   sold_out_info='\n'.join(info),
                 )
@@ -761,7 +761,7 @@ class EventEvent(models.Model):
         initial_date = min(max(datetime.now(), self.date_begin), self.date_end)
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Slots'),
+            'name': self.env._('Slots'),
             'view_mode': 'calendar,list,form',
             'mobile_view_mode': 'list',
             'res_model': 'event.slot',
@@ -796,16 +796,16 @@ class EventEvent(models.Model):
         event_date_tz = datetime.replace(tzinfo=UTC).astimezone(ZoneInfo(self.date_tz))
         diff = (event_date_tz.date() - today_tz.date())
         if diff.days <= 0:
-            return _('today')
+            return self.env._('today')
         if diff.days == 1:
-            return _('tomorrow')
+            return self.env._('tomorrow')
         if (diff.days < 7):
-            return _('in %d days', diff.days)
+            return self.env._('in %d days', diff.days)
         if (diff.days < 14):
-            return _('next week')
+            return self.env._('next week')
         if event_date_tz.month == (today_tz + relativedelta(months=+1)).month:
-            return _('next month')
-        return _('on %(date)s', date=format_date(self.env, datetime, lang_code=lang_code, date_format='medium'))
+            return self.env._('next month')
+        return self.env._('on %(date)s', date=format_date(self.env, datetime, lang_code=lang_code, date_format='medium'))
 
     def _get_ics_description(self):
         """

@@ -12,7 +12,7 @@ class BaseModuleInstallRequest(models.TransientModel):
     _rec_name = "module_id"
 
     module_id = fields.Many2one(
-        'ir.module.module', string="Module", required=True,
+        'ir.module.module', required=True,
         domain=[('state', '=', "uninstalled")],
         ondelete='cascade', readonly=True,
     )
@@ -43,7 +43,7 @@ class BaseModuleInstallRequest(models.TransientModel):
                 'mail.mail_notification_light',
                 mail_content_html,
                 add_context={
-                    'model_description': _('Module Activation Request for "%(module_desc)s"', module_desc=self.module_id.shortdesc),
+                    'model_description': self.env._('Module Activation Request for "%(module_desc)s"', module_desc=self.module_id.shortdesc),
                 })
 
             mail_values = {
@@ -51,7 +51,7 @@ class BaseModuleInstallRequest(models.TransientModel):
                 'body_html': mail_body_html,
                 'email_from': self.user_id.email_formatted or self.env.user.email_formatted,
                 'recipient_ids': [(4, user.partner_id.id)],
-                'subject': _('Module Activation Request for "%(module_desc)s"', module_desc=self.module_id.shortdesc),
+                'subject': self.env._('Module Activation Request for "%(module_desc)s"', module_desc=self.module_id.shortdesc),
             }
 
             mail = self.env['mail.mail'].sudo().create(mail_values)
@@ -62,7 +62,7 @@ class BaseModuleInstallRequest(models.TransientModel):
             'tag': 'display_notification',
             'params': {
                 'type': 'success',
-                'message': _('Request sent'),
+                'message': self.env._('Request sent'),
                 'next': {'type': 'ir.actions.act_window_close'},
             }
         }
@@ -74,7 +74,7 @@ class BaseModuleInstallReview(models.TransientModel):
     _rec_name = "module_id"
 
     module_id = fields.Many2one(
-        'ir.module.module', string="Module", required=True,
+        'ir.module.module', required=True,
         domain=[('state', '=', "uninstalled")],
         ondelete='cascade', readonly=True,
     )
@@ -93,9 +93,9 @@ class BaseModuleInstallReview(models.TransientModel):
     @api.model
     def _get_depending_apps(self, module):
         if not module:
-            raise UserError(_('No module selected.'))
+            raise UserError(self.env._('No module selected.'))
         if module.state == "installed":
-            raise UserError(_('The module is already installed.'))
+            raise UserError(self.env._('The module is already installed.'))
         deps = module.upstream_dependencies()
         apps = module | deps.filtered(lambda d: d.application)
         for dep in deps:

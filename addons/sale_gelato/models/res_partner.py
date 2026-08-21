@@ -4,7 +4,7 @@ from odoo import models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.addons.sale_gelato import const
+from .. import const
 
 
 class ResPartner(models.Model):

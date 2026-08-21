@@ -8,11 +8,11 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import frozendict, html2plaintext
 
-from odoo.addons.l10n_fr_pdp.models.account_edi_proxy_user import STATUS_TO_PROCESS_CONDITION_CODE_PDP
-from odoo.addons.l10n_fr_pdp.models.account_edi_xml_ubl_21_fr import PDP_CUSTOMIZATION_ID
-from odoo.addons.l10n_fr_pdp.models.account_peppol_response import NEW_STATUSES
-from odoo.addons.l10n_fr_pdp.models.pdp_flow import FLOW_OPEN_STATES_SELECTION, FLOW_SENT_STATES, FLOW_SENT_STATES_SELECTION
-from odoo.addons.l10n_fr_pdp.utils import drom_com_territories
+from .account_edi_proxy_user import STATUS_TO_PROCESS_CONDITION_CODE_PDP
+from .account_edi_xml_ubl_21_fr import PDP_CUSTOMIZATION_ID
+from .account_peppol_response import NEW_STATUSES
+from .pdp_flow import FLOW_OPEN_STATES_SELECTION, FLOW_SENT_STATES, FLOW_SENT_STATES_SELECTION
+from ..utils import drom_com_territories
 
 PAID_CODES = frozenset({'ESC', 'RAB', 'REM', 'MPA', 'MEN'})
 G1_05_RE = re.compile(r'^(?! )(?!.*  )[A-Za-z0-9+\-_/ ]{1,20}(?<! )$')  # can't start with space, can't have 2 consecutive spaces, max 20 chars, allowed chars are alphanumeric, space, -, _, /, can't end with space
@@ -295,7 +295,7 @@ class AccountMove(models.Model):
                 changes - PDP_TRACKED_FIELDS,
                 [tv for tv in tracking_values if tv.get('field_name') not in PDP_TRACKED_FIELDS],
             )
-        super()._track_execute(track_init_values, filtered_trackings, track_records=track_records)
+        return super()._track_execute(track_init_values, filtered_trackings, track_records=track_records)
 
     def _l10n_fr_pdp_message_log_ereporting_status(self):
         self.ensure_one()

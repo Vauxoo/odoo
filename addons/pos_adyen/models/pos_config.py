@@ -5,7 +5,6 @@ import logging
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
-_logger = logging.getLogger(__name__)
 
 
 class PosConfig(models.Model):
@@ -17,4 +16,4 @@ class PosConfig(models.Model):
     def _check_adyen_ask_customer_for_tip(self):
         for config in self:
             if config.adyen_ask_customer_for_tip and (not config.tip_product_id or not config.iface_tipproduct):
-                raise ValidationError(_("Please configure a tip product for POS %s to support tipping with Adyen.", config.name))
+                raise ValidationError(self.env._("Please configure a tip product for POS %s to support tipping with Adyen.", config.name))

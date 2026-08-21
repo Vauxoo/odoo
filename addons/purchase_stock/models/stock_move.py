@@ -39,7 +39,7 @@ class StockMove(models.Model):
     def _compute_partner_id(self):
         # dropshipped moves should have their partner_ids directly set
         not_dropshipped_moves = self.filtered(lambda m: not m._is_dropshipped())
-        super(StockMove, not_dropshipped_moves)._compute_partner_id()
+        return super(StockMove, not_dropshipped_moves)._compute_partner_id()
 
     @api.depends('purchase_line_id.name')
     def _compute_description_picking(self):

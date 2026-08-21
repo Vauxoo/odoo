@@ -13,7 +13,6 @@ from odoo.addons.http_routing.tests.common import MockRequest
 from odoo.addons.website.tests.common import HttpCaseWithWebsiteUser
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 
-_logger = logging.getLogger(__name__)
 
 ATTACHMENT_DATA = [
     BinaryBytes(base64.b64decode(b))

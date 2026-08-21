@@ -3,10 +3,6 @@
 {
     'name': 'Sale Purchase',
     'summary': 'Sale based on service outsourcing.',
-    'description': """
-Allows the outsourcing of services. This module allows one to sell services provided
-by external providers and will automatically generate purchase orders directed to the service seller.
-    """,
     'category': 'Sales/Sales',
     'depends': [
         'sale',

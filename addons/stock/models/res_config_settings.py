@@ -95,7 +95,7 @@ class ResConfigSettings(models.TransientModel):
         base_user = self.env.ref('base.group_user')
         base_user_implied_ids = base_user.implied_ids
         if not self.group_stock_multi_locations and location_grp in base_user_implied_ids and warehouse_grp in base_user_implied_ids:
-            raise UserError(_("You can't deactivate the multi-location if you have more than once warehouse by company"))
+            raise UserError(self.env._("You can't deactivate the multi-location if you have more than once warehouse by company"))
 
         # Update all picking types of this company to keep their move_type aligned with the configured picking policy
         picking_types = self.env['stock.picking.type'].search([
@@ -142,7 +142,7 @@ class ResConfigSettings(models.TransientModel):
 
         if not self.group_stock_production_lot and previous_group.get('group_stock_production_lot'):
             if self.env['product.product'].search_count([('tracking', 'in', ['lot', 'serial'])], limit=1):
-                raise UserError(_("You have product(s) in stock that have lot/serial number tracking enabled. \nSwitch off tracking on all the products before switching off this setting."))
+                raise UserError(self.env._("You have product(s) in stock that have lot/serial number tracking enabled. \nSwitch off tracking on all the products before switching off this setting."))
 
         return
 

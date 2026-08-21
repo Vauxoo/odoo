@@ -20,9 +20,9 @@ class WebsiteSnippetFilter(models.Model):
     name = fields.Char(required=True, translate=True)
     action_server_id = fields.Many2one('ir.actions.server', 'Server Action', ondelete='cascade')
     field_names = fields.Char(help="A list of comma-separated field names", required=True, default='')
-    filter_id = fields.Many2one('ir.filters', 'Filter', ondelete='cascade')
+    filter_id = fields.Many2one('ir.filters', ondelete='cascade')
     limit = fields.Integer(help='The limit is the maximum number of records retrieved', required=True)
-    website_id = fields.Many2one('website', string='Website', ondelete='cascade')
+    website_id = fields.Many2one('website', ondelete='cascade')
     model_name = fields.Char(string='Model name', compute='_compute_model_name')
     help = fields.Text(
         string="Description",
@@ -42,27 +42,27 @@ class WebsiteSnippetFilter(models.Model):
     def _check_data_source_is_provided(self):
         for record in self:
             if bool(record.action_server_id) == bool(record.filter_id):
-                raise ValidationError(_("Either action_server_id or filter_id must be provided."))
+                raise ValidationError(self.env._("Either action_server_id or filter_id must be provided."))
 
     @api.constrains('limit')
     def _check_limit(self):
         """Limit must be between 1 and 16."""
         for record in self:
             if not 0 < record.limit <= 16:
-                raise ValidationError(_("The limit must be between 1 and 16."))
+                raise ValidationError(self.env._("The limit must be between 1 and 16."))
 
     @api.constrains('field_names')
     def _check_field_names(self):
         for record in self:
             for field_name in record.field_names.split(","):
                 if not field_name.strip():
-                    raise ValidationError(_("Empty field name in “%s”", record.field_names))
+                    raise ValidationError(self.env._("Empty field name in “%s”", record.field_names))
 
     def _render(self, template_key, limit, search_domain=None, with_sample=False, res_model=None, res_id=None, **custom_template_data):
         """Renders the website dynamic snippet items"""
         self and self.ensure_one()
 
-        assert '.dynamic_filter_template_' in template_key, _("You can only use template prefixed by dynamic_filter_template_ ")
+        assert '.dynamic_filter_template_' in template_key, self.env._("You can only use template prefixed by dynamic_filter_template_ ")
         if search_domain is None:
             search_domain = []
 
@@ -233,7 +233,7 @@ class WebsiteSnippetFilter(models.Model):
                 elif field_widget in ('integer', 'float'):
                     sample[field_name] = index
                 else:
-                    sample[field_name] = _('Sample %s', index + 1)
+                    sample[field_name] = self.env._('Sample %s', index + 1)
         return sample
 
     def _get_hardcoded_sample(self, model):

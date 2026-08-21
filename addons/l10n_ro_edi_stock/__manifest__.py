@@ -1,9 +1,6 @@
 {
     'name': 'Romania - E-Transport',
     'category': 'Accounting/Localizations/EDI',
-    'description': """
-E-Transport implementation for Romania
-    """,
     'depends': ['stock_delivery', 'l10n_ro_edi', 'stock_picking_batch'],
     'assets': {
         'web.assets_backend': [

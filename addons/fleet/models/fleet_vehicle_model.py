@@ -30,16 +30,16 @@ class FleetVehicleModel(models.Model):
         return [(str(i), i) for i in range(1970, current_year + 1)]
 
     name = fields.Char('Model name', required=True, tracking=True)
-    company_id = fields.Many2one('res.company', string='Company')
+    company_id = fields.Many2one('res.company')
     brand_id = fields.Many2one('fleet.vehicle.model.brand', 'Manufacturer', required=True, tracking=True, index='btree_not_null')
-    category_id = fields.Many2one('fleet.vehicle.model.category', 'Category', tracking=True)
-    vendors = fields.Many2many('res.partner', 'fleet_vehicle_model_vendors', 'model_id', 'partner_id', string='Vendors')
+    category_id = fields.Many2one('fleet.vehicle.model.category', tracking=True)
+    vendors = fields.Many2many('res.partner', 'fleet_vehicle_model_vendors', 'model_id', 'partner_id')
     image_128 = fields.Image(related='brand_id.image_128', readonly=True)
     active = fields.Boolean(default=True)
     vehicle_type = fields.Selection([('car', 'Car'), ('bike', 'Bike'), ('other', 'Other')], default='car', required=True, tracking=True)
     transmission = fields.Selection(
         selection=[('manual', 'Manual'), ('semi_automatic', 'Semi-Automatic'), ('automatic', 'Automatic')],
-        string='Transmission', tracking=True)
+        tracking=True)
     vehicle_count = fields.Integer(compute='_compute_vehicle_count', search='_search_vehicle_count')
     model_year = fields.Selection(selection='_get_year_selection', tracking=True)
     seats = fields.Integer(string='Seating Capacity', tracking=True)
@@ -51,13 +51,13 @@ class FleetVehicleModel(models.Model):
         help='''Emission Standard specifies the regulatory test procedure or \
             guideline under which a vehicle's emissions are measured.''')
     default_fuel_type = fields.Selection(FUEL_TYPES, 'Fuel Type', default='electric', tracking=True)
-    power = fields.Float('Power', tracking=True)
+    power = fields.Float(tracking=True)
     horsepower = fields.Float(tracking=True)
     electric_assistance = fields.Boolean(default=False, tracking=True)
     power_unit = fields.Selection([
         ('power', 'kW'),
         ('horsepower', 'Horsepower (hp)')
-        ], 'Power Unit', default='power', required=True)
+        ], default='power', required=True)
     vehicle_properties_definition = fields.PropertiesDefinition('Vehicle Properties')
     vehicle_range = fields.Integer(string="Range",
         help="Range represents the maximum distance a vehicle can travel on a full charge (for EVs) or \
@@ -111,11 +111,11 @@ class FleetVehicleModel(models.Model):
         context = {'default_model_id': self.id}
         if self.vehicle_count:
             view_mode = 'kanban,list,form'
-            name = _('Vehicles')
+            name = self.env._('Vehicles')
             context['search_default_model_id'] = self.id
         else:
             view_mode = 'form'
-            name = _('Vehicle')
+            name = self.env._('Vehicle')
         view = {
             'type': 'ir.actions.act_window',
             'view_mode': view_mode,

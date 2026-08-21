@@ -7,15 +7,6 @@
     'author': 'Odoo House ApS, VK DATA ApS, FlexERP ApS',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-
-Localization Module for Denmark
-===============================
-
-This is the module to manage the **accounting chart for Denmark**. Cover both one-man business as well as I/S, IVS, ApS and A/S
-Also provides Nemhandel registration and invoice sending throught the Odoo Access Point
-
-    """,
     'depends': [
         'account',
         'account_edi_proxy_client',

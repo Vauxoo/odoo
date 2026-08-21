@@ -8,11 +8,11 @@ class PosConfig(models.Model):
     _inherit = 'pos.config'
 
     floor_ids = fields.Many2many('restaurant.floor', string='Restaurant Floors', help='The restaurant floors served by this point of sale.', copy=False)
-    default_screen = fields.Selection([('tables', 'Tables'), ('register', 'Register')], string='Default Screen', default='tables')
+    default_screen = fields.Selection([('tables', 'Tables'), ('register', 'Register')], default='tables')
     use_course_allocation = fields.Boolean(string="Enable Course Allocation")
     use_show_items_on_course_ticket = fields.Boolean(string="Show Items on Fired Course Ticket", help="Show items again on the fired course ticket in preparation printer")
-    floor_plan_settings = fields.Json(string='Floor Plan Settings')
-    floor_plan = fields.Json(string='Floor Plan', compute="_compute_floor_plan")
+    floor_plan_settings = fields.Json()
+    floor_plan = fields.Json(compute="_compute_floor_plan")
 
     def _get_forbidden_change_fields(self):
         forbidden_keys = super()._get_forbidden_change_fields()
@@ -96,14 +96,14 @@ class PosConfig(models.Model):
 
     @api.model
     def load_onboarding_restaurant_scenario(self, with_demo_data=True):
-        journal, payment_methods_ids = self._create_journal_and_payment_methods(cash_journal_vals={'name': _('Cash Restaurant'), 'show_on_dashboard': False})
+        journal, payment_methods_ids = self._create_journal_and_payment_methods(cash_journal_vals={'name': self.env._('Cash Restaurant'), 'show_on_dashboard': False})
         presets = self.get_record_by_ref([
             'pos_restaurant.pos_takein_preset',
             'pos_restaurant.pos_takeout_preset',
             'pos_restaurant.pos_delivery_preset',
         ]) + self.env['pos.preset'].search([]).ids
         config = self.env['pos.config'].create({
-            'name': _('Restaurant'),
+            'name': self.env._('Restaurant'),
             'company_id': self.env.company.id,
             'journal_id': journal.id,
             'payment_method_ids': payment_methods_ids,
@@ -136,7 +136,7 @@ class PosConfig(models.Model):
 
     @api.depends('floor_plan_settings')
     def _compute_local_data_integrity(self):
-        super()._compute_local_data_integrity()
+        return super()._compute_local_data_integrity()
 
     def _load_restaurant_demo_data(self, with_demo_data=True):
         self.ensure_one()

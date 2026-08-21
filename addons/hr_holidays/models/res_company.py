@@ -19,7 +19,7 @@ class ResCompany(models.Model):
                 self.env['hr.leave'].search_count(conflict_domain, limit=1)
                 or self.env['hr.leave.allocation'].search_count(conflict_domain, limit=1)
             ):
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "The company country cannot be changed while time off leaves "
                     "or allocations with the country exist."
                 ))

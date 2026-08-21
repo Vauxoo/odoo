@@ -1,5 +1,5 @@
 from odoo.addons.populate import start_populate
-from odoo.addons.test_populate.tests.common import PopulateTestCase
+from ..common import PopulateTestCase
 
 
 class TestValuesJSON(PopulateTestCase):

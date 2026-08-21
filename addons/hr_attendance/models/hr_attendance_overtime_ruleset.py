@@ -11,7 +11,7 @@ class HrAttendanceOvertimeRuleset(models.Model):
     name = fields.Char(required=True)
     description = fields.Html()
     rule_ids = fields.One2many('hr.attendance.overtime.rule', 'ruleset_id', copy=True)
-    company_id = fields.Many2one('res.company', "Company", default=lambda self: self.env.company, index='btree_not_null')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, index='btree_not_null')
     country_id = fields.Many2one(
         'res.country',
         compute='_compute_country_id',
@@ -26,7 +26,6 @@ class HrAttendanceOvertimeRuleset(models.Model):
         ],
         required=True,
         default='max',
-        string="Rate Combination Mode",
         help=(
             "Controls how the rates from the different rules that apply are combined.\n"
             "  Max: use the highest rate. (e.g.: combined for 150% and 120 = 150%)\n"

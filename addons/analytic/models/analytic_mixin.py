@@ -15,7 +15,6 @@ class AnalyticMixin(models.AbstractModel):
     _description = 'Analytic Mixin'
 
     analytic_distribution = fields.Json(
-        'Analytic Distribution',
         compute="_compute_analytic_distribution",
         search="_search_analytic_distribution",
         store=True, copy=True, readonly=False,
@@ -38,7 +37,7 @@ class AnalyticMixin(models.AbstractModel):
                                         ON {self._table} USING gin(regexp_split_to_array(jsonb_path_query_array(analytic_distribution, '$.keyvalue()."key"')::text, '\D+'));
             """
             self.env.cr.execute(query)
-        super().init()
+        return super().init()
 
     def _query_analytic_accounts(self, table=False):
         return SQL(
@@ -101,7 +100,7 @@ class AnalyticMixin(models.AbstractModel):
             ids = search_value(value, exact=False)
             operator = 'not in' if operator.startswith('not') else 'in'
         else:
-            raise UserError(_('Operation not supported'))
+            raise UserError(self.env._('Operation not supported'))
 
         if not ids:
             # not ids found, just let it optimize to a constant
@@ -193,7 +192,7 @@ class AnalyticMixin(models.AbstractModel):
 
             for plan_id in mandatory_plans_ids:
                 if float_compare(distribution_by_root_plan.get(plan_id, 0), 100, precision_digits=decimal_precision) != 0:
-                    raise ValidationError(_("One or more lines require a 100% analytic distribution."))
+                    raise ValidationError(self.env._("One or more lines require a 100% analytic distribution."))
 
     def _sanitize_values(self, vals, decimal_precision):
         """ Normalize the float of the distribution """

@@ -3,7 +3,6 @@
 {
     'name': 'SMS on Events',
     'category': 'Marketing/Events',
-    'description': """Schedule SMS in event management""",
     'depends': ['event', 'sms'],
     'data': [
         'data/sms_data.xml',

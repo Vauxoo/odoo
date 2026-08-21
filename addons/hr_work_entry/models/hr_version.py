@@ -426,7 +426,7 @@ class HrVersion(models.Model):
                 new_vals.pop('date_start', False)
                 new_vals.pop('date_stop', False)
                 if 'duration' not in new_vals or 'date' not in new_vals:
-                    raise UserError(_('Missing date or duration on work entry'))
+                    raise UserError(self.env._('Missing date or duration on work entry'))
                 new_vals_list.append(new_vals)
                 continue
 

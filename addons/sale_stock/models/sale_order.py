@@ -21,14 +21,12 @@ class SaleOrder(models.Model):
         string='Shipping Policy', required=True, default=lambda self: self.env.company.picking_policy,
         help="It specifies goods to be deliver partially or all at once")
     warehouse_id = fields.Many2one(
-        'stock.warehouse', string='Warehouse',
-        compute='_compute_warehouse_id', store=True, readonly=False, precompute=True,
+        'stock.warehouse', compute='_compute_warehouse_id', store=True, readonly=False, precompute=True,
         init_storage='_init_column_warehouse_id',
         check_company=True)
     picking_ids = fields.One2many('stock.picking', 'sale_id', string='Transfers')
     delivery_count = fields.Integer(string='Delivery Orders', compute='_compute_picking_ids')
     late_availability = fields.Boolean(
-        string="Late Availability",
         compute='_compute_late_availability',
         search='_search_late_availability',
         help="True if any related picking has late availability"
@@ -36,7 +34,7 @@ class SaleOrder(models.Model):
     stock_reference_ids = fields.Many2many(
         'stock.reference', 'stock_reference_sale_rel',
         'sale_id', 'reference_id', string='References', copy=False)
-    effective_date = fields.Datetime("Effective Date", compute='_compute_effective_date', store=True, help="Completion date of the first delivery order.")
+    effective_date = fields.Datetime(compute='_compute_effective_date', store=True, help="Completion date of the first delivery order.")
     expected_date = fields.Datetime( help="Delivery date you can promise to the customer, computed from the minimum lead time of "
                                           "the order lines in case of Service products. In case of shipping, the shipping policy of "
                                           "the order will be taken into account to either use the minimum or maximum lead time of "
@@ -89,7 +87,7 @@ class SaleOrder(models.Model):
 
     @api.depends('picking_policy')
     def _compute_expected_date(self):
-        super(SaleOrder, self)._compute_expected_date()
+        return super(SaleOrder, self)._compute_expected_date()
 
     @api.depends('picking_ids.products_availability_state')
     def _compute_late_availability(self):
@@ -136,11 +134,11 @@ class SaleOrder(models.Model):
                 other_company.add(order_line.route_ids.company_id.id)
                 continue
             if order_line.order_id.company_id.id in company_ids_with_wh:
-                raise UserError(_('You must set a warehouse on your sale order to proceed.'))
+                raise UserError(self.env._('You must set a warehouse on your sale order to proceed.'))
             self.env['stock.warehouse'].with_company(order_line.order_id.company_id)._warehouse_redirect_warning()
         other_company_warehouses = self.env['stock.warehouse'].search([('company_id', 'in', list(other_company))])
         if any(c not in other_company_warehouses.company_id.ids for c in other_company):
-            raise UserError(_("You must have a warehouse for line using a delivery in different company."))
+            raise UserError(self.env._("You must have a warehouse for line using a delivery in different company."))
 
     def write(self, vals):
         values = vals
@@ -223,8 +221,8 @@ class SaleOrder(models.Model):
         )
         if pickings:
             res['warning'] = {
-                'title': _('Warning!'),
-                'message': _(
+                'title': self.env._('Warning!'),
+                'message': self.env._(
                     'Do not forget to change the partner on the following delivery orders: %s',
                     ','.join(pickings.mapped('name')))
             }

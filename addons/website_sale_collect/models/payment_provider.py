@@ -3,7 +3,7 @@
 from odoo import api, fields, models
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.addons.website_sale_collect import const
+from .. import const
 
 
 class PaymentProvider(models.Model):

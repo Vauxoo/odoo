@@ -4,11 +4,6 @@
     'name': 'Delivery Stock Picking Batch',
     'category': 'Supply Chain/Inventory',
     'summary': 'Batch Transfer, Carrier',
-    'description': """
-This module makes the link between the batch pickings and carrier applications.
-
-Allows to prepare batches depending on their carrier
-""",
     'depends': ['stock_delivery', 'stock_picking_batch'],
     'data': [
         'views/stock_picking_type_views.xml',

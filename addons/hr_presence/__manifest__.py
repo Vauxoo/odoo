@@ -3,17 +3,6 @@
 {
     'name': 'Employee Presence Control',
     'category': 'Human Resources',
-    'description': """
-Control Employees Presence
-==========================
-
-Based on:
-    * The IP Address
-    * The User's Session
-    * The Sent Emails
-
-Allows to contact directly the employee in case of unjustified absence.
-    """,
     'depends': ['hr', 'hr_holidays', 'sms'],
     'data': [
         'views/hr_employee_views.xml',

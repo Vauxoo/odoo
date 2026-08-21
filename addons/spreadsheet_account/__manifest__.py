@@ -3,7 +3,6 @@
     'name': "Spreadsheet Accounting Formulas",
     'category': 'Accounting',
     'summary': 'Spreadsheet Accounting formulas',
-    'description': 'Spreadsheet Accounting formulas',
     'depends': ['spreadsheet', 'account'],
     'auto_install': ['account'],
     'author': 'Odoo S.A.',

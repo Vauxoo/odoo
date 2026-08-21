@@ -6,10 +6,10 @@ class ResGroupsPrivilege(models.Model):
     _description = "Privilege"
     _order = 'sequence, name, id'
 
-    name = fields.Char(string='Name', required=True, translate=True)
-    description = fields.Text(string='Description', translate=True)
+    name = fields.Char(required=True, translate=True)
+    description = fields.Text(translate=True)
     placeholder = fields.Char(string='No group label', default=lambda self: self.env._('No'), translate=True,
         help="Label displayed when the user does not belong of any group of that scope.")
-    sequence = fields.Integer(string='Sequence', default=100)
-    category_id = fields.Many2one('ir.module.category', string='Category', index=True)
+    sequence = fields.Integer(default=100)
+    category_id = fields.Many2one('ir.module.category', index=True)
     group_ids = fields.One2many('res.groups', 'privilege_id', string='Groups')

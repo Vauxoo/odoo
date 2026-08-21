@@ -16,8 +16,8 @@ from werkzeug.urls import url_encode, url_parse
 from odoo import api, fields, models
 from odoo.fields import Command, Domain
 from odoo.addons.base.models.res_partner import _tz_get
-from odoo.addons.calendar.models.calendar_attendee import CalendarAttendee
-from odoo.addons.calendar.models.calendar_recurrence import (
+from .calendar_attendee import CalendarAttendee
+from .calendar_recurrence import (
     weekday_to_field,
     RRULE_TYPE_SELECTION,
     END_TYPE_SELECTION,
@@ -25,7 +25,7 @@ from odoo.addons.calendar.models.calendar_recurrence import (
     WEEKDAY_SELECTION,
     BYDAY_SELECTION
 )
-from odoo.addons.calendar.models.utils import interval_from_events
+from .utils import interval_from_events
 from odoo.addons.mail.tools.discuss import Store
 from odoo.tools.intervals import intervals_overlap
 from odoo.tools.translate import _
@@ -164,15 +164,14 @@ class CalendarEvent(models.Model):
 
     # description
     name = fields.Char('Meeting Subject', required=True)
-    description = fields.Html('Description',
-        help="""When synchronization with an external calendar is active, this description is synchronized \
+    description = fields.Html(help="""When synchronization with an external calendar is active, this description is synchronized \
         with the one of the associated meeting in that external calendar. Any update will be propagated there \
         and vice versa.""")
     user_id = fields.Many2one('res.users', 'Organizer', default=lambda self: self.env.user, index='btree_not_null')
     partner_id = fields.Many2one(
         'res.partner', string='Scheduled by', related='user_id.partner_id', readonly=True)
-    location = fields.Char('Location', tracking=True)
-    notes = fields.Html('Notes')  # Unlike description, internal use only
+    location = fields.Char(tracking=True)
+    notes = fields.Html()  # Unlike description, internal use only
     videocall_location = fields.Char('Meeting URL', compute='_compute_videocall_location', store=True, copy=True)
     access_token = fields.Char('Invitation Token', default=lambda self: str(uuid.uuid4()), copy=False, readonly=True)
     google_calendar_url = fields.Char('Google Calendar URL', compute="_compute_google_calendar_url",
@@ -183,12 +182,11 @@ class CalendarEvent(models.Model):
     privacy = fields.Selection(
         [('public', 'Public'),
          ('private', 'Private'),
-         ('confidential', 'Only internal users')], 'Privacy',
-        help="People to whom this event will be visible.")
+         ('confidential', 'Only internal users')], help="People to whom this event will be visible.")
     privacy_placeholder = fields.Char(compute='_compute_privacy_placeholder')
     effective_privacy = fields.Selection(
         [('public', 'Public'), ('private', 'Private'), ('confidential', 'Only internal users')],
-        'Effective Privacy', help="Whether the event is private, considering the user privacy",
+        help="Whether the event is private, considering the user privacy",
         compute="_compute_effective_privacy"
     )
     show_as = fields.Selection(
@@ -205,28 +203,28 @@ class CalendarEvent(models.Model):
         the event (only if the organizer is not the only attendee)""")
     # filtering
     active = fields.Boolean(
-        'Active', default=True,
+        default=True,
         tracking=True,
         help="If the active field is set to false, it will allow you to hide the event alarm information without removing it.")
     categ_ids = fields.Many2many(
         'calendar.event.type', 'meeting_category_rel', 'event_id', 'type_id', 'Tags')
     # timing
     start = fields.Datetime(
-        'Start', required=True, tracking=True, default=_default_start, index=True,
+        required=True, tracking=True, default=lambda self: self._default_start(), index=True,
         help="Start date of an event, without time for full days events")
     stop = fields.Datetime(
-        'Stop', required=True, tracking=True, default=_default_stop,
+        required=True, tracking=True, default=lambda self: self._default_stop(),
         compute='_compute_stop', readonly=False, store=True,
         help="Stop date of an event, without time for full days events")
     display_time = fields.Char('Event Time', compute='_compute_display_time')
     allday = fields.Boolean('All Day Duration', default=False)
     start_date = fields.Date(
-        'Start Date', store=True, tracking=True,
+        store=True, tracking=True,
         compute='_compute_dates', inverse='_inverse_dates')
     stop_date = fields.Date(
         'End Date', store=True, tracking=True,
         compute='_compute_dates', inverse='_inverse_dates')
-    duration = fields.Float('Duration', compute='_compute_duration', store=True, readonly=False)
+    duration = fields.Float(compute='_compute_duration', store=True, readonly=False)
     # linked document
     res_id = fields.Many2oneReference('Document ID', model_field='res_model')
     res_model_id = fields.Many2one('ir.model', 'Document Model', ondelete='cascade', index=True)
@@ -245,7 +243,7 @@ class CalendarEvent(models.Model):
     should_show_status = fields.Boolean(compute="_compute_should_show_status")
     partner_ids = fields.Many2many(
         'res.partner', 'calendar_event_res_partner_rel',
-        string='Attendees', default=_default_partners)
+        string='Attendees', default=lambda self: self._default_partners())
     invalid_email_partner_ids = fields.Many2many('res.partner', compute='_compute_invalid_email_partner_ids')
     unavailable_partner_ids = fields.Many2many('res.partner', string="Unavailable Attendees", compute='_compute_unavailable_partner_ids')
     # alarms
@@ -1058,7 +1056,7 @@ class CalendarEvent(models.Model):
         """ Hide private events' name for events which don't belong to the current user. """
         hidden = self.filtered(lambda event: event._check_private_event_conditions())
         hidden.display_name = _('Busy')
-        super(CalendarEvent, self - hidden)._compute_display_name()
+        return super(CalendarEvent, self - hidden)._compute_display_name()
 
     @api.model
     def _read_group(self, domain, groupby=(), aggregates=(), having=(), offset=0, limit=None, order=None) -> list[tuple]:

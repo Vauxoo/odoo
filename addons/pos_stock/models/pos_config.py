@@ -16,11 +16,11 @@ class PosConfig(models.Model):
     picking_type_id = fields.Many2one(
         'stock.picking.type',
         string='Operation Type',
-        default=_default_picking_type_id,
+        default=lambda self: self._default_picking_type_id(),
         required=True,
         domain=lambda self: [('code', '=', 'outgoing'), ('warehouse_id.company_id', '=', self.env.company.id)],
         ondelete='restrict')
-    ship_later = fields.Boolean(string="Ship Later")
+    ship_later = fields.Boolean()
     warehouse_id = fields.Many2one('stock.warehouse', compute='_compute_warehouse_id', store=True, readonly=False, precompute=True, ondelete='restrict')
     route_id = fields.Many2one('stock.route', string="Specific route for products delivered later.")
     picking_policy = fields.Selection([

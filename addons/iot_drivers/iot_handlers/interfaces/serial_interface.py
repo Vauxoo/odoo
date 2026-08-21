@@ -2,9 +2,9 @@
 
 from serial.tools.list_ports import comports
 
-from odoo.addons.iot_drivers.tools.system import IS_WINDOWS
-from odoo.addons.iot_drivers.interface import Interface
-from odoo.addons.iot_drivers.main import iot_devices
+from ...tools.system import IS_WINDOWS
+from ...interface import Interface
+from ...main import iot_devices
 import logging
 
 _logger = logging.getLogger(__name__)

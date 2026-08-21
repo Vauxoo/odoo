@@ -8,10 +8,10 @@ class CrmLeadScoringFrequency(models.Model):
     _name = 'crm.lead.scoring.frequency'
     _description = 'Lead Scoring Frequency'
 
-    variable = fields.Char('Variable', index=True)
-    value = fields.Char('Value')
-    won_count = fields.Float('Won Count', digits=(16, 1))  # Float because we add 0.1 to avoid zero Frequency issue
-    lost_count = fields.Float('Lost Count', digits=(16, 1))  # Float because we add 0.1 to avoid zero Frequency issue
+    variable = fields.Char(index=True)
+    value = fields.Char()
+    won_count = fields.Float(digits=(16, 1))  # Float because we add 0.1 to avoid zero Frequency issue
+    lost_count = fields.Float(digits=(16, 1))  # Float because we add 0.1 to avoid zero Frequency issue
     team_id = fields.Many2one('crm.team', 'Sales Team', ondelete="cascade")
 
 
@@ -27,4 +27,4 @@ class CrmLeadScoringFrequencyField(models.Model):
         'ir.model.fields', domain=[('model_id.model', '=', 'crm.lead')], required=True,
         ondelete='cascade',
     )
-    color = fields.Integer('Color', default=_get_default_color)
+    color = fields.Integer(default=lambda self: self._get_default_color())

@@ -3,11 +3,6 @@
 {
     'name': 'Tours',
     'category': 'Hidden',
-    'description': """
-Odoo Web tours.
-========================
-
-""",
     'depends': ['web'],
     'data': [
         'views/tour_views.xml',

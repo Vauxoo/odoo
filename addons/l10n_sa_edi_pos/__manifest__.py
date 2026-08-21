@@ -14,9 +14,6 @@
         'receipt/pos_order_receipt.xml',
     ],
     'summary': "ZATCA E-Invoicing, support for PoS",
-    'description': """
-E-invoice implementation for Saudi Arabia; Integration with ZATCA (POS)
-    """,
     'category': 'Accounting/Localizations/EDI',
     'license': 'LGPL-3',
     'assets': {

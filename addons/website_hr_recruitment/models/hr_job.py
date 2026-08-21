@@ -26,7 +26,7 @@ class HrJob(models.Model):
         return self.env['ir.qweb']._render("website_hr_recruitment.default_website_rating", raise_if_not_found=False)
 
     def _get_default_job_details(self):
-        return _("""
+        return self.env._("""
             <span class="text-muted small">Time to Answer</span>
             <h6>2 open days</h6>
             <span class="text-muted small">Process</span>
@@ -54,12 +54,12 @@ spirit. To be successful, you will have solid solving problem skills.''')
     website_published = fields.Boolean(help='Set if the application is published on the website of the company.', tracking=True)
     website_description = fields.Html(
         'Website description', translate=html_translate,
-        default=_get_default_website_description, prefetch=False,
+        default=lambda self: self._get_default_website_description(), prefetch=False,
         sanitize_overridable=True,
         sanitize_attributes=False, sanitize_form=False)
     website_rating = fields.Html(
         'Website rating', translate=html_translate,
-        default=_get_default_website_rating, prefetch=False,
+        default=lambda self: self._get_default_website_rating(), prefetch=False,
         sanitize_overridable=True,
         sanitize_attributes=False, sanitize_form=False)
     job_details = fields.Html(
@@ -67,7 +67,7 @@ spirit. To be successful, you will have solid solving problem skills.''')
         translate=True,
         help="Complementary information that will appear on the job submission page",
         sanitize_attributes=False,
-        default=_get_default_job_details)
+        default=lambda self: self._get_default_job_details())
     full_url = fields.Char('job URL', compute='_compute_full_url')
 
     @api.depends('website_url')

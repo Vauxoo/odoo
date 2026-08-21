@@ -6,9 +6,6 @@
     'category': 'Sales/Point of Sale',
     'sequence': 6,
     'summary': 'Link module between pos_restaurant and pos_loyalty',
-    'description': """
-This module correct some behaviors when both module are installed.
-""",
     'depends': ['pos_restaurant', 'pos_loyalty'],
     'auto_install': True,
     'assets': {

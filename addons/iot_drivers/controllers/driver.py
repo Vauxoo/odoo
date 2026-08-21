@@ -13,9 +13,9 @@ from werkzeug.exceptions import InternalServerError
 from odoo import http, tools
 from odoo.http.stream import Stream
 
-from odoo.addons.iot_drivers.event_manager import event_manager
-from odoo.addons.iot_drivers.tools import communication, helpers, route
-from odoo.addons.iot_drivers.tools.system import IOT_IDENTIFIER
+from ..event_manager import event_manager
+from ..tools import communication, helpers, route
+from ..tools.system import IOT_IDENTIFIER
 
 _logger = logging.getLogger(__name__)
 

@@ -58,7 +58,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'default_account_id': 'l10n_kr_101140',
             },
             'cash': {
-                'name': _('Cash'),
+                'name': self.env._('Cash'),
                 'type': 'cash',
                 'default_account_id': 'l10n_kr_101110',
             },

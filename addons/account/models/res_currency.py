@@ -14,9 +14,9 @@ class ResCurrency(models.Model):
     def _get_fiscal_country_codes(self):
         return ','.join(self.env.companies.mapped('account_fiscal_country_id.code'))
 
-    display_rounding_warning = fields.Boolean(string="Display Rounding Warning", compute='_compute_display_rounding_warning',
+    display_rounding_warning = fields.Boolean(compute='_compute_display_rounding_warning',
         help="The warning informs a rounding factor change might be dangerous on res.currency's form view.")
-    fiscal_country_codes = fields.Char(store=False, default=_get_fiscal_country_codes)
+    fiscal_country_codes = fields.Char(store=False, default=lambda self: self._get_fiscal_country_codes())
 
     @api.depends('rounding')
     def _compute_display_rounding_warning(self):
@@ -30,7 +30,7 @@ class ResCurrency(models.Model):
             rounding_val = vals['rounding']
             for record in self:
                 if (rounding_val > record.rounding or rounding_val == 0) and record._has_accounting_entries():
-                    raise UserError(_("You cannot reduce the number of decimal places of a currency which has already been used to make accounting entries."))
+                    raise UserError(self.env._("You cannot reduce the number of decimal places of a currency which has already been used to make accounting entries."))
 
         return super().write(vals)
 

@@ -15,7 +15,7 @@ class MailPushDevice(models.Model):
     _description = "Push Notification Device"
 
     partner_id = fields.Many2one(
-        'res.partner', string='Partner', index=True, required=True,
+        'res.partner', index=True, required=True,
         default=lambda self: self.env.user.partner_id)
     endpoint = fields.Char(string='Browser endpoint', required=True)
     keys = fields.Char(string='Browser keys', required=True,

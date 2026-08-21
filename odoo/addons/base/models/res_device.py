@@ -29,23 +29,22 @@ class ResDeviceLog(models.Model):
     _rec_names_search = ('ip_address', 'user_agent')
 
     # Fields that identify a session
-    session_identifier = fields.Char('Session Identifier', required=True, index='btree')
-    user_id = fields.Integer(string='User', required=True, index='btree')
+    session_identifier = fields.Char(required=True, index='btree')
+    user_id = fields.Integer(required=True, index='btree')
     # Note:
     # `user_id` is an Integer to keep a reference to the user even when the user
     # is deleted. This avoids having a foreign key.
     # Fields that identify a device for a given session (comes from the HTTP request information
     ip_address = fields.Char('IP Address', required=True)
-    user_agent = fields.Char('User Agent', required=True)
+    user_agent = fields.Char(required=True)
     # Store the country and city as this data may change over time for the same IP address
-    country = fields.Char('Country')
-    city = fields.Char('City')
+    country = fields.Char()
+    city = fields.Char()
     # Fields that represent the device's activity
-    first_activity = fields.Datetime('First Activity', required=True)
-    last_activity = fields.Datetime('Last Activity', required=True, index='btree')
+    first_activity = fields.Datetime(required=True)
+    last_activity = fields.Datetime(required=True, index='btree')
     # Field that determine the "status" of the session/device on disk
-    revoked = fields.Boolean('Revoked',
-                            help="""If True, the session file corresponding to this device
+    revoked = fields.Boolean(help="""If True, the session file corresponding to this device
                                     no longer exists on the filesystem.""")
 
     _composite_idx = models.Index('(session_identifier, ip_address, user_agent, id) WHERE revoked IS NOT TRUE')
@@ -179,19 +178,19 @@ class ResDevice(models.Model):
     _order = 'last_activity desc'
 
     session_identifier = fields.Char('Session identifier', readonly=True)
-    user_id = fields.Many2one('res.users', string='User', readonly=True)
+    user_id = fields.Many2one('res.users', readonly=True)
     ip_address = fields.Char('IP Address', readonly=True)
-    country = fields.Char('Country', readonly=True)
-    city = fields.Char('City', readonly=True)
-    user_agent = fields.Char('User Agent', readonly=True)
-    first_activity = fields.Datetime('First Activity', readonly=True)
-    last_activity = fields.Datetime('Last Activity', readonly=True)
-    revoked = fields.Boolean('Revoked', readonly=True)
+    country = fields.Char(readonly=True)
+    city = fields.Char(readonly=True)
+    user_agent = fields.Char(readonly=True)
+    first_activity = fields.Datetime(readonly=True)
+    last_activity = fields.Datetime(readonly=True)
+    revoked = fields.Boolean(readonly=True)
 
-    platform = fields.Char('Platform', compute='_compute_device_info', readonly=True)
-    browser = fields.Char('Browser', compute='_compute_device_info', readonly=True)
-    browser_version = fields.Char('Browser Version', compute='_compute_device_info', readonly=True)
-    browser_language = fields.Char('Browser Language', compute='_compute_device_info', readonly=True)
+    platform = fields.Char(compute='_compute_device_info', readonly=True)
+    browser = fields.Char(compute='_compute_device_info', readonly=True)
+    browser_version = fields.Char(compute='_compute_device_info', readonly=True)
+    browser_language = fields.Char(compute='_compute_device_info', readonly=True)
     device_type = fields.Char('Type', compute='_compute_device_info', readonly=True)
 
     is_current = fields.Boolean('Current', compute='_compute_is_current', readonly=True)
@@ -271,10 +270,10 @@ class ResSession(models.Model):
 
     device_ids = fields.One2many('res.device', compute='_compute_session_info', readonly=True)
     ip_address = fields.Char('IP Address', compute='_compute_session_info', readonly=True)
-    user_agent = fields.Char('User Agent', compute='_compute_session_info', readonly=True)
-    country = fields.Char('Country', compute='_compute_session_info', readonly=True)
-    city = fields.Char('City', compute='_compute_session_info', readonly=True)
-    first_activity = fields.Datetime('First Activity', compute='_compute_session_info', readonly=True)
+    user_agent = fields.Char(compute='_compute_session_info', readonly=True)
+    country = fields.Char(compute='_compute_session_info', readonly=True)
+    city = fields.Char(compute='_compute_session_info', readonly=True)
+    first_activity = fields.Datetime(compute='_compute_session_info', readonly=True)
 
     is_current = fields.Boolean('Current', compute='_compute_is_current', readonly=True)
 

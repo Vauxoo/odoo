@@ -33,7 +33,7 @@ class UtmSource(models.Model):
 
         create_date = record.create_date or fields.Datetime.today()
         model_description = self.env['ir.model']._get(record._name).name
-        return _(
+        return self.env._(
             '%(content)s (%(model_description)s created on %(create_date)s)',
             content=content,
             model_description=model_description,
@@ -52,7 +52,7 @@ class UtmSource(models.Model):
         for xml_id in utm_source_xml_ids:
             utm_source = self.env.ref(xml_id, raise_if_not_found=False)
             if utm_source and utm_source in self:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Oops, you can't delete the Source '%s'.\n"
                     "Doing so would be like tearing down a load-bearing wall \u2014 not the best idea.",
                     utm_source.name

@@ -2,7 +2,6 @@
 
 {
     'name': 'Indonesia - Point of Sale',
-    'description': """Indonesian Point of Sale""",
     'category': 'Accounting/Localizations/Point of Sale',
     'depends': [
         'l10n_id',

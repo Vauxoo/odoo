@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 
 from odoo import _, fields, models
-from odoo.addons.l10n_vn_edi_viettel.models.sinvoice_service import SInvoiceService
+from .sinvoice_service import SInvoiceService
 
 
 class ResCompany(models.Model):
@@ -62,14 +62,14 @@ class ResCompany(models.Model):
         if error_message:
             return "", error_message
         if 'access_token' not in token_data:  # Just in case something else go wrong and it's missing the token
-            return "", _('Connection to the API failed, please try again later.')
+            return "", self.env._('Connection to the API failed, please try again later.')
 
         access_token = token_data['access_token']
 
         try:
             access_token_expiry = datetime.now() + timedelta(seconds=int(token_data['expires_in']))
         except ValueError:  # Simple security measure in case we don't get the expected format in the response.
-            return "", _('Error while parsing API answer. Please try again later.')
+            return "", self.env._('Error while parsing API answer. Please try again later.')
 
         # Tokens are valid for 5 minutes. Storing it helps reduce api calls and speed up things a little bit.
         credentials_company.write({

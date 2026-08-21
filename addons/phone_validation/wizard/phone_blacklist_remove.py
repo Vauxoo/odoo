@@ -13,7 +13,7 @@ class PhoneBlacklistRemove(models.TransientModel):
 
     def action_unblacklist_apply(self):
         if self.reason:
-            message = Markup('<p>%s</p>') % _("Unblock Reason: %(reason)s", reason=self.reason)
+            message = Markup('<p>%s</p>') % self.env._("Unblock Reason: %(reason)s", reason=self.reason)
         else:
             message = None
         return self.env['phone.blacklist']._remove(

@@ -6,7 +6,7 @@ from odoo import api, models, fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import SQL
 
-from odoo.addons.l10n_hr_edi.tools.api import (
+from ..tools.api import (
     _mer_api_mark_paid,
     _mer_api_query_document_process_status_inbox,
     _mer_api_query_document_process_status_outbox,

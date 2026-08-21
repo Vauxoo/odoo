@@ -93,15 +93,15 @@ class ProjectProject(models.Model):
         else:
             self_sudo.favorite_user_ids = [Command.unlink(self.env.uid)]
 
-    name = fields.Char("Name", index='trigram', required=True, tracking=True, translate=True, default_export_compatible=True)
+    name = fields.Char(index='trigram', required=True, tracking=True, translate=True, default_export_compatible=True)
     description = fields.Html(help="Description to provide more information and context about this project")
     active = fields.Boolean(default=True, copy=False, export_string_translation=False)
     sequence = fields.Integer(default=10, export_string_translation=False)
     partner_id = fields.Many2one('res.partner', string='Customer', bypass_search_access=True, tracking=True, domain="['|', ('company_id', '=?', company_id), ('company_id', '=', False)]", index='btree_not_null')
     partner_phone = fields.Char(related='partner_id.phone', readonly=False, export_string_translation=False)
     partner_email = fields.Char(related='partner_id.email', readonly=False, export_string_translation=False)
-    company_id = fields.Many2one('res.company', string='Company', compute="_compute_company_id", inverse="_inverse_company_id", store=True, readonly=False)
-    currency_id = fields.Many2one('res.currency', compute="_compute_currency_id", compute_sql="_compute_sql_currency_id", compute_sudo=True, string="Currency", readonly=True, export_string_translation=False)
+    company_id = fields.Many2one('res.company', compute="_compute_company_id", inverse="_inverse_company_id", store=True, readonly=False)
+    currency_id = fields.Many2one('res.currency', compute="_compute_currency_id", compute_sql="_compute_sql_currency_id", compute_sudo=True, readonly=True, export_string_translation=False)
     analytic_account_balance = fields.Monetary(related="account_id.balance")
     account_id = fields.Many2one('account.analytic.account', copy=False, domain="['|', ('company_id', '=', False), ('company_id', '=?', company_id)]", ondelete='set null')
 
@@ -116,12 +116,12 @@ class ProjectProject(models.Model):
     resource_calendar_id = fields.Many2one(
         'resource.calendar', string='Working Time', compute='_compute_resource_calendar_id', export_string_translation=False)
     type_ids = fields.Many2many('project.task.type', 'project_task_type_rel', 'project_id', 'type_id', string='Tasks Stages', export_string_translation=False)
-    task_count = fields.Integer(compute='_compute_task_count', string="Task Count", export_string_translation=False)
-    open_task_count = fields.Integer(compute='_compute_open_task_count', string="Open Task Count", export_string_translation=False)
+    task_count = fields.Integer(compute='_compute_task_count', export_string_translation=False)
+    open_task_count = fields.Integer(compute='_compute_open_task_count', export_string_translation=False)
     task_ids = fields.One2many('project.task', 'project_id', string='Tasks', export_string_translation=False,
                                domain="[('is_closed', '=', False)]")
     color = fields.Integer(string='Color Index', export_string_translation=False)
-    user_id = fields.Many2one('res.users', string='Project Manager', default=lambda self: self.env.user, tracking=True, falsy_value_label=_lt("👤 Unassigned"),
+    user_id = fields.Many2one('res.users', string='Project Manager', default=lambda self: self.env.user, tracking=True, falsy_value_label="👤 Unassigned",
         domain="[('share', '=', False), '|', ('company_id', '=?', company_id), ('company_ids', 'in', company_id)]")
     alias_id = fields.Many2one(help="Internal email associated with this project. Incoming emails are automatically synchronized "
                                     "with Tasks (or optionally Issues if the Issue Tracker module is installed).")
@@ -146,8 +146,8 @@ class ProjectProject(models.Model):
              "Other Rules:\n"
              "- Internal users can open a task from a direct link, even without project access.\n"
              "- Project admins have access to private projects, even if not followers.\n")
-    privacy_visibility_warning = fields.Char('Privacy Visibility Warning', compute='_compute_privacy_visibility_warning', export_string_translation=False)
-    access_instruction_message = fields.Char('Access Instruction Message', compute='_compute_access_instruction_message', export_string_translation=False)
+    privacy_visibility_warning = fields.Char(compute='_compute_privacy_visibility_warning', export_string_translation=False)
+    access_instruction_message = fields.Char(compute='_compute_access_instruction_message', export_string_translation=False)
     date_start = fields.Date(string='Start Date', copy=False)
     date = fields.Date(string='Expiration Date', copy=False, index=True, tracking=True,
         help="Date on which this project ends. The timeframe defined on the project is taken into account when viewing its planning.")
@@ -164,8 +164,8 @@ class ProjectProject(models.Model):
     collaborator_count = fields.Integer('# Collaborators', compute='_compute_collaborator_count', compute_sudo=True, export_string_translation=False)
 
     # Not `required` since this is an option to enable in project settings.
-    stage_id = fields.Many2one('project.project.stage', string='Stage', ondelete='restrict', groups="project.group_project_stages",
-        tracking=True, index=True, copy=False, default=_default_stage_id, group_expand='_read_group_expand_full')
+    stage_id = fields.Many2one('project.project.stage', ondelete='restrict', groups="project.group_project_stages",
+        tracking=True, index=True, copy=False, default=lambda self: self._default_stage_id(), group_expand='_read_group_expand_full')
     duration_tracking = fields.Json(groups="project.group_project_stages")
     rotting_days = fields.Integer(groups="project.group_project_stages")
     is_rotting = fields.Boolean(groups="project.group_project_stages")
@@ -173,7 +173,7 @@ class ProjectProject(models.Model):
 
     update_ids = fields.One2many('project.update', 'project_id', export_string_translation=False)
     update_count = fields.Integer(compute='_compute_total_update_ids', export_string_translation=False)
-    last_update_id = fields.Many2one('project.update', string='Last Update', copy=False, index='btree_not_null', export_string_translation=False)
+    last_update_id = fields.Many2one('project.update', copy=False, index='btree_not_null', export_string_translation=False)
     last_update_status = fields.Selection(selection=[
         ('on_track', 'On Track'),
         ('at_risk', 'At Risk'),

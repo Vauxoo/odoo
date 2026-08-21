@@ -9,7 +9,7 @@ class FleetVehicleTag(models.Model):
     _description = 'Vehicle Tag'
 
     name = fields.Char('Tag Name', required=True, translate=True)
-    color = fields.Integer('Color')
+    color = fields.Integer()
 
     _name_uniq = models.Constraint(
         'unique (name)',

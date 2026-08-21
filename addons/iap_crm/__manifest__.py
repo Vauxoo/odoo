@@ -4,7 +4,6 @@
 {
     'name': "IAP / CRM",
     'summary': """Bridge between IAP and CRM""",
-    'description': """Bridge between IAP and CRM""",
     'category': 'Hidden/Tools',
     'depends': [
         'crm',

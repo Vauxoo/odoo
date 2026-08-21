@@ -19,7 +19,7 @@ class PosConfig(models.Model):
     def _check_self_order_online_payment_method_id(self):
         for config in self:
             if config.self_ordering_mode == 'mobile' and config.self_ordering_service_mode == 'each' and config.self_order_online_payment_method_id and not config.self_order_online_payment_method_id._get_online_payment_providers(config.id, error_if_invalid=True):
-                raise ValidationError(_("The online payment method used for self-order in a POS config must have at least one published payment provider supporting the currency of that POS config."))
+                raise ValidationError(self.env._("The online payment method used for self-order in a POS config must have at least one published payment provider supporting the currency of that POS config."))
 
     def has_valid_self_payment_method(self):
         res = super().has_valid_self_payment_method()

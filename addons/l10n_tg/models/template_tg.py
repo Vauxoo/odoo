@@ -8,7 +8,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('tg')
     def _get_tg_template_data(self):
         return {
-            'name': _('SYSCOHADA for Companies'),
+            'name': self.env._('SYSCOHADA for Companies'),
             'parent': 'syscohada',
             'code_digits': '6',
         }

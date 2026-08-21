@@ -29,7 +29,6 @@ class ResCompany(models.Model):
     account_production_wip_overhead_account_id = fields.Many2one('account.account', string='Production WIP Overhead Account', check_company=True)
 
     inventory_period = fields.Selection(
-        string='Inventory Period',
         selection=[
             ('manual', 'Manual'),
             ('daily', 'Daily'),
@@ -49,7 +48,6 @@ class ResCompany(models.Model):
     )
 
     cost_method = fields.Selection(
-        string="Cost Method",
         selection=[
             ('standard', "Standard Price"),
             ('fifo', "First In First Out (FIFO)"),
@@ -74,7 +72,7 @@ class ResCompany(models.Model):
             if not raise_error_if_closed:
                 return
             # No account moves to create, so nothing to display.
-            raise UserError(_("Everything is correctly closed"))
+            raise UserError(self.env._("Everything is correctly closed"))
         if not self.account_stock_journal_id:
             raise UserError(self.env._("Please set the Journal for Inventory Valuation in the settings."))
         if not self.account_stock_valuation_id:
@@ -84,7 +82,7 @@ class ResCompany(models.Model):
             'journal_id': self.account_stock_journal_id.id,
             'date': at_date or fields.Date.context_today(self),
             'closing_datetime': datetime.combine(at_date, time.max) if at_date else fields.Datetime.now(),
-            'ref': _('Stock Closing'),
+            'ref': self.env._('Stock Closing'),
             'inventory_closing': True,
             'line_ids': [Command.create(aml_vals) for aml_vals in aml_vals_list],
             'company_id': self.id,
@@ -95,7 +93,7 @@ class ResCompany(models.Model):
 
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Journal Items"),
+            'name': self.env._("Journal Items"),
             'res_model': 'account.move',
             'res_id': account_move.id,
             'views': [(False, 'form')],
@@ -243,7 +241,7 @@ class ResCompany(models.Model):
                 location_account,
                 stock_account,
                 balance,
-                _('Closing: Location Reclassification - [%(account)s]', account=location_account.display_name),
+                self.env._('Closing: Location Reclassification - [%(account)s]', account=location_account.display_name),
             )
             amls_vals_list += amls_vals
         return amls_vals_list
@@ -278,7 +276,7 @@ class ResCompany(models.Model):
                 account,
                 account_variation,
                 balance,
-                _('Closing: Stock Variation Global for company [%(company)s]', company=self.display_name),
+                self.env._('Closing: Stock Variation Global for company [%(company)s]', company=self.display_name),
             )
             amls_vals_list += amls_vals
 
@@ -326,7 +324,7 @@ class ResCompany(models.Model):
                 expense_acc,
                 variation_acc,
                 balance_over_period,
-                _('Closing: Stock Variation Over Period'),
+                self.env._('Closing: Stock Variation Over Period'),
             )
             amls_vals_list += amls_vals
 

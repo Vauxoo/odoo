@@ -4,7 +4,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Domain
 from odoo.tools import format_list
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 
 
 class MailPollOption(models.Model):

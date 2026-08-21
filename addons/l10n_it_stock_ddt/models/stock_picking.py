@@ -51,7 +51,7 @@ class StockPicking(models.Model):
     def _action_done(self):
         for picking in self.filtered(lambda p: p.picking_type_id.l10n_it_ddt_sequence_id):
             picking.l10n_it_ddt_number = picking.picking_type_id.l10n_it_ddt_sequence_id.next_by_id()
-        super()._action_done()
+        return super()._action_done()
 
 
 class StockPickingType(models.Model):
@@ -63,9 +63,9 @@ class StockPickingType(models.Model):
         ir_seq_prefix = sequence_code + 'DDT'
         if warehouse_id:
             wh = self.env['stock.warehouse'].browse(warehouse_id)
-            ir_seq_name = _('%(warehouse)s Sequence %(code)s', warehouse=wh.name, code=sequence_code)
+            ir_seq_name = self.env._('%(warehouse)s Sequence %(code)s', warehouse=wh.name, code=sequence_code)
         else:
-            ir_seq_name = _('Sequence %(code)s', code=sequence_code)
+            ir_seq_name = self.env._('Sequence %(code)s', code=sequence_code)
         return ir_seq_name, ir_seq_prefix
 
     @api.model_create_multi

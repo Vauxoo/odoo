@@ -3,9 +3,6 @@
 {
     'name': 'MRP Subcontracting Repair',
     'category': 'Supply Chain/Repair',
-    'description': """
-Bridge module between MRP subcontracting and Repair
-    """,
     'depends': [
         'mrp_subcontracting', 'repair'
     ],

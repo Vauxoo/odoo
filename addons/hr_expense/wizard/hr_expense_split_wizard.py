@@ -7,7 +7,7 @@ class HrExpenseSplitWizard(models.TransientModel):
     _name = 'hr.expense.split.wizard'
     _description = 'Expense Split Wizard'
 
-    expense_id = fields.Many2one(comodel_name='hr.expense', string='Expense', required=True)
+    expense_id = fields.Many2one(comodel_name='hr.expense', required=True)
     expense_split_line_ids = fields.One2many(comodel_name='hr.expense.split', inverse_name='wizard_id')
     total_amount_currency = fields.Monetary(string='Total Amount', compute='_compute_total_amount_currency', currency_field='currency_id')
     total_amount_currency_original = fields.Monetary(
@@ -66,4 +66,4 @@ class HrExpenseSplitWizard(models.TransientModel):
         (self.expense_id | copied_expenses).split_expense_origin_id = self.expense_id.split_expense_origin_id or self.expense_id
         all_related_expenses = copied_expenses | self.expense_id | split_expense_ids
 
-        return all_related_expenses._get_records_action(name=_("Split Expenses"))
+        return all_related_expenses._get_records_action(name=self.env._("Split Expenses"))

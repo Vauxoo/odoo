@@ -17,4 +17,4 @@ class BaseDocumentLayout(models.TransientModel):
                 company_details += Markup('<br> ICE: %s') % ice
         return company_details
 
-    company_details = fields.Html(default=_default_company_details)
+    company_details = fields.Html(default=lambda self: self._default_company_details())

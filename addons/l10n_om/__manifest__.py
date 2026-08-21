@@ -2,17 +2,6 @@
     'name': 'Oman - Accounting',
     'category': 'Accounting/Localizations/Account Charts',
     'author': 'Odoo S.A.',
-    'description': """
-Oman Accounting Module
-=================================================================
-Oman accounting basic charts and localization.
-Activates:
-- Chart of Accounts
-- Taxes
-- VAT Return
-- Fiscal Positions
-- States
-""",
     'countries': ['om'],
     'depends': [
         'account',

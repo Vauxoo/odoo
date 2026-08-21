@@ -10,7 +10,7 @@ class WebClient(WebclientController):
         if channel := self._link_visitor_to_livechat(livechat_channel_id):
             channel.is_pending_chat_request = False
             store.add(channel, "_store_open_chat_window_fields")
-        super().store_init_livechat(store, livechat_channel_id=livechat_channel_id)
+        return super().store_init_livechat(store, livechat_channel_id=livechat_channel_id)
 
     @classmethod
     def _link_visitor_to_livechat(self, livechat_channel_id):

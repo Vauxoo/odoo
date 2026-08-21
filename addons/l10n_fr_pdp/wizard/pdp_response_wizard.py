@@ -66,7 +66,6 @@ class PdpResponseWizard(models.TransientModel):
     )
     currency_id = fields.Many2one(
         comodel_name='res.currency',
-        string='Currency',
         compute='_compute_currency_id',
         store=True,
         precompute=True,

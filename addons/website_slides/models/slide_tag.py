@@ -6,7 +6,7 @@ class SlideTag(models.Model):
     _name = 'slide.tag'
     _description = 'Slide Tag'
 
-    name = fields.Char('Name', required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
 
     _slide_tag_unique = models.Constraint(
         'UNIQUE(name)',

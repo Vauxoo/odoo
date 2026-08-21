@@ -69,7 +69,7 @@ class EventLeadRule(models.Model):
 
     # Definition
     name = fields.Char('Rule Name', required=True, translate=True)
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     lead_ids = fields.One2many(
         'crm.lead', 'event_lead_rule_id', string='Created Leads',
         groups='sales_team.group_sale_salesman')
@@ -92,16 +92,14 @@ class EventLeadRule(models.Model):
         'event.type', string='Event Templates',
         help='Filter the attendees to include those of this specific event category. If not set, no event category restriction will be applied.')
     event_id = fields.Many2one(
-        'event.event', string='Event',
-        domain="[('company_id', 'in', [company_id or current_company_id, False])]",
+        'event.event', domain="[('company_id', 'in', [company_id or current_company_id, False])]",
         help='Filter the attendees to include those of this specific event. If not set, no event restriction will be applied.')
     company_id = fields.Many2one(
-        'res.company', string='Company',
-        help="Restrict the trigger of this rule to events belonging to a specific company.\nIf not set, no company restriction will be applied.")
+        'res.company', help="Restrict the trigger of this rule to events belonging to a specific company.\nIf not set, no company restriction will be applied.")
     event_registration_filter = fields.Text(string="Registrations Domain", help="Filter the attendees that will or not generate leads.")
     # Lead default_value fields
     lead_type = fields.Selection([
-        ('lead', 'Lead'), ('opportunity', 'Opportunity')], string="Lead Type", required=True,
+        ('lead', 'Lead'), ('opportunity', 'Opportunity')], required=True,
         default=lambda self: 'lead' if self.env.user.has_group('crm.group_use_lead') else 'opportunity',
         help="Default lead type when this rule is applied.")
     lead_sales_team_id = fields.Many2one(
@@ -183,7 +181,7 @@ class EventLeadRule(models.Model):
                 # check if registrations are part of a group, for example a sale order, to know if we update or create leads
                 for toupdate_leads, _group_key, group_registrations in rule_group_info[rule]:
                     if toupdate_leads:
-                        additionnal_description = group_registrations._get_lead_description(_("New registrations"), line_counter=True)
+                        additionnal_description = group_registrations._get_lead_description(self.env._("New registrations"), line_counter=True)
                         for lead in toupdate_leads:
                             lead.write({
                                 'description': "%s<br/>%s" % (lead.description, additionnal_description),

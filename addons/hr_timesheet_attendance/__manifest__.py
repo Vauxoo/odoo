@@ -2,9 +2,6 @@
 
 {
     'name': "Timesheets/attendances reporting",
-    'description': """
-    Module linking the attendance module to the timesheet app.
-    """,
     'category': 'Human Resources/Attendances',
     'version': '1.1',
 

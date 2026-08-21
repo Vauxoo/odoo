@@ -8,7 +8,7 @@ class SlideChannelPartner(models.Model):
     _table = 'slide_channel_partner'
     _rec_name = 'partner_id'
 
-    active = fields.Boolean(string='Active', default=True)
+    active = fields.Boolean(default=True)
     channel_id = fields.Many2one('slide.channel', string='Course', index=True, required=True, ondelete='cascade')
     member_status = fields.Selection([
         ('invited', 'Invite Sent'),
@@ -31,8 +31,8 @@ class SlideChannelPartner(models.Model):
     next_slide_id = fields.Many2one('slide.slide', string='Next Lesson', compute='_compute_next_slide_id')
 
     # Invitation
-    invitation_link = fields.Char('Invitation Link', compute="_compute_invitation_link")
-    last_invitation_date = fields.Datetime('Last Invitation Date')
+    invitation_link = fields.Char(compute="_compute_invitation_link")
+    last_invitation_date = fields.Datetime()
 
     _channel_partner_uniq = models.Constraint(
         'unique(channel_id, partner_id)',
@@ -192,7 +192,7 @@ class SlideChannelPartner(models.Model):
                 karma_per_users[user] = {
                     'gain': karma if completed else karma * -1,
                     'source': channel,
-                    'reason': _('Course Finished') if completed else _('Course Set Uncompleted'),
+                    'reason': self.env._('Course Finished') if completed else self.env._('Course Set Uncompleted'),
                 }
 
             self.env['res.users']._add_karma_batch(karma_per_users)
@@ -252,7 +252,7 @@ class SlideChannelPartner(models.Model):
             email_values['body_html'] = template._render_encapsulate(
                 'mail.mail_notification_light', email_values['body_html'],
                 add_context={
-                    'model_description': _('Completed Course')  # tde fixme: translate into partner lang
+                    'model_description': self.env._('Completed Course')  # tde fixme: translate into partner lang
                 },
                 context_record=record.channel_id,
             )

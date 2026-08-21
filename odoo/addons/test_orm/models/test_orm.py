@@ -107,7 +107,7 @@ class TestOrmDiscussion(models.Model):
     important_emails = fields.One2many('test_orm.emailmessage', 'discussion',
                                        domain=[('important', '=', True)])
 
-    history = fields.Json('History', default={'delete_messages': []})
+    history = fields.Json(default={'delete_messages': []})
     attributes_definition = fields.PropertiesDefinition('Message Properties')  # see message@attributes
 
     def _domain_very_important(self):
@@ -192,7 +192,7 @@ class TestOrmMessage(models.Model):
         rows = self.env.execute_query(SQL(
             'SELECT id FROM %s WHERE char_length("body") %s %s',
             SQL.identifier(self._table),
-            SQL(operator),  # pylint: disable=sql-injection
+            SQL(operator),  # ruff: ignore[sql-injection]
             value,
         ))
         ids = [t[0] for t in rows]
@@ -233,8 +233,7 @@ class TestOrmEmailmessage(models.Model):
     _inherits = {'test_orm.message': 'message'}
     _inherit = 'properties.base.definition.mixin'
 
-    message = fields.Many2one('test_orm.message', 'Message',
-                              required=True, ondelete='cascade')
+    message = fields.Many2one('test_orm.message', required=True, ondelete='cascade')
     email_to = fields.Char('To')
     active = fields.Boolean('Active Message', related='message.active', store=True, related_sudo=False)
 
@@ -1000,7 +999,7 @@ class TestOrmModel_Image(models.Model):
     image = fields.Image()
     image_512 = fields.Image("Image 512", related='image', max_width=512, max_height=512, store=True, readonly=False)
     image_256 = fields.Image("Image 256", related='image', max_width=256, max_height=256, store=False, readonly=False)
-    image_128 = fields.Image("Image 128", max_width=128, max_height=128)
+    image_128 = fields.Image(max_width=128, max_height=128)
     image_64 = fields.Image("Image 64", related='image', max_width=64, max_height=64, store=True, attachment=False, readonly=False)
 
 
@@ -1192,7 +1191,7 @@ class TestOrmModel_Child(models.Model):
 
     name = fields.Char()
     company_id = fields.Many2one('res.company')
-    parent_id = fields.Many2one('test_orm.model_parent', string="Parent", check_company=True)
+    parent_id = fields.Many2one('test_orm.model_parent', check_company=True)
     parent_ids = fields.Many2many('test_orm.model_parent', string="Parents", check_company=True)
 
 
@@ -1303,7 +1302,7 @@ class TestOrmModel_Child_M2o(models.Model):
     _name = 'test_orm.model_child_m2o'
     _description = 'dummy model with override write and ValidationError'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     parent_id = fields.Many2one('test_orm.model_parent_m2o', ondelete='cascade')
     size1 = fields.Integer(compute='_compute_sizes', store=True)
     size2 = fields.Integer(compute='_compute_sizes', store=True)
@@ -1332,7 +1331,7 @@ class TestOrmModel_Parent_M2o(models.Model):
     _name = 'test_orm.model_parent_m2o'
     _description = 'dummy model with multiple childs'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     child_ids = fields.One2many('test_orm.model_child_m2o', 'parent_id', string="Children")
     cost = fields.Integer(compute='_compute_cost', store=True)
 
@@ -1852,7 +1851,7 @@ class TestOrmShip(models.Model):
     _name = 'test_orm.ship'
     _description = 'Yaaaarrr machine'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     pirate_ids = fields.Many2many('test_orm.pirate', 'test_orm_crew', 'ship_id', 'pirate_id')
     prisoner_ids = fields.Many2many('test_orm.prisoner', 'test_orm_crew', 'ship_id', 'prisoner_id')
 
@@ -1861,7 +1860,7 @@ class TestOrmPirate(models.Model):
     _name = 'test_orm.pirate'
     _description = 'Yaaarrr'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     ship_ids = fields.Many2many('test_orm.ship', 'test_orm_crew', 'pirate_id', 'ship_id')
 
 
@@ -1869,7 +1868,7 @@ class TestOrmPrisoner(models.Model):
     _name = 'test_orm.prisoner'
     _description = 'Yaaarrr minions'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     ship_ids = fields.Many2many('test_orm.ship', 'test_orm_crew', 'prisoner_id', 'ship_id')
 
 
@@ -2048,16 +2047,16 @@ class TestOrmPrefetch(models.Model):
     _name = 'test_orm.prefetch'
     _description = 'A model to check the prefetching of fields (translated and group)'
 
-    name = fields.Char('Name', translate=True)
-    description = fields.Char('Description', translate=True)
+    name = fields.Char(translate=True)
+    description = fields.Char(translate=True)
     html_description = fields.Html('Styled description', translate=True)
-    rare_description = fields.Char('Rare Description', translate=True, prefetch=False)
+    rare_description = fields.Char(translate=True, prefetch=False)
     rare_html_description = fields.Html('Rare Styled description', translate=True, prefetch=False)
     harry = fields.Integer('Harry Potter', prefetch='Harry Potter')
     hermione = fields.Char('Hermione Granger', prefetch='Harry Potter')
     ron = fields.Float('Ron Weasley', prefetch='Harry Potter')
-    hansel = fields.Integer('Hansel', prefetch="Hansel and Gretel")
-    gretel = fields.Char('Gretel', prefetch="Hansel and Gretel")
+    hansel = fields.Integer(prefetch="Hansel and Gretel")
+    gretel = fields.Char(prefetch="Hansel and Gretel")
 
     line_ids = fields.One2many('test_orm.prefetch.line', 'prefetch_id')
 
@@ -2074,7 +2073,7 @@ class TestOrmModified(models.Model):
     _name = 'test_orm.modified'
     _description = 'A model to check modified trigger'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     line_ids = fields.One2many('test_orm.modified.line', 'modified_id')
     total_quantity = fields.Integer(compute='_compute_total_quantity')
 
@@ -2133,14 +2132,14 @@ class TestOrmEmpty_Char(models.Model):
     _name = 'test_orm.empty_char'
     _description = 'A model to test emtpy char'
 
-    name = fields.Char('Name')
+    name = fields.Char()
 
 
 class TestOrmEmpty_Int(models.Model):
     _name = 'test_orm.empty_int'
     _description = 'A model to test empty int'
 
-    number = fields.Integer('Number')
+    number = fields.Integer()
 
 
 class TestOrmTeam(models.Model):
@@ -2156,7 +2155,7 @@ class TestOrmTeamMember(models.Model):
     _name = 'test_orm.team.member'
     _description = 'Odoo Developer'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     team_id = fields.Many2one('test_orm.team')
     parent_id = fields.Many2one('test_orm.team', related='team_id.parent_id')
 
@@ -2165,7 +2164,7 @@ class TestOrmUnsearchableO2m(models.Model):
     _name = 'test_orm.unsearchable.o2m'
     _description = 'Test non-stored unsearchable o2m'
 
-    name = fields.Char('Name')
+    name = fields.Char()
     stored_parent_id = fields.Many2one('test_orm.unsearchable.o2m', store=True)
     parent_id = fields.Many2one('test_orm.unsearchable.o2m', store=False, compute="_compute_parent_id")
     child_ids = fields.One2many('test_orm.unsearchable.o2m', 'parent_id')

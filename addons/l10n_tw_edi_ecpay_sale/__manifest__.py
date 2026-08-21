@@ -4,9 +4,6 @@
     "name": "Taiwan - E-invoicing Sales",
     "category": "Website Sale/Localizations/EDI",
     "summary": """ECPay E-invoice bridge module for Sales""",
-    "description": """
-        This bridge module allows the user to input ECPay information in Sales for sending their invoices to the ECPay system
-    """,
     'author': 'Odoo S.A.',
     "license": "LGPL-3",
     "depends": [

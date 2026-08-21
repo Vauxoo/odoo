@@ -5,9 +5,6 @@
     'icon': '/account/static/description/l10n.png',
     'countries': ['bg'],
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-Chart accounting and taxes for Bulgaria
-    """,
     'depends': [
         'account',
     ],

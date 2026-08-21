@@ -9,7 +9,7 @@ class EventEvent(models.Model):
         view = self.env.ref('marketing_card_event.mailing_mailing_view_form_event_send_card', False)
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Send Cards'),
+            'name': self.env._('Send Cards'),
             'res_model': 'mailing.mailing',
             'context': {
                 'default_subject': self.name,

@@ -7,7 +7,7 @@ from odoo.exceptions import ValidationError
 from odoo.tools.urls import urljoin
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_toss_payments import const
+from .. import const
 
 _logger = get_payment_logger(__name__, const.SENSITIVE_KEYS)
 
@@ -20,10 +20,9 @@ class PaymentProvider(models.Model):
         ondelete={"toss_payments": "set default"},
     )
     toss_payments_client_key = fields.Char(
-        string="Toss Payments Client Key", required_if_provider="toss_payments", copy=False
+        required_if_provider="toss_payments", copy=False
     )
     toss_payments_secret_key = fields.Char(
-        string="Toss Payments Secret Key",
         required_if_provider="toss_payments",
         copy=False,
         groups="base.group_system",

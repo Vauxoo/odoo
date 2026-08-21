@@ -11,7 +11,7 @@ class SaleOrderLine(models.Model):
     analytic_line_ids = fields.One2many(domain=[('project_id', '=', False)])  # only analytic lines, not timesheets (since this field determine if SO line came from expense)
     remaining_hours_available = fields.Boolean(compute='_compute_remaining_hours_available', compute_sudo=True)
     remaining_hours = fields.Float('Time Remaining on SO', compute='_compute_remaining_hours', compute_sudo=True, store=True)
-    has_displayed_warning_upsell = fields.Boolean('Has Displayed Warning Upsell', copy=False, export_string_translation=False)
+    has_displayed_warning_upsell = fields.Boolean(copy=False, export_string_translation=False)
     timesheet_ids = fields.One2many('account.analytic.line', 'so_line', domain=[('project_id', '!=', False)], string='Timesheets', export_string_translation=False)
 
     @api.depends('remaining_hours_available', 'remaining_hours')
@@ -28,7 +28,7 @@ class SaleOrderLine(models.Model):
                 is_hour = True
             elif encoding_uom == self.env.ref('uom.product_uom_day'):
                 is_day = True
-                unit_label = _('days remaining')
+                unit_label = self.env._('days remaining')
             for line in self:
                 if line.remaining_hours_available:
                     remaining_time = ''
@@ -71,7 +71,7 @@ class SaleOrderLine(models.Model):
 
     @api.depends('analytic_line_ids.project_id', 'project_id.pricing_type')
     def _compute_qty_delivered(self):
-        super()._compute_qty_delivered()
+        return super()._compute_qty_delivered()
 
     def _prepare_qty_delivered(self):
         delivered_qties = super()._prepare_qty_delivered()

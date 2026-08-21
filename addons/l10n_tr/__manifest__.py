@@ -5,18 +5,6 @@
     'countries': ['tr'],
     'version': '1.3',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the base module to manage the accounting chart for Türkiye in Odoo
-==========================================================================
-
-Türkiye accounting basic charts and localizations
--------------------------------------------------
-Activates:
-
-- Chart of Accounts
-- Taxes
-- Tax Report
-    """,
     'author': 'Odoo S.A., Drysharks Consulting and Trading Ltd.',
     'depends': [
         'account',

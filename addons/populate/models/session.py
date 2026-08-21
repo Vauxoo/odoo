@@ -71,8 +71,8 @@ class Session(models.Model):
     _name = 'populate.session'
     _description = 'Data Population Session'
 
-    seed = fields.Integer("Seed", default=lambda _: max(secrets.randbits(31) - 1, 0))
-    scaling_factor = fields.Float("Scaling Factor")
+    seed = fields.Integer(default=lambda _: max(secrets.randbits(31) - 1, 0))
+    scaling_factor = fields.Float()
     worker_count = fields.Integer("Number of parallel workers that will run jobs at the same time", default=1)
     blueprint_id = fields.Many2one('populate.blueprint', required=True, ondelete='cascade')
     job_ids = fields.One2many('populate.job', inverse_name='session_id', domain=[('parent_id', '=', False)])

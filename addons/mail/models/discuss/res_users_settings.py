@@ -2,7 +2,7 @@
 
 from odoo import api, fields, models
 
-from odoo.addons.mail.tools.discuss import Store
+from ...tools.discuss import Store
 
 
 class ResUsersSettings(models.Model):
@@ -14,7 +14,6 @@ class ResUsersSettings(models.Model):
     # Notifications
     channel_notifications = fields.Selection(
         [("all", "All Messages"), ("no_notif", "Nothing")],
-        "Channel Notifications",
         help="This setting will only be applied to channels. Mentions only if not specified.",
     )
 

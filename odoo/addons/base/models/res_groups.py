@@ -36,7 +36,7 @@ class ResGroups(models.Model):
     api_key_duration = fields.Float(string='API Keys maximum duration days',
         help="Determines the maximum duration of an api key created by a user belonging to this group.")
 
-    sequence = fields.Integer(string='Sequence')
+    sequence = fields.Integer()
     privilege_id = fields.Many2one('res.groups.privilege', string='Scope', index=True)
     view_group_hierarchy = fields.Json(string='Technical field for default group setting', compute='_compute_view_group_hierarchy')
 
@@ -448,7 +448,7 @@ class ResGroups(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Implying Groups"),
+            'name': self.env._("Implying Groups"),
             'res_model': 'res.groups',
             'views': [[False, 'list'], [False, 'form']],
             'domain': [('implied_by_ids', 'in', self.ids)],
@@ -458,7 +458,7 @@ class ResGroups(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Implied Groups"),
+            'name': self.env._("Implied Groups"),
             'res_model': 'res.groups',
             'views': [[False, 'list'], [False, 'form']],
             'domain': [('implied_ids', 'in', self.ids)],
@@ -468,7 +468,7 @@ class ResGroups(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Access Rules"),
+            'name': self.env._("Access Rules"),
             'res_model': 'ir.access',
             'views': [[False, 'list'], [False, 'kanban'], [False, 'form']],
             'domain': [('group_id', 'in', self.ids)],

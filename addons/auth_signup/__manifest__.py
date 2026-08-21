@@ -2,10 +2,6 @@
 
 {
     'name': 'Signup',
-    'description': """
-Allow users to sign up and reset their password
-===============================================
-    """,
     'category': 'Hidden/Tools',
     'auto_install': True,
     'depends': [

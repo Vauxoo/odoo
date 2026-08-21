@@ -31,6 +31,6 @@ class ResUsers(models.Model):
         res = super().get_gamification_redirection_data()
         res.append({
             'url': '/slides',
-            'label': _('See our eLearning')
+            'label': self.env._('See our eLearning')
         })
         return res

@@ -8,15 +8,15 @@ class StockAverageCostReport(models.AbstractModel):
     _description = 'Stock AVCO Justifier'
     _order = 'date desc, id desc'
 
-    date = fields.Date(string='Date', required=True)
-    user_id = fields.Many2one('res.users', string='User', required=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True)
+    date = fields.Date(required=True)
+    user_id = fields.Many2one('res.users', required=True)
+    company_id = fields.Many2one('res.company', required=True)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id', string='Currency')
 
-    product_id = fields.Many2one('product.product', string='Product', required=True)
+    product_id = fields.Many2one('product.product', required=True)
 
-    reference = fields.Char(string='Reference', required=True)
-    description = fields.Text(string='Description', required=True)
+    reference = fields.Char(required=True)
+    description = fields.Text(required=True)
 
     res_model_name = fields.Selection([
         ('stock.move', 'Stock Move'),
@@ -24,14 +24,14 @@ class StockAverageCostReport(models.AbstractModel):
     ], string='Resource Model Name', required=True)
 
     quantity = fields.Float(string='Added Quantity', required=True)
-    value = fields.Float(string='Value', required=True)
+    value = fields.Float(required=True)
 
-    added_value = fields.Float(string='Added Value', compute='_compute_cumulative_fields')
-    total_quantity = fields.Float(string='Total Quantity', compute='_compute_cumulative_fields')
-    total_value = fields.Float(string='Total Value', compute='_compute_cumulative_fields')
+    added_value = fields.Float(compute='_compute_cumulative_fields')
+    total_quantity = fields.Float(compute='_compute_cumulative_fields')
+    total_value = fields.Float(compute='_compute_cumulative_fields')
     avco_value = fields.Float(string='AVCO Value', compute='_compute_cumulative_fields')
 
-    justification = fields.Text(string='Justification', compute='_compute_justification')
+    justification = fields.Text(compute='_compute_justification')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, 'stock_avco_report')

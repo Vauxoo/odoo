@@ -2,7 +2,6 @@ import logging
 from odoo import models
 from odoo.addons.account.models.chart_template import template
 
-_logger = logging.getLogger(__name__)
 
 
 class AccountChartTemplate(models.AbstractModel):

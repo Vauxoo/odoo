@@ -70,8 +70,8 @@ class IrAccess(models.Model):
 
     name = fields.Char(required=True)
     active = fields.Boolean(default=True, help="Only active accesses are taken into account when checking access rights.")
-    model_id = fields.Many2one('ir.model', string="Model", required=True, ondelete='cascade', index=True)
-    group_id = fields.Many2one('res.groups', string="Group", ondelete='cascade', index=True)
+    model_id = fields.Many2one('ir.model', required=True, ondelete='cascade', index=True)
+    group_id = fields.Many2one('res.groups', ondelete='cascade', index=True)
     operation = fields.Selection(
         list(CRUD_SELECTION.items()), required=True,
         help="Which operation(s) this access applies to, a subset of 'crud'.",
@@ -123,7 +123,7 @@ class IrAccess(models.Model):
         inverse='_inverse_for_operations',
         help="Whether this access record applies for operation 'unlink'",
     )
-    note = fields.Html(string='Note')
+    note = fields.Html()
 
     @api.depends('group_id')
     def _compute_kind(self):

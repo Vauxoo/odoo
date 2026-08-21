@@ -9,7 +9,7 @@ class MailMessageTranslation(models.Model):
     _name = 'mail.message.translation'
     _description = "Message Translation"
 
-    message_id = fields.Many2one("mail.message", "Message", required=True, ondelete="cascade")
+    message_id = fields.Many2one("mail.message", required=True, ondelete="cascade")
     source_lang = fields.Char(
         "Source Language", required=True, help="Result of the language detection based on its content."
     )

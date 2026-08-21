@@ -10,7 +10,7 @@ class PosOrder(models.Model):
 
     currency_rate = fields.Float(compute='_compute_currency_rate', store=True, digits=0, readonly=True)
     crm_team_id = fields.Many2one('crm.team', string="Sales Team", ondelete="set null")
-    sale_order_count = fields.Integer(string='Sale Order Count', compute='_count_sale_order', readonly=True, groups="sales_team.group_sale_salesman")
+    sale_order_count = fields.Integer(compute='_count_sale_order', readonly=True, groups="sales_team.group_sale_salesman")
 
     def _count_sale_order(self):
         for order in self:
@@ -98,7 +98,7 @@ class PosOrder(models.Model):
         linked_orders = self.lines.mapped('sale_order_origin_id')
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Linked Sale Orders'),
+            'name': self.env._('Linked Sale Orders'),
             'res_model': 'sale.order',
             'view_mode': 'list,form',
             'domain': [('id', 'in', linked_orders.ids)],

@@ -5,8 +5,8 @@ from odoo.exceptions import ValidationError
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_paypal import utils as paypal_utils
-from odoo.addons.payment_paypal.const import PAYMENT_STATUS_MAPPING
+from .. import utils as paypal_utils
+from ..const import PAYMENT_STATUS_MAPPING
 
 _logger = get_payment_logger(__name__)
 

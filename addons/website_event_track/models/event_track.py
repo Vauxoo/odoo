@@ -45,7 +45,7 @@ class EventTrack(models.Model):
 
     # description
     name = fields.Char('Title', required=True, translate=True)
-    event_id = fields.Many2one('event.event', 'Event', required=True, index=True)
+    event_id = fields.Many2one('event.event', required=True, index=True)
     active = fields.Boolean(default=True)
     user_id = fields.Many2one('res.users', 'Responsible', tracking=True, default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', related='event_id.company_id')
@@ -55,11 +55,11 @@ class EventTrack(models.Model):
     priority = fields.Selection([
         ('0', 'Low'), ('1', 'Medium'),
         ('2', 'High'), ('3', 'Highest')],
-        'Priority', required=True, default='1')
+        required=True, default='1')
     # management
     stage_id = fields.Many2one(
-        'event.track.stage', string='Stage', ondelete='restrict',
-        index=True, copy=False, default=_get_default_stage_id,
+        'event.track.stage', ondelete='restrict',
+        index=True, copy=False, default=lambda self: self._get_default_stage_id(),
         group_expand='_read_group_expand_full',  # Always display all stages
         required=True, tracking=True)
     legend_blocked = fields.Char(related='stage_id.legend_blocked',
@@ -71,14 +71,13 @@ class EventTrack(models.Model):
     kanban_state = fields.Selection([
         ('normal', 'Grey'),
         ('done', 'Green'),
-        ('blocked', 'Red')], string='Kanban State',
-        copy=False, default='normal', required=True,
+        ('blocked', 'Red')], copy=False, default='normal', required=True,
         help="A track's kanban state indicates special situations affecting it:\n"
              " * Grey is the default situation\n"
              " * Red indicates something is preventing the progress of this track\n"
              " * Green indicates the track is ready to be pulled to the next stage")
     kanban_state_label = fields.Char(
-        string='Kanban State Label', compute='_compute_kanban_state_label', store=True,
+        compute='_compute_kanban_state_label', store=True,
         tracking=True)
     partner_id = fields.Many2one('res.partner', 'Contact', index='btree_not_null')
     # speaker information
@@ -110,26 +109,26 @@ class EventTrack(models.Model):
         max_width=256, max_height=256)
     # contact information
     contact_email = fields.Char(
-        string='Contact Email', compute='_compute_contact_email',
+        compute='_compute_contact_email',
         readonly=False, store=True, tracking=20)
     contact_phone = fields.Char(
-        string='Contact Phone', compute='_compute_contact_phone',
+        compute='_compute_contact_phone',
         readonly=False, store=True, tracking=30)
-    location_id = fields.Many2one('event.track.location', 'Location')
+    location_id = fields.Many2one('event.track.location')
     # time information
     date = fields.Datetime('Track Date', compute='_compute_date', inverse="_inverse_date", store=True)
     date_end = fields.Datetime('Track End Date', compute='_compute_end_date', inverse="_inverse_end_date", store=True)
-    duration = fields.Float('Duration', default=0.5)
+    duration = fields.Float(default=0.5)
     is_track_live = fields.Boolean(
-        'Is Track Live', compute='_compute_track_time_data')
+        compute='_compute_track_time_data')
     is_track_soon = fields.Boolean(
-        'Is Track Soon', compute='_compute_track_time_data')
+        compute='_compute_track_time_data')
     is_track_today = fields.Boolean(
-        'Is Track Today', compute='_compute_track_time_data')
+        compute='_compute_track_time_data')
     is_track_upcoming = fields.Boolean(
-        'Is Track Upcoming', compute='_compute_track_time_data')
+        compute='_compute_track_time_data')
     is_track_done = fields.Boolean(
-        'Is Track Done', compute='_compute_track_time_data')
+        compute='_compute_track_time_data')
     is_one_day = fields.Boolean(compute='_compute_field_is_one_day')
     track_start_remaining = fields.Integer(
         'Minutes before track starts', compute='_compute_track_time_data',
@@ -138,7 +137,7 @@ class EventTrack(models.Model):
         'Minutes compare to track start', compute='_compute_track_time_data',
         help="Relative time compared to track start (seconds)")
     # frontend description
-    website_image = fields.Image(string="Website Image", max_width=1024, max_height=1024)
+    website_image = fields.Image(max_width=1024, max_height=1024)
     website_image_url = fields.Char(
         string='Image URL', compute='_compute_website_image_url',
         compute_sudo=True, store=False)
@@ -148,7 +147,7 @@ class EventTrack(models.Model):
     event_track_visitor_ids = fields.One2many(
         'event.track.visitor', 'track_id', string="Track Visitors",
         groups="event.group_event_user")
-    is_reminder_on = fields.Boolean('Is Reminder On', compute='_compute_is_reminder_on')
+    is_reminder_on = fields.Boolean(compute='_compute_is_reminder_on')
     wishlist_visitor_ids = fields.Many2many(
         'website.visitor', string="Visitor Wishlist",
         compute="_compute_wishlist_visitor_ids", compute_sudo=True,

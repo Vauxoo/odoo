@@ -21,18 +21,10 @@ class L10n_Hu_EdiTax_Audit_Export(models.TransientModel):
         ],
         default='date',
     )
-    date_from = fields.Date(
-        string='Date From'
-    )
-    date_to = fields.Date(
-        string='Date To'
-    )
-    name_from = fields.Char(
-        string='Name From'
-    )
-    name_to = fields.Char(
-        string='Name To'
-    )
+    date_from = fields.Date()
+    date_to = fields.Date()
+    name_from = fields.Char()
+    name_to = fields.Char()
     filename = fields.Char(
         string='File name',
         compute='_compute_filename'
@@ -88,7 +80,7 @@ class L10n_Hu_EdiTax_Audit_Export(models.TransientModel):
 
         invoices = self.env['account.move'].search(domain)
         if not invoices:
-            raise UserError(_('No invoice to export!'))
+            raise UserError(self.env._('No invoice to export!'))
 
         with io.BytesIO() as buf:
             with zipfile.ZipFile(buf, mode='w', compression=zipfile.ZIP_DEFLATED, allowZip64=False) as zf:

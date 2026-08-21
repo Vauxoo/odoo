@@ -4,9 +4,8 @@ import zoneinfo
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.l10n_hr_edi.tools.api import _mer_api_send, MojEracunServiceError
+from ..tools.api import _mer_api_send, MojEracunServiceError
 
-_logger = logging.getLogger(__name__)
 
 
 class AccountMoveSend(models.AbstractModel):
@@ -33,7 +32,7 @@ class AccountMoveSend(models.AbstractModel):
             any(any((tax.tax_exigibility == 'on_payment' and not tax.invoice_legal_notes) for tax in line.tax_ids
              ) for line in move.line_ids if line.display_type == 'product') for move in moves):
             raise ValidationError(self.env._('For Croatia, Legal Notes should be provided for all cash basis taxes.'))
-        super()._check_move_constraints(moves)
+        return super()._check_move_constraints(moves)
 
     # -------------------------------------------------------------------------
     # SENDING METHODS

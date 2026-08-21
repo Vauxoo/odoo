@@ -5,7 +5,7 @@ from collections import defaultdict
 import itertools
 
 from odoo import api, fields, models, Command
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 
 
 class MailFollowers(models.Model):
@@ -31,8 +31,7 @@ class MailFollowers(models.Model):
     partner_id = fields.Many2one(
         'res.partner', string='Related Partner', index=True, ondelete='cascade', required=True)
     subtype_ids = fields.Many2many(
-        'mail.message.subtype', string='Subtype',
-        help="Message subtypes followed, meaning subtypes that will be pushed onto the user's Wall.")
+        'mail.message.subtype', help="Message subtypes followed, meaning subtypes that will be pushed onto the user's Wall.")
     name = fields.Char('Name', related='partner_id.name')
     email = fields.Char('Email', related='partner_id.email')
     is_active = fields.Boolean('Is Active', related='partner_id.active')

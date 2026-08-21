@@ -6,10 +6,10 @@ from odoo import http
 from odoo.http import request
 from odoo.tools.misc import file_path
 
-from odoo.addons.pos_bancontact_pay.controllers.signature import (
+from .signature import (
     BancontactSignatureValidation,
 )
-from odoo.addons.pos_bancontact_pay.errors.exceptions import (
+from ..errors.exceptions import (
     BancontactSignatureValidationError,
 )
 

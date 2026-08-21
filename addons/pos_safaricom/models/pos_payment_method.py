@@ -15,12 +15,12 @@ class PosPaymentMethod(models.Model):
     _inherit = 'pos.payment.method'
 
     # Credentials from Mpesa
-    consumer_key = fields.Char(string="Consumer Key")
-    consumer_secret = fields.Char(string="Consumer Secret", groups="point_of_sale.group_pos_manager")
-    business_short_code = fields.Char(string="Business Short Code")
+    consumer_key = fields.Char()
+    consumer_secret = fields.Char(groups="point_of_sale.group_pos_manager")
+    business_short_code = fields.Char()
     safaricom_till_number = fields.Char(string="Till number")
     safaricom_paybill_number = fields.Char(string="Paybill number")
-    passkey = fields.Char(string="Passkey", help="The passkey is used to generate the password for the STK Push", groups="point_of_sale.group_pos_manager")
+    passkey = fields.Char(help="The passkey is used to generate the password for the STK Push", groups="point_of_sale.group_pos_manager")
     safaricom_test_mode = fields.Boolean(string="Test Mode", default=True, help="Use sandbox environment")
     safaricom_payment_type = fields.Selection(
         selection=[('mpesa_express', 'M-PESA Express'), ('lipa_na_mpesa', 'Lipa na M-PESA')],
@@ -88,7 +88,7 @@ class PosPaymentMethod(models.Model):
         self.ensure_one()
 
         if not self.consumer_key or not self.sudo().consumer_secret:
-            raise UserError(_("Consumer Key and Consumer Secret are required for Safaricom M-Pesa"))
+            raise UserError(self.env._("Consumer Key and Consumer Secret are required for Safaricom M-Pesa"))
 
         try:
             consumer_key = self.consumer_key.strip()
@@ -103,12 +103,12 @@ class PosPaymentMethod(models.Model):
             access_token = data.get('access_token')
 
             if not access_token:
-                raise UserError(_("Failed to retrieve access token from Safaricom"))
+                raise UserError(self.env._("Failed to retrieve access token from Safaricom"))
 
             return access_token
 
         except requests.exceptions.RequestException:
-            raise UserError(_("Failed to retrieve access token from Safaricom"))
+            raise UserError(self.env._("Failed to retrieve access token from Safaricom"))
 
     def _get_password(self, timestamp):
         """Generate password for STK Push"""
@@ -135,7 +135,7 @@ class PosPaymentMethod(models.Model):
             phone_number = self._format_phone_number(data.get('phone_number', ''))
 
             if not phone_number:
-                return {'error': _("Invalid phone number format. Please use format: 2547XXXXXXXX")}
+                return {'error': self.env._("Invalid phone number format. Please use format: 2547XXXXXXXX")}
 
             signed_hash_payload = hash_sign(self.sudo().env, "pos_safaricom", {"payment_method_id": self.id}, expiration_hours=6)
 
@@ -230,7 +230,7 @@ class PosPaymentMethod(models.Model):
             if base_url:
                 base_url = base_url.replace("http://", "https://")
             else:
-                raise UserError(_("Could not find base url. Please set up web.base.url to a valid https address"))
+                raise UserError(self.env._("Could not find base url. Please set up web.base.url to a valid https address"))
 
             access_token = self._get_bearer_token()
 
@@ -262,10 +262,10 @@ class PosPaymentMethod(models.Model):
             result = response.json()
 
             if result.get('ResponseCode') != '00000000':
-                raise UserError(_("Failed to register URLs: %s", result.get('errorMessage')))
+                raise UserError(self.env._("Failed to register URLs: %s", result.get('errorMessage')))
 
         except (requests.exceptions.RequestException, ValueError):
-            raise UserError(_("Failed to register URLs. Check your credentials and try again."))
+            raise UserError(self.env._("Failed to register URLs. Check your credentials and try again."))
 
     def _create_payment_transaction(self, trans_id, trans_amount, msisdn, name):
         """Create a payment transaction for the payment"""

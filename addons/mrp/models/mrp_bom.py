@@ -24,7 +24,7 @@ class MrpBom(models.Model):
         return self.env['uom.uom'].search([], limit=1, order='id').id
 
     code = fields.Char('Reference')
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     type = fields.Selection([
         ('normal', 'Manufacture this product'),
         ('phantom', 'Kit')], 'BoM Type',
@@ -46,9 +46,9 @@ class MrpBom(models.Model):
         help="This should be the smallest quantity that this product can be produced in. If the BOM contains operations, make sure the work center capacity is accurate.")
     uom_id = fields.Many2one(
         'uom.uom', 'Unit',
-        default=_default_uom_id, required=True,
+        default=lambda self: self._default_uom_id(), required=True,
         help="Unit of Measure (Unit of Measure) is the unit of measurement for the inventory control")
-    sequence = fields.Integer('Sequence')
+    sequence = fields.Integer()
     operation_ids = fields.One2many('mrp.routing.workcenter', 'bom_id', 'Operations', copy=True)
     operation_count = fields.Integer('Operations Count', compute='_compute_operation_count')
     show_copy_operations_button = fields.Boolean(
@@ -66,7 +66,7 @@ class MrpBom(models.Model):
              "the operation type is not taken into account in the BoM search. That allows "
              "to define stock rules which trigger different manufacturing orders with different BoMs.")
     company_id = fields.Many2one(
-        'res.company', 'Company', index=True,
+        'res.company', index=True,
         default=lambda self: self.env.company)
     possible_product_template_attribute_value_ids = fields.Many2many(
         'product.template.attribute.value',
@@ -112,8 +112,8 @@ class MrpBom(models.Model):
                 self.byproduct_ids.bom_product_template_attribute_value_ids
             ) and {
                 'warning': {
-                    'title': _("Warning"),
-                    'message': _("Changing the product or variant will permanently reset all previously encoded variant-related data."),
+                    'title': self.env._("Warning"),
+                    'message': self.env._("Changing the product or variant will permanently reset all previously encoded variant-related data."),
                 }
             }
             self.bom_line_ids.bom_product_template_attribute_value_ids = False
@@ -179,10 +179,10 @@ class MrpBom(models.Model):
         for bom in self:
             apply_variants = bom.bom_line_ids.bom_product_template_attribute_value_ids | bom.operation_ids.bom_product_template_attribute_value_ids | bom.byproduct_ids.bom_product_template_attribute_value_ids
             if bom.product_id and apply_variants:
-                raise ValidationError(_("You cannot use the 'Apply on Variant' functionality and simultaneously create a BoM for a specific variant."))
+                raise ValidationError(self.env._("You cannot use the 'Apply on Variant' functionality and simultaneously create a BoM for a specific variant."))
             for ptav in apply_variants:
                 if ptav.product_tmpl_id != bom.product_tmpl_id:
-                    raise ValidationError(_(
+                    raise ValidationError(self.env._(
                         "The attribute value %(attribute)s set on product %(product)s does not match the BoM product %(bom_product)s.",
                         attribute=ptav.display_name,
                         product=ptav.product_tmpl_id.display_name,
@@ -194,21 +194,21 @@ class MrpBom(models.Model):
                 else:
                     same_product = bom.product_tmpl_id == byproduct.product_id.product_tmpl_id
                 if same_product:
-                    raise ValidationError(_("By-product %s should not be the same as BoM product.", bom.display_name))
+                    raise ValidationError(self.env._("By-product %s should not be the same as BoM product.", bom.display_name))
                 if byproduct.cost_share < 0:
-                    raise ValidationError(_("By-products cost shares must be positive."))
+                    raise ValidationError(self.env._("By-products cost shares must be positive."))
             for product in bom.product_tmpl_id.product_variant_ids:
                 total_variant_cost_share = sum(bom.byproduct_ids.filtered(lambda bp: not bp._skip_byproduct_line(product) and not bp.uom_id.is_zero(bp.product_qty)).mapped('cost_share'))
                 if float_compare(total_variant_cost_share, 100, precision_digits=2) > 0:
-                    raise ValidationError(_("The total cost share for a BoM's by-products cannot exceed 100."))
+                    raise ValidationError(self.env._("The total cost share for a BoM's by-products cannot exceed 100."))
 
     @api.onchange('bom_line_ids', 'product_qty', 'product_id', 'product_tmpl_id')
     def onchange_bom_structure(self):
         if self.type == 'phantom' and self._origin and self.env['stock.move'].search_count([('bom_line_id', 'in', self._origin.bom_line_ids.ids)], limit=1):
             return {
                 'warning': {
-                    'title': _('Warning'),
-                    'message': _(
+                    'title': self.env._('Warning'),
+                    'message': self.env._(
                         'The product has already been used at least once, editing its structure may lead to undesirable behaviours. '
                         'You should rather archive the product and create a new one with a new bill of materials.'),
                 }
@@ -223,8 +223,8 @@ class MrpBom(models.Model):
                 self.byproduct_ids.bom_product_template_attribute_value_ids
             ) and {
                 'warning': {
-                    'title': _("Warning"),
-                    'message': _("Changing the product or variant will permanently reset all previously encoded variant-related data."),
+                    'title': self.env._("Warning"),
+                    'message': self.env._("Changing the product or variant will permanently reset all previously encoded variant-related data."),
                 }
             }
             default_uom_id = self.env.context.get('default_uom_id')
@@ -242,7 +242,7 @@ class MrpBom(models.Model):
                 domain.append(('id', '!=', self.id.origin))
             number_of_bom_of_this_product = self.env['mrp.bom'].search_count(domain)
             if number_of_bom_of_this_product:  # add a reference to the bom if there is already a bom for this product
-                self.code = _("%(product_name)s (new) %(number_of_boms)s", product_name=self.product_tmpl_id.name, number_of_boms=number_of_bom_of_this_product)
+                self.code = self.env._("%(product_name)s (new) %(number_of_boms)s", product_name=self.product_tmpl_id.name, number_of_boms=number_of_bom_of_this_product)
             if warning:
                 return warning
 
@@ -298,7 +298,7 @@ class MrpBom(models.Model):
                 result = super().name_create(self.env.context[key])
                 self.browse(result[0]).code = name
                 return result
-            raise UserError(_("You cannot create a new Bill of Material from here."))
+            raise UserError(self.env._("You cannot create a new Bill of Material from here."))
         return super(MrpBom, self).name_create(name)
 
     def action_archive(self):
@@ -315,7 +315,7 @@ class MrpBom(models.Model):
             display_name = f"{bom.code + ': ' if bom.code else ''}{bom.product_tmpl_id.display_name}"
             if self.env.context.get('display_bom_uom_qty') and (bom.product_qty > 1 or bom.uom_id != bom.product_tmpl_id.uom_id):
                 display_name += f" ({bom.product_qty} {bom.uom_id.name})"
-            bom.display_name = _('%(display_name)s', display_name=display_name)
+            bom.display_name = self.env._('%(display_name)s', display_name=display_name)
 
     @api.depends('operation_ids')
     def _compute_operation_count(self):
@@ -357,7 +357,7 @@ class MrpBom(models.Model):
         product_ids = [pid for bom in self.filtered(lambda bom: bom.type == "phantom")
                            for pid in (bom.product_id.ids or bom.product_tmpl_id.product_variant_ids.ids)]
         if self.env['stock.warehouse.orderpoint'].search_count([('product_id', 'in', product_ids)], limit=1):
-            raise ValidationError(_("You can not create a kit-type bill of materials for products that have at least one reordering rule."))
+            raise ValidationError(self.env._("You can not create a kit-type bill of materials for products that have at least one reordering rule."))
 
     @api.constrains('enable_batch_size', 'batch_size')
     def _check_valid_batch_size(self):
@@ -367,7 +367,7 @@ class MrpBom(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_running_mo(self):
         if self.env['mrp.production'].search_count([('bom_id', 'in', self.ids), ('state', 'not in', ['done', 'cancel'])], limit=1):
-            raise UserError(_('You can not delete a Bill of Material with running manufacturing orders.\nPlease close or cancel it first.'))
+            raise UserError(self.env._('You can not delete a Bill of Material with running manufacturing orders.\nPlease close or cancel it first.'))
 
     @api.model
     def _bom_find_domain(self, products, picking_type=None, company_id=False, bom_type=False):
@@ -487,7 +487,7 @@ class MrpBom(models.Model):
     @api.model
     def get_import_templates(self):
         return [{
-            'label': _('Template for Bills of Materials'),
+            'label': self.env._('Template for Bills of Materials'),
             'template': '/mrp/static/xls/mrp_bom.xls'
         }]
 
@@ -623,9 +623,9 @@ class MrpBomLine(models.Model):
         digits='Product Unit', required=True)
     uom_id = fields.Many2one(
         'uom.uom', 'Unit',
-        default=_default_uom_id, required=True)
+        default=lambda self: self._default_uom_id(), required=True)
     sequence = fields.Integer(
-        'Sequence', default=1,
+        default=1,
         help="Gives the sequence order when displaying.")
     bom_id = fields.Many2one(
         'mrp.bom', 'Parent BoM',
@@ -681,7 +681,7 @@ class MrpBomLine(models.Model):
                 errors[record.bom_product_tmpl_id.name].update(invalid_variants)
         if errors:
             error_lines = '\n\t'.join((f'{p}: {', '.join(v)}' for p, v in errors.items()))
-            raise ValidationError(_('Some product have invalid variants.\n\t%(error_message)s', error_message=error_lines))
+            raise ValidationError(self.env._('Some product have invalid variants.\n\t%(error_message)s', error_message=error_lines))
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -777,7 +777,7 @@ class MrpBomByproduct(models.Model):
         'product.template.attribute.value', string="Apply on Variants", ondelete='restrict',
         domain="[('id', 'in', possible_bom_product_template_attribute_value_ids)]",
         help="BOM Product Variants needed to apply this line.")
-    sequence = fields.Integer("Sequence")
+    sequence = fields.Integer()
     cost_share = fields.Float(
         "Cost Share (%)", digits=(5, 2),  # decimal = 2 is important for rounding calculations!!
         help="The percentage of the final production cost for this by-product line (divided between the quantity produced)."

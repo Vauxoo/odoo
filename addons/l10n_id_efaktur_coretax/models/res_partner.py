@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
-from odoo.addons.l10n_id_efaktur_coretax.models.account_move import TAX_TRANSACTION_CODE
+from .account_move import TAX_TRANSACTION_CODE
 
 
 class Partner(models.Model):
@@ -39,4 +39,4 @@ class Partner(models.Model):
                 (not is_commercial_partner and tku != '000000') or
                 (is_commercial_partner and vat.startswith(('0', '10')))
             )
-        super(Partner, self - l10n_id_partners)._compute_is_company()
+        return super(Partner, self - l10n_id_partners)._compute_is_company()

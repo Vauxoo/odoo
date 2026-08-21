@@ -15,15 +15,15 @@ class ResCompany(models.Model):
 
     # used for resupply routes between warehouses that belong to this company
     internal_transit_location_id = fields.Many2one(
-        'stock.location', 'Internal Transit Location', ondelete="restrict", check_company=True)
+        'stock.location', ondelete="restrict", check_company=True)
     scrap_location_id = fields.Many2one(
-        'stock.location', 'Scrap Location', compute='_compute_scrap_location_id', check_company=True)
+        'stock.location', compute='_compute_scrap_location_id', check_company=True)
     default_stock_location_id = fields.Many2one(
-        'stock.location', 'Default Stock Location', compute='_compute_default_stock_location_id', check_company=True)
+        'stock.location', compute='_compute_default_stock_location_id', check_company=True)
     stock_move_email_validation = fields.Boolean("Email Confirmation picking", default=False)
     stock_mail_confirmation_template_id = fields.Many2one('mail.template', string="Email Template confirmation picking",
         domain="[('model', '=', 'stock.picking')]",
-        default=_default_confirmation_mail_template,
+        default=lambda self: self._default_confirmation_mail_template(),
         help="Email sent to the customer once the order is done.")
     annual_inventory_month = fields.Selection([
         ('1', 'January'),
@@ -38,8 +38,7 @@ class ResCompany(models.Model):
         ('10', 'October'),
         ('11', 'November'),
         ('12', 'December'),
-    ], string='Annual Inventory Month',
-        default='12',
+    ], default='12',
         help="Annual inventory month for products not in a location with a cyclic inventory date. Set to no month if no automatic annual inventory.")
     annual_inventory_day = fields.Integer(
         string='Day of the month', default=31,
@@ -51,7 +50,7 @@ class ResCompany(models.Model):
                                 ('0 days') to avoid overstocking.""")
 
     # used for sending stock text confirmation
-    stock_text_confirmation = fields.Boolean("Stock Text Confirmation")
+    stock_text_confirmation = fields.Boolean()
     stock_confirmation_type = fields.Selection([('sms', 'SMS')], default='sms')
     picking_policy = fields.Selection([
         ('direct', 'As soon as possible, with back orders'),
@@ -77,7 +76,7 @@ class ResCompany(models.Model):
         '''
         for company in self:
             location = self.env['stock.location'].create({
-                'name': _('Inter-warehouse transit'),
+                'name': self.env._('Inter-warehouse transit'),
                 'usage': 'transit',
                 'company_id': company.id,
                 'active': False

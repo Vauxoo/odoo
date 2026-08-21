@@ -17,7 +17,7 @@ from psycopg2.extras import Json
 from odoo import api, fields, models, tools
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.fields import Command, Domain
-from odoo.tools import BinaryBytes, frozendict, reset_cached_properties, split_every, sql, unique, OrderedSet, SQL
+from odoo.tools import BinaryBytes, frozendict, reset_cached_properties, split_every, sql, unique, OrderedSet, SQL, groupby
 from odoo.tools.safe_eval import expr_eval, safe_eval, datetime, dateutil, time
 from odoo.tools.translate import FIELD_TRANSLATE, LazyTranslate, _
 
@@ -235,16 +235,16 @@ class IrModel(models.Model):
 
     name = fields.Char(string='Model Description', translate=True, required=True)
     model = fields.Char(default='x_', required=True)
-    order = fields.Char(string='Order', default='id', required=True,
+    order = fields.Char(default='id', required=True,
                         help='SQL expression for ordering records in the model; e.g. "x_sequence asc, id desc"')
     info = fields.Text(string='Information')
-    explanation = fields.Text(string='Explanation', help='Verbose description of what is this model for')
+    explanation = fields.Text(help='Verbose description of what is this model for')
     field_id = fields.One2many('ir.model.fields', 'model_id', string='Fields', required=True, copy=True,
-                               default=_default_field_id)
+                               default=lambda self: self._default_field_id())
     inherited_model_ids = fields.Many2many('ir.model', compute='_inherited_models', string="Inherited models",
                                            help="The list of models that extends the current model.")
     state = fields.Selection([('manual', 'Custom'), ('base', 'Base')], string='Type', default='manual', readonly=True)
-    access_ids = fields.One2many('ir.access', 'model_id', string='Access')
+    access_ids = fields.One2many('ir.access', 'model_id')
     abstract = fields.Boolean(string="Abstract Model")
     transient = fields.Boolean(string="Transient Model")
     modules = fields.Char(compute='_in_modules', string='In Apps', help='List of modules in which the object is defined or inherited')
@@ -585,7 +585,7 @@ class IrModelFields(models.Model):
         help="For many2one_reference fields, the field that stores the technical name of the target model")
     relation_field_id = fields.Many2one('ir.model.fields', compute='_compute_relation_field_id',
                                         store=True, ondelete='cascade', string='Relation field')
-    model_id = fields.Many2one('ir.model', string='Model', required=True, index=True, ondelete='cascade',
+    model_id = fields.Many2one('ir.model', required=True, index=True, ondelete='cascade',
                                help="The model this field belongs to")
     field_description = fields.Char(string='Field Label', default='', required=True, translate=True)
     help = fields.Text(string='Field Help', translate=True)
@@ -594,12 +594,11 @@ class IrModelFields(models.Model):
                             compute='_compute_selection', inverse='_inverse_selection')
     selection_ids = fields.One2many("ir.model.fields.selection", "field_id",
                                     string="Selection Options", copy=True)
-    copied = fields.Boolean(string='Copied',
-                            compute='_compute_copied', store=True, readonly=False,
+    copied = fields.Boolean(compute='_compute_copied', store=True, readonly=False,
                             help="Whether the value is copied when duplicating a record.")
     related = fields.Char(string='Related Field Definition', help="The corresponding related field, if any. This must be a dot-separated list of field names.")
     related_field_id = fields.Many2one('ir.model.fields', compute='_compute_related_field_id',
-                                       store=True, string="Related Field", ondelete='cascade')
+                                       store=True, ondelete='cascade')
     required = fields.Boolean()
     readonly = fields.Boolean()
     index = fields.Boolean(string='Indexed')
@@ -608,11 +607,11 @@ class IrModelFields(models.Model):
         ('html_translate', 'Translate HTML terms'),
         ('xml_translate', 'Translate XML terms'),
     ], string='Translatable', help="Whether values for this field can be translated (enables the translation mechanism for that field)")
-    company_dependent = fields.Boolean(string='Company Dependent', help="Whether values for this field is company dependent", readonly=True)
+    company_dependent = fields.Boolean(help="Whether values for this field is company dependent", readonly=True)
     size = fields.Integer()
     state = fields.Selection([('manual', 'Custom Field'), ('base', 'Base Field')], string='Type', default='manual', required=True, readonly=True, index=True)
     on_delete = fields.Selection([('cascade', 'Cascade'), ('set null', 'Set NULL'), ('restrict', 'Restrict')],
-                                 string='On Delete', default='set null', help='On delete property for many2one fields')
+                                 default='set null', help='On delete property for many2one fields')
     domain = fields.Char(default="[]", help="The optional domain to restrict possible values for relationship fields, "
                                             "specified as a Python expression defining a list of triplets. "
                                             "For example: [('color','=','red')]")
@@ -2184,7 +2183,7 @@ class IrModelData(models.Model):
     module = fields.Char(default='', required=True)
     res_id = fields.Many2oneReference(string='Record ID', help="ID of the target record in the database", model_field='model')
     noupdate = fields.Boolean(string='Non Updatable', default=False)
-    reference = fields.Char(string='Reference', compute='_compute_reference', readonly=True, store=False)
+    reference = fields.Char(compute='_compute_reference', readonly=True, store=False)
 
     _name_nospaces = models.Constraint("CHECK(name NOT LIKE '% %')", "External IDs cannot contain spaces")
     _module_name_uniq_index = models.UniqueIndex('(module, name)')
@@ -2521,7 +2520,7 @@ class IrModelData(models.Model):
                     delete(records[half_size:])
 
         # remove non-model records first, grouped by batches of the same model
-        for model, items in itertools.groupby(unique(records_items), itemgetter(0)):
+        for model, items in groupby(unique(records_items), itemgetter(0)):
             ids = [item[1] for item in items]
             # we cannot guarantee that the ir.model.data points to an existing model
             if model in self.env:

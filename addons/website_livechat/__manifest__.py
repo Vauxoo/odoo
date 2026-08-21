@@ -2,7 +2,6 @@
     'name': 'Website Live Chat',
     'category': 'Website/Live Chat',
     'summary': 'Chat with your website visitors',
-    'description': "Allow website visitors to chat with the collaborators.",
     'depends': ['website', 'im_livechat'],
     'auto_install': True,
     'data': [

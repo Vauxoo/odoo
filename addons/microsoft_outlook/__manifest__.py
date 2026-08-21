@@ -4,7 +4,6 @@
     "name": "Microsoft Outlook",
     "version": "1.1",
     "category": "Hidden",
-    "description": "Outlook support for incoming / outgoing mail servers",
     "depends": [
         "mail",
     ],

@@ -3,7 +3,7 @@
 from odoo import fields, models
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_xendit import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 
@@ -15,16 +15,14 @@ class PaymentProvider(models.Model):
         selection_add=[("xendit", "Xendit")], ondelete={"xendit": "set default"}
     )
     xendit_public_key = fields.Char(
-        string="Xendit Public Key", required_if_provider="xendit", copy=False
+        required_if_provider="xendit", copy=False
     )
     xendit_secret_key = fields.Char(
-        string="Xendit Secret Key",
         required_if_provider="xendit",
         copy=False,
         groups="base.group_system",
     )
     xendit_webhook_token = fields.Char(
-        string="Xendit Webhook Token",
         required_if_provider="xendit",
         copy=False,
         groups="base.group_system",

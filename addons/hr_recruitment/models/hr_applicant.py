@@ -50,8 +50,8 @@ class HrApplicant(models.Model):
             & Domain("company_id", "=?", unquote("company_id"))
         )
 
-    sequence = fields.Integer(string='Sequence', index=True, default=10)
-    active = fields.Boolean("Active", default=True, help="If the active field is set to false, it will allow you to hide the case without removing it.", index=True)
+    sequence = fields.Integer(index=True, default=10)
+    active = fields.Boolean(default=True, help="If the active field is set to false, it will allow you to hide the case without removing it.", index=True)
 
     partner_id = fields.Many2one('res.partner', "Contact", copy=False, index='btree_not_null')
     partner_name = fields.Char("Applicant's Name", tracking=True)
@@ -81,25 +81,24 @@ class HrApplicant(models.Model):
     )
     linkedin_profile = fields.Char('LinkedIn Profile', tracking=True, index='btree_not_null')
     type_id = fields.Many2one('hr.recruitment.degree', "Degree", tracking=True)
-    availability = fields.Date("Availability", help="The date at which the applicant will be available to start working", tracking=True)
+    availability = fields.Date(help="The date at which the applicant will be available to start working", tracking=True)
     color = fields.Integer("Color Index", default=0)
-    employee_id = fields.Many2one('hr.employee', string="Employee", help="Employee linked to the applicant.", copy=False, index='btree_not_null')
+    employee_id = fields.Many2one('hr.employee', help="Employee linked to the applicant.", copy=False, index='btree_not_null')
     emp_is_active = fields.Boolean(string="Employee Active", related='employee_id.active')
     employee_name = fields.Char(related='employee_id.name', string="Employee Name", readonly=False, tracking=False)
 
-    probability = fields.Float("Probability")
+    probability = fields.Float()
     create_date = fields.Datetime("Applied on", readonly=True)
-    stage_id = fields.Many2one('hr.recruitment.stage', 'Stage', ondelete='restrict', tracking=True,
+    stage_id = fields.Many2one('hr.recruitment.stage', ondelete='restrict', tracking=True,
                                compute='_compute_stage', store=True, readonly=False,
                                domain="['&', '|', ('job_ids', '=', False), ('job_ids', '=', job_id), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
                                copy=False, index=True,
                                group_expand='_read_group_stage_ids')
-    last_stage_id = fields.Many2one('hr.recruitment.stage', "Last Stage",
-                                    help="Stage of the applicant before being in the current stage. Used for lost cases analysis.")
+    last_stage_id = fields.Many2one('hr.recruitment.stage', help="Stage of the applicant before being in the current stage. Used for lost cases analysis.")
     categ_ids = fields.Many2many('hr.applicant.category', string="Tags", tracking=True)
     currency_id = fields.Many2one('res.currency', string='Currency', related='company_id.currency_id')
-    company_id = fields.Many2one('res.company', "Company", compute='_compute_company', store=True, index=True, readonly=False, tracking=True)
-    recruiter_id = fields.Many2one('hr.employee', "Recruiter", compute='_compute_recruiter', domain=lambda self: str(self._recruiter_domain()),
+    company_id = fields.Many2one('res.company', compute='_compute_company', store=True, index=True, readonly=False, tracking=True)
+    recruiter_id = fields.Many2one('hr.employee', compute='_compute_recruiter', domain=lambda self: str(self._recruiter_domain()),
         tracking=True, store=True, index=True, readonly=False)
     date_closed = fields.Datetime("Hire Date", compute='_compute_date_closed', store=True, readonly=False, tracking=True, copy=False)
     date_open = fields.Datetime("Assigned", readonly=True)
@@ -117,9 +116,9 @@ class HrApplicant(models.Model):
         ('biweekly', 'Bi-Week'),
         ('monthly', 'Month'),
         ('yearly', 'Year'),
-    ], string='Schedule Pay', default='monthly', required=True, groups="hr_recruitment.group_hr_recruitment_user")
+    ], default='monthly', required=True, groups="hr_recruitment.group_hr_recruitment_user")
     department_id = fields.Many2one(
-        'hr.department', "Department", compute='_compute_department', store=True, readonly=False,
+        'hr.department', compute='_compute_department', store=True, readonly=False,
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", tracking=True)
     day_open = fields.Float(compute='_compute_day', string="Days to Open", compute_sudo=True)
     day_close = fields.Float(compute='_compute_day', string="Days to Close", compute_sudo=True)
@@ -131,9 +130,8 @@ class HrApplicant(models.Model):
         ('normal', 'In Progress'),
         ('done', 'Ready'),
         ('waiting', 'Waiting'),
-        ('blocked', 'Blocked')], string='Kanban State',
-        copy=False, default='normal', required=True)
-    refuse_reason_id = fields.Many2one('hr.applicant.refuse.reason', string='Refuse Reason', tracking=True)
+        ('blocked', 'Blocked')], copy=False, default='normal', required=True)
+    refuse_reason_id = fields.Many2one('hr.applicant.refuse.reason', tracking=True)
     meeting_ids = fields.One2many('calendar.event', 'applicant_id', 'Meetings')
     meeting_display_text = fields.Char(compute='_compute_meeting_display')
     meeting_display_date = fields.Date(compute='_compute_meeting_display')
@@ -153,7 +151,7 @@ class HrApplicant(models.Model):
     application_count = fields.Integer(compute='_compute_application_count', help='Applications with the same email or phone or mobile')
     applicant_properties = fields.Properties('Properties', definition='company_id.applicant_properties_definition', precompute=False, copy=True)
     applicant_notes = fields.Html()
-    refuse_date = fields.Datetime('Refuse Date')
+    refuse_date = fields.Datetime()
     talent_pool_ids = fields.Many2many(comodel_name="hr.talent.pool", string="Talent Pools")
     pool_applicant_id = fields.Many2one("hr.applicant", index='btree_not_null')
     linked_applicant_ids = fields.One2many('hr.applicant', 'pool_applicant_id', 'Applications')

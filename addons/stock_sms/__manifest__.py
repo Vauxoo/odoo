@@ -3,7 +3,6 @@
 {
     'name': "Stock - SMS",
     'summary': 'Send text messages when final stock move',
-    'description': "Send text messages when final stock move",
     'category': 'Supply Chain/Inventory',
     'depends': ['stock', 'sms'],
     'data': [

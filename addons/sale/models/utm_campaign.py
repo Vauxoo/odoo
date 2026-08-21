@@ -8,7 +8,6 @@ class UtmCampaign(models.Model):
     _inherit = "utm.campaign"
 
     quotation_count = fields.Integer(
-        "Quotation Count",
         compute="_compute_quotation_count",
         compute_sudo=True,
         groups="sales_team.group_sale_salesman",
@@ -21,7 +20,6 @@ class UtmCampaign(models.Model):
     )
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         index="btree_not_null",
         default=lambda self: self.env.company,
     )

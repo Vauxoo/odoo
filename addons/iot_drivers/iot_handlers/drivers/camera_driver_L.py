@@ -4,8 +4,8 @@ import base64
 import logging
 import subprocess
 
-from odoo.addons.iot_drivers.iot_handlers.interfaces.camera_interface_L import CameraInterface
-from odoo.addons.iot_drivers.driver import Driver
+from ..interfaces.camera_interface_L import CameraInterface
+from ...driver import Driver
 
 _logger = logging.getLogger(__name__)
 

@@ -7,7 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools.business_data import split_vat
 
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
-from odoo.addons.l10n_dk.tools.demo_utils import handle_demo
+from ..tools.demo_utils import handle_demo
 
 _logger = logging.getLogger(__name__)
 BATCH_SIZE = 50
@@ -36,12 +36,12 @@ class AccountEdiProxyClientUser(models.Model):
     def _call_nemhandel_proxy(self, endpoint, params=None):
         self.ensure_one()
         if self.proxy_type != 'nemhandel':
-            raise UserError(_('EDI user should be of type Nemhandel'))
+            raise UserError(self.env._('EDI user should be of type Nemhandel'))
 
         errors = {
-            'code_incorrect': _('The verification code is not correct'),
-            'code_expired': _('This verification code has expired. Please request a new one.'),
-            'too_many_attempts': _('Too many attempts to request an SMS code. Please try again later.'),
+            'code_incorrect': self.env._('The verification code is not correct'),
+            'code_expired': self.env._('This verification code has expired. Please request a new one.'),
+            'too_many_attempts': self.env._('Too many attempts to request an SMS code. Please try again later.'),
         }
 
         params = params or {}
@@ -56,14 +56,14 @@ class AccountEdiProxyClientUser(models.Model):
         if 'error' in response:
             error_code = response['error'].get('code')
             error_message = response['error'].get('subject') or response['error'].get('data', {}).get('message')
-            raise UserError(errors.get(error_code) or error_message or _('Connection error, please try again later.'))
+            raise UserError(errors.get(error_code) or error_message or self.env._('Connection error, please try again later.'))
         return response
 
     @handle_demo
     def _check_user_on_alternative_service(self):
         status = self._call_nemhandel_proxy('/api/nemhandel/1/check_user_valid')
         if status and status.get('status') != 'valid':
-            error_msg = _(
+            error_msg = self.env._(
                 "A participant with these details has already been registered on the network. "
                 "If you have previously registered to an alternative Nemhandel service, please deregister"
             )
@@ -98,7 +98,7 @@ class AccountEdiProxyClientUser(models.Model):
         if proxy_type != 'nemhandel':
             return super()._get_proxy_identification(company, proxy_type)
         if not company.nemhandel_identifier_type or not company.nemhandel_identifier_value:
-            raise UserError(_("Please fill in the Identifier Type and Value."))
+            raise UserError(self.env._("Please fill in the Identifier Type and Value."))
         return f'{company.nemhandel_identifier_type}:{company.nemhandel_identifier_value}'
 
     def _register_proxy_user(self, company, proxy_type, edi_mode):
@@ -215,7 +215,7 @@ class AccountEdiProxyClientUser(models.Model):
 
         move._extend_with_attachments(move._to_files_data(attachment), new=True)
         move._message_log(
-            body=_(
+            body=self.env._(
                 "Nemhandel document (UUID: %(uuid)s) has been received successfully.",
                 uuid=uuid,
             ),
@@ -237,7 +237,7 @@ class AccountEdiProxyClientUser(models.Model):
             edi_user = edi_user.with_company(edi_user.company_id)
             journal = edi_user.company_id.nemhandel_purchase_journal_id
             if not journal:
-                msg = _('Please set a journal for Nemhandel invoices on %s before receiving documents.', edi_user.company_id.display_name)
+                msg = self.env._('Please set a journal for Nemhandel invoices on %s before receiving documents.', edi_user.company_id.display_name)
                 if skip_no_journal:
                     _logger.warning(msg)
                 else:
@@ -393,7 +393,7 @@ class AccountEdiProxyClientUser(models.Model):
             return True
 
         # Invoice
-        record._message_log(body=_("Nemhandel error: %s", content['error'].get('data', {}).get('message') or content['error']['message']))
+        record._message_log(body=self.env._("Nemhandel error: %s", content['error'].get('data', {}).get('message') or content['error']['message']))
         record.nemhandel_move_state = 'error'
         return True
 
@@ -411,7 +411,7 @@ class AccountEdiProxyClientUser(models.Model):
                 record.nemhandel_state = content['state']
             else:
                 record.nemhandel_move_state = content['state']
-                record._message_log(body=_('Nemhandel status update: %s', content['state']))
+                record._message_log(body=self.env._('Nemhandel status update: %s', content['state']))
             processed_message_uuids.append(uuid)
         return processed_message_uuids
 
@@ -501,11 +501,11 @@ class AccountEdiProxyClientUser(models.Model):
         if company.l10n_dk_nemhandel_proxy_state != 'in_verification':
             # a participant can only try registering as a receiver if they are not registered
             nemhandel_state_translated = dict(company._fields['l10n_dk_nemhandel_proxy_state']._description_selection(self.env))[company.l10n_dk_nemhandel_proxy_state]
-            raise UserError(_('Cannot register a user with a %s application', nemhandel_state_translated))
+            raise UserError(self.env._('Cannot register a user with a %s application', nemhandel_state_translated))
 
         company_vat = split_vat(company.vat)[1]
         if company.nemhandel_identifier_type == '0184' and company_vat != company.nemhandel_identifier_value:
-            raise ValidationError(_("If you try to register with your CVR, please make sure your company has the same VAT"))
+            raise ValidationError(self.env._("If you try to register with your CVR, please make sure your company has the same VAT"))
 
         self._check_user_on_alternative_service()
 

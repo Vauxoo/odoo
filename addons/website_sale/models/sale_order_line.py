@@ -158,12 +158,12 @@ class SaleOrderLine(models.Model):
         Donation lines have a user-selected price that must never be overwritten by pricelist rules.
         """
         donation_lines = self.filtered("is_donation")
-        super(SaleOrderLine, self - donation_lines)._compute_price_unit()
+        return super(SaleOrderLine, self - donation_lines)._compute_price_unit()
 
     def _compute_discount(self):
         donation_lines = self.filtered("is_donation")
         donation_lines.discount = 0.0
-        super(SaleOrderLine, self - donation_lines)._compute_discount()
+        return super(SaleOrderLine, self - donation_lines)._compute_discount()
 
     def _get_max_line_qty(self):
         max_quantity = self._get_max_available_qty()

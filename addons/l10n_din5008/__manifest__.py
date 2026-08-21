@@ -3,7 +3,6 @@
 {
     'name': 'DIN 5008',
     'category': 'Accounting/Localizations',
-    'description': "This is the base module that defines the DIN 5008 standard in Odoo.",
     'depends': ['account'],
     'auto_install': True,
     'countries': ['de', 'ch'],

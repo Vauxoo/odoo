@@ -34,7 +34,7 @@ class ResPartner(models.Model):
             partner.is_company = (vat.startswith('HU') and len(vat) == 10) \
                 or bool(self._check_tin_hu_companies_re.fullmatch(vat)) or False
 
-        super(ResPartner, self - l10n_hu_partners)._compute_is_company()
+        return super(ResPartner, self - l10n_hu_partners)._compute_is_company()
 
     @api.model
     def _commercial_fields(self):

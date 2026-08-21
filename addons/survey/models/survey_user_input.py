@@ -11,7 +11,6 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_is_zero
 
-_logger = logging.getLogger(__name__)
 
 
 class SurveyUser_Input(models.Model):
@@ -23,11 +22,11 @@ class SurveyUser_Input(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     # answer description
-    survey_id = fields.Many2one('survey.survey', string='Survey', required=True, readonly=True, index=True, ondelete='cascade')
+    survey_id = fields.Many2one('survey.survey', required=True, readonly=True, index=True, ondelete='cascade')
     scoring_type = fields.Selection(string="Scoring", related="survey_id.scoring_type")
     start_datetime = fields.Datetime('Start date and time', readonly=True)
     end_datetime = fields.Datetime('End date and time', readonly=True)
-    deadline = fields.Datetime('Deadline', help="Datetime until customer can open the survey and submit answers")
+    deadline = fields.Datetime(help="Datetime until customer can open the survey and submit answers")
     lang_id = fields.Many2one('res.lang', string='Language')
     state = fields.Selection([
         ('new', 'New'),
@@ -38,26 +37,26 @@ class SurveyUser_Input(models.Model):
     # attempts management
     is_attempts_limited = fields.Boolean("Limited number of attempts", related='survey_id.is_attempts_limited')
     attempts_limit = fields.Integer("Number of attempts", related='survey_id.attempts_limit')
-    attempts_count = fields.Integer("Attempts Count", compute='_compute_attempts_info')
+    attempts_count = fields.Integer(compute='_compute_attempts_info')
     attempts_number = fields.Integer("Attempt n°", compute='_compute_attempts_info')
-    survey_time_limit_reached = fields.Boolean("Survey Time Limit Reached", compute='_compute_survey_time_limit_reached')
+    survey_time_limit_reached = fields.Boolean(compute='_compute_survey_time_limit_reached')
     # identification / access
     access_token = fields.Char('Identification token', default=lambda self: str(uuid.uuid4()), readonly=True, required=True, copy=False)
     invite_token = fields.Char('Invite token', readonly=True, copy=False)  # no unique constraint, as it identifies a pool of attempts
     partner_id = fields.Many2one('res.partner', string='Contact', readonly=True, index='btree_not_null')
     create_uid = fields.Many2one('res.users', string='Created by', index=True)
-    email = fields.Char('Email', readonly=True)
-    nickname = fields.Char('Nickname', help="Attendee nickname, mainly used to identify them in the survey session leaderboard.")
+    email = fields.Char(readonly=True)
+    nickname = fields.Char(help="Attendee nickname, mainly used to identify them in the survey session leaderboard.")
     # questions / answers
     user_input_line_ids = fields.One2many('survey.user_input.line', 'user_input_id', string='Answers', copy=True)
     predefined_question_ids = fields.Many2many('survey.question', string='Predefined Questions', readonly=True)
     scoring_percentage = fields.Float("Score (%)", compute="_compute_scoring_values", store=True, compute_sudo=True)  # stored for perf reasons
     scoring_total = fields.Float("Total Score", compute="_compute_scoring_values", store=True, compute_sudo=True, digits=(10, 2))  # stored for perf reasons
     scoring_success = fields.Boolean('Quiz Passed', compute='_compute_scoring_success', store=True, compute_sudo=True)  # stored for perf reasons
-    survey_first_submitted = fields.Boolean(string='Survey First Submitted')
+    survey_first_submitted = fields.Boolean()
     # live sessions
     is_session_answer = fields.Boolean('Is in a Session', help="Is that user input part of a survey session or not.")
-    question_time_limit_reached = fields.Boolean("Question Time Limit Reached", compute='_compute_question_time_limit_reached')
+    question_time_limit_reached = fields.Boolean(compute='_compute_question_time_limit_reached')
 
     _unique_token = models.Constraint(
         'UNIQUE (access_token)',
@@ -290,7 +289,7 @@ class SurveyUser_Input(models.Model):
             ('question_id', '=', question.id)
         ])
         if old_answers and not overwrite_existing:
-            raise UserError(_("This answer cannot be overwritten."))
+            raise UserError(self.env._("This answer cannot be overwritten."))
 
         if question.question_type in ['char_box', 'text_box', 'scale', 'numerical_box', 'date', 'datetime']:
             self._save_line_simple_answer(question, old_answers, answer)
@@ -444,7 +443,7 @@ class SurveyUser_Input(models.Model):
             if question.question_type in ['simple_choice', 'multiple_choice']:
                 question_correct_suggested_answers = question.suggested_answer_ids.filtered(lambda answer: answer.is_correct)
 
-            question_section = question.page_id.title or _('Uncategorized')
+            question_section = question.page_id.title or self.env._('Uncategorized')
             for user_input in self:
                 user_input_lines = user_input.user_input_line_ids.filtered(lambda line:
                     line.question_id == question and (line.answer_type != 'char_box' or question.comment_count_as_answer))
@@ -480,10 +479,10 @@ class SurveyUser_Input(models.Model):
                 skipped_count += section_counts.get('skipped', 0)
 
             res[user_input]['totals'] = [
-                {'text': _("Correct"), 'count': correct_count},
-                {'text': _("Partially"), 'count': partial_count},
-                {'text': _("Incorrect"), 'count': incorrect_count},
-                {'text': _("Unanswered"), 'count': skipped_count}
+                {'text': self.env._("Correct"), 'count': correct_count},
+                {'text': self.env._("Partially"), 'count': partial_count},
+                {'text': self.env._("Incorrect"), 'count': incorrect_count},
+                {'text': self.env._("Unanswered"), 'count': skipped_count}
             ]
 
         return res
@@ -707,13 +706,13 @@ class SurveyUser_Input(models.Model):
         for user_input in self.filtered(lambda user_input_: user_input_.survey_id.id in followed_survey_ids):
             survey_title = user_input.survey_id.title
             if user_input.partner_id:
-                body = _(
+                body = self.env._(
                     '%(participant)s just participated in "%(survey_title)s".',
                     participant=user_input.partner_id.display_name,
                     survey_title=survey_title,
                 )
             else:
-                body = _('Someone just participated in "%(survey_title)s".', survey_title=survey_title)
+                body = self.env._('Someone just participated in "%(survey_title)s".', survey_title=survey_title)
 
             user_input.message_post(author_id=author_id, body=body, subtype_xmlid='survey.mt_survey_user_input_completed')
 
@@ -725,14 +724,14 @@ class SurveyUser_InputLine(models.Model):
     _order = 'question_sequence, id'
 
     # survey data
-    user_input_id = fields.Many2one('survey.user_input', string='User Input', ondelete='cascade', required=True, index=True)
+    user_input_id = fields.Many2one('survey.user_input', ondelete='cascade', required=True, index=True)
     survey_id = fields.Many2one(related='user_input_id.survey_id', string='Survey', store=True, readonly=False)
-    question_id = fields.Many2one('survey.question', string='Question', ondelete='cascade', required=True, index=True)
+    question_id = fields.Many2one('survey.question', ondelete='cascade', required=True, index=True)
     page_id = fields.Many2one(related='question_id.page_id', string="Section", readonly=False)
     question_sequence = fields.Integer('Sequence', related='question_id.sequence', store=True)
     lang_id = fields.Many2one('res.lang', related="user_input_id.lang_id")
     # answer
-    skipped = fields.Boolean('Skipped')
+    skipped = fields.Boolean()
     answer_type = fields.Selection([
         ('text_box', 'Free Text'),
         ('char_box', 'Text'),
@@ -740,7 +739,7 @@ class SurveyUser_InputLine(models.Model):
         ('scale', 'Number'),
         ('date', 'Date'),
         ('datetime', 'Datetime'),
-        ('suggestion', 'Suggestion')], string='Answer Type')
+        ('suggestion', 'Suggestion')])
     value_char_box = fields.Char('Text answer')
     value_numerical_box = fields.Float('Numerical answer')
     value_scale = fields.Integer('Scale value')
@@ -779,7 +778,7 @@ class SurveyUser_InputLine(models.Model):
                     line.display_name = line.suggested_answer_id.value
 
             if not line.display_name:
-                line.display_name = _('Skipped')
+                line.display_name = self.env._('Skipped')
 
     @api.depends('answer_type', 'value_text_box', 'value_numerical_box', 'value_date', 'value_datetime',
                  'suggested_answer_id', 'user_input_id')
@@ -848,7 +847,7 @@ class SurveyUser_InputLine(models.Model):
     def _check_answer_type_skipped(self):
         for line in self:
             if (line.skipped == bool(line.answer_type)):
-                raise ValidationError(_('A question can either be skipped or answered, not both.'))
+                raise ValidationError(self.env._('A question can either be skipped or answered, not both.'))
 
             # allow 0 for numerical box and scale
             if line.answer_type == 'numerical_box' and float_is_zero(line['value_numerical_box'], precision_digits=6):
@@ -864,7 +863,7 @@ class SurveyUser_InputLine(models.Model):
                 field_name = False
 
             if field_name and not line[field_name]:
-                raise ValidationError(_('The answer must be in the right type'))
+                raise ValidationError(self.env._('The answer must be in the right type'))
 
     def _get_answer_matching_domain(self):
         self.ensure_one()

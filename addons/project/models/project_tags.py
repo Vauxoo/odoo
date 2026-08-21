@@ -16,8 +16,8 @@ class ProjectTags(models.Model):
     def _get_default_color(self):
         return randint(1, 11)
 
-    name = fields.Char('Name', required=True, translate=True)
-    color = fields.Integer(string='Color', default=_get_default_color,
+    name = fields.Char(required=True, translate=True)
+    color = fields.Integer(default=lambda self: self._get_default_color(),
         help="Transparent tags are not visible in the kanban view of your projects and tasks.")
     project_ids = fields.Many2many('project.project', 'project_project_project_tags_rel', string='Projects', export_string_translation=False)
     task_ids = fields.Many2many('project.task', string='Tasks', export_string_translation=False)

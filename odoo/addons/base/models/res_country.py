@@ -6,7 +6,6 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Domain
 
-_logger = logging.getLogger(__name__)
 
 
 FLAG_MAPPING = {
@@ -189,7 +188,7 @@ class ResCountryGroup(models.Model):
     _description = "Country Group"
 
     name = fields.Char(required=True, translate=True)
-    code = fields.Char(string="Code")
+    code = fields.Char()
     country_ids = fields.Many2many('res.country', 'res_country_res_country_group_rel',
                                    'res_country_group_id', 'res_country_id', string='Countries')
 
@@ -218,7 +217,7 @@ class ResCountryState(models.Model):
     _order = 'code, id'
     _rec_names_search = ('name', 'code')
 
-    country_id = fields.Many2one('res.country', string='Country', required=True, index=True)
+    country_id = fields.Many2one('res.country', required=True, index=True)
     name = fields.Char(string='State Name', required=True,
                help='Administrative divisions of a country. E.g. Fed. State, Department, Canton')
     code = fields.Char(string='State Code', help='The state code.', required=True)

@@ -7,9 +7,6 @@
         'account_debit_note',
     ],
     'auto_install': ['l10n_it'],
-    'description': """
-E-invoice implementation
-    """,
     'category': 'Accounting/Localizations/EDI',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/italy.html',
     'data': [

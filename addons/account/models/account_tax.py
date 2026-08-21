@@ -36,13 +36,11 @@ class AccountTaxGroup(models.Model):
         comodel_name='account.account',
         check_company=True,
         domain="[('account_type', '=', 'liability_payable'), ('non_trade', '=', True)]",
-        string='Tax Payable Account',
         help="Tax current account used as a counterpart to the Tax Closing Entry when in favor of the authorities.")
     tax_receivable_account_id = fields.Many2one(
         comodel_name='account.account',
         check_company=True,
         domain="[('account_type', '=', 'asset_receivable'), ('non_trade', '=', True)]",
-        string='Tax Receivable Account',
         help="Tax current account used as a counterpart to the Tax Closing Entry when in favor of the company.")
     advance_tax_payment_account_id = fields.Many2one(
         comodel_name='account.account',
@@ -50,14 +48,12 @@ class AccountTaxGroup(models.Model):
         string='Tax Advance Account',
         help="Downpayments posted on this account will be considered by the Tax Closing Entry.")
     country_id = fields.Many2one(
-        string="Country",
         comodel_name='res.country',
         compute='_compute_country_id', store=True, readonly=False, precompute=True,
         help="The country for which this tax group is applicable.",
     )
     country_code = fields.Char(related="country_id.code")
     preceding_subtotal = fields.Char(
-        string="Preceding Subtotal",
         help="If set, this value will be used on documents as the label of a subtotal excluding this tax group before displaying it. " \
              "If not set, the tax group will be displayed after the 'Untaxed amount' subtotal.",
         translate=True,
@@ -95,7 +91,7 @@ class AccountTax(models.Model):
     name = fields.Char(string='Tax Name', required=True, translate=True, tracking=True)
     type_tax_use = fields.Selection(TYPE_TAX_USE, string='Tax Type', required=True, default="sale", tracking=True,
         help="Determines where the tax is selectable. Note: 'None' means a tax can't be used by itself, however it can still be used in a group. 'adjustment' is used to perform tax adjustment.")
-    tax_scope = fields.Selection([('service', 'Services'), ('consu', 'Goods')], string="Tax Scope")
+    tax_scope = fields.Selection([('service', 'Services'), ('consu', 'Goods')])
     amount_type = fields.Selection(default='percent', string="Tax Computation", required=True, tracking=True,
         selection=[('group', 'Group of Taxes'), ('fixed', 'Fixed'), ('percent', 'Percentage'), ('division', 'Percentage Tax Included')],
         help="""
@@ -138,7 +134,7 @@ class AccountTax(models.Model):
     display_alternative_taxes_field = fields.Boolean(compute='_compute_display_alternative_taxes_field')
     is_domestic = fields.Boolean(compute='_compute_is_domestic', store=True, precompute=True)
     active = fields.Boolean(default=True, help="Set active to false to hide the tax without removing it.")
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', required=True, readonly=True, default=lambda self: self.env.company)
     children_tax_ids = fields.Many2many('account.tax',
         'account_tax_filiation_rel', 'parent_tax', 'child_tax',
         check_company=True,
@@ -146,7 +142,7 @@ class AccountTax(models.Model):
     sequence = fields.Integer(required=True, default=1,
         help="The sequence field is used to define order in which the tax lines are applied.")
     amount = fields.Float(required=True, digits=(16, 4), default=0.0, tracking=True)
-    description = fields.Html(string='Description', translate=html_translate)
+    description = fields.Html(translate=html_translate)
     invoice_label = fields.Char(string='Label on Invoices', translate=True)
     tax_label = fields.Char(compute='_compute_tax_label')
     price_include = fields.Boolean(
@@ -170,7 +166,6 @@ class AccountTax(models.Model):
     analytic = fields.Boolean(string="Include in Analytic Cost", help="If set, the amount computed by this tax will be assigned to the same analytic account as the invoice line (if any)")
     tax_group_id = fields.Many2one(
         comodel_name='account.tax.group',
-        string="Tax Group",
         compute='_compute_tax_group_id', readonly=False, store=True,
         required=True, precompute=True,
         domain="[('country_id', 'in', (country_id, False))]")
@@ -179,11 +174,10 @@ class AccountTax(models.Model):
     tax_exigibility = fields.Selection(
         [('on_invoice', 'Based on Invoice'),
          ('on_payment', 'Based on Payment'),
-        ], string='Tax Exigibility', default='on_invoice',
+        ], default='on_invoice',
         help="Based on Invoice: the tax is due as soon as the invoice is validated.\n"
         "Based on Payment: the tax is due as soon as the payment of the invoice is received.")
-    cash_basis_transition_account_id = fields.Many2one(string="Cash Basis Transition Account",
-        check_company=True,
+    cash_basis_transition_account_id = fields.Many2one(check_company=True,
         domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable'))]",
         comodel_name='account.account',
         help="Account used to transition the tax amount for cash basis taxes. It will contain the tax amount as long as the original invoice has not been reconciled ; at reconciliation, this amount cancelled on this account and put on the regular tax account.")
@@ -210,7 +204,6 @@ class AccountTax(models.Model):
         copy=True,
     )
     country_id = fields.Many2one(
-        string="Country",
         comodel_name='res.country',
         compute='_compute_country_id', readonly=False, store=True,
         required=True, precompute=True,
@@ -262,7 +255,7 @@ class AccountTax(models.Model):
     def validate_tax_group_id(self):
         for record in self:
             if record.tax_group_id.country_id and record.tax_group_id.country_id != record.country_id:
-                raise ValidationError(_("The tax group must have the same country_id as the tax using it."))
+                raise ValidationError(self.env._("The tax group must have the same country_id as the tax using it."))
 
     @api.model
     @api.readonly
@@ -409,10 +402,10 @@ class AccountTax(models.Model):
                     #   3. Update the last refund repartition line factor to 50%
                     sequence = (invoice_sequence := invoice_sequence + 1) if repartition_line.document_type == 'invoice' else (refund_sequence := refund_sequence + 1)
                     repartition_line_info[(repartition_line.document_type, sequence)] = {
-                        _('Factor Percent'): repartition_line.factor_percent,
-                        _('Account'): repartition_line.account_id.display_name or _('None'),
-                        _('Tax Grids'): repartition_line.tag_ids.mapped('name') or _('None'),
-                        _('Use in tax closing'): _('True') if repartition_line.use_in_tax_closing else _('False'),
+                        self.env._('Factor Percent'): repartition_line.factor_percent,
+                        self.env._('Account'): repartition_line.account_id.display_name or self.env._('None'),
+                        self.env._('Tax Grids'): repartition_line.tag_ids.mapped('name') or self.env._('None'),
+                        self.env._('Use in tax closing'): self.env._('True') if repartition_line.use_in_tax_closing else self.env._('False'),
                     }
                 repartition_lines_str = str(repartition_line_info)
             tax.repartition_lines_str = repartition_lines_str
@@ -446,7 +439,7 @@ class AccountTax(models.Model):
                     fields_info={fname: {'type': 'char', 'string': fname} for fname in diff_keys},
                     body=Markup("<b>{type}</b> {rep} {seq}").format(
                         type=document_type.capitalize(),
-                        rep=_('repartition line'),
+                        rep=self.env._('repartition line'),
                         seq=sequence,
                     )
                 )
@@ -462,7 +455,7 @@ class AccountTax(models.Model):
                     body=Markup("<b>{op} {type}</b> {rep} {seq}").format(
                         op=operation,
                         type=document_type.capitalize(),
-                        rep=_('repartition line'),
+                        rep=self.env._('repartition line'),
                         seq=sequence,
                     )
                 )
@@ -556,7 +549,7 @@ class AccountTax(models.Model):
 
         base_line = lines.filtered(lambda x: x.repartition_type == 'base')
         if len(base_line) != 1:
-            raise ValidationError(_("Invoice and credit note distribution should each contain exactly one line for the base."))
+            raise ValidationError(self.env._("Invoice and credit note distribution should each contain exactly one line for the base."))
 
     @api.constrains('invoice_repartition_line_ids', 'refund_repartition_line_ids', 'repartition_line_ids')
     def _validate_repartition_lines(self):
@@ -573,44 +566,44 @@ class AccountTax(models.Model):
             record._check_repartition_lines(refund_repartition_line_ids)
 
             if len(invoice_repartition_line_ids) != len(refund_repartition_line_ids):
-                raise ValidationError(_("Invoice and credit note distribution should have the same number of lines."))
+                raise ValidationError(self.env._("Invoice and credit note distribution should have the same number of lines."))
 
             if not invoice_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax') or \
                     not refund_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax'):
-                raise ValidationError(_("Invoice and credit note repartition should have at least one tax repartition line."))
+                raise ValidationError(self.env._("Invoice and credit note repartition should have at least one tax repartition line."))
 
             index = 0
             while index < len(invoice_repartition_line_ids):
                 inv_rep_ln = invoice_repartition_line_ids[index]
                 ref_rep_ln = refund_repartition_line_ids[index]
                 if inv_rep_ln.repartition_type != ref_rep_ln.repartition_type or inv_rep_ln.factor_percent != ref_rep_ln.factor_percent:
-                    raise ValidationError(_("Invoice and credit note distribution should match (same percentages, in the same order)."))
+                    raise ValidationError(self.env._("Invoice and credit note distribution should match (same percentages, in the same order)."))
                 index += 1
 
             tax_reps = invoice_repartition_line_ids.filtered(lambda tax_rep: tax_rep.repartition_type == 'tax')
             total_pos_factor = sum(tax_reps.filtered(lambda tax_rep: tax_rep.factor > 0.0).mapped('factor'))
             if float_compare(total_pos_factor, 1.0, precision_digits=2):
-                raise ValidationError(_("Invoice and credit note distribution should have a total factor (+) equals to 100."))
+                raise ValidationError(self.env._("Invoice and credit note distribution should have a total factor (+) equals to 100."))
             total_neg_factor = sum(tax_reps.filtered(lambda tax_rep: tax_rep.factor < 0.0).mapped('factor'))
             if total_neg_factor and float_compare(total_neg_factor, -1.0, precision_digits=2):
-                raise ValidationError(_("Invoice and credit note distribution should have a total factor (-) equals to 100."))
+                raise ValidationError(self.env._("Invoice and credit note distribution should have a total factor (-) equals to 100."))
 
     @api.constrains('children_tax_ids', 'type_tax_use')
     def _check_children_scope(self):
         for tax in self:
             if tax._has_cycle('children_tax_ids'):
-                raise ValidationError(_("Recursion found for tax “%s”.", tax.name))
+                raise ValidationError(self.env._("Recursion found for tax “%s”.", tax.name))
             if any(
                 child.type_tax_use not in ('none', tax.type_tax_use)
                 or child.tax_scope not in (tax.tax_scope, False)
                 for child in tax.children_tax_ids
             ):
-                raise ValidationError(_('The application scope of taxes in a group must be either the same as the group or left empty.'))
+                raise ValidationError(self.env._('The application scope of taxes in a group must be either the same as the group or left empty.'))
             if any(
                 child.amount_type == 'group'
                 for child in tax.children_tax_ids
             ):
-                raise ValidationError(_('Nested group of taxes are not allowed.'))
+                raise ValidationError(self.env._('Nested group of taxes are not allowed.'))
 
     @api.constrains('company_id')
     def _check_company_consistency(self):
@@ -625,7 +618,7 @@ class AccountTax(models.Model):
                 ('tax_ids', 'in', [tax.id for tax in taxes]),
                 '!', ('company_id', 'child_of', company.id)
             ], limit=1):
-                raise UserError(_("You can't change the company of your tax since there are some journal items linked to it."))
+                raise UserError(self.env._("You can't change the company of your tax since there are some journal items linked to it."))
 
     def _sanitize_vals(self, vals):
         """Normalize the create/write values."""
@@ -682,7 +675,7 @@ class AccountTax(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for tax, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", tax.name)
+                vals['name'] = self.env._("%s (copy)", tax.name)
         return vals_list
 
     @api.depends('type_tax_use', 'tax_scope')
@@ -2878,7 +2871,7 @@ class AccountTax(models.Model):
             tax_totals_summary['tax_amount'] += values['tax_amount']
 
         # Tax groups.
-        untaxed_amount_subtotal_label = _("Untaxed Amount")
+        untaxed_amount_subtotal_label = self.env._("Untaxed Amount")
         subtotals = defaultdict(lambda: {
             'tax_groups': [],
             'tax_amount_currency': 0.0,
@@ -5184,8 +5177,7 @@ class AccountTaxRepartitionLine(models.Model):
     factor = fields.Float(string="Factor Ratio", compute="_compute_factor", help="Factor to apply on the journal items generated from this distribution line")
     repartition_type = fields.Selection(string="Based On", selection=[('base', 'Base'), ('tax', 'of tax')], required=True, default='tax', help="Base on which the factor will be applied.")
     document_type = fields.Selection(string="Related to", selection=[('invoice', 'Invoice'), ('refund', 'Refund')], required=True)
-    account_id = fields.Many2one(string="Account",
-        comodel_name='account.account',
+    account_id = fields.Many2one(comodel_name='account.account',
         domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable', 'off_balance'))]",
         check_company=True,
         index='btree_not_null',
@@ -5194,7 +5186,7 @@ class AccountTaxRepartitionLine(models.Model):
     tag_ids = fields.Many2many(string="Tax Grids", comodel_name='account.account.tag', domain=[('applicability', '=', 'taxes')], copy=True, ondelete='restrict')
     tax_id = fields.Many2one(comodel_name='account.tax', index='btree_not_null', ondelete='cascade', check_company=True)
     company_id = fields.Many2one(string="Company", comodel_name='res.company', related="tax_id.company_id", store=True, help="The company this distribution line belongs to.")
-    sequence = fields.Integer(string="Sequence", default=1,
+    sequence = fields.Integer(default=1,
         help="The order in which distribution lines are displayed and matched. For refunds to work properly, invoice distribution lines should be arranged in the same order as the credit note distribution lines they correspond to.")
     use_in_tax_closing = fields.Boolean(
         string="Tax Closing Entry",

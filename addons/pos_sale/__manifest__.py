@@ -7,10 +7,6 @@
     'category': 'Sales/Point of Sale',
     'sequence': 6,
     'summary': 'Link module between Point of Sale and Sales',
-    'description': """
-
-This module adds a custom Sales Team for the Point of Sale. This enables you to view and manage your point of sale sales with more ease.
-""",
     'depends': ['point_of_sale', 'sale_management'],
     'data': [
         'data/pos_sale_data.xml',

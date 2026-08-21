@@ -12,7 +12,7 @@ class Printer(models.Model):
             ("zpl", "ZPL"),
             ('epos', 'ePOS'),
         ],
-        default="zpl", required=True, string="Type"
+        default="zpl", required=True
     )
 
     @api.depends('name', 'type')

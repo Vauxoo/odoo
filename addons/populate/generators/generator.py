@@ -14,7 +14,7 @@ from odoo.tools.lru import LRU
 
 from ..utils.distributions import Distribution, UniformDistribution
 from ..utils.orm import get_ref_domain
-from odoo.addons.populate.utils.distributions import WeightedDistribution
+from ..utils.distributions import WeightedDistribution
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Collection, Iterable

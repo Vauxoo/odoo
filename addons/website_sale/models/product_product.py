@@ -13,7 +13,7 @@ class ProductProduct(models.Model):
     _inherit = ["product.product", "website.structured_data.mixin"]
     _mail_post_access = "read"
 
-    variant_ribbon_id = fields.Many2one(string="Variant Ribbon", comodel_name="product.ribbon")
+    variant_ribbon_id = fields.Many2one(comodel_name="product.ribbon")
     website_id = fields.Many2one(related="product_tmpl_id.website_id", readonly=False)
 
     product_variant_image_ids = fields.One2many(

@@ -2,11 +2,6 @@
     'name': 'Translation Mode',
     'category': 'Hidden',
     'summary': 'In-context and interactive translation mode to streamline the module translation process using Weblate',
-    'description': """
-The translation mode is available when several languages are installed. Select the language to translate,
-enable the interactive translation mode from the command palette then browse the screens to translate.
-By default, the translate feature redirects to the Odoo official translation project powered by Weblate.
-In the settings, a custom Weblate project can be targeted.""",
     'depends': ['web'],
     'data': [
         'data/config_parameter.xml',

@@ -40,7 +40,7 @@ class ProductTemplate(models.Model):
         res = super(ProductTemplate, self).get_import_templates()
         if self.env.context.get('purchase_product_template'):
             return [{
-                'label': _('Template for Products'),
+                'label': self.env._('Template for Products'),
                 'template': '/purchase/static/xls/products_import_template.xlsx'
             }]
         return res
@@ -51,7 +51,7 @@ class ProductTemplate(models.Model):
             ('state', '=', 'purchase'),
             ('product_id', 'in', self.with_context(active_test=False).product_variant_ids.ids)
         ]
-        action['display_name'] = _("Purchase History for %s", self.display_name)
+        action['display_name'] = self.env._("Purchase History for %s", self.display_name)
         return action
 
 
@@ -129,7 +129,7 @@ class ProductProduct(models.Model):
     def action_view_po(self):
         action = self.env["ir.actions.actions"]._for_xml_id("purchase.action_purchase_history")
         action['domain'] = ['&', ('state', '=', 'purchase'), ('product_id', 'in', self.ids)]
-        action['display_name'] = _("Purchase History for %s", self.display_name)
+        action['display_name'] = self.env._("Purchase History for %s", self.display_name)
         return action
 
     def _get_backend_root_menu_ids(self):
@@ -142,7 +142,7 @@ class ProductProduct(models.Model):
             ['id:recordset'],
         ):
             if uom != product.product_tmpl_id.uom_id:
-                raise UserError(_(
+                raise UserError(self.env._(
                     'As other units of measure (ex : %(problem_uom)s) '
                     'than %(uom)s have already been used for this product, the change of unit of measure can not be done.'
                     'If you want to change it, please archive the product and create a new one.',

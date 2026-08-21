@@ -11,7 +11,6 @@ class ResPartner(models.Model):
     " company."
 
     sale_order_count = fields.Integer(
-        string="Sale Order Count",
         groups="sales_team.group_sale_salesman",
         compute="_compute_sale_order_count",
     )
@@ -19,11 +18,10 @@ class ResPartner(models.Model):
     sale_warn_msg = fields.Text("Message for Sales Order")
     incoterm_id = fields.Many2one(
         comodel_name="account.incoterms",
-        string="Incoterm",
         help="International Commercial Terms are a series of predefined commercial"
         " terms used in international transactions.",
     )
-    incoterm_location = fields.Char(string="Incoterm Location")
+    incoterm_location = fields.Char()
 
     @api.model
     def _get_sale_order_domain_count(self):

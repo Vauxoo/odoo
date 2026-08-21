@@ -1,11 +1,10 @@
 import logging
 
 from odoo import api, fields, models
-from odoo.addons.event.models.event_mail import _INTERVALS
+from .event_mail import _INTERVALS
 from odoo.exceptions import MissingError
 
 
-_logger = logging.getLogger(__name__)
 
 
 class EventMailRegistration(models.Model):
@@ -17,7 +16,7 @@ class EventMailRegistration(models.Model):
     scheduler_id = fields.Many2one('event.mail', 'Mail Scheduler', required=True, index=True, ondelete='cascade')
     registration_id = fields.Many2one('event.registration', 'Attendee', required=True, index=True, ondelete='cascade')
     scheduled_date = fields.Datetime('Scheduled Time', compute='_compute_scheduled_date', store=True)
-    mail_sent = fields.Boolean('Mail Sent')
+    mail_sent = fields.Boolean()
 
     @api.depends('registration_id', 'scheduler_id.interval_unit', 'scheduler_id.interval_type')
     def _compute_scheduled_date(self):

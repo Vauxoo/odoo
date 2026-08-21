@@ -18,7 +18,6 @@ from odoo.tools import is_html_empty, format_datetime
 from odoo.tools.translate import LazyTranslate
 
 _lt = LazyTranslate(__name__)
-_logger = logging.getLogger(__name__)
 
 
 class WebsiteForum(WebsiteProfile):

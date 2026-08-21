@@ -23,7 +23,6 @@ class AccountJournal(models.Model):
     )
     check_sequence_id = fields.Many2one(
         comodel_name='ir.sequence',
-        string='Check Sequence',
         readonly=True,
         copy=False,
         help="Checks numbering sequence.",
@@ -57,17 +56,17 @@ class AccountJournal(models.Model):
     def _inverse_check_next_number(self):
         for journal in self:
             if journal.check_next_number and not re.match(r'^[0-9]+$', journal.check_next_number):
-                raise ValidationError(_('Next Check Number should only contains numbers.'))
+                raise ValidationError(self.env._('Next Check Number should only contains numbers.'))
             next_num = int(journal.check_next_number)
             if next_num < journal.check_sequence_id.number_next_actual:
-                raise ValidationError(_(
+                raise ValidationError(self.env._(
                     "The last check number was %s. In order to avoid a check being rejected "
                     "by the bank, you can only use a greater number.",
                     journal.check_sequence_id.number_next_actual
                 ))
             if journal.check_sequence_id:
                 if next_num > MAX_INT32:
-                    raise ValidationError(_(
+                    raise ValidationError(self.env._(
                         "The check number you entered (%(num)s) exceeds the maximum allowed value of %(max)d. "
                         "Please enter a smaller number.",
                         num=next_num,
@@ -86,7 +85,7 @@ class AccountJournal(models.Model):
         """ Create a check sequence for the journal """
         for journal in self:
             journal.check_sequence_id = self.env['ir.sequence'].sudo().create({
-                'name': _("%(journal)s: Check Number Sequence", journal=journal.name),
+                'name': self.env._("%(journal)s: Check Number Sequence", journal=journal.name),
                 'implementation': 'no_gap',
                 'padding': 5,
                 'number_increment': 1,
@@ -105,7 +104,7 @@ class AccountJournal(models.Model):
     def action_checks_to_print(self):
         payment_method_line_id = self.outbound_payment_method_line_ids.filtered(lambda l: l.code == 'check_printing')[:1].id
         return {
-            'name': _('Checks to Print'),
+            'name': self.env._('Checks to Print'),
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form,graph',
             'res_model': 'account.payment',

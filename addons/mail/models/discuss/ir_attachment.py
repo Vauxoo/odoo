@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, fields
-from odoo.addons.mail.tools.discuss import Store
+from ...tools.discuss import Store
 
 
 class IrAttachment(models.Model):

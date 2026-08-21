@@ -8,14 +8,14 @@ from odoo.tools import SQL
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    karma = fields.Integer('Karma', compute='_compute_karma', store=True, readonly=False)
+    karma = fields.Integer(compute='_compute_karma', store=True, readonly=False)
     karma_tracking_ids = fields.One2many('gamification.karma.tracking', 'user_id', string='Karma Changes', groups="base.group_system")
     badge_ids = fields.One2many('gamification.badge.user', 'user_id', string='Badges', copy=False)
     gold_badge = fields.Integer('Gold badges count', compute="_get_user_badge_level")
     silver_badge = fields.Integer('Silver badges count', compute="_get_user_badge_level")
     bronze_badge = fields.Integer('Bronze badges count', compute="_get_user_badge_level")
-    rank_id = fields.Many2one('gamification.karma.rank', 'Rank', index='btree_not_null')
-    next_rank_id = fields.Many2one('gamification.karma.rank', 'Next Rank')
+    rank_id = fields.Many2one('gamification.karma.rank', index='btree_not_null')
+    next_rank_id = fields.Many2one('gamification.karma.rank')
 
     @api.depends('karma_tracking_ids.new_value')
     def _compute_karma(self):
@@ -76,7 +76,7 @@ class ResUsers(models.Model):
                 'gain': int(vals['karma']),
                 'old_value': 0,
                 'origin_ref': f'res.users,{self.env.uid}',
-                'reason': _('User Creation'),
+                'reason': self.env._('User Creation'),
             }
             for user, vals in zip(res, vals_list)
             if vals.get('karma')
@@ -108,7 +108,7 @@ class ResUsers(models.Model):
         create_values = []
         for user, values in values_per_user.items():
             origin = values.get('source') or self.env.user
-            reason = values.get('reason') or _('Add Manually')
+            reason = values.get('reason') or self.env._('Add Manually')
             origin_description = f'{origin.display_name} #{origin.id}'
             old_value = values.get('old_value', user.karma)
 
@@ -388,7 +388,7 @@ WHERE sub.user_id IN %s""",
         self.ensure_one()
 
         return {
-            'name': _('Karma Updates'),
+            'name': self.env._('Karma Updates'),
             'res_model': 'gamification.karma.tracking',
             'target': 'current',
             'type': 'ir.actions.act_window',

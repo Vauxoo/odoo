@@ -24,13 +24,13 @@ class UpdateProductAttributeValue(models.TransientModel):
         self.message = ''
         for wizard in self:
             if wizard.mode == 'add':
-                wizard.message = _(
+                wizard.message = self.env._(
                     "You are about to add the value \"%(attribute_value)s\" to %(product_count)s products.",
                     attribute_value=wizard.attribute_value_id.name,
                     product_count=wizard.product_count,
                 )
             elif wizard.mode == 'update_extra_price':
-                wizard.message = _(
+                wizard.message = self.env._(
                     "You are about to update the extra price of %s products.",
                     wizard.product_count,
                 )

@@ -43,8 +43,7 @@ class ProjectProject(models.Model):
              "If you would like to bill the same service at a different rate, you need to create two separate sales order items as each sales order item can only have a single unit price at a time.\n"
              "You can also define the hourly company cost of your employees for their timesheets on this project specifically. It will bypass the timesheet cost set on the employee.")
     timesheet_product_id = fields.Many2one(
-        'product.product', string='Timesheet Product',
-        domain="""[
+        'product.product', domain="""[
             ('type', '=', 'service'),
             ('invoice_policy', '=', 'delivery'),
             ('service_type', '=', 'timesheet'),
@@ -52,7 +51,7 @@ class ProjectProject(models.Model):
         help='Service that will be used by default when invoicing the time spent on a task. It can be modified on each task individually by selecting a specific sales order item.',
         check_company=True,
         compute="_compute_timesheet_product_id", store=True, readonly=False,
-        default=_default_timesheet_product_id)
+        default=lambda self: self._default_timesheet_product_id())
     warning_employee_rate = fields.Boolean(compute='_compute_warning_employee_rate', compute_sudo=True, export_string_translation=False)
     partner_id = fields.Many2one(
         compute='_compute_partner_id', store=True, readonly=False)
@@ -131,7 +130,7 @@ class ProjectProject(models.Model):
             if project.allow_billable and project.allow_timesheets and project.pricing_type != 'task_rate':
                 sol = project.sale_line_id or project.sale_line_employee_ids.sale_line_id[:1]
                 project.partner_id = sol.order_partner_id
-        super(ProjectProject, self - billable_projects)._compute_partner_id()
+        return super(ProjectProject, self - billable_projects)._compute_partner_id()
 
     @api.depends('partner_id')
     def _compute_sale_line_id(self):

@@ -46,7 +46,7 @@ class BaseString(Field[str | typing.Literal[False]]):
     def _compute_related(self, records):
         if records.env.context.get('edit_translations'):
             records = records.with_context(edit_translations=None, check_translations=True)
-        super()._compute_related(records)
+        return super()._compute_related(records)
 
     def _description_translate(self, env):
         return bool(self.translate)
@@ -553,7 +553,7 @@ class Char(BaseString):
         ):
             # the column's varchar size does not match self.size; convert it
             sql.convert_column(model.env.cr, model._table, self.name, self.stored_sql_column_type)
-        super().update_db_column(model, column)
+        return super().update_db_column(model, column)
 
     _related_size = property(attrgetter('size'))
     _related_trim = property(attrgetter('trim'))

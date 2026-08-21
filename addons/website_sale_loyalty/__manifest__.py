@@ -3,12 +3,6 @@
 {
     "name": "Coupons, Promotions, Gift Card and Loyalty for eCommerce",
     "summary": """Use coupon, promotion, gift cards and loyalty programs in your eCommerce store""",
-    "description": """
-Create coupons, promotion codes, gift cards and loyalty programs to boost your sales (free products,
-discounts, etc.). Shoppers can use them in the eCommerce checkout.
-
-Coupon & promotion programs can be edited in the Catalog menu of the Website app.
-    """,
     "category": "Website/Website",
     "depends": ["website_sale", "website_links", "sale_loyalty"],
     "data": [

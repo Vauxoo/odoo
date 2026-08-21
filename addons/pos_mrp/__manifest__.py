@@ -6,9 +6,6 @@
     'category': 'Sales/Point of Sale',
     'sequence': 6,
     'summary': 'Link module between Point of Sale and Mrp',
-    'description': """
-This is a link module between Point of Sale and Mrp.
-""",
     'depends': ['pos_stock', 'mrp'],
     'data': [
         'security/ir.access.csv',

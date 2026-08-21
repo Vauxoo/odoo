@@ -11,7 +11,7 @@ class CrmLeadLost(models.TransientModel):
     _description = 'Get Lost Reason'
 
     lead_ids = fields.Many2many('crm.lead', string='Leads', context={"active_test": False})
-    lost_reason_id = fields.Many2one('crm.lost.reason', 'Lost Reason')
+    lost_reason_id = fields.Many2one('crm.lost.reason')
     lost_feedback = fields.Html(
         'Closing Note', sanitize=True
     )
@@ -22,7 +22,7 @@ class CrmLeadLost(models.TransientModel):
         if not is_html_empty(self.lost_feedback):
             self.lead_ids._track_set_log_message(
                 Markup('<div style="margin-bottom: 4px;"><p>%s:</p>%s<br /></div>') % (
-                    _('Lost Comment'),
+                    self.env._('Lost Comment'),
                     self.lost_feedback
                 )
             )

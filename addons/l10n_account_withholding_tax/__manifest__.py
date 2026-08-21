@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Withholding Tax',
-    'description': """Allows users to manage withholding taxes on invoices, bills, and payments.""",
     'category': 'Accounting/Localizations',
     'depends': ['account'],
     'data': [

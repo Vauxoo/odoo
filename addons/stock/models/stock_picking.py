@@ -6,7 +6,7 @@ from collections import defaultdict
 from markupsafe import Markup
 
 from odoo import _, api, fields, models, modules
-from odoo.addons.stock.models.stock_move import PROCUREMENT_PRIORITIES
+from .stock_move import PROCUREMENT_PRIORITIES
 from odoo.addons.web.controllers.utils import clean_action
 from odoo.exceptions import UserError
 from odoo.fields import Domain, Command
@@ -24,8 +24,8 @@ class StockPickingType(models.Model):
     _check_company_auto = True
 
     name = fields.Char('Operation Type', required=True, translate=True)
-    color = fields.Integer('Color')
-    sequence = fields.Integer('Sequence', help="Used to order the 'All Operations' kanban view")
+    color = fields.Integer()
+    sequence = fields.Integer(help="Used to order the 'All Operations' kanban view")
     sequence_id = fields.Many2one(
         'ir.sequence', 'Reference Sequence',
         check_company=True, copy=False)
@@ -52,11 +52,11 @@ class StockPickingType(models.Model):
         index='btree_not_null',
         check_company=True)
     show_entire_packs = fields.Boolean('Move Entire Packages', default=False, help="If ticked, packages to move will be directly displayed in Barcode instead of the products they contain")
-    set_package_type = fields.Boolean('Set Package Type', default=False, help="If ticked, you will be able to select which package or package type to use in a put in pack")
+    set_package_type = fields.Boolean(default=False, help="If ticked, you will be able to select which package or package type to use in a put in pack")
     warehouse_id = fields.Many2one(
-        'stock.warehouse', 'Warehouse', compute='_compute_warehouse_id', store=True, readonly=False, ondelete='cascade',
+        'stock.warehouse', compute='_compute_warehouse_id', store=True, readonly=False, ondelete='cascade',
         check_company=True)
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean(default=True)
     use_create_lots = fields.Boolean(
         'Create New Lots/Serial Numbers', default=True,
         compute='_compute_use_create_lots', store=True, readonly=False,
@@ -74,7 +74,7 @@ class StockPickingType(models.Model):
         help="If this checkbox is ticked, the pickings lines will represent detailed stock operations. If not, the picking lines will represent an aggregate of detailed stock operations.")
     reservation_method = fields.Selection(
         [('at_confirm', 'At Confirmation'), ('manual', 'Manually'), ('by_date', 'Before scheduled date')],
-        'Reservation Method', required=True, default='at_confirm',
+        required=True, default='at_confirm',
         help="How products in transfers of this operation type should be reserved.")
     reservation_days_before = fields.Integer('Days', help="Maximum number of days before scheduled date that products should be reserved.")
     reservation_days_before_priority = fields.Integer('Days when starred', help="Maximum number of days before scheduled date that priority picking products should be reserved.")
@@ -82,14 +82,11 @@ class StockPickingType(models.Model):
         "Show Allocation",
         help="If this checkbox is ticked, Odoo will automatically show the allocation report (if there are moves to allocate to) when validating.")
     auto_print_delivery_slip = fields.Boolean(
-        "Auto Print Delivery Slip",
         help="If this checkbox is ticked, Odoo will automatically print the delivery slip of a picking when it is validated.")
     auto_print_return_slip = fields.Boolean(
-        "Auto Print Return Slip",
         help="If this checkbox is ticked, Odoo will automatically print the return slip of a picking when it is validated.")
 
     auto_print_product_labels = fields.Boolean(
-        "Auto Print Product Labels",
         help="If this checkbox is ticked, Odoo will automatically print the product labels of a picking when it is validated.")
     product_label_format = fields.Selection([
         ('dymo', 'Dymo'),
@@ -108,17 +105,13 @@ class StockPickingType(models.Model):
         ('zpl_units', 'ZPL Labels - One per unit')],
         string="Lot Label Format to auto-print", default='4x12_lots')
     auto_print_reception_report = fields.Boolean(
-        "Auto Print Reception Report",
         help="If this checkbox is ticked, Odoo will automatically print the reception report of a picking when it is validated and has assigned moves.")
     auto_print_reception_report_labels = fields.Boolean(
-        "Auto Print Reception Report Labels",
         help="If this checkbox is ticked, Odoo will automatically print the reception report labels of a picking when it is validated.")
     auto_print_packages = fields.Boolean(
-        "Auto Print Packages",
         help="If this checkbox is ticked, Odoo will automatically print the packages and their contents of a picking when it is validated.")
 
     auto_print_package_label = fields.Boolean(
-        "Auto Print Package Label",
         help="If this checkbox is ticked, Odoo will automatically print the package label when \"Put in Pack\" button is used.")
     package_label_to_print = fields.Selection(
         [('pdf', 'PDF'), ('zpl', 'ZPL')],
@@ -131,13 +124,13 @@ class StockPickingType(models.Model):
     count_picking_late = fields.Integer(compute='_compute_picking_count')
     count_picking_backorders = fields.Integer(compute='_compute_picking_count')
     hide_reservation_method = fields.Boolean(compute='_compute_hide_reservation_method')
-    barcode = fields.Char('Barcode', copy=False)
+    barcode = fields.Char(copy=False)
     company_id = fields.Many2one(
-        'res.company', 'Company', required=True,
+        'res.company', required=True,
         default=lambda s: s.env.company.id, index=True)
     create_backorder = fields.Selection(
         [('ask', 'Ask'), ('always', 'Always'), ('never', 'Never')],
-        'Create Backorder', required=True, default='ask',
+        required=True, default='ask',
         help="When validating a transfer:\n"
              " * Ask: users are asked to choose if they want to make a backorder for remaining products\n"
              " * Always: a backorder is automatically created for the remaining products\n"
@@ -167,13 +160,13 @@ class StockPickingType(models.Model):
                 if vals.get('warehouse_id'):
                     wh = self.env['stock.warehouse'].browse(vals['warehouse_id'])
                     vals['sequence_id'] = self.env['ir.sequence'].sudo().create({
-                        'name': _('%(warehouse)s Sequence %(code)s', warehouse=wh.name, code=vals['sequence_code']),
+                        'name': self.env._('%(warehouse)s Sequence %(code)s', warehouse=wh.name, code=vals['sequence_code']),
                         'padding': 5,
                         'company_id': wh.company_id.id,
                     }).id
                 else:
                     vals['sequence_id'] = self.env['ir.sequence'].sudo().create({
-                        'name': _('Sequence %(code)s', code=vals['sequence_code']),
+                        'name': self.env._('Sequence %(code)s', code=vals['sequence_code']),
                         'padding': 5,
                         'company_id': vals.get('company_id') or self.env.company.id,
                     }).id
@@ -184,29 +177,29 @@ class StockPickingType(models.Model):
         vals_list = super().copy_data(default=default)
         for picking, vals in zip(self, vals_list):
             if 'name' not in default:
-                vals['name'] = _("%s (copy)", picking.name)
+                vals['name'] = self.env._("%s (copy)", picking.name)
             if 'sequence_code' not in default and 'sequence_id' not in default:
-                vals['sequence_code'] = _("%s (copy)", picking.sequence_code)
+                vals['sequence_code'] = self.env._("%s (copy)", picking.sequence_code)
         return vals_list
 
     def write(self, vals):
         if 'company_id' in vals:
             for picking_type in self:
                 if picking_type.company_id.id != vals['company_id']:
-                    raise UserError(_("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
+                    raise UserError(self.env._("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
         if 'sequence_code' in vals:
             for picking_type in self:
                 if vals.get('sequence_id') is False:  # revert the sequence_id
                     vals['sequence_id'] = picking_type.sequence_id.id
                 if picking_type.warehouse_id:
                     picking_type.sequence_id.sudo().write({
-                        'name': _('%(warehouse)s Sequence %(code)s', warehouse=picking_type.warehouse_id.name, code=vals['sequence_code']),
+                        'name': self.env._('%(warehouse)s Sequence %(code)s', warehouse=picking_type.warehouse_id.name, code=vals['sequence_code']),
                         'padding': 5,
                         'company_id': picking_type.warehouse_id.company_id.id,
                     })
                 else:
                     picking_type.sequence_id.sudo().write({
-                        'name': _('Sequence %(code)s', code=vals['sequence_code']),
+                        'name': self.env._('Sequence %(code)s', code=vals['sequence_code']),
                         'padding': 5,
                         'company_id': picking_type.env.company.id,
                     })
@@ -345,7 +338,7 @@ class StockPickingType(models.Model):
         if self.code == 'internal' and not self.env.user.has_group('stock.group_stock_multi_locations'):
             return {
                 'warning': {
-                    'message': _('You need to activate storage locations to be able to do internal operation types.')
+                    'message': self.env._('You need to activate storage locations to be able to do internal operation types.')
                 }
             }
 
@@ -400,7 +393,7 @@ class StockPickingType(models.Model):
         if picking_type and picking_type.sequence_id != self.sequence_id:
             return {
                 'warning': {
-                    'message': _(
+                    'message': self.env._(
                         "This sequence prefix is already being used by another operation type. It is recommended that you select a unique prefix "
                         "to avoid issues and/or repeated reference values or assign the existing reference sequence to this operation type.")
                 }
@@ -500,12 +493,12 @@ class StockPickingType(models.Model):
         If all values in a graph are 0, then they are assigned the "sample" type.
         """
         data_category_mapping = {
-            'total_before': {'label': _('Before'), 'type': 'past'},
-            'total_yesterday': {'label': _('Yesterday'), 'type': 'past'},
-            'total_today': {'label': _('Today'), 'type': 'present'},
-            'total_day_1': {'label': _('Tomorrow'), 'type': 'future'},
-            'total_day_2': {'label': _('The day after tomorrow'), 'type': 'future'},
-            'total_after': {'label': _('After'), 'type': 'future'},
+            'total_before': {'label': self.env._('Before'), 'type': 'past'},
+            'total_yesterday': {'label': self.env._('Yesterday'), 'type': 'past'},
+            'total_today': {'label': self.env._('Today'), 'type': 'present'},
+            'total_day_1': {'label': self.env._('Tomorrow'), 'type': 'future'},
+            'total_day_2': {'label': self.env._('The day after tomorrow'), 'type': 'future'},
+            'total_after': {'label': self.env._('After'), 'type': 'future'},
         }
 
         for picking_type in self:
@@ -513,7 +506,7 @@ class StockPickingType(models.Model):
             # Graph is empty if all its "total_*" values are 0
             empty = all(picking_type_summary[k] == 0 for k in data_category_mapping)
             graph_data = [{
-                'key': _('Sample data') if empty else picking_type_summary['data_series_name'],
+                'key': self.env._('Sample data') if empty else picking_type_summary['data_series_name'],
                 # Passing the picking type ID allows for a redirection after clicking
                 'picking_type_id': None if empty else picking_type.id,
                 'values': [
@@ -526,9 +519,9 @@ class StockPickingType(models.Model):
     def _get_code_report_name(self):
         self.ensure_one()
         code_names = {
-            'outgoing': _('Delivery Note'),
-            'incoming': _('Goods Receipt Note'),
-            'internal': _('Internal Move'),
+            'outgoing': self.env._('Delivery Note'),
+            'incoming': self.env._('Goods Receipt Note'),
+            'internal': self.env._('Internal Move'),
         }
         return code_names.get(self.code)
 
@@ -588,10 +581,10 @@ class StockPicking(models.Model):
     reference_ids = fields.Many2many(
         'stock.reference', related="move_ids.reference_ids", string="References", readonly=True)
     priority = fields.Selection(
-        PROCUREMENT_PRIORITIES, string='Priority', default='0',
+        PROCUREMENT_PRIORITIES, default='0',
         help="Products will be reserved first for the transfers with the highest priorities.")
     scheduled_date = fields.Datetime(
-        'Scheduled Date', compute='_compute_scheduled_date', inverse='_set_scheduled_date', store=True,
+        compute='_compute_scheduled_date', inverse='_set_scheduled_date', store=True,
         index=True, default=fields.Datetime.now, tracking=True,
         help="Scheduled time for the first part of the shipment to be processed. Setting manually a value here would set it as expected date for all the stock moves.")
     date_deadline = fields.Datetime(
@@ -602,7 +595,7 @@ class StockPicking(models.Model):
         "Is late", compute='_compute_has_deadline_issue', store=True, default=False,
         help="Is late or will be late depending on the deadline and scheduled date")
     date_done = fields.Datetime('Date of Transfer', copy=False, help="Date at which the transfer has been processed or cancelled.")
-    delay_alert_date = fields.Datetime('Delay Alert Date', compute='_compute_delay_alert_date', search='_search_delay_alert_date')
+    delay_alert_date = fields.Datetime(compute='_compute_delay_alert_date', search='_search_delay_alert_date')
     json_popover = fields.Char('JSON data for the popover widget', compute='_compute_json_popover')
     location_id = fields.Many2one(
         'stock.location', "Source Location",
@@ -618,7 +611,7 @@ class StockPicking(models.Model):
     picking_type_id = fields.Many2one(
         'stock.picking.type', 'Operation Type',
         required=True, index=True,
-        default=_default_picking_type_id, tracking=True)
+        default=lambda self: self._default_picking_type_id(), tracking=True)
     warehouse_address_id = fields.Many2one('res.partner', related='picking_type_id.warehouse_id.partner_id')
     picking_type_code = fields.Selection(
         related='picking_type_id.code',
@@ -638,7 +631,7 @@ class StockPicking(models.Model):
         default=lambda self: self.env.user, copy=False
     )
     move_line_ids = fields.One2many('stock.move.line', 'picking_id', 'Operations')
-    packages_count = fields.Integer('Packages Count', compute='_compute_packages_count')
+    packages_count = fields.Integer(compute='_compute_packages_count')
     package_history_ids = fields.Many2many('stock.package.history', string='Transfered Packages', copy=False)
     show_check_availability = fields.Boolean(
         compute='_compute_show_check_availability',
@@ -650,9 +643,9 @@ class StockPicking(models.Model):
         'res.partner', 'Assign Owner',
         check_company=True, index='btree_not_null',
         help="When validating the transfer, the products will be assigned to this owner.")
-    printed = fields.Boolean('Printed', copy=False)
-    signature = fields.Image('Signature', help='Signature', copy=False, attachment=True)
-    is_signed = fields.Boolean('Is Signed', compute="_compute_is_signed")
+    printed = fields.Boolean(copy=False)
+    signature = fields.Image(help='Signature', copy=False, attachment=True)
+    is_signed = fields.Boolean(compute="_compute_is_signed")
     is_locked = fields.Boolean(default=True, copy=False, help='When the picking is not done this allows changing the '
                                'initial demand. When the picking is done this allows '
                                'changing the done quantities.')
@@ -778,7 +771,7 @@ class StockPicking(models.Model):
             picking.picking_type_code in ('outgoing', 'internal')
         )
         pickings.products_availability_state = 'available'
-        pickings.products_availability = _('Available')
+        pickings.products_availability = self.env._('Available')
         other_pickings = self - pickings
         other_pickings.products_availability = False
         other_pickings.products_availability_state = False
@@ -795,12 +788,12 @@ class StockPicking(models.Model):
                 ) == -1
                 for move in picking.move_ids
             ):
-                picking.products_availability = _('Not Available')
+                picking.products_availability = self.env._('Not Available')
                 picking.products_availability_state = 'late'
             else:
                 forecast_date = max(picking.move_ids.filtered('forecast_expected_date').mapped('forecast_expected_date'), default=False)
                 if forecast_date:
-                    picking.products_availability = _('Exp %s', format_date(self.env, forecast_date))
+                    picking.products_availability = self.env._('Exp %s', format_date(self.env, forecast_date))
                     picking.products_availability_state = 'late' if picking.scheduled_date and picking.scheduled_date < forecast_date else 'expected'
 
     @api.depends('move_line_ids', 'picking_type_id.use_create_lots', 'picking_type_id.use_existing_lots', 'state')
@@ -943,7 +936,7 @@ class StockPicking(models.Model):
     def _set_scheduled_date(self):
         for picking in self:
             if picking.state == 'cancel':
-                raise UserError(_("You cannot change the Scheduled Date on a cancelled transfer."))
+                raise UserError(self.env._("You cannot change the Scheduled Date on a cancelled transfer."))
             if picking.state == 'done':
                 continue
             picking.move_ids.write({'date': picking.scheduled_date})
@@ -1131,8 +1124,8 @@ class StockPicking(models.Model):
                 parent_path = [int(loc_id) for loc_id in ml.location_id.parent_path.split('/')[:-1]]
                 if self.location_id.id not in parent_path:
                     return {'warning': {
-                            'title': _("Warning: change source location"),
-                            'message': _("Updating the location of this transfer will result in unreservation of the currently assigned items. "
+                            'title': self.env._("Warning: change source location"),
+                            'message': self.env._("Updating the location of this transfer will result in unreservation of the currently assigned items. "
                                          "An attempt to reserve items at the new location will be made and the link with preceding transfers will be discarded.\n\n"
                                          "To avoid this, please discard the source location change before saving.")
                         }
@@ -1163,7 +1156,7 @@ class StockPicking(models.Model):
 
     def write(self, vals):
         if vals.get('picking_type_id') and any(picking.state in ('done', 'cancel') for picking in self):
-            raise UserError(_("Changing the operation type of this record is forbidden at this point."))
+            raise UserError(self.env._("Changing the operation type of this record is forbidden at this point."))
         if vals.get('picking_type_id'):
             picking_type = self.env['stock.picking.type'].browse(vals.get('picking_type_id'))
             for picking in self:
@@ -1253,7 +1246,7 @@ class StockPicking(models.Model):
     def action_return(self):
         new_picking = self._create_return()
         return {
-            'name': _('Returned Picking'),
+            'name': self.env._('Returned Picking'),
             'type': 'ir.actions.act_window',
             'res_model': 'stock.picking',
             'res_id': new_picking.id,
@@ -1292,7 +1285,7 @@ class StockPicking(models.Model):
             new_picking.action_confirm()
             new_picking.action_assign()
             return {
-                'name': _('Returned Picking'),
+                'name': self.env._('Returned Picking'),
                 'type': 'ir.actions.act_window',
                 'res_model': 'stock.picking',
                 'res_id': new_picking.id,
@@ -1303,7 +1296,7 @@ class StockPicking(models.Model):
     def action_detailed_operations(self):
         view_id = self.env.ref('stock.view_stock_move_line_detailed_operation_tree').id
         return {
-            'name': _('Detailed Operations'),
+            'name': self.env._('Detailed Operations'),
             'view_mode': 'list',
             'type': 'ir.actions.act_window',
             'res_model': 'stock.move.line',
@@ -1332,7 +1325,7 @@ class StockPicking(models.Model):
                 "res_id": next_transfers.id
             }
         return {
-            'name': _('Next Transfers'),
+            'name': self.env._('Next Transfers'),
             "type": "ir.actions.act_window",
             "res_model": "stock.picking",
             "views": [[False, "list"], [False, "form"]],
@@ -1397,7 +1390,7 @@ class StockPicking(models.Model):
             'picking_type_id': return_type.id,
             'state': 'draft',
             'return_id': self.id,
-            'origin': _("Return of %(picking_name)s", picking_name=self.name),
+            'origin': self.env._("Return of %(picking_name)s", picking_name=self.name),
             'user_id': False,
             'location_id': location.id,
             'location_dest_id': location_dest.id,
@@ -1567,17 +1560,17 @@ class StockPicking(models.Model):
 
         if not self._should_show_transfers():
             if pickings_without_moves:
-                raise UserError(_("You can’t validate an empty transfer. Please add some products to move before proceeding."))
+                raise UserError(self.env._("You can’t validate an empty transfer. Please add some products to move before proceeding."))
             if pickings_without_quantities:
                 raise UserError(self._get_without_quantities_error_message())
             if pickings_without_lots:
-                raise UserError(_('You need to supply a Lot/Serial number for products %s.', ', '.join(products_without_lots.mapped('display_name'))))
+                raise UserError(self.env._('You need to supply a Lot/Serial number for products %s.', ', '.join(products_without_lots.mapped('display_name'))))
         else:
             message = ""
             if pickings_without_moves:
-                message += _('Transfers %s: Please add some items to move.', ', '.join(pickings_without_moves.mapped('name')))
+                message += self.env._('Transfers %s: Please add some items to move.', ', '.join(pickings_without_moves.mapped('name')))
             if pickings_without_lots:
-                message += _(
+                message += self.env._(
                     '\n\nTransfers %(transfer_list)s: You need to supply a Lot/Serial number for products %(product_list)s.',
                     transfer_list=pickings_without_lots.mapped('name'),
                     product_list=products_without_lots.mapped('display_name'),
@@ -1658,11 +1651,11 @@ class StockPicking(models.Model):
         if self.state == 'done':
             return
         if all(m.uom_id.is_zero(m.quantity) for m in self.move_ids):
-            raise UserError(_("%s: Nothing to split. Fill the quantities you want in a new transfer in the done quantities", self.display_name))
+            raise UserError(self.env._("%s: Nothing to split. Fill the quantities you want in a new transfer in the done quantities", self.display_name))
         if all(m.uom_id.compare(m.quantity, m.product_uom_qty) == 0 for m in self.move_ids):
-            raise UserError(_("%s: Nothing to split, all demand is done. For split you need at least one line not fully fulfilled", self.display_name))
+            raise UserError(self.env._("%s: Nothing to split, all demand is done. For split you need at least one line not fully fulfilled", self.display_name))
         if any(m.uom_id.compare(m.quantity, m.product_uom_qty) > 0 for m in self.move_ids):
-            raise UserError(_("%s: Can't split: quantities done can't be above demand", self.display_name))
+            raise UserError(self.env._("%s: Can't split: quantities done can't be above demand", self.display_name))
 
         moves = self.move_ids.filtered(lambda m: m.state not in ('done', 'cancel') and m.quantity != 0)
         backorder_moves = moves._create_backorder()
@@ -1703,7 +1696,7 @@ class StockPicking(models.Model):
     def _action_generate_zero_demand_wizard(self):
         view = self.env.ref('stock.view_zero_demand_confirmation')
         return {
-            'name': _('Zero Demand Warning'),
+            'name': self.env._('Zero Demand Warning'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'stock.zero.demand.confirmation',
@@ -1732,7 +1725,7 @@ class StockPicking(models.Model):
         :return: Translated error message
         :rtype: str
         """
-        return _(
+        return self.env._(
             "Transfer trouble alert! Validating a zero quantity transfer? You're not moving invisible goods around are you?\n"
             "Set some quantities and let's get moving!"
         )
@@ -1740,7 +1733,7 @@ class StockPicking(models.Model):
     def _action_generate_backorder_wizard(self, show_transfers=False):
         view = self.env.ref('stock.view_backorder_confirmation')
         return {
-            'name': _('Create Backorder?'),
+            'name': self.env._('Create Backorder?'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'stock.backorder.confirmation',
@@ -2124,7 +2117,7 @@ class StockPicking(models.Model):
                 products |= move.product_id
         default_scrap_location = self.env.company.scrap_location_id
         return {
-            'name': _('Scrap Products'),
+            'name': self.env._('Scrap Products'),
             'view_mode': 'form',
             'res_model': 'stock.move',
             'view_id': view.id,
@@ -2222,7 +2215,7 @@ class StockPicking(models.Model):
         if self.env.user.has_group('stock.group_production_lot') and self.move_line_ids.lot_id:
             view = self.env.ref('stock.picking_label_type_form')
             return {
-                'name': _('Choose Type of Labels To Print'),
+                'name': self.env._('Choose Type of Labels To Print'),
                 'type': 'ir.actions.act_window',
                 'res_model': 'picking.label.type',
                 'views': [(view.id, 'form')],
@@ -2237,9 +2230,9 @@ class StockPicking(models.Model):
         report = self.env['ir.actions.report']._render_qweb_pdf("stock.action_report_delivery", self.id)
         filename = "%s_signed_delivery_slip" % self.name
         if self.partner_id:
-            message = _('Order signed by %s', self.partner_id.name)
+            message = self.env._('Order signed by %s', self.partner_id.name)
         else:
-            message = _('Order signed')
+            message = self.env._('Order signed')
         self.message_post(
             attachments=[('%s.pdf' % filename, report[0])],
             body=message,
@@ -2256,7 +2249,7 @@ class StockPicking(models.Model):
                 "res_id": self.return_ids.id
             }
         return {
-            'name': _('Returns'),
+            'name': self.env._('Returns'),
             "type": "ir.actions.act_window",
             "res_model": "stock.picking",
             "views": [[False, "list"], [False, "form"]],

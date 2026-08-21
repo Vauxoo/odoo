@@ -6,7 +6,7 @@ from odoo.tools import BinaryBytes
 
 from odoo.addons.account.models.company import PEPPOL_DEFAULT_COUNTRIES, PEPPOL_LIST
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
-from odoo.addons.account_peppol.exceptions import get_peppol_error_message
+from ..exceptions import get_peppol_error_message
 
 _logger = logging.getLogger(__name__)
 
@@ -101,9 +101,9 @@ class AccountMoveSend(models.AbstractModel):
         invalid_partners = filter_peppol_state(peppol_moves, ['not_valid_format'])
         if invalid_partners and not 'account_edi_ubl_cii_configure_partner' in alerts:
             alerts['account_peppol_warning_partner'] = {
-                'message': _("Customer is on Peppol but did not enable receiving documents."),
-                'action_text': _("View Partner(s)"),
-                'action': invalid_partners._get_records_action(name=_("Check Partner(s)")),
+                'message': self.env._("Customer is on Peppol but did not enable receiving documents."),
+                'action_text': self.env._("View Partner(s)"),
+                'action': invalid_partners._get_records_action(name=self.env._("Check Partner(s)")),
             }
         not_peppol_moves = moves.filtered(lambda m: 'peppol' not in moves_data[m]['sending_methods'])
         info_always_on_countries = {'BE', 'FI', 'LU', 'LV', 'NL', 'NO', 'SE', 'FR'}
@@ -302,7 +302,7 @@ class AccountMoveSend(models.AbstractModel):
                 # the response only contains message uuids,
                 # so we have to rely on the order to connect peppol messages to account.move
                 attachments_linked_message = self._get_peppol_attachments_linked_message(edi_user)
-                attachments_not_linked_message = _("Some attachments could not be sent with the XML:")
+                attachments_not_linked_message = self.env._("Some attachments could not be sent with the XML:")
                 for message, (invoice, invoice_data) in zip(response['messages'], invoices_data_peppol.items()):
                     invoice.peppol_message_uuid = message['message_uuid']
                     invoice.peppol_move_state = 'processing'
@@ -341,7 +341,7 @@ class AccountMoveSend(models.AbstractModel):
                 self.env.ref('account_peppol.ir_cron_peppol_get_message_status')._trigger(at=fields.Datetime.now() + timedelta(minutes=5))
 
     def _get_peppol_attachments_linked_message(self, edi_user):
-        return _("The invoice has been sent to the Peppol Access Point. The following attachments were sent with the XML:")
+        return self.env._("The invoice has been sent to the Peppol Access Point. The following attachments were sent with the XML:")
 
     def action_what_is_peppol_activate(self, moves):
         companies = moves.company_id
@@ -358,7 +358,7 @@ class AccountMoveSend(models.AbstractModel):
             # go back to previous (send and print) action
             # to avoid doing participant SML lookup again, we don't go through action_send_and_print
             return {
-                'name': _("Send"),
+                'name': self.env._("Send"),
                 'type': 'ir.actions.act_window',
                 'view_mode': 'form',
                 'res_model': 'account.move.send.wizard' if len(moves) == 1 else 'account.move.send.batch.wizard',

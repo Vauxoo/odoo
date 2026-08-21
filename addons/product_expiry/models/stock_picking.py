@@ -37,7 +37,7 @@ class StockPicking(models.Model):
             'expired_lot_name': expired_move_line.lot_name,
         })
         return {
-            'name': _('Confirmation'),
+            'name': self.env._('Confirmation'),
             'type': 'ir.actions.act_window',
             'res_model': 'expiry.picking.confirmation',
             'view_mode': 'form',

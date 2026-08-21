@@ -28,11 +28,10 @@ class HrJob(models.Model):
         help='Number of new employees you expect to recruit.', default=1)
     employee_ids = fields.One2many('hr.employee', 'job_id', string='Employees', groups='base.group_user')
     description = fields.Html(string='Job Description', sanitize_attributes=False)
-    requirements = fields.Text('Requirements', groups="hr.group_hr_user")
+    requirements = fields.Text(groups="hr.group_hr_user")
     recruiter_id = fields.Many2one(
         'hr.employee',
-        "Recruiter",
-        domain=_recruiter_domain,
+        domain=lambda self: self._recruiter_domain(),
         check_company=True,
         default=lambda self: self.env.user.employee_id,
         tracking=True,
@@ -40,9 +39,9 @@ class HrJob(models.Model):
         help="The Recruiter will be the default value for all Applicants in this job \
             position. The Recruiter is automatically added to all meetings with the Applicant.",
     )
-    department_id = fields.Many2one('hr.department', string='Department', check_company=True, tracking=True, index='btree_not_null')
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company, tracking=True, required=True, index=True)
-    employee_type_id = fields.Many2one('hr.employee.type', string='Employee Type', tracking=True)
+    department_id = fields.Many2one('hr.department', check_company=True, tracking=True, index='btree_not_null')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, tracking=True, required=True, index=True)
+    employee_type_id = fields.Many2one('hr.employee.type', tracking=True)
     company_country_code = fields.Char(related='company_id.country_id.code', depends=["company_id.country_id"])
 
     _name_company_uniq = models.Constraint(

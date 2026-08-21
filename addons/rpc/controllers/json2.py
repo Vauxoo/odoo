@@ -15,7 +15,6 @@ from odoo.http import request
 from odoo.models import BaseModel, get_public_method
 from odoo.tools import frozendict
 
-_logger = logging.getLogger(__name__)
 
 
 class WebJson2Controller(http.Controller):

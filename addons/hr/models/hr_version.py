@@ -13,7 +13,6 @@ from odoo.tools import get_lang, babel_locale_parse
 
 import logging
 import operator as py_operator
-_logger = logging.getLogger(__name__)
 
 PY_OPERATORS = {
     '>': py_operator.gt,
@@ -58,7 +57,6 @@ class HrVersion(models.Model):
                                  store=True, index=True, default=lambda self: self.env.company, tracking=1)
     employee_id = fields.Many2one(
         'hr.employee',
-        string='Employee',
         tracking=1,
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         index=True)
@@ -81,23 +79,22 @@ class HrVersion(models.Model):
         groups="hr.group_hr_user",
         tracking=1)
     passport_id = fields.Char('Passport No', groups="hr.group_hr_user", tracking=1)
-    passport_expiration_date = fields.Date('Passport Expiration Date', groups="hr.group_hr_user", tracking=1)
+    passport_expiration_date = fields.Date(groups="hr.group_hr_user", tracking=1)
     sex = fields.Selection([
         ('male', 'Male'),
         ('female', 'Female'),
         ('other', 'Other'),
     ], groups="hr.group_hr_user", tracking=1, help="This is the legal sex as recognized by the state, used for official and statutory purposes.")
 
-    private_street = fields.Char(string="Private Street", groups="hr.group_hr_user", tracking=1)
-    private_street2 = fields.Char(string="Private Street2", groups="hr.group_hr_user", tracking=1)
-    private_city = fields.Char(string="Private City", groups="hr.group_hr_user", tracking=1)
+    private_street = fields.Char(groups="hr.group_hr_user", tracking=1)
+    private_street2 = fields.Char(groups="hr.group_hr_user", tracking=1)
+    private_city = fields.Char(groups="hr.group_hr_user", tracking=1)
     allowed_country_state_ids = fields.Many2many("res.country.state", compute='_compute_allowed_country_state_ids', groups="hr.group_hr_user")
     private_state_id = fields.Many2one(
-        "res.country.state", string="Private State",
-        domain="[('id', 'in', allowed_country_state_ids)]",
+        "res.country.state", domain="[('id', 'in', allowed_country_state_ids)]",
         groups="hr.group_hr_user", tracking=1)
-    private_zip = fields.Char(string="Private Zip", groups="hr.group_hr_user", tracking=1)
-    private_country_id = fields.Many2one("res.country", string="Private Country", index='btree_not_null',
+    private_zip = fields.Char(groups="hr.group_hr_user", tracking=1)
+    private_country_id = fields.Many2one("res.country", index='btree_not_null',
                                          groups="hr.group_hr_user", tracking=1, default=lambda self: self.env.company.country_id)
 
     distance_home_work = fields.Integer(string="Home-Work Distance", groups="hr.group_hr_user", tracking=1)
@@ -116,7 +113,7 @@ class HrVersion(models.Model):
         required=True,
         tracking=1)
     spouse_complete_name = fields.Char(string="Spouse Legal Name", groups="hr.group_hr_user", tracking=1)
-    spouse_birthdate = fields.Date(string="Spouse Birthdate", groups="hr.group_hr_user", tracking=1)
+    spouse_birthdate = fields.Date(groups="hr.group_hr_user", tracking=1)
     children = fields.Integer(string='Dependent Children', groups="hr.group_hr_user", tracking=1)
 
     # Work Information
@@ -125,21 +122,20 @@ class HrVersion(models.Model):
         help="Whether the employee is a member of the active user's department or one of it's child department.")
     job_id = fields.Many2one('hr.job', check_company=True, tracking=1, index=True)
     job_title = fields.Char(compute="_compute_job_title", inverse="_inverse_job_title", store=True, readonly=False,
-        string="Job Title", tracking=True)
+        tracking=True)
     is_custom_job_title = fields.Boolean(compute='_compute_is_custom_job_title', store=True, default=False, groups="hr.group_hr_user")
     address_id = fields.Many2one(
         'res.partner',
         string='Work Address',
-        default=_get_default_address_id,
+        default=lambda self: self._get_default_address_id(),
         store=True,
         index='btree_not_null',
         readonly=False,
         check_company=True,
         tracking=1)
-    work_location_id = fields.Many2one('hr.work.location', 'Work Location',
-                                       domain="[('address_id', '=', address_id)]", index=True, tracking=1)
+    work_location_id = fields.Many2one('hr.work.location', domain="[('address_id', '=', address_id)]", index=True, tracking=1)
 
-    departure_id = fields.Many2one('hr.employee.departure', string="Departure", copy=False, index='btree_not_null')
+    departure_id = fields.Many2one('hr.employee.departure', copy=False, index='btree_not_null')
     departure_reason_id = fields.Many2one(related='departure_id.departure_reason_id', readonly=False, groups="hr.group_hr_user", tracking=1)
     departure_description = fields.Html(related='departure_id.departure_description', readonly=False, groups="hr.group_hr_user")
     dismissal_date = fields.Date(related='departure_id.dismissal_date', readonly=False, groups="hr.group_hr_user", tracking=1)
@@ -162,7 +158,7 @@ class HrVersion(models.Model):
     contract_date_end = fields.Date(
         'Contract End Date', tracking=1, help="End date of the contract (if it's a fixed-term contract).",
         groups="hr.group_hr_user")
-    fixed_term = fields.Boolean('Fixed Term', tracking=1, groups='hr.group_hr_user')
+    fixed_term = fields.Boolean(tracking=1, groups='hr.group_hr_user')
     trial_date_end = fields.Date('End of Trial Period', help="End date of the trial period (if there is one).",
                                  groups="hr.group_hr_user", tracking=1)
     date_start = fields.Date(compute='_compute_dates', groups="hr.group_hr_user", search="_search_start_date")
@@ -173,27 +169,27 @@ class HrVersion(models.Model):
     is_in_contract = fields.Boolean(compute='_compute_is_in_contract', groups="hr.group_hr_user")
 
     contract_template_id = fields.Many2one(
-        'hr.version', string="Contract Template", groups="hr.group_hr_user",
+        'hr.version', groups="hr.group_hr_user",
         domain="[('company_id', '=', company_id), ('employee_id', '=', False)]", tracking=1,
         help="Select a contract template to auto-fill the contract form with predefined values. You can still edit the fields as needed after applying the template.")
     structure_type_id = fields.Many2one('hr.payroll.structure.type', string="Salary Structure Type",
                                         compute="_compute_structure_type_id", readonly=False, store=True, index='btree_not_null', tracking=1,
-                                        groups="hr.group_hr_manager", default=_default_salary_structure)
+                                        groups="hr.group_hr_manager", default=lambda self: self._default_salary_structure())
     active_employee = fields.Boolean(related="employee_id.active", string="Active Employee", groups="hr.group_hr_user")
     currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
-    wage = fields.Monetary('Wage', tracking=1, help="Employee's monthly gross wage.", aggregator="avg",
+    wage = fields.Monetary(tracking=1, help="Employee's monthly gross wage.", aggregator="avg",
                            groups="hr.group_hr_manager")
     # [XBO] TODO: remove me in master
     company_country_id = fields.Many2one('res.country', string="Company country",
                                          related='company_id.country_id', readonly=True)
     country_code = fields.Char(related='company_country_id.code', depends=['company_country_id'], readonly=True)
-    employee_type_id = fields.Many2one('hr.employee.type', "Employee Type", tracking=1, index=True,
+    employee_type_id = fields.Many2one('hr.employee.type', tracking=1, index=True,
                                        groups="hr.group_hr_manager")
-    additional_note = fields.Text(string='Additional Note', groups="hr.group_hr_user", tracking=1, copy=False)
+    additional_note = fields.Text(groups="hr.group_hr_user", tracking=1, copy=False)
 
     hr_responsible_id = fields.Many2one(
         'res.users', 'HR Responsible', tracking=1,
-        help='Person responsible for validating the employee\'s contracts.', domain=_get_hr_responsible_domain,
+        help='Person responsible for validating the employee\'s contracts.', domain=lambda self: self._get_hr_responsible_domain(),
         default=lambda self: self.env.user, required=True, groups="hr.group_hr_user")
 
     _check_contract_start_date_defined = models.Constraint(
@@ -311,7 +307,7 @@ class HrVersion(models.Model):
         for employee_id, versions in self.grouped('employee_id').items():
             if employee_id.version_ids == versions:
                 raise ValidationError(
-                    self.env._('Employee %s must always have at least one active version.') % employee_id.name
+                    self.env._('Employee %s must always have at least one active version.', employee_id.name)
                 )
 
     def write(self, vals):

@@ -31,7 +31,6 @@ class ResPartner(models.Model):
     )
 
     is_pricelist_manually_set = fields.Boolean(
-        string="Is Pricelist Manually Set",
         compute='_compute_is_pricelist_manually_set'
     )
 

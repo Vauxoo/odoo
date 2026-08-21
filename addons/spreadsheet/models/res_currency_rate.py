@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.addons.spreadsheet.utils.helpers import spreadsheet_safe_batch
+from ..utils.helpers import spreadsheet_safe_batch
 
 
 class ResCurrencyRate(models.Model):

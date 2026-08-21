@@ -4,10 +4,6 @@
     'name': 'Base - Module Install Request',
     'category': 'Hidden',
     'depends': ['mail'],
-    'description': """
-Allow internal users requesting a module installation
-=====================================================
-    """,
     'auto_install': True,
     'data':[
         'wizard/base_module_install_request_views.xml',

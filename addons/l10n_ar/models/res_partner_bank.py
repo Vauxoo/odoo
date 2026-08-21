@@ -5,7 +5,6 @@ from stdnum.ar.cbu import validate
 
 from odoo import api, fields, models
 
-_logger = logging.getLogger(__name__)
 
 
 class ResPartnerBank(models.Model):

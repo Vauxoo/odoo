@@ -81,13 +81,13 @@ class StockMove(models.Model):
 
         if uoms_with_issues:
             error_message_lines = [
-                _("Conversion Error: The following unit of measure conversions result in a zero quantity due to rounding:")
+                self.env._("Conversion Error: The following unit of measure conversions result in a zero quantity due to rounding:")
             ]
             for uom_from, uom_to in uoms_with_issues:
-                error_message_lines.append(_(' - From "%(uom_from)s" to "%(uom_to)s"', uom_from=uom_from, uom_to=uom_to))
+                error_message_lines.append(self.env._(' - From "%(uom_from)s" to "%(uom_to)s"', uom_from=uom_from, uom_to=uom_to))
 
             error_message_lines.append(
-                _("\nThis issue occurs because the quantity becomes zero after rounding during the conversion. "
+                self.env._("\nThis issue occurs because the quantity becomes zero after rounding during the conversion. "
                 "To fix this, adjust the conversion factors or rounding method to ensure that even the smallest quantity in the original unit "
                 "does not round down to zero in the target unit.")
             )

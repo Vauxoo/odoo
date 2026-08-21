@@ -7,8 +7,8 @@ from odoo.tests import new_test_user
 
 from odoo.addons.base.tests.common import HttpCase
 from odoo.addons.bus.tests.common import BusResult
-from odoo.addons.mail.tests.common import MailCase
-from odoo.addons.mail.tools.discuss import Store, mail_route
+from ..common import MailCase
+from ...tools.discuss import Store, mail_route
 
 
 class TestStoreVersioning(HttpCase, MailCase):

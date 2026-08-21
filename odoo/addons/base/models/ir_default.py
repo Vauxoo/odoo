@@ -18,13 +18,13 @@ class IrDefault(models.Model):
     _allow_sudo_commands = False
     _clear_cache_name = 'default'
 
-    field_id = fields.Many2one('ir.model.fields', string="Field", required=True,
+    field_id = fields.Many2one('ir.model.fields', required=True,
                                ondelete='cascade', index=True)
-    user_id = fields.Many2one('res.users', string='User', ondelete='cascade', index=True,
+    user_id = fields.Many2one('res.users', ondelete='cascade', index=True,
                               help="If set, action binding only applies for this user.")
-    company_id = fields.Many2one('res.company', string='Company', ondelete='cascade', index=True,
+    company_id = fields.Many2one('res.company', ondelete='cascade', index=True,
                                  help="If set, action binding only applies for this company")
-    condition = fields.Char('Condition', help="If set, applies the default upon condition.")
+    condition = fields.Char(help="If set, applies the default upon condition.")
     json_value = fields.Char('Default Value (JSON format)', required=True)
 
     @api.constrains('json_value', 'field_id')

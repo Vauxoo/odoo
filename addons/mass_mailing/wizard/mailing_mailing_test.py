@@ -29,12 +29,12 @@ class MailingMailingTest(models.TransientModel):
         result = self.env['ir.model'].sudo().search([('is_mailing_enabled', '=', True)])
         return [(model.model, model.name) for model in result]
 
-    email_to = fields.Text(string='Recipients', required=True, default=_default_email_to)
+    email_to = fields.Text(string='Recipients', required=True, default=lambda self: self._default_email_to())
     mass_mailing_id = fields.Many2one('mailing.mailing', string='Mailing', required=True, ondelete='cascade')
     email_from = fields.Char(string='From', compute='_compute_mailing_preview')
-    subject = fields.Char(string='Subject', compute='_compute_mailing_preview')
-    preview_text = fields.Char(string='Preview Text', compute='_compute_mailing_preview')
-    reply_to = fields.Char(string='Reply To', compute='_compute_mailing_preview')
+    subject = fields.Char(compute='_compute_mailing_preview')
+    preview_text = fields.Char(compute='_compute_mailing_preview')
+    reply_to = fields.Char(compute='_compute_mailing_preview')
     body_html = fields.Html(string='Preview Body', compute='_compute_mailing_preview', sanitize='email_outgoing')
     preview_record_ref = fields.Reference(
         string='Preview for',
@@ -112,7 +112,7 @@ class MailingMailingTest(models.TransientModel):
 
         mailing = self.mass_mailing_id
         body = mailing._prepend_preview(self.body_html or '', self.preview_text)
-        subject = _('[TEST] %(mailing_subject)s', mailing_subject=self.subject)
+        subject = self.env._('[TEST] %(mailing_subject)s', mailing_subject=self.subject)
 
         for valid_email in valid_emails:
             mail_values = {
@@ -140,15 +140,15 @@ class MailingMailingTest(models.TransientModel):
         notification_messages = []
         if invalid_candidates:
             notification_messages.append(
-                _('Mailing addresses incorrect: %s', ', '.join(invalid_candidates)))
+                self.env._('Mailing addresses incorrect: %s', ', '.join(invalid_candidates)))
 
         for mail_sudo in mails_sudo:
             if mail_sudo.state == 'sent':
                 notification_messages.append(
-                    _('Test mailing successfully sent to %s', mail_sudo.email_to))
+                    self.env._('Test mailing successfully sent to %s', mail_sudo.email_to))
             elif mail_sudo.state == 'exception':
                 notification_messages.append(
-                    _('Test mailing could not be sent to %s:', mail_sudo.email_to) +
+                    self.env._('Test mailing could not be sent to %s:', mail_sudo.email_to) +
                     (Markup("<br/>") + mail_sudo.failure_reason)
                 )
 

@@ -7,7 +7,7 @@ class BasePartnerMergeAutomaticWizard(models.TransientModel):
     def _update_foreign_keys(self, src_partners, dst_partner):
         """Override of base to merge corresponding nominative loyalty cards."""
         self._merge_loyalty_cards(src_partners, dst_partner)
-        super()._update_foreign_keys(src_partners, dst_partner)
+        return super()._update_foreign_keys(src_partners, dst_partner)
 
     def _merge_loyalty_cards(self, src_partners, dst_partner):
         """Merge nominative loyalty cards.

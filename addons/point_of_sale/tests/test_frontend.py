@@ -19,7 +19,6 @@ from odoo.addons.point_of_sale.tests.common import archive_products
 from odoo.exceptions import UserError
 from freezegun import freeze_time
 
-_logger = logging.getLogger(__name__)
 
 
 def _create_image(color: int | str = 0, dims=(1920, 1080), format='JPEG'):

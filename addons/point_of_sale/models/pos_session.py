@@ -45,8 +45,8 @@ class PosSession(models.Model):
     name = fields.Char(string='Session ID', readonly=True, default='/')
     start_at = fields.Datetime(string='Opening Date', readonly=True)
     stop_at = fields.Datetime(string='Closing Date', readonly=True, copy=False)
-    opening_notes = fields.Text(string="Opening Notes")
-    closing_notes = fields.Text(string="Closing Notes")
+    opening_notes = fields.Text()
+    closing_notes = fields.Text()
     state = fields.Selection(
         [
             ('opening_control', 'Opening Control'),
@@ -65,7 +65,6 @@ class PosSession(models.Model):
     # Cash control fields
     bank_statement_id = fields.Many2one(
         'account.bank.statement',
-        string='Bank Statement',
         index='btree_not_null',
         readonly=True)
     bank_statement_line_ids = fields.One2many(
@@ -83,7 +82,6 @@ class PosSession(models.Model):
         readonly=True,
     )
     closing_difference = fields.Monetary(
-        string='Closing Difference',
         compute='_compute_closing_difference',
     )
     sales_move_id = fields.Many2one(
@@ -126,7 +124,6 @@ class PosSession(models.Model):
     )
     total_payments_amount = fields.Float(
         compute='_compute_total_payments_amount',
-        string='Total Payments Amount',
     )
     is_in_company_currency = fields.Boolean(
         'Is Using Company Currency',
@@ -259,7 +256,7 @@ class PosSession(models.Model):
                 'status': 'success',
             }
         if self.state != 'opening_control' or len(self.order_ids) > 0:
-            raise UserError(_("You can only cancel a session that is in opening control state and has no orders."))
+            raise UserError(self.env._("You can only cancel a session that is in opening control state and has no orders."))
         self._delete_session()
         return {
             'status': 'success',
@@ -329,7 +326,7 @@ class PosSession(models.Model):
                 ('config_id', '=', self.config_id.id),
                 ('rescue', '=', False),
             ]) > 1:
-            raise ValidationError(_("Another session is already opened for this point of sale."))
+            raise ValidationError(self.env._("Another session is already opened for this point of sale."))
 
     @api.constrains('start_at')
     def _check_start_date(self):
@@ -339,7 +336,7 @@ class PosSession(models.Model):
             start_date = record.start_at.date()
             violated_lock_dates = company._get_violated_lock_dates(start_date, True, journal)
             if violated_lock_dates:
-                raise ValidationError(_("You cannot create a session starting before: %(lock_date_info)s",
+                raise ValidationError(self.env._("You cannot create a session starting before: %(lock_date_info)s",
                                         lock_date_info=self.env['res.company']._format_lock_dates(violated_lock_dates)))
 
     @api.model_create_multi
@@ -347,7 +344,7 @@ class PosSession(models.Model):
         for vals in vals_list:
             config_id = vals.get('config_id') or self.env.context.get('default_config_id')
             if not config_id:
-                raise UserError(_("You should assign a Point of Sale to your session."))
+                raise UserError(self.env._("You should assign a Point of Sale to your session."))
 
             # journal_id is not required on the pos_config because it does not
             # exists at the installation. If nothing is configured at the
@@ -395,7 +392,7 @@ class PosSession(models.Model):
             return {
                 'status': False,
                 'type': 'draft_orders',
-                'message': _("You cannot close the POS while there are still draft orders for the day."),
+                'message': self.env._("You cannot close the POS while there are still draft orders for the day."),
                 'redirect': False,
             }
 
@@ -403,7 +400,7 @@ class PosSession(models.Model):
             return {
                 'status': False,
                 'type': 'session_already_closed',
-                'message': _("This session is already closed."),
+                'message': self.env._("This session is already closed."),
                 'redirect': True,
             }
 
@@ -429,7 +426,7 @@ class PosSession(models.Model):
                 order_links = Markup().join(
                     Markup("<li>%s</li>") % order._get_html_link() for order in edited_orders
                 )
-                body = _(
+                body = self.env._(
                     "Edited order(s) during the session:%s",
                     Markup("<br/><ul>%s</ul>") % order_links,
                 )
@@ -447,14 +444,14 @@ class PosSession(models.Model):
         return {'status': True}
 
     def post_close_register_message(self):
-        self.message_post(body=_('Closed Register'), author_id=self._get_message_author().id)
+        self.message_post(body=self.env._('Closed Register'), author_id=self._get_message_author().id)
 
     def _get_message_author(self):
         return self.env.user.partner_id
 
     def get_cash_in_out_list(self):
         if not self.env.user.has_group('point_of_sale.group_pos_user'):
-            raise AccessError(_("You don't have the access rights to get the cash in/out list."))
+            raise AccessError(self.env._("You don't have the access rights to get the cash in/out list."))
         cash_in_count = 0
         cash_out_count = 0
         cash_in_out_list = []
@@ -476,7 +473,7 @@ class PosSession(models.Model):
 
     def get_closing_control_data(self):
         if not self.env.user.has_group('point_of_sale.group_pos_user'):
-            raise AccessError(_("You don't have the access rights to get the point of sale closing control data."))
+            raise AccessError(self.env._("You don't have the access rights to get the point of sale closing control data."))
         self.ensure_one()
         orders = self._get_order_for_session_closing()
         payments = orders.payment_ids.filtered(lambda p: p.payment_method_id.type != "pay_later")
@@ -525,7 +522,7 @@ class PosSession(models.Model):
         self.ensure_one()
         all_related_moves = self._get_session_and_order_account_moves()
         return {
-            'name': _('Invoices'),
+            'name': self.env._('Invoices'),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'domain': [('id', 'in', all_related_moves.ids)],
@@ -555,7 +552,7 @@ class PosSession(models.Model):
 
     def action_show_payments_list(self):
         return {
-            'name': _('Payments'),
+            'name': self.env._('Payments'),
             'type': 'ir.actions.act_window',
             'res_model': 'pos.payment',
             'view_mode': 'list,form',
@@ -592,7 +589,7 @@ class PosSession(models.Model):
 
         if notes:
             self.opening_notes = notes
-            message = _('Opening control message: ')
+            message = self.env._('Opening control message: ')
             message += notes
             self.message_post(body=plaintext2html(message))
 
@@ -622,7 +619,7 @@ class PosSession(models.Model):
 
     def action_view_order(self):
         return {
-            'name': _('Orders'),
+            'name': self.env._('Orders'),
             'res_model': 'pos.order',
             'view_mode': 'list,form',
             'views': [
@@ -643,7 +640,7 @@ class PosSession(models.Model):
                 session.activity_schedule(
                     'point_of_sale.mail_activity_old_session',
                     user_id=session.user_id.id,
-                    note=_(
+                    note=self.env._(
                         "Your PoS Session is open since %(date)s, we advise you to close it and to create a new one.",
                         date=session.start_at,
                     ),
@@ -652,7 +649,7 @@ class PosSession(models.Model):
     def _check_if_no_draft_orders(self):
         draft_orders = self.get_session_orders().filtered(lambda order: order.state == 'draft')
         if draft_orders:
-            raise UserError(_(
+            raise UserError(self.env._(
                     'There are still orders in draft state in the session. '
                     'Pay or cancel the following orders to validate the session:\n%s',
                     ', '.join(draft_orders.mapped('name')),
@@ -661,12 +658,12 @@ class PosSession(models.Model):
 
     def try_cash_in_out(self, _type, amount, reason, partner_id):
         if not self.env.user._has_cash_move_permission():
-            raise AccessError(_("You don't have the access rights to perform a cash in/out."))
+            raise AccessError(self.env._("You don't have the access rights to perform a cash in/out."))
 
         sign = 1 if _type == 'in' else -1
         cash_pm = self.config_id._get_cash_payment_method()
         if not cash_pm:
-            raise UserError(_("There is no cash payment method for this PoS Session"))
+            raise UserError(self.env._("There is no cash payment method for this PoS Session"))
 
         message = f'{self.name}-{_type}-{reason}'
         signed_amount = amount * sign
@@ -681,10 +678,10 @@ class PosSession(models.Model):
 
     def delete_cash_in_out(self, absl_id, partner_id):
         if not self.env.user._has_cash_delete_permission():
-            raise AccessError(_("You don't have the access rights to delete a cash in/out."))
+            raise AccessError(self.env._("You don't have the access rights to delete a cash in/out."))
         absl = self.env['account.bank.statement.line'].browse(absl_id).sudo()
         if absl not in self.sudo().bank_statement_line_ids:
-            raise AccessError(_("You cannot delete a cash move that is not linked to this session."))
+            raise AccessError(self.env._("You cannot delete a cash move that is not linked to this session."))
         cashier_name = absl.partner_id.name
         amount = absl.amount
         action = (cashier_name + ': ' if cashier_name else '') + str(amount)
@@ -711,11 +708,11 @@ class PosSession(models.Model):
 
     def log_partner_message(self, partner_id, action, message_type):
         if message_type == 'ACTION_CANCELLED':
-            body = _('Action cancelled (%(ACTION)s)', ACTION=action)
+            body = self.env._('Action cancelled (%(ACTION)s)', ACTION=action)
         elif message_type == 'CASH_DRAWER_ACTION':
-            body = _('Cash drawer opened (%(ACTION)s)', ACTION=action)
+            body = self.env._('Cash drawer opened (%(ACTION)s)', ACTION=action)
         elif message_type == 'CASH_IN_OUT_UNLINK':
-            body = _('Cash move deleted: %s', action)
+            body = self.env._('Cash move deleted: %s', action)
         self.message_post(body=body, author_id=partner_id)
 
     def _get_closed_orders(self):
@@ -775,7 +772,7 @@ class PosSession(models.Model):
             move = move_ctx.create({
                 'journal_id': journal.id,
                 'date': fields.Date.context_today(self),
-                'ref': _(
+                'ref': self.env._(
                     'Bank difference for %(pm)s in %(session)s',
                     pm=pm.name,
                     session=self.name,
@@ -814,7 +811,7 @@ class PosSession(models.Model):
             self.bank_statement_id = self.env['account.bank.statement'].sudo().create({
                 'journal_id': cash_pm.journal_id.id,
                 'balance_start': last_balance,
-                'name': _(
+                'name': self.env._(
                     'Cash Statement for %(method_name)s in %(session)s',
                     method_name=cash_pm.name,
                     session=self.name,
@@ -827,7 +824,7 @@ class PosSession(models.Model):
 
         rounding = self.currency_id.rounding
         if not float_is_zero(difference, precision_rounding=rounding):
-            message = _(
+            message = self.env._(
                 'Cash correction from %(session)s',
                 session=self.name,
             )
@@ -936,7 +933,7 @@ class PosSession(models.Model):
         )
 
         if len(cash_payment_method) > 1:
-            raise UserError(_(
+            raise UserError(self.env._(
                 "Only one cash payment method can be used in a session.",
             ))
 
@@ -1051,7 +1048,7 @@ class PosSession(models.Model):
         unposted = account_move.filtered(lambda move: move.state != 'posted')
         if unposted:
             invoices = '\n'.join(f'{invoice.name} - {invoice.state}' for invoice in unposted)
-            raise UserError(_(
+            raise UserError(self.env._(
                 'You cannot close the POS when invoices are not posted.\nInvoices: %(invoices)s',
                 invoices=invoices,
             ))
@@ -1063,7 +1060,7 @@ class PosSession(models.Model):
         reverse_move_lines = []
         for line in product_lines:
             reverse_move_lines.append(Command.create({
-                'name': _("Reversal of %s", line.name),
+                'name': self.env._("Reversal of %s", line.name),
                 'product_id': line.product_id.id,
                 'account_id': line.account_id.id,
                 'partner_id': line.partner_id.id,
@@ -1103,7 +1100,7 @@ class PosSession(models.Model):
                 lambda line: line.display_type == 'rounding',
             )
             reverse_move_lines.append(Command.create({
-                'name': _("Rounding reversal: %s", matching_line.name),
+                'name': self.env._("Rounding reversal: %s", matching_line.name),
                 'account_id': matching_line.account_id.id,
                 'partner_id': matching_line.partner_id.id,
                 'currency_id': order.company_id.currency_id.id,
@@ -1120,7 +1117,7 @@ class PosSession(models.Model):
                 lambda line: line.display_type == 'payment_term',
             )[idx]
             receivable_line = Command.create({
-                'name': _("Payment reversal %s", matching_line.name),
+                'name': self.env._("Payment reversal %s", matching_line.name),
                 'account_id': matching_line.account_id.id,
                 'partner_id': matching_line.partner_id.id,
                 'currency_id': order.company_id.currency_id.id,

@@ -5,8 +5,8 @@ class PosPaymentMethod(models.Model):
     _inherit = 'pos.payment.method'
 
     cashmatic_ip = fields.Char('Cashmatic IP')
-    cashmatic_username = fields.Char('Cashmatic Username')
-    cashmatic_password = fields.Char('Cashmatic Password')
+    cashmatic_username = fields.Char()
+    cashmatic_password = fields.Char()
     cashmatic_use_lna = fields.Boolean('Cashmatic Local Network Access')
 
     def _get_cash_machine_selection(self):

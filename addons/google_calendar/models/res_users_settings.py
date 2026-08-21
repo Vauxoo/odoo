@@ -71,7 +71,7 @@ class ResUsersSettings(models.Model):
                 self.sudo()._set_google_auth_tokens(False, False, 0)
                 self.env.cr.commit()
             error_key = error.response.json().get("error", "nc")
-            error_msg = _("An error occurred while generating the token. Your authorization code may be invalid or has already expired [%s]. "
+            error_msg = self.env._("An error occurred while generating the token. Your authorization code may be invalid or has already expired [%s]. "
                           "You should check your Client ID and secret on the Google APIs plateform or try to stop and restart your calendar synchronization.",
                           error_key)
             raise UserError(error_msg)

@@ -30,7 +30,7 @@ class ResCompany(models.Model):
     attendance_kiosk_key = fields.Char(default=lambda s: uuid.uuid4().hex, copy=False, groups='hr_attendance.group_hr_attendance_user', init_storage='_init_column_attendance_kiosk_key')
     attendance_kiosk_url = fields.Char(compute="_compute_attendance_kiosk_url")
     attendance_kiosk_use_pin = fields.Boolean(string='Employee PIN Identification')
-    attendance_from_systray = fields.Boolean(string='Attendance From Systray', default=True)
+    attendance_from_systray = fields.Boolean(default=True)
     attendance_overtime_validation = fields.Selection([
         ('no_validation', 'Automatically Approved'),
         ('by_manager', 'Approved by Manager'),
@@ -40,7 +40,7 @@ class ResCompany(models.Model):
     auto_check_out_mode = fields.Selection([('tolerance', 'Tolerance'), ('specific_time', 'Specific Time')], default='tolerance')
     auto_check_out_tolerance = fields.Float(default=2, export_string_translation=False)
     auto_check_out_specific_time = fields.Float(default=20.0, export_string_translation=False)
-    absence_management = fields.Boolean(string="Absence Management", default=False)
+    absence_management = fields.Boolean(default=False)
     attendance_device_tracking = fields.Boolean(string="Device & Location Tracking", default=False)
     attendance_capture_check_in = fields.Boolean(string="Take Pictures on Check-In", default=False)
 

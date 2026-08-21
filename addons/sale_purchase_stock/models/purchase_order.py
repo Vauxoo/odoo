@@ -9,7 +9,7 @@ class PurchaseOrder(models.Model):
 
     @api.depends('reference_ids', 'reference_ids.sale_ids')
     def _compute_sale_order_count(self):
-        super()._compute_sale_order_count()
+        return super()._compute_sale_order_count()
 
     def _get_sale_orders(self):
         return super()._get_sale_orders() | self.reference_ids.sale_ids

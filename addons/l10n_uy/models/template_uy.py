@@ -44,12 +44,12 @@ class AccountChartTemplate(models.AbstractModel):
     def _get_uy_account_journal(self):
         return {
             'sale': {
-                "name": _("Sales"),
+                "name": self.env._("Sales"),
                 "code": "0001",
                 "refund_sequence": False,
             },
             'purchase': {
-                "name": _("Purchases"),
+                "name": self.env._("Purchases"),
                 "code": "0002",
                 "refund_sequence": False,
                 "default_account_id": 'uy_code_5401',

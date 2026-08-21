@@ -4,7 +4,7 @@ import requests
 from odoo.exceptions import UserError
 from odoo.tools.urls import urljoin
 
-from odoo.addons.account_peppol.exceptions import get_peppol_error_message
+from ..exceptions import get_peppol_error_message
 
 _logger = logging.getLogger(__name__)
 

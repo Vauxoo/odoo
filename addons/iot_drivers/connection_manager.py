@@ -5,9 +5,9 @@ import requests
 from threading import Thread
 import time
 
-from odoo.addons.iot_drivers.main import iot_devices, manager
-from odoo.addons.iot_drivers.tools import helpers, system, upgrade, wifi
-from odoo.addons.iot_drivers.tools.system import IS_TEST, IOT_IDENTIFIER
+from .main import iot_devices, manager
+from .tools import helpers, system, upgrade, wifi
+from .tools.system import IS_TEST, IOT_IDENTIFIER
 
 _logger = logging.getLogger(__name__)
 

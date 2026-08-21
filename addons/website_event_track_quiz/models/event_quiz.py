@@ -9,7 +9,7 @@ class EventQuiz(models.Model):
     _name = 'event.quiz'
     _description = "Quiz"
 
-    name = fields.Char('Name', required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     question_ids = fields.One2many('event.quiz.question', 'quiz_id', string="Questions")
     event_track_id = fields.Many2one('event.track', readonly=True, index='btree_not_null')
     event_id = fields.Many2one(
@@ -25,11 +25,11 @@ class EventQuizQuestion(models.Model):
     _order = "quiz_id, sequence, id"
 
     name = fields.Char("Question", required=True, translate=True)
-    sequence = fields.Integer("Sequence")
-    quiz_id = fields.Many2one("event.quiz", "Quiz", required=True, index=True, ondelete='cascade')
+    sequence = fields.Integer()
+    quiz_id = fields.Many2one("event.quiz", required=True, index=True, ondelete='cascade')
     correct_answer_id = fields.One2many('event.quiz.answer', compute='_compute_correct_answer_id')
     awarded_points = fields.Integer("Number of Points", compute='_compute_awarded_points')
-    answer_ids = fields.One2many('event.quiz.answer', 'question_id', string="Answer")
+    answer_ids = fields.One2many('event.quiz.answer', 'question_id')
 
     @api.depends('answer_ids.awarded_points')
     def _compute_awarded_points(self):
@@ -45,9 +45,9 @@ class EventQuizQuestion(models.Model):
     def _check_answers_integrity(self):
         for question in self:
             if len(question.correct_answer_id) != 1:
-                raise ValidationError(_('Question "%s" must have 1 correct answer to be valid.', question.name))
+                raise ValidationError(self.env._('Question "%s" must have 1 correct answer to be valid.', question.name))
             if len(question.answer_ids) < 2:
-                raise ValidationError(_('Question "%s" must have 1 correct answer and at least 1 incorrect answer to be valid.', question.name))
+                raise ValidationError(self.env._('Question "%s" must have 1 correct answer and at least 1 incorrect answer to be valid.', question.name))
 
 
 class EventQuizAnswer(models.Model):
@@ -56,8 +56,8 @@ class EventQuizAnswer(models.Model):
     _description = "Question's Answer"
     _order = 'question_id, sequence, id'
 
-    sequence = fields.Integer("Sequence")
-    question_id = fields.Many2one('event.quiz.question', string="Question", required=True, index=True, ondelete='cascade')
+    sequence = fields.Integer()
+    question_id = fields.Many2one('event.quiz.question', required=True, index=True, ondelete='cascade')
     text_value = fields.Char("Answer", required=True, translate=True)
     is_correct = fields.Boolean('Correct', default=False)
     comment = fields.Text(

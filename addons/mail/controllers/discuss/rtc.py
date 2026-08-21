@@ -9,7 +9,7 @@ from odoo.http import Controller, request, route
 from odoo.http.stream import STATIC_CACHE
 from odoo.tools import file_open
 
-from odoo.addons.mail.tools.discuss import add_guest_to_context, mail_route, Store
+from ...tools.discuss import add_guest_to_context, mail_route, Store
 
 
 class RtcController(Controller):

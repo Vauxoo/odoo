@@ -14,7 +14,7 @@ class HrApplicantCategory(models.Model):
         return randint(1, 11)
 
     name = fields.Char("Tag Name", required=True)
-    color = fields.Integer(string='Color Index', default=_get_default_color)
+    color = fields.Integer(string='Color Index', default=lambda self: self._get_default_color())
 
     _name_uniq = models.Constraint(
         'unique (name)',

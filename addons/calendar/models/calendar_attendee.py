@@ -36,7 +36,7 @@ class CalendarAttendee(models.Model):
     email = fields.Char('Email', related='partner_id.email')
     phone = fields.Char('Phone', related='partner_id.phone')
     common_name = fields.Char('Common name', compute='_compute_common_name', store=True)
-    access_token = fields.Char('Invitation Token', default=_default_access_token, groups="base.group_system")
+    access_token = fields.Char('Invitation Token', default=lambda self: self._default_access_token(), groups="base.group_system")
     mail_tz = fields.Selection(_tz_get, compute='_compute_mail_tz', help='Timezone used for displaying time in the mail template')
     # state
     state = fields.Selection(STATE_SELECTION, string='Status', default='needsAction')
@@ -78,7 +78,7 @@ class CalendarAttendee(models.Model):
         return super().unlink()
 
     def copy(self, default=None):
-        raise UserError(_('You cannot duplicate a calendar attendee.'))
+        raise UserError(self.env._('You cannot duplicate a calendar attendee.'))
 
     def _unsubscribe_partner(self):
         for event in self.event_id:
@@ -236,7 +236,7 @@ class CalendarAttendee(models.Model):
         for attendee in self:
             attendee.event_id.message_post(
                 author_id=attendee.partner_id.id,
-                body=_("%s has accepted the invitation", attendee.common_name),
+                body=self.env._("%s has accepted the invitation", attendee.common_name),
                 subtype_xmlid="calendar.subtype_invitation",
             )
         return self.write({'state': 'accepted'})
@@ -246,7 +246,7 @@ class CalendarAttendee(models.Model):
         for attendee in self:
             attendee.event_id.message_post(
                 author_id=attendee.partner_id.id,
-                body=_("%s has declined the invitation", attendee.common_name),
+                body=self.env._("%s has declined the invitation", attendee.common_name),
                 subtype_xmlid="calendar.subtype_invitation",
             )
         return self.write({'state': 'declined'})

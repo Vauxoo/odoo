@@ -7,8 +7,8 @@ from odoo.tools import urls
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.const import CURRENCY_MINOR_UNITS
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_mollie import const
-from odoo.addons.payment_mollie.controllers.main import MollieController
+from .. import const
+from ..controllers.main import MollieController
 
 _logger = get_payment_logger(__name__)
 

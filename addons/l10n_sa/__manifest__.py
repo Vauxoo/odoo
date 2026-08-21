@@ -7,19 +7,6 @@
     'author': 'Odoo S.A.',
     'category': 'Accounting/Localizations/Account Charts',
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/saudi_arabia.html',
-    'description': """
-Saudi Arabia Accounting Module
-===========================================================
-Saudi Arabia Accounting Basic Charts and Localization
-
-Activates:
-
-- Chart of Accounts
-- Taxes
-- VAT Return
-- Withholding Return
-- Fiscal Positions
-""",
     'depends': [
         'l10n_gcc_invoice',
         'account',

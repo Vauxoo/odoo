@@ -7,8 +7,6 @@
     'countries': ['us'],
     'version': '1.1',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-    """,
     'depends': ['base'],
     'data': [
         'data/res_company_data.xml',

@@ -131,7 +131,7 @@ class EventRegistration(models.Model):
         for registration in self:
             render_context = {
                 'registration': registration,
-                'record_type': _('Ticket') if new_record_field == 'event_ticket_id' else _('Slot'),
+                'record_type': self.env._('Ticket') if new_record_field == 'event_ticket_id' else self.env._('Slot'),
                 'old_name': registration[new_record_field].display_name,
                 'new_name': new_record.display_name,
             }

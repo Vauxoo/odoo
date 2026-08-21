@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import fields, models
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 
 
 class MessageMailLinkPreview(models.Model):
@@ -14,7 +14,7 @@ class MessageMailLinkPreview(models.Model):
     link_preview_id = fields.Many2one(
         "mail.link.preview", index=True, required=True, ondelete="cascade"
     )
-    sequence = fields.Integer("Sequence")
+    sequence = fields.Integer()
     is_hidden = fields.Boolean()
     author_id = fields.Many2one(related="message_id.author_id")
 

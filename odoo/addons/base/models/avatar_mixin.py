@@ -41,10 +41,10 @@ class AvatarMixin(models.AbstractModel):
 
     # all image fields are PIL-supported
     avatar_1920 = fields.Image("Avatar", compute="_compute_avatar_1920")
-    avatar_1024 = fields.Image("Avatar 1024", compute="_compute_avatar_1024")
-    avatar_512 = fields.Image("Avatar 512", compute="_compute_avatar_512")
-    avatar_256 = fields.Image("Avatar 256", compute="_compute_avatar_256")
-    avatar_128 = fields.Image("Avatar 128", compute="_compute_avatar_128")
+    avatar_1024 = fields.Image(compute="_compute_avatar_1024")
+    avatar_512 = fields.Image(compute="_compute_avatar_512")
+    avatar_256 = fields.Image(compute="_compute_avatar_256")
+    avatar_128 = fields.Image(compute="_compute_avatar_128")
 
     def _compute_avatar(self, avatar_field, image_field):
         for record in self:

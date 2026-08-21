@@ -1,11 +1,6 @@
 {
     'name': "HTML Builder",
     'summary': "Generic html builder",
-    'description': """
-    This addon contains a generic html builder application. It is designed to be
-    used by the website builder and mass mailing editor.
-    """,
-
     'author': 'Odoo S.A.',
 
     # so stupid that we need to use the stupid defineMailModel helper, so we need

@@ -3,7 +3,6 @@
     'category': 'Accounting/Localizations/Website',
     'countries': ['ar'],
     'icon': '/base/static/img/country_flags/ar.png',
-    'description': """Bridge Website Sale for Argentina""",
     'depends': [
         'website_sale',
         'l10n_ar',

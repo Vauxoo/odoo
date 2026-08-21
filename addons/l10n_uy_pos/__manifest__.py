@@ -2,10 +2,6 @@
 {
     "name": "Uruguayan - Point of Sale",
     "category": "Accounting/Localizations/Point of Sale",
-    "description": """
-This module brings the technical requirement for the Uruguayan regulation.
-Install this if you are using the Point of Sale app in Uruguay.
-    """,
     "depends": [
         "l10n_uy",
         "point_of_sale",

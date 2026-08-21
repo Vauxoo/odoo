@@ -2,7 +2,6 @@
 
 {
     'name': 'Colombian - Point of Sale',
-    'description': """Colombian - Point of Sale""",
     'category': 'Accounting/Localizations/Point of Sale',
     'auto_install': True,
     'data': [

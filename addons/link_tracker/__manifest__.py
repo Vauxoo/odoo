@@ -3,9 +3,6 @@
 {
     'name': 'Link Tracker',
     'category': 'Marketing',
-    'description': """
-Shorten URLs and use them to track clicks and UTMs
-""",
     'version': '1.1',
     'depends': ['utm', 'mail'],
     'data': [

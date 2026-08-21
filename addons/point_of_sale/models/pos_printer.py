@@ -45,7 +45,6 @@ class PosPrinter(models.Model):
 
     name = fields.Char('Printer Name', required=True, default='Printer', help='An internal identification of the printer')
     printer_type = fields.Selection(
-        string='Printer Type',
         default='epson_epos',
         selection=[
             ('epson_epos', 'ePoS'),
@@ -67,7 +66,7 @@ class PosPrinter(models.Model):
     )
     use_lna = fields.Boolean(string="Use Local Network Access")
     use_cashdrawer = fields.Boolean(string='Link Cashdrawer', help="Automatically open the cashdrawer.")
-    paper_size = fields.Selection(string="Paper Size", selection=[
+    paper_size = fields.Selection(selection=[
         ('80', 'Standard 80mm'),
         ('58', 'Standard 58mm'),
         ('label', 'Zebra (>=2.75in)'),
@@ -82,7 +81,7 @@ class PosPrinter(models.Model):
         vals_list = super().copy_data(default=default)
         if 'name' not in default:
             for printer, vals in zip(self, vals_list):
-                vals['name'] = _("%s (copy)", printer.name)
+                vals['name'] = self.env._("%s (copy)", printer.name)
         return vals_list
 
     @api.depends('printer_type')
@@ -115,7 +114,7 @@ class PosPrinter(models.Model):
     def _constrains_printer_ip(self):
         for record in self:
             if record.printer_type == 'epson_epos' and not record.printer_ip:
-                raise ValidationError(_("Printer IP Address cannot be empty."))
+                raise ValidationError(self.env._("Printer IP Address cannot be empty."))
 
     @api.onchange("printer_ip")
     def _onchange_printer_ip(self):

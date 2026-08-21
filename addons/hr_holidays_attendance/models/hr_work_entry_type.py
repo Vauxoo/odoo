@@ -27,7 +27,7 @@ class HrWorkEntryType(models.Model):
         for work_entry_type in overtime_leaves:
             work_entry_type.display_name = "%(name)s (%(count)s)" % {
                 'name': work_entry_type.name,
-                'count': _('%s hours available',
+                'count': self.env._('%s hours available',
                     format_duration(unspent_overtime)),
             }
         super(HrWorkEntryType, self - overtime_leaves)._compute_display_name()

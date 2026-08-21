@@ -16,7 +16,7 @@ class ProductMargin(models.TransientModel):
         ('paid', 'Paid'),
         ('open_paid', 'Open and Paid'),
         ('draft_open_paid', 'Draft, Open and Paid'),
-    ], 'Invoice State', required=True, default="open_paid")
+    ], required=True, default="open_paid")
 
     def action_open_window(self):
         self.ensure_one()
@@ -45,7 +45,7 @@ class ProductMargin(models.TransientModel):
             (graph_view_id, 'graph')
         ]
         return {
-            'name': _('Product Margins'),
+            'name': self.env._('Product Margins'),
             'context': context,
             "view_mode": 'list,form,graph',
             'res_model': 'product.product',

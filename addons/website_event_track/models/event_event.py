@@ -8,7 +8,7 @@ class EventEvent(models.Model):
     _inherit = "event.event"
 
     track_ids = fields.One2many('event.track', 'event_id', 'Tracks')
-    track_count = fields.Integer('Track Count', compute='_compute_track_count')
+    track_count = fields.Integer(compute='_compute_track_count')
     website_track = fields.Boolean(
         'Tracks on Website', compute='_compute_website_track',
         readonly=False, store=True)
@@ -115,8 +115,8 @@ class EventEvent(models.Model):
     def _get_website_menu_entries(self):
         self.ensure_one()
         return super()._get_website_menu_entries() + [
-            (_('Talks'), '#', False, 10, 'track', False),
-            (_('Talks'), '/event/%s/track' % self.env['ir.http']._slug(self), False, 10, 'track', 'track'),
-            (_('Agenda'), '/event/%s/agenda' % self.env['ir.http']._slug(self), False, 15, 'track', 'track'),
-            (_('Propose a talk'), '/event/%s/track_proposal' % self.env['ir.http']._slug(self), False, 20, 'track_proposal', 'track')
+            (self.env._('Talks'), '#', False, 10, 'track', False),
+            (self.env._('Talks'), '/event/%s/track' % self.env['ir.http']._slug(self), False, 10, 'track', 'track'),
+            (self.env._('Agenda'), '/event/%s/agenda' % self.env['ir.http']._slug(self), False, 15, 'track', 'track'),
+            (self.env._('Propose a talk'), '/event/%s/track_proposal' % self.env['ir.http']._slug(self), False, 20, 'track_proposal', 'track')
         ]

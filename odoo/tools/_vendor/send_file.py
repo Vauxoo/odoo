@@ -30,7 +30,6 @@ if t.TYPE_CHECKING:
     from wsgiref.types import WSGIEnvironment
 
 
-_logger = logging.getLogger(__name__)
 
 
 def send_file(

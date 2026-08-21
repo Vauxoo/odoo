@@ -32,7 +32,7 @@ class ResourceCalendarLeaves(models.Model):
 
     name = fields.Char('Reason')
     company_id = fields.Many2one(
-        'res.company', string="Company", readonly=True, store=True,
+        'res.company', readonly=True, store=True,
         default=lambda self: self.env.company, compute='_compute_company_id')
     calendar_id = fields.Many2one(
         'resource.calendar', "Working Hours",
@@ -43,7 +43,7 @@ class ResourceCalendarLeaves(models.Model):
     date_from = fields.Datetime('Start Date', required=True)
     date_to = fields.Datetime('End Date', compute="_compute_date_to", readonly=False, required=True, store=True)
     resource_id = fields.Many2one(
-        "resource.resource", 'Resource', index=True,
+        "resource.resource", index=True,
         help="If empty, this is a generic time off for the company. If a resource is set, the time off is only for this resource")
     count_as = fields.Selection([('absence', 'Absence'), ('working_time', 'Working Time')], default='absence',
                                  help="Whether this should be computed as a time off or as work time (eg: formation)")
@@ -73,7 +73,7 @@ class ResourceCalendarLeaves(models.Model):
     @api.constrains('date_from', 'date_to')
     def check_dates(self):
         if self.filtered(lambda leave: leave.date_from > leave.date_to):
-            raise ValidationError(_('The start date of the time off must be earlier than the end date.'))
+            raise ValidationError(self.env._('The start date of the time off must be earlier than the end date.'))
 
     def _copy_leave_vals(self):
         self.ensure_one()

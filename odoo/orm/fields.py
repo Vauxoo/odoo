@@ -891,7 +891,7 @@ class Field[T]:
     def stored_sql_column_type(self) -> SQL:
         """ Column type as stored in the database column. """
         _ident, spec = self.column_type
-        return SQL(spec)  # pylint: disable=sql-injection
+        return SQL(spec)  # ruff: ignore[sql-injection]
 
     @functools.cached_property
     def sql_column_type(self) -> SQL:

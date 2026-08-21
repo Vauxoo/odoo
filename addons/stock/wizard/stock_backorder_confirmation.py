@@ -10,7 +10,7 @@ class StockBackorderConfirmationLine(models.TransientModel):
 
     backorder_confirmation_id = fields.Many2one('stock.backorder.confirmation', 'Immediate Transfer')
     picking_id = fields.Many2one('stock.picking', 'Transfer')
-    to_backorder = fields.Boolean('To Backorder')
+    to_backorder = fields.Boolean()
 
 
 class StockBackorderConfirmation(models.TransientModel):

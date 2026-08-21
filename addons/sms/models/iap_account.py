@@ -12,7 +12,7 @@ class IapAccount(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'target': 'new',
-            'name': _('Register Account'),
+            'name': self.env._('Register Account'),
             'view_mode': 'form',
             'res_model': 'sms.account.phone',
             'context': {'default_account_id': self.id},
@@ -22,7 +22,7 @@ class IapAccount(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'target': 'new',
-            'name': _('Choose your sender name'),
+            'name': self.env._('Choose your sender name'),
             'view_mode': 'form',
             'res_model': 'sms.account.sender',
             'context': {'default_account_id': self.id},

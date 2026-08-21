@@ -11,8 +11,7 @@ class FleetVehicleLogServices(models.Model):
     account_move_state = fields.Selection(related='account_move_line_id.parent_state')
     amount = fields.Monetary(string='Cost', compute="_compute_amount", inverse="_inverse_amount",
         readonly=False, store=True, tracking=True)
-    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string='Vehicle',
-        compute="_compute_vehicle_id", store=True, readonly=False, required=True)
+    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', compute="_compute_vehicle_id", store=True, readonly=False, required=True)
 
     @api.depends('account_move_line_id.vehicle_id')
     def _compute_vehicle_id(self):
@@ -24,7 +23,7 @@ class FleetVehicleLogServices(models.Model):
 
     def _inverse_amount(self):
         if any(service.account_move_line_id for service in self):
-            raise UserError(_("You cannot modify the amount of services linked to a journal item. Do it on the related accounting entry instead."))
+            raise UserError(self.env._("You cannot modify the amount of services linked to a journal item. Do it on the related accounting entry instead."))
 
     @api.depends('account_move_line_id.price_subtotal')
     def _compute_amount(self):
@@ -38,7 +37,7 @@ class FleetVehicleLogServices(models.Model):
             'view_mode': 'form',
             'res_model': 'account.move',
             'target': 'current',
-            'name': _('Bill'),
+            'name': self.env._('Bill'),
             'res_id': self.account_move_line_id.move_id.id,
         }
 
@@ -76,4 +75,4 @@ class FleetVehicleLogServices(models.Model):
         if self.env.context.get('ignore_linked_bill_constraint'):
             return
         if any(log_service.account_move_line_id for log_service in self):
-            raise UserError(_("You cannot delete log services records because one or more of them were bill created."))
+            raise UserError(self.env._("You cannot delete log services records because one or more of them were bill created."))

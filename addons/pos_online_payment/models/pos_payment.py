@@ -29,21 +29,21 @@ class PosPayment(models.Model):
         for pm_id, oaps_id in online_account_payments_by_pm.items():
             if pm_id in opms_id:
                 if None in oaps_id:
-                    raise UserError(_("Cannot create a POS online payment without an accounting payment."))
+                    raise UserError(self.env._("Cannot create a POS online payment without an accounting payment."))
                 online_account_payments_to_check_id.update(oaps_id)
             elif any(oaps_id):
-                raise UserError(_("Cannot create a POS payment with a not online payment method and an online accounting payment."))
+                raise UserError(self.env._("Cannot create a POS payment with a not online payment method and an online accounting payment."))
 
         if online_account_payments_to_check_id:
             valid_oap_amount = self.env['account.payment'].search_count([('id', 'in', list(online_account_payments_to_check_id))])
             if valid_oap_amount != len(online_account_payments_to_check_id):
-                raise UserError(_("Cannot create a POS online payment without an accounting payment."))
+                raise UserError(self.env._("Cannot create a POS online payment without an accounting payment."))
 
         return super().create(vals_list)
 
     def write(self, vals):
         if vals.keys() & ('amount', 'payment_date', 'payment_method_id', 'online_account_payment_id', 'pos_order_id') and any(payment.online_account_payment_id or payment.payment_method_id.type == 'online' for payment in self):
-            raise UserError(_("Cannot edit a POS online payment essential data."))
+            raise UserError(self.env._("Cannot edit a POS online payment essential data."))
         return super().write(vals)
 
     @api.constrains('payment_method_id')
@@ -53,4 +53,4 @@ class PosPayment(models.Model):
             # An online payment must always be saved for the POS, even if the online payment method is no longer configured/allowed in the pos.config, because in any case it is saved by account_payment and payment modules.
             _logger.warning("Allow to save a POS online payment with an unexpected online payment method")
 
-        super(PosPayment, self - bypass_check_payments)._check_payment_method_id()
+        return super(PosPayment, self - bypass_check_payments)._check_payment_method_id()

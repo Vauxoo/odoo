@@ -18,7 +18,7 @@ class MailTestTicket(models.Model):
     count = fields.Integer(default=1)
     datetime = fields.Datetime(default=fields.Datetime.now)
     mail_template = fields.Many2one('mail.template', 'Template')
-    customer_id = fields.Many2one('res.partner', 'Customer', tracking=2)
+    customer_id = fields.Many2one('res.partner', tracking=2)
     user_id = fields.Many2one('res.users', 'Responsible', tracking=1)
     container_id = fields.Many2one('mail.test.container', tracking=True)
 
@@ -118,7 +118,7 @@ class MailTestTicketMc(models.Model):
     _inherit = ['mail.test.ticket']
     _primary_email = 'email_from'
 
-    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     container_id = fields.Many2one('mail.test.container.mc', tracking=True)
 
     def _get_customer_information(self):
@@ -221,7 +221,7 @@ class MailTestContainer(models.Model):
 
     name = fields.Char()
     description = fields.Text()
-    customer_id = fields.Many2one('res.partner', 'Customer')
+    customer_id = fields.Many2one('res.partner')
 
     def _mail_get_partner_fields(self, introspect_fields=False):
         return ['customer_id']
@@ -254,7 +254,7 @@ class MailTestContainerMc(models.Model):
     _mail_post_access = 'read'
     _inherit = ['mail.test.container']
 
-    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
 
     def _alias_get_creation_values(self):
         values = super()._alias_get_creation_values()

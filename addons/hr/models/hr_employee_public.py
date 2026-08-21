@@ -65,7 +65,7 @@ class HrEmployeePublic(models.Model):
     is_manager = fields.Boolean(compute='_compute_is_manager')
     is_user = fields.Boolean(compute='_compute_is_user')
 
-    employee_id = fields.Many2one('hr.employee', 'Employee', readonly=True)
+    employee_id = fields.Many2one('hr.employee', readonly=True)
     # hr.employee.public specific fields
     child_ids = fields.One2many('hr.employee.public', 'parent_id', string='Direct subordinates', readonly=True)
     child_count = fields.Integer(compute='_compute_child_count')
@@ -84,11 +84,11 @@ class HrEmployeePublic(models.Model):
     avatar_256 = fields.Image("Avatar 256", related='employee_id.avatar_256', compute_sudo=True)
     avatar_128 = fields.Image("Avatar 128", related='employee_id.avatar_128', compute_sudo=True)
     parent_id = fields.Many2one('hr.employee.public', 'Manager', readonly=True)
-    coach_id = fields.Many2one('hr.employee.public', 'Coach', readonly=True)
+    coach_id = fields.Many2one('hr.employee.public', readonly=True)
     user_partner_id = fields.Many2one(related='user_id.partner_id', related_sudo=False, string="User's partner")
     birthday_public_display_string = fields.Char("Public Date of Birth", related='employee_id.birthday_public_display_string')
 
-    newly_hired = fields.Boolean('Newly Hired', compute='_compute_newly_hired', search='_search_newly_hired')
+    newly_hired = fields.Boolean(compute='_compute_newly_hired', search='_search_newly_hired')
 
     monday_location_id = fields.Many2one('hr.work.location', string='Monday')
     tuesday_location_id = fields.Many2one('hr.work.location', string='Tuesday')

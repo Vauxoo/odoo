@@ -15,4 +15,4 @@ class ResPartner(models.Model):
             if not partner._is_vat_void(partner.vat) and partner.vat.isdigit() and len(partner.vat) == 8:
                 partner.is_company = True
 
-        super(ResPartner, self - l10n_tw_partners)._compute_is_company()
+        return super(ResPartner, self - l10n_tw_partners)._compute_is_company()

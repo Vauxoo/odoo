@@ -31,7 +31,7 @@ class EventType(models.Model):
         return self.env['event.question'].search([('is_default', '=', True), ('active', '=', True)]).ids
 
     name = fields.Char('Event Template', required=True, translate=True)
-    note = fields.Html(string='Note')
+    note = fields.Html()
     sequence = fields.Integer(default=10)
     # tickets
     event_type_ticket_ids = fields.One2many('event.type.ticket', 'event_type_id', string='Tickets')
@@ -47,12 +47,12 @@ class EventType(models.Model):
     # communication
     event_type_mail_ids = fields.One2many(
         'event.type.mail', 'event_type_id', string='Mail Schedule',
-        default=_default_event_mail_type_ids)
+        default=lambda self: self._default_event_mail_type_ids())
     # ticket reports
-    ticket_instructions = fields.Html('Ticket Instructions', translate=True,
+    ticket_instructions = fields.Html(translate=True,
         help="This information will be printed on your tickets.")
     question_ids = fields.Many2many(
-        'event.question', default=_default_question_ids,
+        'event.question', default=lambda self: self._default_question_ids(),
         string='Questions', copy=True)
 
     @api.depends('has_seats_limitation')

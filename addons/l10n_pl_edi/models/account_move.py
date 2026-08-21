@@ -16,9 +16,8 @@ from odoo.tools import float_compare, float_is_zero, float_repr, mute_logger, Or
 from odoo.tools.business_data import split_vat
 from odoo.tools.image import image_data_uri
 
-from odoo.addons.l10n_pl_edi.tools.ksef_api_service import KsefApiService
+from ..tools.ksef_api_service import KsefApiService
 
-_logger = logging.getLogger(__name__)
 
 
 class AccountMove(models.Model):

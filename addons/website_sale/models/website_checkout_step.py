@@ -3,7 +3,7 @@
 from odoo import api, fields, models
 from odoo.fields import Domain
 
-from odoo.addons.website_sale import const
+from .. import const
 
 
 class WebsiteCheckoutStep(models.Model):

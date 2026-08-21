@@ -10,7 +10,7 @@ class MrpProductionBackorderLine(models.TransientModel):
 
     mrp_production_backorder_id = fields.Many2one('mrp.production.backorder', 'MO Backorder', required=True, ondelete="cascade")
     mrp_production_id = fields.Many2one('mrp.production', 'Manufacturing Order', required=True, ondelete="cascade", readonly=True)
-    to_backorder = fields.Boolean('To Backorder')
+    to_backorder = fields.Boolean()
 
 
 class MrpProductionBackorder(models.TransientModel):

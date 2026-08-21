@@ -7,7 +7,7 @@ class AccountInvoiceReport(models.Model):
     _inherit = "account.invoice.report"
 
     team_id = fields.Many2one(comodel_name="crm.team", string="Sales Team")
-    source_id = fields.Many2one(comodel_name="utm.source", string="Source", readonly=True)
+    source_id = fields.Many2one(comodel_name="utm.source", readonly=True)
 
     def _select_list(self, table):
         return super()._select_list(table) + [

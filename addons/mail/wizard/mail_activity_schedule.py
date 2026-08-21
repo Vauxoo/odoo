@@ -4,12 +4,11 @@ import logging
 from markupsafe import Markup
 
 from odoo import api, fields, models, _
-from odoo.addons.mail.tools.parser import parse_res_ids
+from ..tools.parser import parse_res_ids
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tools import html2plaintext
 from odoo.tools.misc import format_date
-_logger = logging.getLogger(__name__)
 
 
 class MailActivitySchedule(models.TransientModel):
@@ -42,8 +41,7 @@ class MailActivitySchedule(models.TransientModel):
         readonly=False, store=True, precompute=True)
     is_batch_mode = fields.Boolean('Use in batch', compute='_compute_is_batch_mode')
     company_id = fields.Many2one(
-        'res.company', 'Company',
-        compute='_compute_company_id', required=False)
+        'res.company', compute='_compute_company_id', required=False)
     # usage
     error = fields.Html(compute='_compute_error')
     has_error = fields.Boolean(compute='_compute_error')
@@ -65,7 +63,7 @@ class MailActivitySchedule(models.TransientModel):
         'res.role', 'Assigned Role',
         help='Choose assignation for activities with on demand assignation.')
     plan_date = fields.Date(
-        'Plan Date', compute='_compute_plan_date',
+        compute='_compute_plan_date',
         store=True, readonly=False)
     # activity-based
     activity_type_available_ids = fields.Many2many(
@@ -73,18 +71,17 @@ class MailActivitySchedule(models.TransientModel):
         compute='_compute_activity_type_available_ids',
         compute_sudo=True)
     activity_type_id = fields.Many2one(
-        'mail.activity.type', string='Activity Type',
-        compute='_compute_activity_type_id', store=True, readonly=False,
+        'mail.activity.type', compute='_compute_activity_type_id', store=True, readonly=False,
         domain="['|', ('res_model', '=', False), ('res_model', '=', res_model)]", ondelete='set null')
     activity_category = fields.Selection(related='activity_type_id.category', readonly=True)
     date_deadline = fields.Date(
         'Due Date', compute="_compute_date_deadline",
         readonly=False, store=True)
     summary = fields.Char(
-        'Summary', compute="_compute_summary",
+        compute="_compute_summary",
         readonly=False, store=True)
     note = fields.Html(
-        'Note', compute="_compute_note",
+        compute="_compute_note",
         readonly=False, store=True, sanitize_style=True)
     activity_user_id = fields.Many2one(
         'res.users', 'Assigned to', compute='_compute_activity_user_id',
@@ -130,18 +127,18 @@ class MailActivitySchedule(models.TransientModel):
                 applied_on = scheduler._get_applied_on_records()
                 if applied_on and ('company_id' in scheduler.env[applied_on._name]._fields and
                                 len(applied_on.mapped('company_id')) > 1):
-                    errors.add(_('The records must belong to the same company.'))
+                    errors.add(self.env._('The records must belong to the same company.'))
             if scheduler.plan_id:
                 errors |= set(scheduler._check_plan_templates_error(applied_on))
                 warnings |= set(scheduler._check_plan_templates_warning(applied_on))
                 if not scheduler.res_ids:
-                    errors.add(_("Can't launch a plan without a record."))
+                    errors.add(self.env._("Can't launch a plan without a record."))
             if not scheduler.res_ids and not scheduler.activity_user_id:
-                errors.add(_("Can't schedule activities without either a record or a user."))
+                errors.add(self.env._("Can't schedule activities without either a record or a user."))
             if errors:
                 error_header = (
-                    _('The plan "%(plan_name)s" cannot be launched:', plan_name=scheduler.plan_id.name) if scheduler.plan_id
-                    else _('The activity cannot be launched:')
+                    self.env._('The plan "%(plan_name)s" cannot be launched:', plan_name=scheduler.plan_id.name) if scheduler.plan_id
+                    else self.env._('The activity cannot be launched:')
                 )
                 error_body = Markup('<ul>%s</ul>') % (
                     Markup().join(Markup('<li>%s</li>') % error for error in errors)
@@ -333,10 +330,10 @@ class MailActivitySchedule(models.TransientModel):
 
     def action_schedule_plan(self):
         if not self.res_model:
-            raise ValueError(_('Plan-based scheduling are available only on documents.'))
+            raise ValueError(self.env._('Plan-based scheduling are available only on documents.'))
         applied_on = self._get_applied_on_records()
         for record in applied_on:
-            body = _('The plan "%(plan_name)s" has been started', plan_name=self.plan_id.name)
+            body = self.env._('The plan "%(plan_name)s" has been started', plan_name=self.plan_id.name)
             activity_descriptions = []
             for template in self._plan_filter_activity_templates_to_schedule():
                 responsible = template._determine_responsible(
@@ -362,7 +359,7 @@ class MailActivitySchedule(models.TransientModel):
                     activity_template_id=template.id,
                 )
                 activity_descriptions.append(
-                    _('%(activity)s, assigned to %(name)s, due on the %(deadline)s',
+                    self.env._('%(activity)s, assigned to %(name)s, due on the %(deadline)s',
                       activity=template.summary or template.activity_type_id.name,
                       name=responsible.name, deadline=format_date(self.env, date_deadline)))
 
@@ -378,7 +375,7 @@ class MailActivitySchedule(models.TransientModel):
         return {
             'type': 'ir.actions.act_window',
             'res_model': self.res_model,
-            'name': _('Launch Plans'),
+            'name': self.env._('Launch Plans'),
             'view_mode': 'list,form',
             'target': 'current',
             'domain': [('id', 'in', applied_on.ids)],
@@ -430,7 +427,7 @@ class MailActivitySchedule(models.TransientModel):
 
     def _action_schedule_activities_personal(self):
         if not self.activity_user_id:
-            raise ValueError(_('Scheduling personal activities requires an assigned user.'))
+            raise ValueError(self.env._('Scheduling personal activities requires an assigned user.'))
         return self.env['mail.activity'].create({
             'activity_type_id': self.activity_type_id.id,
             'automated': False,
@@ -493,6 +490,6 @@ class MailActivitySchedule(models.TransientModel):
                     accessible = thread.has_access(operation)
                     break
             if not accessible:
-                raise UserError(_("Selected user '%(user)s' cannot upload documents on model '%(model)s'",
+                raise UserError(self.env._("Selected user '%(user)s' cannot upload documents on model '%(model)s'",
                                     model=model,
                                     user=activity_user.display_name))

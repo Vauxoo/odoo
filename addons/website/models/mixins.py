@@ -14,7 +14,7 @@ from odoo.tools.json import scriptsafe as json_safe
 from odoo.tools.sql import SQL, escape_like_value
 from odoo.tools.urls import urljoin as url_join
 
-from odoo.addons.website.tools import text_from_html
+from ..tools import text_from_html
 
 
 class WebsiteSeoMetadata(models.AbstractModel):
@@ -148,7 +148,7 @@ class WebsiteCover_PropertiesMixin(models.AbstractModel):
 
     _description = 'Cover Properties Website Mixin'
 
-    cover_properties = fields.Text('Cover Properties', default=lambda s: json_safe.dumps(s._default_cover_properties()))
+    cover_properties = fields.Text(default=lambda s: json_safe.dumps(s._default_cover_properties()))
 
     def _default_cover_properties(self):
         return {
@@ -235,7 +235,6 @@ class WebsiteMultiMixin(models.AbstractModel):
 
     website_id = fields.Many2one(
         "website",
-        string="Website",
         ondelete="restrict",
         help="Restrict to a specific website.",
         index=True,
@@ -443,14 +442,14 @@ class WebsitePublishedMixin(models.AbstractModel):
     _description = 'Website Published Mixin'
 
     website_published = fields.Boolean('Visible on current website', related='is_published', readonly=False)
-    is_published = fields.Boolean('Is Published', copy=False, default=lambda self: self._default_is_published(), index=True)
+    is_published = fields.Boolean(copy=False, default=lambda self: self._default_is_published(), index=True)
     publish_on = fields.Datetime(
         "Auto publish on",
         copy=False,
         help="Automatically publish the page on the chosen date and time.",
     )
     published_date = fields.Datetime("Published date", copy=False)
-    can_publish = fields.Boolean('Can Publish', compute='_compute_can_publish')
+    can_publish = fields.Boolean(compute='_compute_can_publish')
 
     def _default_is_published(self):
         return False
@@ -520,7 +519,7 @@ class WebsitePublishedMixin(models.AbstractModel):
         )
         if not scheduled_action:
             raise UserError(
-                _(
+                self.env._(
                     'The scheduled action "Website Publish Mixin: Publish scheduled website page" '
                     "has been deleted. Please contact your administrator to restore it or reinstall the website module."
                 )
@@ -770,7 +769,7 @@ class WebsitePublishedMixin(models.AbstractModel):
     def _get_can_publish_error_message(self):
         """ Override this method to customize the error message shown when the user doesn't
         have the rights to publish/unpublish. """
-        return _("You do not have the rights to publish/unpublish")
+        return self.env._("You do not have the rights to publish/unpublish")
 
 
 class WebsitePublishedMultiMixin(WebsitePublishedMixin):

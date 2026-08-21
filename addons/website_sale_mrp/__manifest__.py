@@ -4,9 +4,6 @@
     'name': 'Kit Availability',
     'category': 'Website/Website',
     'summary': 'Manage Kit product inventory & availability',
-    'description': """
-Manage the inventory of your Kit products and display their availability status in your eCommerce store.
-    """,
     'depends': [
         'website_sale_stock',
         'sale_mrp',

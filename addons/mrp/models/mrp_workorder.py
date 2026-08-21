@@ -28,7 +28,7 @@ class MrpWorkorder(models.Model):
 
     name = fields.Char(
         'Work Order', required=True)
-    sequence = fields.Integer("Sequence", compute='_compute_sequence', store=True, readonly=False, precompute=True)
+    sequence = fields.Integer(compute='_compute_sequence', store=True, readonly=False, precompute=True)
     barcode = fields.Char(compute='_compute_barcode', store=True)
     workcenter_id = fields.Many2one(
         'mrp.workcenter', 'Work Center', required=True, index=True, tracking=True,
@@ -101,7 +101,7 @@ class MrpWorkorder(models.Model):
     progress = fields.Float('Progress Done (%)', digits=(16, 2), compute='_compute_progress')
 
     operation_id = fields.Many2one(
-        'mrp.routing.workcenter', 'Operation', check_company=True, index='btree_not_null')
+        'mrp.routing.workcenter', check_company=True, index='btree_not_null')
         # Should be used differently as BoM can change in the meantime
     move_raw_ids = fields.One2many(
         'stock.move', 'workorder_id', 'Raw Moves',
@@ -127,9 +127,9 @@ class MrpWorkorder(models.Model):
     # This field should only be changed once at MO confirmation and should reflect the cost_mode of the operation_id.
 
     cost = fields.Float(
-        string='Cost', compute='_compute_cost', store=True, aggregator="sum",
+        compute='_compute_cost', store=True, aggregator="sum",
         help="Total real cost of the work order based on duration and hourly cost.")
-    production_date = fields.Datetime('Production Date', compute='_compute_production_date', store=True)
+    production_date = fields.Datetime(compute='_compute_production_date', store=True)
     qty_reported_from_previous_wo = fields.Float('Carried Quantity', digits='Product Unit', copy=False,
         help="The quantity already produced awaiting allocation in the backorders chain.")
     is_planned = fields.Boolean(compute='_compute_is_planned')
@@ -150,7 +150,7 @@ class MrpWorkorder(models.Model):
     production_reference_ids = fields.Many2many(related="production_id.reference_ids", string="References", readonly=True)
     decoration_dates = fields.Char(compute='_compute_decoration_dates')  # technical: used in views only
     picking_type_id = fields.Many2one(related='production_id.picking_type_id')
-    properties = fields.Properties('Properties', definition='picking_type_id.wo_properties_definition', copy=True)
+    properties = fields.Properties(definition='picking_type_id.wo_properties_definition', copy=True)
     qty_to_produce = fields.Float('Quantity To Produce', digits='Product Unit', compute='_compute_qty_to_produce',
         help="The quantity to produce in this workorder in the backorders chain.")
     backorder_count = fields.Integer("Count of linked backorders", compute='_compute_backorder')
@@ -254,7 +254,7 @@ class MrpWorkorder(models.Model):
                     wo.leave_id.unlink()
                     continue
                 if (not wo.date_start or not wo.date_finished):
-                    raise UserError(_("It is not possible to unplan one single Work Order. "
+                    raise UserError(self.env._("It is not possible to unplan one single Work Order. "
                               "You should unplan the Manufacturing Order instead in order to unplan all the linked operations."))
                 wo.leave_id.write({
                     'date_from': wo.date_start,
@@ -275,7 +275,7 @@ class MrpWorkorder(models.Model):
     @api.constrains('blocked_by_workorder_ids')
     def _check_no_cyclic_dependencies(self):
         if self._has_cycle('blocked_by_workorder_ids'):
-            raise ValidationError(_("You cannot create cyclic dependency."))
+            raise ValidationError(self.env._("You cannot create cyclic dependency."))
 
     @api.depends('production_id.name')
     def _compute_barcode(self):
@@ -478,7 +478,7 @@ class MrpWorkorder(models.Model):
                 and self.date_finished != self._calculate_date_finished():
             self.duration_expected = self._calculate_duration_expected()
         if not self.date_finished and self.date_start:
-            raise UserError(_("It is not possible to unplan one single Work Order. "
+            raise UserError(self.env._("It is not possible to unplan one single Work Order. "
                               "You should unplan the Manufacturing Order instead in order to unplan all the linked operations."))
 
     def _calculate_duration_expected(self, date_start=False, date_finished=False):
@@ -496,19 +496,19 @@ class MrpWorkorder(models.Model):
         if 'qty_produced' in values:
             for wo in self:
                 if wo.uom_id.compare(values['qty_produced'], 0) < 0:
-                    raise UserError(_('The quantity produced must be positive.'))
+                    raise UserError(self.env._('The quantity produced must be positive.'))
                 if wo.state == 'done':
-                    raise UserError(_('This production order has been closed.'))
+                    raise UserError(self.env._('This production order has been closed.'))
 
         workorders_with_new_wc = self.env['mrp.workorder']
         if 'production_id' in values and any(values['production_id'] != w.production_id.id for w in self):
-            raise UserError(_('You cannot link this work order to another manufacturing order.'))
+            raise UserError(self.env._('You cannot link this work order to another manufacturing order.'))
         if 'workcenter_id' in values:
             new_workcenter = self.env['mrp.workcenter'].browse(values['workcenter_id'])
             for workorder in self:
                 if workorder.workcenter_id.id != values['workcenter_id']:
                     if workorder.state in ('done', 'cancel'):
-                        raise UserError(_('You cannot change the workcenter of a work order that is done.'))
+                        raise UserError(self.env._('You cannot change the workcenter of a work order that is done.'))
                     workorder.leave_id.resource_id = new_workcenter.resource_id
                     if workorder.state == 'progress':
                         continue
@@ -518,7 +518,7 @@ class MrpWorkorder(models.Model):
                 date_start = fields.Datetime.to_datetime(values.get('date_start', workorder.date_start))
                 date_finished = fields.Datetime.to_datetime(values.get('date_finished', workorder.date_finished))
                 if date_start and date_finished and date_start > date_finished:
-                    raise UserError(_('The planned end date of the work order cannot be prior to the planned start date, please correct this to save the work order.'))
+                    raise UserError(self.env._('The planned end date of the work order cannot be prior to the planned start date, please correct this to save the work order.'))
                 if 'duration_expected' not in values and not self.env.context.get('bypass_duration_calculation'):
                     if values.get('date_start') and values.get('date_finished'):
                         computed_finished_time = workorder._calculate_date_finished(date_start=date_start, new_workcenter=new_workcenter)
@@ -644,7 +644,7 @@ class MrpWorkorder(models.Model):
                     best_duration = duration_expected
             # If none of the workcenter are available, raise
             if best_date_finished == datetime.max:
-                raise UserError(_('Impossible to plan the workorder. Please check the workcenter availabilities.'))
+                raise UserError(self.env._('Impossible to plan the workorder. Please check the workcenter availabilities.'))
             # Create leave on chosen workcenter calendar
             done_wo.add(wo.id)
             wo.write({
@@ -683,14 +683,14 @@ class MrpWorkorder(models.Model):
 
     def button_start(self, raise_on_invalid_state=False):
         if any(wo.working_state == 'blocked' for wo in self):
-            raise UserError(_('Please unblock the work center to start the work order.'))
+            raise UserError(self.env._('Please unblock the work center to start the work order.'))
         for wo in self:
             if any(not time.date_end for time in wo.time_ids.filtered(lambda t: t.user_id.id == self.env.user.id)):
                 continue
             if wo.state in ('done', 'cancel'):
                 if raise_on_invalid_state:
                     continue
-                raise UserError(_('You cannot start a work order that is already done or cancelled'))
+                raise UserError(self.env._('You cannot start a work order that is already done or cancelled'))
 
             if wo.qty_producing == 0:
                 wo.qty_producing = wo.qty_remaining
@@ -918,15 +918,15 @@ class MrpWorkorder(models.Model):
         if not self.duration_expected or duration <= self.duration_expected:
             loss_id = self.env['mrp.workcenter.productivity.loss'].search([('loss_type', '=', 'productive')], limit=1)
             if not len(loss_id):
-                raise UserError(_("You need to define at least one productivity loss in the category 'Productivity'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
+                raise UserError(self.env._("You need to define at least one productivity loss in the category 'Productivity'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
         else:
             loss_id = self.env['mrp.workcenter.productivity.loss'].search([('loss_type', '=', 'performance')], limit=1)
             if not len(loss_id):
-                raise UserError(_("You need to define at least one productivity loss in the category 'Performance'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
+                raise UserError(self.env._("You need to define at least one productivity loss in the category 'Performance'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
         return {
             'workorder_id': self.id,
             'workcenter_id': self.workcenter_id.id,
-            'description': _('Time Tracking: %(user)s', user=self.env.user.name),
+            'description': self.env._('Time Tracking: %(user)s', user=self.env.user.name),
             'loss_id': loss_id[0].id,
             'date_start': date_start.replace(microsecond=0),
             'date_end': date_end.replace(microsecond=0) if date_end else date_end,
@@ -986,7 +986,7 @@ class MrpWorkorder(models.Model):
     def action_mark_as_done(self):
         for wo in self:
             if wo.working_state == 'blocked':
-                raise UserError(_('Please unblock the work center to validate the work order'))
+                raise UserError(self.env._('Please unblock the work center to validate the work order'))
             res = wo.button_finish()
             if res is not True:
                 return res
@@ -1117,7 +1117,7 @@ class MrpWorkorder(models.Model):
         return {
             'res_model': 'mrp.workorder',
             'type': 'ir.actions.act_window',
-            'name': _("Productions"),
+            'name': self.env._("Productions"),
             'domain': [('id', 'in', backorder_ids)],
             'view_mode': 'list,form',
             'views': [(self.env.ref('mrp.mrp_production_workorder_tree_view_backorders').id, 'list'), (False, 'form')],

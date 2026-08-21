@@ -9,8 +9,8 @@ from odoo.tools import BinaryBytes
 
 class ImportController(http.Controller):
 
+    # ruff: disable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]
     @http.route('/base_import/set_file', methods=['POST'])
-    # pylint: disable=redefined-builtin
     def set_file(self, id, ufile, model=None):
         file = ufile
         written = request.env['base_import.import'].browse(int(id)).write({
@@ -20,3 +20,4 @@ class ImportController(http.Controller):
         })
 
         return json.dumps({'result': written})
+    # ruff: enable[builtin-variable-shadowing, builtin-argument-shadowing, builtin-import-shadowing]

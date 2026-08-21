@@ -7,9 +7,9 @@ from odoo import fields, models
 class EventBoothRegistration(models.Model):
     _inherit = 'event.booth.registration'
 
-    sponsor_name = fields.Char(string='Sponsor Name')
-    sponsor_email = fields.Char(string='Sponsor Email')
-    sponsor_phone = fields.Char(string='Sponsor Phone')
+    sponsor_name = fields.Char()
+    sponsor_email = fields.Char()
+    sponsor_phone = fields.Char()
     sponsor_subtitle = fields.Char(string='Sponsor Slogan')
     sponsor_website_description = fields.Html(string='Sponsor Description', sanitize_overridable=True,)
     sponsor_image_512 = fields.Image(string='Sponsor Logo')

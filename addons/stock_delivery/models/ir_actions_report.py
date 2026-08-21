@@ -70,14 +70,14 @@ class IrActionsReport(models.Model):
         if report.report_name in ["stock_delivery.report_shipping_labels", "stock_delivery.report_shipping_docs"]:
             attachments = self.get_reports_from_chatter(report.report_name, res_ids)
             if not attachments:
-                raise UserError(_(
+                raise UserError(self.env._(
                     "This action is meant to print %s attachments from the chatter: none was found.",
                     report.name
                 ))
             if not len(report.printer_ids.exists()):
-                raise UserError(_("Configure a printer to print this report: '%s'", report.name))
+                raise UserError(self.env._("Configure a printer to print this report: '%s'", report.name))
             if attachments[0].mimetype != 'application/pdf':
-                raise UserError(_(
+                raise UserError(self.env._(
                     "Configure the carrier to generate labels in PDF format, or use a ZPL/ePOS printer"
                     " to print %s from the chatter.",
                     report.name

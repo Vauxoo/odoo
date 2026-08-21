@@ -10,7 +10,6 @@ from odoo.tools import mute_logger
 
 from odoo.addons.auth_totp.tests.test_totp import TestTOTPMixin
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged('post_install', '-at_install')

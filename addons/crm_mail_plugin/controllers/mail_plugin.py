@@ -10,7 +10,6 @@ from odoo.tools.image import image_data_uri
 
 from odoo.addons.mail_plugin.controllers import mail_plugin
 
-_logger = logging.getLogger(__name__)
 
 
 class MailPluginController(mail_plugin.MailPluginController):

@@ -11,7 +11,7 @@ from odoo import fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.urls import urljoin
 
-from odoo.addons.payment_iyzico import const
+from .. import const
 
 
 class PaymentProvider(models.Model):

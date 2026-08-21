@@ -21,27 +21,27 @@ class AccountPaymentTerm(models.Model):
     name = fields.Char(string='Payment Terms', translate=True, required=True)
     active = fields.Boolean(default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
     note = fields.Html(string='Description on the Invoice', translate=True)
-    line_ids = fields.One2many('account.payment.term.line', 'payment_id', string='Terms', copy=True, default=_default_line_ids)
-    company_id = fields.Many2one('res.company', string='Company')
+    line_ids = fields.One2many('account.payment.term.line', 'payment_id', string='Terms', copy=True, default=lambda self: self._default_line_ids())
+    company_id = fields.Many2one('res.company')
     fiscal_country_codes = fields.Char(compute='_compute_fiscal_country_codes')
     sequence = fields.Integer(required=True, default=10)
     currency_id = fields.Many2one('res.currency', compute="_compute_currency_id", compute_sql="_compute_sql_currency_id", compute_sudo=True)
 
     display_on_invoice = fields.Boolean(string='Show installment dates', default=True)
     example_amount = fields.Monetary(currency_field='currency_id', default=1000, store=False, readonly=True)
-    example_date = fields.Date(string='Date example', default=_default_example_date, store=False)
+    example_date = fields.Date(string='Date example', default=lambda self: self._default_example_date(), store=False)
     example_invalid = fields.Boolean(compute='_compute_example_invalid')
     example_preview = fields.Html(compute='_compute_example_preview')
     example_preview_discount = fields.Html(compute='_compute_example_preview')
 
     discount_percentage = fields.Float(string='Discount %', help='Early Payment Discount granted for this payment term', default=2.0)
-    discount_days = fields.Integer(string='Discount Days', help='Number of days before the early payment proposition expires', default=10)
+    discount_days = fields.Integer(help='Number of days before the early payment proposition expires', default=10)
     early_pay_discount_computation = fields.Selection([
         ('included', 'On early payment'),
         ('excluded', 'Never'),
         ('mixed', 'Always (upon invoice)'),
     ], string='Cash Discount Tax Reduction', readonly=False, store=True, compute='_compute_discount_computation')
-    early_discount = fields.Boolean(string='Early Discount')
+    early_discount = fields.Boolean()
 
     @api.depends('company_id')
     @api.depends_context('allowed_company_ids')
@@ -101,7 +101,7 @@ class AccountPaymentTerm(models.Model):
             if record.early_discount:
                 date = record._get_last_discount_date_formatted(record.example_date or fields.Date.context_today(record))
                 discount_amount = record._get_amount_due_after_discount(record.example_amount, 0.0)
-                record.example_preview_discount = _(
+                record.example_preview_discount = self.env._(
                     "Early Payment Discount: <b>%(amount)s</b> if paid before <b>%(date)s</b>",
                     amount=formatLang(self.env, discount_amount, currency_obj=currency),
                     date=date,
@@ -121,7 +121,7 @@ class AccountPaymentTerm(models.Model):
                     date = info_by_dates['date']
                     amount = info_by_dates['amount']
                     example_preview += "<div>"
-                    example_preview += _(
+                    example_preview += self.env._(
                         "<b>%(count)s#</b> Installment of <b>%(amount)s</b> due on <b style='color: #704A66;'>%(date)s</b>",
                         count=i+1,
                         amount=formatLang(self.env, amount, currency_obj=currency),
@@ -157,14 +157,14 @@ class AccountPaymentTerm(models.Model):
         for terms in self:
             total_percent = sum(line.value_amount for line in terms.line_ids if line.value == 'percent')
             if float_round(total_percent, precision_digits=round_precision) != 100:
-                raise ValidationError(_('The Payment Term must have at least one percent line and the sum of the percent must be 100%.'))
+                raise ValidationError(self.env._('The Payment Term must have at least one percent line and the sum of the percent must be 100%.'))
             if len(terms.line_ids) > 1 and terms.early_discount:
                 raise ValidationError(
-                    _("The Early Payment Discount functionality can only be used with payment terms using a single 100% line. "))
+                    self.env._("The Early Payment Discount functionality can only be used with payment terms using a single 100% line. "))
             if terms.early_discount and terms.discount_percentage <= 0.0:
-                raise ValidationError(_("The Early Payment Discount must be strictly positive."))
+                raise ValidationError(self.env._("The Early Payment Discount must be strictly positive."))
             if terms.early_discount and terms.discount_days <= 0:
-                raise ValidationError(_("The Early Payment Discount days must be strictly positive."))
+                raise ValidationError(self.env._("The Early Payment Discount days must be strictly positive."))
 
     def _compute_terms(self, date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency, cash_rounding=None):
         """Get the distribution of this payment term.
@@ -256,7 +256,7 @@ class AccountPaymentTerm(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_referenced_terms(self):
         if self.env['account.move'].search_count([('invoice_payment_term_id', 'in', self.ids)], limit=1):
-            raise UserError(_("Uh-oh! Those payment terms are quite popular and can't be deleted since there are still some records referencing them. How about archiving them instead?"))
+            raise UserError(self.env._("Uh-oh! Those payment terms are quite popular and can't be deleted since there are still some records referencing them. How about archiving them instead?"))
 
     def _get_last_discount_date(self, date_ref):
         self.ensure_one()
@@ -273,7 +273,7 @@ class AccountPaymentTerm(models.Model):
     def copy_data(self, default=None):
         default = dict(default or {})
         vals_list = super().copy_data(default=default)
-        return [dict(vals, name=_("%s (copy)", line.name)) for line, vals in zip(self, vals_list)]
+        return [dict(vals, name=self.env._("%s (copy)", line.name)) for line, vals in zip(self, vals_list)]
 
 
 class AccountPaymentTermLine(models.Model):
@@ -329,9 +329,9 @@ class AccountPaymentTermLine(models.Model):
         for record in self:
             if record.days_next_month and record.days_next_month.isnumeric():
                 if not (0 <= int(record.days_next_month) <= 31):
-                    raise ValidationError(_('The days added must be between 0 and 31.'))
+                    raise ValidationError(self.env._('The days added must be between 0 and 31.'))
             else:
-                raise ValidationError(_('The days added must be a number and has to be between 0 and 31.'))
+                raise ValidationError(self.env._('The days added must be a number and has to be between 0 and 31.'))
 
     @api.depends('delay_type')
     def _compute_display_days_next_month(self):
@@ -342,7 +342,7 @@ class AccountPaymentTermLine(models.Model):
     def _check_percent(self):
         for term_line in self:
             if term_line.value == 'percent' and (term_line.value_amount < 0.0 or term_line.value_amount > 100.0):
-                raise ValidationError(_('Percentages on the Payment Terms lines must be between 0 and 100.'))
+                raise ValidationError(self.env._('Percentages on the Payment Terms lines must be between 0 and 100.'))
 
     @api.depends('payment_id')
     def _compute_days(self):

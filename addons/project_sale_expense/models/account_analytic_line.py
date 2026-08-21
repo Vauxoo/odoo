@@ -12,4 +12,4 @@ class AccountAnalyticLine(models.Model):
     def _set_billable_cost(self):
         aals_expense = self.filtered(lambda aal: aal.category == 'expense')
         aals_expense.billable_type = '13_expense'
-        super(AccountAnalyticLine, self - aals_expense)._set_billable_cost()
+        return super(AccountAnalyticLine, self - aals_expense)._set_billable_cost()

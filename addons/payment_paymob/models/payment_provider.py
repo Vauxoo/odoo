@@ -8,7 +8,7 @@ from odoo.exceptions import ValidationError
 from odoo.fields import Command
 
 from odoo.addons.payment.logging import get_payment_logger
-from odoo.addons.payment_paymob import const
+from .. import const
 
 _logger = get_payment_logger(__name__)
 
@@ -20,7 +20,6 @@ class PaymentProvider(models.Model):
         selection_add=[("paymob", "Paymob")], ondelete={"paymob": "set default"}
     )
     paymob_account_country_id = fields.Many2one(
-        string="Paymob Account Country",
         help="The country of the Paymob account. The currency will be updated to match the country"
         " of the Paymob account.",
         comodel_name="res.country",
@@ -30,10 +29,9 @@ class PaymentProvider(models.Model):
         copy=False,
     )
     paymob_public_key = fields.Char(
-        string="Paymob Public Key", required_if_provider="paymob", copy=False
+        required_if_provider="paymob", copy=False
     )
     paymob_secret_key = fields.Char(
-        string="Paymob Secret Key",
         required_if_provider="paymob",
         copy=False,
         groups="base.group_system",

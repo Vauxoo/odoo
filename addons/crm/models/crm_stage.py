@@ -25,11 +25,11 @@ class CrmStage(models.Model):
     _order = "sequence, name, id"
 
     name = fields.Char('Stage Name', required=True, translate=True)
-    sequence = fields.Integer('Sequence', default=1, help="Used to order stages. Lower is better.")
+    sequence = fields.Integer(default=1, help="Used to order stages. Lower is better.")
     is_won = fields.Boolean('Is Won Stage?')
     rotting_threshold_days = fields.Integer('Days to rot', default=0, help='Highlight opportunities that haven\'t been updated for this many days. \
         Set to 0 to disable. Changing this parameter will not affect the rotting status/date of resources last updated before this change.')
-    requirements = fields.Text('Requirements', help="Enter here the internal requirements for this stage (ex: Offer sent to customer). It will appear as a tooltip over the stage's name.")
+    requirements = fields.Text(help="Enter here the internal requirements for this stage (ex: Offer sent to customer). It will appear as a tooltip over the stage's name.")
     team_ids = fields.Many2many('crm.team', string='Sales Teams', ondelete='restrict')
     fold = fields.Boolean('Folded in Pipeline',
         help='This stage is folded in the kanban view when there are no records in that stage to display.')
@@ -58,8 +58,8 @@ class CrmStage(models.Model):
     def _onchange_is_won(self):
         return {
             'warning': {
-                'title': _("Do you really want to update this stage?"),
-                'message': _("Changing the value of 'Is Won Stage' may induce a large number of operations, "
+                'title': self.env._("Do you really want to update this stage?"),
+                'message': self.env._("Changing the value of 'Is Won Stage' may induce a large number of operations, "
                             "as the probabilities of opportunities in this stage will be recomputed on saving."),
             }
         }

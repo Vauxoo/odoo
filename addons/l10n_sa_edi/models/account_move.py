@@ -45,7 +45,7 @@ class AccountMove(models.Model):
             if move.country_code == "SA" and \
                move.company_id.l10n_sa_edi_is_production and \
                move.attachment_ids.filtered(lambda a: a.description == descr and a.res_model == 'account.move'):
-                raise UserError(_("The Invoice(s) are linked to a validated EDI document and cannot be modified according to ZATCA rules"))
+                raise UserError(self.env._("The Invoice(s) are linked to a validated EDI document and cannot be modified according to ZATCA rules"))
 
     def _l10n_sa_get_alerts(self):
         res = {}

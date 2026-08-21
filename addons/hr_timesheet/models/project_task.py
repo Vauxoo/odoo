@@ -40,7 +40,7 @@ class ProjectTask(models.Model):
     remaining_hours_percentage = fields.Float(compute='_compute_remaining_hours_percentage', search='_search_remaining_hours_percentage', export_string_translation=False)
     effective_hours = fields.Float("Time Spent", compute='_compute_effective_hours', compute_sudo=True, store=True)
     total_hours_spent = fields.Float("Total Time Spent", compute='_compute_total_hours_spent', store=True, help="Time spent on this task and its sub-tasks (and their own sub-tasks).")
-    progress = fields.Float("Progress", compute='_compute_progress_hours', store=True, aggregator="avg")
+    progress = fields.Float(compute='_compute_progress_hours', store=True, aggregator="avg")
     overtime = fields.Float(compute='_compute_progress_hours', store=True)
     subtask_effective_hours = fields.Float("Time Spent on Sub-tasks", compute='_compute_subtask_effective_hours', recursive=True, store=True, help="Time spent on the sub-tasks (and their own sub-tasks) of this task.")
     timesheet_ids = fields.One2many('account.analytic.line', 'task_id', 'Timesheets', export_string_translation=False)
@@ -64,7 +64,7 @@ class ProjectTask(models.Model):
     def _check_project_root(self):
         private_tasks = self.filtered(lambda t: not t.project_id and not t.is_template)
         if private_tasks and self.env['account.analytic.line'].sudo().search_count([('task_id', 'in', private_tasks.ids)], limit=1):
-            raise UserError(_("This task cannot be private because there are some timesheets linked to it."))
+            raise UserError(self.env._("This task cannot be private because there are some timesheets linked to it."))
 
     def _uom_in_days(self):
         return self.env.company.timesheet_encode_uom_id == self.env.ref('uom.product_uom_day')
@@ -205,7 +205,7 @@ class ProjectTask(models.Model):
             new_views.insert(0, view) if view[1] == 'list' else new_views.append(view)
 
         action.update({
-            'display_name': _('Timesheets'),
+            'display_name': self.env._('Timesheets'),
             'context': {'default_project_id': self.project_id.id},
             'domain': [('project_id', '!=', False), ('task_id', 'in', task_ids)],
             'views': new_views,
@@ -238,7 +238,7 @@ class ProjectTask(models.Model):
         if self.env.context.get('hr_timesheet_display_remaining_hours'):
             for task in self:
                 if task.allow_timesheets and task.allocated_hours > 0 and task.encode_uom_in_days:
-                    days_left = _("(%s days remaining)", task._convert_hours_to_days(task.remaining_hours))
+                    days_left = self.env._("(%s days remaining)", task._convert_hours_to_days(task.remaining_hours))
                     task.display_name = task.display_name + "\u00A0" + days_left
                 elif task.allow_timesheets and task.allocated_hours > 0:
                     hours, mins = divmod(round(abs(task.remaining_hours) * 60), 60)
@@ -278,16 +278,16 @@ class ProjectTask(models.Model):
         )
         if inaccessible_task_ids:
             raise UserError(
-                _("This task can’t be deleted because it’s linked to timesheets. Please contact someone with higher access to remove the timesheets first, "
+                self.env._("This task can’t be deleted because it’s linked to timesheets. Please contact someone with higher access to remove the timesheets first, "
                 "and then you’ll be able to delete the task.")
             )
         if len(task_with_timesheets_ids) > 1:
-            warning_msg = _("Some timesheet entries are weighing down these tasks! Remove them first, then you’ll be able to delete the tasks!")
+            warning_msg = self.env._("Some timesheet entries are weighing down these tasks! Remove them first, then you’ll be able to delete the tasks!")
         else:
-            warning_msg = _("Some timesheet entries are weighing down these tasks! Remove them first, then you’ll be able to delete the tasks!")
+            warning_msg = self.env._("Some timesheet entries are weighing down these tasks! Remove them first, then you’ll be able to delete the tasks!")
         raise RedirectWarning(
             warning_msg, self.env.ref('hr_timesheet.timesheet_action_task').id,
-            _('See timesheet entries'), {'active_ids': task_with_timesheets_ids})
+            self.env._('See timesheet entries'), {'active_ids': task_with_timesheets_ids})
 
     @api.model
     def _convert_hours_to_days(self, time):

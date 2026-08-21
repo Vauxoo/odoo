@@ -26,9 +26,9 @@ class ProductComboItem(models.Model):
         min_display_digits='Product Price',
         related='product_id.lst_price',
     )
-    extra_price = fields.Float(string="Extra Price", min_display_digits='Product Price', default=0.0)
+    extra_price = fields.Float(min_display_digits='Product Price', default=0.0)
 
     @api.constrains('product_id')
     def _check_product_id_no_combo(self):
         if any(combo_item.product_id.type == 'combo' for combo_item in self):
-            raise ValidationError(_("A combo choice can't contain products of type \"combo\"."))
+            raise ValidationError(self.env._("A combo choice can't contain products of type \"combo\"."))

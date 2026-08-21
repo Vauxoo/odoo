@@ -14,7 +14,7 @@ class ApplicantGetRefuseReason(models.TransientModel):
     def _default_refuse_reason_id(self):
         return self.env['hr.applicant.refuse.reason'].search([], limit=1)
 
-    refuse_reason_id = fields.Many2one('hr.applicant.refuse.reason', 'Refuse Reason', required=True, default=_default_refuse_reason_id)
+    refuse_reason_id = fields.Many2one('hr.applicant.refuse.reason', required=True, default=lambda self: self._default_refuse_reason_id())
     applicant_ids = fields.Many2many('hr.applicant')
     send_mail = fields.Boolean("Send Email", compute='_compute_send_mail', precompute=True, store=True, readonly=False)
     template_id = fields.Many2one('mail.template', string='Email Template',
@@ -23,7 +23,7 @@ class ApplicantGetRefuseReason(models.TransientModel):
     applicant_without_email = fields.Text(compute='_compute_applicant_without_email',
         string='Applicant(s) not having email')
     duplicates = fields.Boolean(string='Refuse Duplicate Applications')
-    duplicates_count = fields.Integer('Duplicates Count', compute='_compute_duplicate_applicant_ids_domain')
+    duplicates_count = fields.Integer(compute='_compute_duplicate_applicant_ids_domain')
     duplicate_applicant_ids = fields.Many2many(
         'hr.applicant',
         relation='applicant_get_refuse_reason_duplicate_applicants_rel',
@@ -37,7 +37,6 @@ class ApplicantGetRefuseReason(models.TransientModel):
         compute="_compute_from_template_id", readonly=False, store=True, bypass_search_access=True,
     )
     scheduled_date = fields.Char(
-        'Scheduled Date',
         compute='_compute_from_template_id', readonly=False, store=True,
         help="send emails after that date. This date is considered as being in UTC timezone."
     )
@@ -55,7 +54,7 @@ class ApplicantGetRefuseReason(models.TransientModel):
             applicants = wizard.applicant_ids.filtered(lambda x: not x.email_from and not x.partner_id.email)
             if applicants:
                 wizard.applicant_without_email = "%s\n%s" % (
-                    _("You can't select Send email option.\nThe email will not be sent to the following applicant(s) as they don't have an email address:"),
+                    self.env._("You can't select Send email option.\nThe email will not be sent to the following applicant(s) as they don't have an email address:"),
                     ", ".join([i.partner_name or i.display_name or '' for i in applicants])
                 )
             else:
@@ -119,9 +118,9 @@ class ApplicantGetRefuseReason(models.TransientModel):
     def action_refuse_reason_apply(self):
         if self.send_mail:
             if not self.env.user.email:
-                raise UserError(_("Unable to post message, please configure the sender's email address."))
+                raise UserError(self.env._("Unable to post message, please configure the sender's email address."))
             if any(not (applicant.email_from or applicant.partner_id.email) for applicant in self.applicant_ids):
-                raise UserError(_("At least one applicant doesn't have a email; you can't use send email option."))
+                raise UserError(self.env._("At least one applicant doesn't have a email; you can't use send email option."))
 
         refused_applications = self.applicant_ids
         if self.duplicates_count and self.duplicates:
@@ -131,7 +130,7 @@ class ApplicantGetRefuseReason(models.TransientModel):
             message_by_duplicate_applicant = {}
             for duplicate_applicant in self.duplicate_applicant_ids:
                 url = original_applicant_by_duplicate_applicant[duplicate_applicant]._get_html_link()
-                message_by_duplicate_applicant[duplicate_applicant.id] = _(
+                message_by_duplicate_applicant[duplicate_applicant.id] = self.env._(
                     "Refused automatically because this application has been identified as a duplicate of %(link)s",
                     link=url)
             self.duplicate_applicant_ids._message_log_batch(bodies={
@@ -191,7 +190,7 @@ class ApplicantRefuseSingle(models.TransientModel):
     _inherit = ['applicant.get.refuse.reason']
     _description = 'Refuse a single applicant'
 
-    applicant_id = fields.Many2one('hr.applicant', string='Applicant', compute='_compute_applicant_id', readonly=True)
+    applicant_id = fields.Many2one('hr.applicant', compute='_compute_applicant_id', readonly=True)
     applicant_ids = fields.Many2many('hr.applicant', string='Applicants')
     duplicate_applicant_ids = fields.Many2many(
         'hr.applicant',

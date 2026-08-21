@@ -36,7 +36,7 @@ class SaleOrder(models.Model):
 
         :return: None.
         """
-        activity_message = _("Some information could not be imported:")
+        activity_message = self.env._("Some information could not be imported:")
         activity_message += body
         self.activity_schedule(
             'mail.mail_activity_data_todo',

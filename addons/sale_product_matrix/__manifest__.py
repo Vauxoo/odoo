@@ -3,10 +3,6 @@
 {
     "name": "Sale Matrix",
     "summary": "Add variants to Sales Order through a grid entry.",
-    "description": """
-This module allows to fill Sales Order rapidly
-by choosing product variants quantity through a Grid Entry.
-    """,
     "category": "Sales/Sales",
     "depends": ["sale", "product_matrix"],
     "data": [

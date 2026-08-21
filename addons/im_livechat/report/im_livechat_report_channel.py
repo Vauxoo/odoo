@@ -16,7 +16,7 @@ class Im_LivechatReportChannel(models.Model):
 
     uuid = fields.Char('UUID', readonly=True)
     channel_id = fields.Many2one('discuss.channel', 'Conversation', readonly=True)
-    channel_name = fields.Char('Channel Name', readonly=True)
+    channel_name = fields.Char(readonly=True)
     livechat_channel_id = fields.Many2one('im_livechat.channel', 'Channel', readonly=True)
     start_date = fields.Datetime('Start Date of session', readonly=True)
     start_hour = fields.Char('Start Hour of session', readonly=True)
@@ -66,7 +66,6 @@ class Im_LivechatReportChannel(models.Model):
             ("no_failure", "Success"),
             ("escalated", "Escalated"),
         ],
-        string="Session Outcome",
         readonly=True,
     )
     chatbot_script_id = fields.Many2one("chatbot.script", "Chatbot", readonly=True)

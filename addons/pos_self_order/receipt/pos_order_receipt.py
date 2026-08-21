@@ -18,14 +18,14 @@ class PosOrderReceipt(models.AbstractModel):
 
         for receipt in data:
             if self.source == 'mobile':
-                receipt['extra_data']['prefix'] = _("Self Order")
+                receipt['extra_data']['prefix'] = self.env._("Self Order")
             elif self.source == 'kiosk':
-                receipt['extra_data']['prefix'] = _("Kiosk Order")
+                receipt['extra_data']['prefix'] = self.env._("Kiosk Order")
 
             receipt['extra_data']['employee_name'] = False
 
             if self.table_stand_number:
-                receipt['extra_data']['order_label'] = _("Table Tracker %s", self.table_stand_number)
+                receipt['extra_data']['order_label'] = self.env._("Table Tracker %s", self.table_stand_number)
             elif not self.table_id:
                 receipt['extra_data']['order_label'] = False
 

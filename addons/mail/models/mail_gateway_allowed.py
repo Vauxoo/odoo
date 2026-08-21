@@ -35,7 +35,7 @@ class MailGatewayAllowed(models.Model):
         LOOP_MINUTES = get_int('mail.gateway.loop.minutes') or 120
         LOOP_THRESHOLD = get_int('mail.gateway.loop.threshold') or 20
 
-        return Markup(_('''
+        return Markup(self.env._('''
             <p class="o_view_nocontent_smiling_face">
                 Add addresses to the Allowed List
             </p><p>

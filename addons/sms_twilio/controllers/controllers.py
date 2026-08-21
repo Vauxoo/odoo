@@ -2,7 +2,7 @@ import hmac
 import logging
 import re
 
-from odoo.addons.sms_twilio.tools.sms_twilio import generate_twilio_sms_callback_signature
+from ..tools.sms_twilio import generate_twilio_sms_callback_signature
 from odoo.http import Controller, request, route
 
 

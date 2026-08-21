@@ -5,10 +5,10 @@ from odoo import api, fields, models
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    table_id = fields.Many2one('restaurant.table', string='Table', help='The table where this order was served', index='btree_not_null', readonly=True)
+    table_id = fields.Many2one('restaurant.table', help='The table where this order was served', index='btree_not_null', readonly=True)
     customer_count = fields.Integer(string='Guests', help='The amount of customers that have been served by this order.', readonly=True)
     course_ids = fields.One2many('restaurant.order.course', 'order_id', string="Courses")
-    duration = fields.Char(string='Duration', compute='_compute_duration', help="Shows how long the table has been occupied.")
+    duration = fields.Char(compute='_compute_duration', help="Shows how long the table has been occupied.")
 
     def _compute_duration(self):
         current_time = fields.Datetime.now()

@@ -62,7 +62,7 @@ class ProductProduct(models.Model):
         if not self.env.context.get("is_pos_product_action"):
             return super()._build_duplicate_barcode_error_string(barcode, duplicate_products)
 
-        return _(
+        return self.env._(
             "Barcode \"%(barcode)s\" already assigned to \"%(product_list)s\"",
             barcode=barcode,
             product_list=(duplicate_products - self).mapped('display_name'),

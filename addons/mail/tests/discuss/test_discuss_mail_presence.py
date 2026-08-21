@@ -11,7 +11,7 @@ from itertools import product
 
 from odoo.tests import new_test_user
 from odoo.addons.bus.tests.common import WebsocketCase, BusResult
-from odoo.addons.mail.tests.common import MailCommon
+from ..common import MailCommon
 from odoo.addons.bus.models.bus import channel_with_db, json_dump
 
 

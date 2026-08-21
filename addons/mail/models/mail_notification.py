@@ -6,7 +6,7 @@ from odoo import api, fields, models
 from odoo.exceptions import AccessError
 from odoo.tools.constants import GC_UNLINK_LIMIT
 from odoo.tools.translate import _
-from odoo.addons.mail.tools.discuss import Store
+from ..tools.discuss import Store
 
 
 class MailNotification(models.Model):
@@ -17,7 +17,7 @@ class MailNotification(models.Model):
     _description = 'Message Notification'
 
     # origin
-    author_id = fields.Many2one('res.partner', 'Author', ondelete='set null')
+    author_id = fields.Many2one('res.partner', ondelete='set null')
     mail_message_id = fields.Many2one('mail.message', 'Message', index=True, ondelete='cascade', required=True)
     mail_mail_id = fields.Many2one('mail.mail', 'Mail', index=True, help='Optional mail_mail ID. Used mainly to optimize searches.')
     # recipient, can be empty when no matching partner exists (mass mail)
@@ -28,7 +28,7 @@ class MailNotification(models.Model):
     # status
     notification_type = fields.Selection([
         ('inbox', 'Inbox'), ('email', 'Email')
-        ], string='Notification Type', default='inbox', index=True, required=True)
+        ], default='inbox', index=True, required=True)
     notification_status = fields.Selection([
         ('ready', 'Ready to Send'),
         ('process', 'Processing'),  # being checked by intermediary like IAP for sms
@@ -38,8 +38,8 @@ class MailNotification(models.Model):
         ('exception', 'Exception'),
         ('canceled', 'Cancelled')
         ], string='Status', default='ready', index=True)
-    is_read = fields.Boolean('Is Read', index=True)
-    read_date = fields.Datetime('Read Date', copy=False)
+    is_read = fields.Boolean(index=True)
+    read_date = fields.Datetime(copy=False)
     failure_type = fields.Selection(selection=[
         # generic
         ("unknown", "Unknown error"),

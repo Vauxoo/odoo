@@ -6,9 +6,6 @@
     'countries': ['mc'],
     'author': 'Odoo S.A.',
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
-This is the base module to manage the accounting chart for Monaco.
-""",
     'depends': [
         'l10n_fr_account',
         'account',

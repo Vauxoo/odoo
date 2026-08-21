@@ -15,13 +15,13 @@ class ReportProjectTaskUser(models.Model):
     name = fields.Char(string='Task Title', readonly=True)
     user_ids = fields.Many2many('res.users', relation='project_task_user_rel', column1='task_id', column2='user_id',
                                 string='Assignees', readonly=True)
-    create_date = fields.Datetime("Create Date", readonly=True)
+    create_date = fields.Datetime(readonly=True)
     date_assign = fields.Datetime(string='Assignment Date', readonly=True)
     date_end = fields.Datetime(string='Ending Date', readonly=True)
     date_deadline = fields.Datetime(string='Deadline', readonly=True)
     date_last_stage_update = fields.Datetime(string='Last Stage Update', readonly=True)
     display_in_project = fields.Boolean(export_string_translation=False)
-    project_id = fields.Many2one('project.project', string='Project', readonly=True)
+    project_id = fields.Many2one('project.project', readonly=True)
     working_days_close = fields.Float(string='Working Days to Close',
         digits=(16, 2), readonly=True, aggregator="avg")
     working_days_open = fields.Float(string='Working Days to Assign',
@@ -37,7 +37,7 @@ class ReportProjectTaskUser(models.Model):
         ('1', 'Medium priority'),
         ('2', 'High priority'),
         ('3', 'Urgent'),
-        ], readonly=True, string="Priority")
+        ], readonly=True)
 
     state = fields.Selection([
         ('01_in_progress', 'In Progress'),
@@ -46,12 +46,12 @@ class ReportProjectTaskUser(models.Model):
         ('03_approved', 'Approved'),
         ('1_canceled', 'Cancelled'),
         ('02_changes_requested', 'Changes Requested'),
-    ], string='State', readonly=True)
+    ], readonly=True)
     is_closed = fields.Boolean(string='Closed state', readonly=True)
-    company_id = fields.Many2one('res.company', string='Company', readonly=True)
+    company_id = fields.Many2one('res.company', readonly=True)
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True)
-    stage_id = fields.Many2one('project.task.type', string='Stage', readonly=True)
-    task_id = fields.Many2one('project.task', string='Task', readonly=True)
+    stage_id = fields.Many2one('project.task.type', readonly=True)
+    task_id = fields.Many2one('project.task', readonly=True)
     tag_ids = fields.Many2many('project.tags', relation='project_tags_project_task_rel',
         column1='project_task_id', column2='project_tags_id',
         string='Tags', readonly=True)

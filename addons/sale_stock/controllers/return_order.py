@@ -139,18 +139,14 @@ class CustomerPortal(sale_portal.CustomerPortal):
             "A return label has been downloaded for the following products:"
         )
         for picking, qty_by_move in move_qty_by_picking.items():
-            message += Markup("<br/>%s") % (self.env._("%s:") % picking.display_name)
+            message += Markup("<br/>%s") % (self.env._("%s:", picking.display_name))
             for move, qty in qty_by_move.items():
                 message += Markup("<br/>- %s") % (
-                    self.env._("%(quantity)s x %(product_name)s")
-                    % {
-                        "quantity": int(qty),
-                        "product_name": move.product_id
+                    self.env._("%(quantity)s x %(product_name)s", quantity=int(qty), product_name=move.product_id
                         .with_context(display_default_code=False)
                         .sudo()
-                        .display_name,
-                    }
+                        .display_name)
                 )
             message += Markup("<br/>")
-        message += Markup("<br/>%s") % (self.env._("Return reason: %s") % return_reason.name)
+        message += Markup("<br/>%s") % (self.env._("Return reason: %s", return_reason.name))
         return message

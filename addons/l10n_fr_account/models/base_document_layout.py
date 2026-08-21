@@ -11,6 +11,6 @@ class BaseDocumentLayout(models.TransientModel):
         siret = self.env.company.partner_id._get_additional_identifier('FR_SIRET') if self.env.company.country_code == 'FR' else None
         if not siret:
             return super()._default_report_footer()
-        return super()._default_report_footer() + Markup('<br/>%s') % _('SIRET: %s', siret)
+        return super()._default_report_footer() + Markup('<br/>%s') % self.env._('SIRET: %s', siret)
 
-    report_footer = fields.Html(default=_default_report_footer)
+    report_footer = fields.Html(default=lambda self: self._default_report_footer())

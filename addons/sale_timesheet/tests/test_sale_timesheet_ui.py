@@ -6,7 +6,6 @@ import logging
 from odoo.tests import HttpCase, tagged
 from odoo.addons.hr.tests.test_utils import get_admin_employee
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged('-at_install', 'post_install')

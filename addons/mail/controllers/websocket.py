@@ -4,7 +4,7 @@ from odoo.http import request, route
 from odoo.http.session import SessionExpiredException
 
 from odoo.addons.bus.controllers.websocket import WebsocketController
-from odoo.addons.mail.tools.discuss import add_guest_to_context
+from ..tools.discuss import add_guest_to_context
 
 
 class WebsocketControllerPresence(WebsocketController):

@@ -11,7 +11,7 @@ class ResUsersSettings(models.Model):
         [('public', 'Public'),
          ('private', 'Private'),
          ('confidential', 'Only internal users')],
-        'Calendar Default Privacy', default='public', required=True,
+        default='public', required=True,
         store=True, readonly=False, help="Default privacy setting for whom the calendar events will be visible."
     )
     calendar_show_activities = fields.Boolean(string='Show Activities in Calendar', default=True)

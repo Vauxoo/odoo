@@ -5,7 +5,6 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     repair_order_count = fields.Integer(
-        string="Repair Order Count",
         groups='stock.group_stock_user',
         compute='_compute_repair_order_count',
     )

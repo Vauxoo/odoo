@@ -82,15 +82,15 @@ class IrModuleCategory(models.Model):
     _order = 'sequence, name, id'
     _allow_sudo_commands = False
 
-    name = fields.Char(string='Name', required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     parent_id = fields.Many2one('ir.module.category', string='Parent Application', index=True)
     child_ids = fields.One2many('ir.module.category', 'parent_id', string='Child Applications')
     module_ids = fields.One2many('ir.module.module', 'category_id', string='Modules')
     privilege_ids = fields.One2many('res.groups.privilege', 'category_id', string='Privileges')
-    description = fields.Text(string='Description', translate=True)
-    sequence = fields.Integer(string='Sequence')
-    visible = fields.Boolean(string='Visible', default=True)
-    exclusive = fields.Boolean(string='Exclusive')
+    description = fields.Text(translate=True)
+    sequence = fields.Integer()
+    visible = fields.Boolean(default=True)
+    exclusive = fields.Boolean()
     xml_id = fields.Char(string='External ID', compute='_compute_xml_id')
 
     def _compute_xml_id(self):
@@ -104,7 +104,7 @@ class IrModuleCategory(models.Model):
     @api.constrains('parent_id')
     def _check_parent_not_circular(self):
         if self._has_cycle():
-            raise ValidationError(_("Error ! You cannot create recursive categories."))
+            raise ValidationError(self.env._("Error ! You cannot create recursive categories."))
 
 
 class MyFilterMessages(Transform):
@@ -277,15 +277,15 @@ class IrModuleModule(models.Model):
             module.icon_flag = get_flag(country_code.upper()) if country_code else ''
 
     name = fields.Char('Technical Name', readonly=True, required=True)
-    category_id = fields.Many2one('ir.module.category', string='Category', readonly=True, index=True)
+    category_id = fields.Many2one('ir.module.category', readonly=True, index=True)
     shortdesc = fields.Char('Module Name', readonly=True, translate=True)
-    summary = fields.Char('Summary', readonly=True, translate=True)
-    description = fields.Text('Description', readonly=True, translate=True)
+    summary = fields.Char(readonly=True, translate=True)
+    description = fields.Text(readonly=True, translate=True)
     description_html = fields.Html('Description HTML', compute='_get_desc')
-    author = fields.Char("Author", readonly=True)
-    maintainer = fields.Char('Maintainer', readonly=True)
-    contributors = fields.Text('Contributors', readonly=True)
-    website = fields.Char("Website", readonly=True)
+    author = fields.Char(readonly=True)
+    maintainer = fields.Char(readonly=True)
+    contributors = fields.Text(readonly=True)
+    website = fields.Char(readonly=True)
 
     # attention: Incorrect field names !!
     #   installed_version refers the latest version (the one on disk)
@@ -293,12 +293,12 @@ class IrModuleModule(models.Model):
     #   published_version refers the version available on the repository
     installed_version = fields.Char('Latest Version', compute='_get_latest_version')
     latest_version = fields.Char('Installed Version', readonly=True)
-    published_version = fields.Char('Published Version', readonly=True)
+    published_version = fields.Char(readonly=True)
 
     url = fields.Char('URL', readonly=True)
-    sequence = fields.Integer('Sequence', default=100)
+    sequence = fields.Integer(default=100)
     dependencies_id = fields.One2many('ir.module.module.dependency', 'module_id',
-                                       string='Dependencies', readonly=True)
+                                       readonly=True)
     country_ids = fields.Many2many('res.country', 'module_country', 'module_id', 'country_id')
     exclusion_ids = fields.One2many('ir.module.module.exclusion', 'module_id',
                                     string='Exclusions', readonly=True)
@@ -319,11 +319,11 @@ class IrModuleModule(models.Model):
         ('OEEL-1', 'Odoo Enterprise Edition License v1.0'),
         ('OPL-1', 'Odoo Proprietary License v1.0'),
         ('Other proprietary', 'Other Proprietary')
-    ], string='License', default='LGPL-3', readonly=True)
+    ], default='LGPL-3', readonly=True)
     menus_by_module = fields.Text(string='Menus', compute='_get_views', store=True)
     reports_by_module = fields.Text(string='Reports', compute='_get_views', store=True)
     views_by_module = fields.Text(string='Views', compute='_get_views', store=True)
-    application = fields.Boolean('Application', readonly=True)
+    application = fields.Boolean(readonly=True)
     icon = fields.Char('Icon URL')
     icon_image = fields.Binary(string='Icon', compute='_get_icon_image')
     icon_flag = fields.Char(string='Flag', compute='_get_icon_image')
@@ -339,7 +339,7 @@ class IrModuleModule(models.Model):
     def _unlink_except_installed(self):
         for module in self:
             if module.state in ('installed', 'to upgrade', 'to remove', 'to install'):
-                raise UserError(_('You are trying to remove a module that is installed or will be installed.'))
+                raise UserError(self.env._('You are trying to remove a module that is installed or will be installed.'))
 
     def _get_modules_to_load_domain(self):
         """ Domain to retrieve the modules that should be loaded by the registry. """
@@ -353,11 +353,11 @@ class IrModuleModule(models.Model):
             manifest.check_manifest_dependencies()
         except MissingDependency as e:
             if newstate == 'to install':
-                msg = _('Unable to install module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.dependency)
+                msg = self.env._('Unable to install module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.dependency)
             elif newstate == 'to upgrade':
-                msg = _('Unable to upgrade module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.dependency)
+                msg = self.env._('Unable to upgrade module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.dependency)
             else:
-                msg = _('Unable to process module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.dependency)
+                msg = self.env._('Unable to process module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.dependency)
 
             install_package = None
             if platform.system() == 'Linux':
@@ -368,13 +368,13 @@ class IrModuleModule(models.Model):
                         install_package = f'apt install {package}'
 
             if install_package:
-                msg += _("\nIt can be installed running: %s", install_package)
+                msg += self.env._("\nIt can be installed running: %s", install_package)
 
             raise UserError(msg) from e
 
     def _state_update(self, newstate, states_to_update, level=100):
         if level < 1:
-            raise UserError(_('Recursion error in modules dependencies!'))
+            raise UserError(self.env._('Recursion error in modules dependencies!'))
 
         for module in self:
             if module.state not in states_to_update:
@@ -384,7 +384,7 @@ class IrModuleModule(models.Model):
             update_mods, ready_mods = self.browse(), self.browse()
             for dep in module.dependencies_id:
                 if dep.state == 'unknown':
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         'You try to install module "%(module)s" that depends on module "%(dependency)s".\nBut the latter module is not available in your system.',
                         module=module.name, dependency=dep.name,
                     ))
@@ -438,7 +438,7 @@ class IrModuleModule(models.Model):
         for module in install_mods:
             for exclusion in module.exclusion_ids:
                 if exclusion.name in install_names:
-                    raise UserError(_(
+                    raise UserError(self.env._(
                         'Modules "%(module)s" and "%(incompatible_module)s" are incompatible.',
                         module=module.shortdesc,
                         incompatible_module=exclusion.exclusion_id.shortdesc,
@@ -462,13 +462,13 @@ class IrModuleModule(models.Model):
             if modules and not any(modules <= closure(module) for module in modules):
                 labels = dict(self.fields_get(['state'])['state']['selection'])
                 raise UserError(
-                    _('You are trying to install incompatible modules in category "%(category)s":%(module_list)s', category=category.name, module_list=''.join(
+                    self.env._('You are trying to install incompatible modules in category "%(category)s":%(module_list)s', category=category.name, module_list=''.join(
                         f"\n- {module.shortdesc} ({labels[module.state]})"
                         for module in modules
                     ))
                 )
 
-        return dict(ACTION_DICT, name=_('Install'))
+        return dict(ACTION_DICT, name=self.env._('Install'))
 
     @assert_log_admin_access
     def button_immediate_install(self):
@@ -606,7 +606,7 @@ class IrModuleModule(models.Model):
 
     def _button_immediate_function(self, function):
         if not self.env.registry.ready:
-            raise UserError(_('The method _button_immediate_install cannot be called on init or non loaded registries. Please use button_install instead.'))
+            raise UserError(self.env._('The method _button_immediate_install cannot be called on init or non loaded registries. Please use button_install instead.'))
 
         if modules.module.current_test:
             raise RuntimeError(
@@ -626,7 +626,7 @@ class IrModuleModule(models.Model):
             self.env.cr.execute("LOCK ir_module_module IN EXCLUSIVE MODE")
         except psycopg2.OperationalError:
             self.env.cr.rollback()
-            raise UserError(_("Odoo is currently processing another module operation.\n"
+            raise UserError(self.env._("Odoo is currently processing another module operation.\n"
                                "Please try again later or contact your system administrator."))
 
         try:
@@ -636,7 +636,7 @@ class IrModuleModule(models.Model):
             self.env.cr.execute("SELECT FROM ir_cron FOR UPDATE")
         except psycopg2.OperationalError:
             self.env.cr.rollback()
-            raise UserError(_("Odoo is currently processing a scheduled action.\n"
+            raise UserError(self.env._("Odoo is currently processing a scheduled action.\n"
                               "Module operations are not possible at this time, "
                               "please try again later or contact your system administrator."))
         function(self)
@@ -677,15 +677,15 @@ class IrModuleModule(models.Model):
             set(tools.config['server_wide_modules']) | set(odoo.modules.loading._FORCED_MODULES)
         )
         if un_installable_modules:
-            raise UserError(_("Those modules cannot be uninstalled: %s", ', '.join(un_installable_modules)))
+            raise UserError(self.env._("Those modules cannot be uninstalled: %s", ', '.join(un_installable_modules)))
         if any(state not in ('installed', 'to upgrade') for state in self.mapped('state')):
-            raise UserError(_(
+            raise UserError(self.env._(
                 "One or more of the selected modules have already been uninstalled, if you "
                 "believe this to be an error, you may try again later or contact support."
             ))
         deps = self.downstream_dependencies()
         (self + deps).write({'state': 'to remove'})
-        return dict(ACTION_DICT, name=_('Uninstall'))
+        return dict(ACTION_DICT, name=self.env._('Uninstall'))
 
     @assert_log_admin_access
     def button_uninstall_wizard(self):
@@ -693,7 +693,7 @@ class IrModuleModule(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'target': 'new',
-            'name': _('Uninstall module'),
+            'name': self.env._('Uninstall module'),
             'view_mode': 'form',
             'res_model': 'base.module.uninstall',
             'context': {'default_module_ids': self.ids},
@@ -730,7 +730,7 @@ class IrModuleModule(models.Model):
             module = todo[i]
             i += 1
             if module.state not in ('installed', 'to upgrade'):
-                raise UserError(_("Cannot upgrade module “%s”. It is not installed.", module.name))
+                raise UserError(self.env._("Cannot upgrade module “%s”. It is not installed.", module.name))
             if self.get_module_info(module.name).get("installable", True):
                 self.check_external_dependencies(module.name, 'to upgrade')
             for dep in Dependency.search([('name', '=', module.name)]):
@@ -749,12 +749,12 @@ class IrModuleModule(models.Model):
                 continue
             for dep in module.dependencies_id:
                 if dep.state == 'unknown':
-                    raise UserError(_('You try to upgrade the module %(module)s that depends on the module: %(dependency)s.\nBut this module is not available in your system.', module=module.name, dependency=dep.name))
+                    raise UserError(self.env._('You try to upgrade the module %(module)s that depends on the module: %(dependency)s.\nBut this module is not available in your system.', module=module.name, dependency=dep.name))
                 if dep.state == 'uninstalled':
                     to_install += self.search([('name', '=', dep.name)]).ids
 
         self.browse(to_install).button_install()
-        return dict(ACTION_DICT, name=_('Apply Schedule Upgrade'))
+        return dict(ACTION_DICT, name=self.env._('Apply Schedule Upgrade'))
 
     @staticmethod
     def get_values_from_terp(terp):
@@ -1015,7 +1015,7 @@ class IrModuleModuleDependency(models.Model):
     name = fields.Char(index=True)
 
     # the module that depends on it
-    module_id = fields.Many2one('ir.module.module', 'Module', ondelete='cascade')
+    module_id = fields.Many2one('ir.module.module', ondelete='cascade')
 
     # the module corresponding to the dependency, and its status
     depend_id = fields.Many2one('ir.module.module', 'Dependency',
@@ -1080,7 +1080,7 @@ class IrModuleModuleExclusion(models.Model):
     name = fields.Char(index=True)
 
     # the module that excludes it
-    module_id = fields.Many2one('ir.module.module', 'Module', ondelete='cascade')
+    module_id = fields.Many2one('ir.module.module', ondelete='cascade')
 
     # the module corresponding to the exclusion, and its status
     exclusion_id = fields.Many2one('ir.module.module', 'Exclusion Module',

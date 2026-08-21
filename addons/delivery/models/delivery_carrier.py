@@ -481,7 +481,6 @@ class DeliveryCarrier(models.Model):
     # ------------------------------------------------ #
 
     fixed_price = fields.Float(
-        string="Fixed Price",
         compute="_compute_fixed_price",
         inverse="_set_product_fixed_price",
         store=True,

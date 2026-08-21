@@ -4,21 +4,6 @@
     'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/egypt.html',
     'icon': '/account/static/description/l10n.png',
     'countries': ['eg'],
-    'description': """
-Egypt Accounting Module
-==============================================================================
-Egypt Accounting Basic Charts and Localization.
-
-Activates:
-
-- Chart of Accounts
-- Taxes
-- VAT Return
-- Withholding Tax Report
-- Schedule Tax Report
-- Other Taxes Report
-- Fiscal Positions
-    """,
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [
         'account',

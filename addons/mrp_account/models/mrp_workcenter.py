@@ -9,7 +9,7 @@ class MrpWorkcenter(models.Model):
     _inherit = ['mrp.workcenter', 'analytic.mixin']
 
     costs_hour_account_ids = fields.Many2many('account.analytic.account', compute="_compute_costs_hour_account_ids", store=True)
-    expense_account_id = fields.Many2one('account.account', string="Expense Account", check_company=True,
+    expense_account_id = fields.Many2one('account.account', check_company=True,
                                          help="The expense is accounted for when the manufacturing order is marked as done. If not set, it is the expense account of the final product that will be used instead.")
 
     @api.depends('analytic_distribution')

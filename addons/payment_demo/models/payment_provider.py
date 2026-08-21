@@ -3,7 +3,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-from odoo.addons.payment_demo import const
+from .. import const
 
 
 class PaymentProvider(models.Model):

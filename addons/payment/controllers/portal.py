@@ -8,8 +8,8 @@ from odoo import http
 from odoo.exceptions import AccessError
 from odoo.http import request
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.controllers.payment_status import PaymentStatus
+from .. import utils as payment_utils
+from .payment_status import PaymentStatus
 from odoo.addons.portal.controllers import portal
 
 

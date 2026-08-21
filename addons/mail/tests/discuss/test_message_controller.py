@@ -9,7 +9,7 @@ from odoo.tests import tagged, users
 from odoo.tools import mute_logger
 
 from odoo.addons.base.tests.common import HttpCase
-from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+from ..common import MailCommon, mail_new_test_user
 
 
 @odoo.tests.tagged("mail_controller")

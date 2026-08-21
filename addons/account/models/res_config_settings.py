@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, fields, models
-from odoo.addons.account.models.company import PEPPOL_LIST
+from .company import PEPPOL_LIST
 
 
 class ResConfigSettings(models.TransientModel):
@@ -287,8 +287,8 @@ class ResConfigSettings(models.TransientModel):
         if not self.tax_exigibility and tax:
             self.tax_exigibility = True
             res['warning'] = {
-                'title': _('Error!'),
-                'message': _('You cannot disable this setting because some of your taxes are cash basis. '
+                'title': self.env._('Error!'),
+                'message': self.env._('You cannot disable this setting because some of your taxes are cash basis. '
                              'Modify your taxes first before disabling this setting.')
             }
         return res
@@ -305,7 +305,7 @@ class ResConfigSettings(models.TransientModel):
         if hasattr(self, 'website_id') and self.env.user.has_group('website.group_website_designer'):
             return self.env["website"].get_client_action('/terms', True)
         return {
-            'name': _('Update Terms & Conditions'),
+            'name': self.env._('Update Terms & Conditions'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'res.company',

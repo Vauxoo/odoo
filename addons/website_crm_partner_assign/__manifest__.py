@@ -5,14 +5,6 @@
     'category': 'Website/Website',
     'summary': 'Publish your resellers/partners and forward leads to them',
     'version': '1.3',
-    'description': """
-This module allows to forward incoming leads/opportunities to your resellers/partners.
-
-Forwarding leads can be done for one or several leads at a time. The action is available in the *Assigned Partner* section of the lead/opportunity form view and in the *Action* menu of the list view.
-
-The automatic assignment is figured from the weight of partner levels and the geolocalization. Partners get leads that are located around them.
-
-    """,
     'depends': ['base_geolocalize', 'crm', 'account', 'website_partnership',
                 'website_partner', 'website_google_map', 'portal'],
     'data': [

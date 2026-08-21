@@ -12,7 +12,7 @@ class AccountFinancialYearOp(models.TransientModel):
     _description = 'Opening Balance of Financial Year'
 
     company_id = fields.Many2one(comodel_name='res.company', required=True)
-    opening_move_posted = fields.Boolean(string='Opening Move Posted', compute='_compute_opening_move_posted')
+    opening_move_posted = fields.Boolean(compute='_compute_opening_move_posted')
     opening_date = fields.Date(string='Opening Date', required=True, related='company_id.account_opening_date', help="Date from which the accounting is managed in Odoo. It is the date of the opening entry.", readonly=False)
     fiscalyear_last_day = fields.Integer(related="company_id.fiscalyear_last_day", required=True, readonly=False,
                                          help="The last day of the month will be used if the chosen day doesn't exist.")
@@ -35,7 +35,7 @@ class AccountFinancialYearOp(models.TransientModel):
                 date(2020, int(wiz.fiscalyear_last_month), wiz.fiscalyear_last_day)
             except ValueError:
                 raise ValidationError(
-                    _('Incorrect fiscal year date: day is out of range for month. Month: %(month)s; Day: %(day)s',
+                    self.env._('Incorrect fiscal year date: day is out of range for month. Month: %(month)s; Day: %(day)s',
                     month=wiz.fiscalyear_last_month, day=wiz.fiscalyear_last_day)
                 )
 

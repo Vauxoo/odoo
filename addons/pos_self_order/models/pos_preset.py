@@ -48,7 +48,6 @@ class PosPreset(models.Model):
     )
     delivery_product_id = fields.Many2one(
         comodel_name="product.product",
-        string="Delivery Product",
         default=lambda self: (
             self.env.ref("pos_self_order.product_delivery_template", raise_if_not_found=False)
             or self.env["product.template"]
@@ -162,7 +161,7 @@ class PosPreset(models.Model):
             self.delivery_from_latitude = result[0]
             self.delivery_from_longitude = result[1]
         else:
-            raise ValidationError(_("The delivery address could not be geolocated. Please check the address. If the address is valid, your geolocation service may be unavailable or unable to resolve it"))
+            raise ValidationError(self.env._("The delivery address could not be geolocated. Please check the address. If the address is valid, your geolocation service may be unavailable or unable to resolve it"))
 
     # will be overridden.
     @api.model

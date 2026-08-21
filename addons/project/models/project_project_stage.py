@@ -17,7 +17,7 @@ class ProjectProjectStage(models.Model):
         help="If set, an email will be automatically sent to the customer when the project reaches this stage.")
     fold = fields.Boolean('Folded',
         help="If enabled, this stage will be displayed as folded in the Kanban and List views of your projects. Projects in a folded stage are considered as closed.")
-    company_id = fields.Many2one('res.company', string="Company")
+    company_id = fields.Many2one('res.company')
     rotting_threshold_days = fields.Integer('Days to rot', default=0, help='Day count before projects in this stage become stale. Set to 0 to disable.')
 
     def copy_data(self, default=None):
@@ -32,7 +32,7 @@ class ProjectProjectStage(models.Model):
         context = dict(self.env.context)
         context['stage_view'] = stage_view
         return {
-            'name': _('Delete Project Stage'),
+            'name': self.env._('Delete Project Stage'),
             'view_mode': 'form',
             'res_model': 'project.project.stage.delete.wizard',
             'views': [(self.env.ref('project.view_project_project_stage_delete_wizard').id, 'form')],
@@ -49,7 +49,7 @@ class ProjectProjectStage(models.Model):
             if project:
                 company = self.env['res.company'].browse(vals['company_id'])
                 raise UserError(
-                    _("You are not able to switch the company of this stage to %(company_name)s since it currently "
+                    self.env._("You are not able to switch the company of this stage to %(company_name)s since it currently "
                     "includes projects associated with %(project_company_name)s. Please ensure that this stage exclusively "
                     "consists of projects linked to %(company_name)s.",
                         company_name=company.name,
@@ -72,7 +72,7 @@ class ProjectProjectStage(models.Model):
             })
 
             return {
-                'name': _('Unarchive Projects'),
+                'name': self.env._('Unarchive Projects'),
                 'view_mode': 'form',
                 'res_model': 'project.project.stage.delete.wizard',
                 'views': [(self.env.ref('project.view_project_project_stage_unarchive_wizard').id, 'form')],

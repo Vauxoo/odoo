@@ -8,11 +8,11 @@ from odoo import _, api, fields, models
 from odoo.http import request
 from odoo.addons.base.models.avatar_mixin import generate_text_avatar_svg
 from odoo.addons.base.models.res_partner import _tz_get
-from odoo.addons.mail.models.discuss.discuss_channel import avatar_initials
+from .discuss_channel import avatar_initials
 from odoo.exceptions import UserError
 from odoo.tools.date_utils import all_timezones
 from odoo.tools.misc import limited_field_access_token
-from odoo.addons.mail.tools.discuss import Store
+from ...tools.discuss import Store
 
 
 class MailGuest(models.Model):
@@ -27,12 +27,12 @@ class MailGuest(models.Model):
     def _lang_get(self):
         return self.env['res.lang'].get_installed()
 
-    name = fields.Char(string="Name", required=True)
-    access_token = fields.Char(string="Access Token", default=lambda self: str(uuid.uuid4()), groups='base.group_system', required=True, readonly=True, copy=False)
-    country_id = fields.Many2one(string="Country", comodel_name='res.country')
+    name = fields.Char(required=True)
+    access_token = fields.Char(default=lambda self: str(uuid.uuid4()), groups='base.group_system', required=True, readonly=True, copy=False)
+    country_id = fields.Many2one(comodel_name='res.country')
     email = fields.Char()
     lang = fields.Selection(string="Language", selection=_lang_get)
-    timezone = fields.Selection(string="Timezone", selection=_tz_get)
+    timezone = fields.Selection(selection=_tz_get)
     channel_ids = fields.Many2many(string="Channels", comodel_name='discuss.channel', relation='discuss_channel_member', column1='guest_id', column2='channel_id', copy=False)
     presence_ids = fields.One2many("mail.presence", "guest_id", groups="base.group_system")
     # sudo: mail.guest - can access presence of accessible guest
@@ -118,9 +118,9 @@ class MailGuest(models.Model):
         self.ensure_one()
         name = name.strip()
         if len(name) < 1:
-            raise UserError(_("Guest's name cannot be empty."))
+            raise UserError(self.env._("Guest's name cannot be empty."))
         if len(name) > 512:
-            raise UserError(_("Guest's name is too long."))
+            raise UserError(self.env._("Guest's name is too long."))
         self.name = name
         for channel in self.channel_ids:
             Store(bus_channel=channel).add(self, "_store_avatar_fields")

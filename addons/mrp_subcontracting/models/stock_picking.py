@@ -87,7 +87,7 @@ class StockPicking(models.Model):
         }
         if len(productions) > 1:
             action.update({
-                'name': _('Subcontracting MOs'),
+                'name': self.env._('Subcontracting MOs'),
                 'views': [
                     (self.env.ref('mrp_subcontracting.mrp_production_subcontracting_tree_view').id, 'list'),
                     (form_view_id.id, 'form'),

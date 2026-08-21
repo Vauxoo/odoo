@@ -190,7 +190,7 @@ class LinkTracker(models.Model):
                 for tracker in duplicates
             )
             raise UserError(
-                _('Combinations of Link Tracker values (URL, campaign, medium, source, reference, and label) must be unique.\n'
+                self.env._('Combinations of Link Tracker values (URL, campaign, medium, source, reference, and label) must be unique.\n'
                   'The following combinations are already used: \n- %(error_lines)s', error_lines=error_lines))
 
     @api.model_create_multi
@@ -198,10 +198,10 @@ class LinkTracker(models.Model):
         vals_list = [vals.copy() for vals in vals_list]
         for vals in vals_list:
             if 'url' not in vals:
-                raise ValueError(_('Creating a Link Tracker without URL is not possible'))
+                raise ValueError(self.env._('Creating a Link Tracker without URL is not possible'))
 
             if vals['url'].startswith(('?', '#')):
-                raise UserError(_("“%s” is not a valid link, links cannot redirect to the current page.", vals['url']))
+                raise UserError(self.env._("“%s” is not a valid link, links cannot redirect to the current page.", vals['url']))
             vals['url'] = validate_url(vals['url'])
 
             if not vals.get('title'):
@@ -263,9 +263,9 @@ class LinkTracker(models.Model):
         errors = set()
         for vals in vals_list:
             if 'url' not in vals:
-                raise ValueError(_('Creating a Link Tracker without URL is not possible'))
+                raise ValueError(self.env._('Creating a Link Tracker without URL is not possible'))
             if vals['url'].startswith(('?', '#')):
-                errors.add(_("“%s” is not a valid link, links cannot redirect to the current page.", vals['url']))
+                errors.add(self.env._("“%s” is not a valid link, links cannot redirect to the current page.", vals['url']))
             vals['url'] = validate_url(vals['url'])
             # fill vals to use direct accessor in _format_key
             self._add_missing_default_values(vals)
@@ -315,7 +315,7 @@ class LinkTracker(models.Model):
 
     def action_visit_page(self):
         return {
-            'name': _("Visit Webpage"),
+            'name': self.env._("Visit Webpage"),
             'type': 'ir.actions.act_url',
             'url': self.url,
             'target': 'new',
@@ -348,7 +348,7 @@ class LinkTrackerCode(models.Model):
     _rec_name = 'code'
 
     code = fields.Char(string='Short URL Code', required=True, store=True)
-    link_id = fields.Many2one('link.tracker', 'Link', required=True, index=True, ondelete='cascade')
+    link_id = fields.Many2one('link.tracker', required=True, index=True, ondelete='cascade')
 
     _code = models.Constraint(
         'unique( code )',
@@ -379,10 +379,9 @@ class LinkTrackerClick(models.Model):
         'utm.campaign', 'UTM Campaign', index='btree_not_null',
         related="link_id.campaign_id", store=True, ondelete="set null")
     link_id = fields.Many2one(
-        'link.tracker', 'Link',
-        index=True, required=True, ondelete='cascade')
+        'link.tracker', index=True, required=True, ondelete='cascade')
     ip = fields.Char(string='Internet Protocol')
-    country_id = fields.Many2one('res.country', 'Country')
+    country_id = fields.Many2one('res.country')
 
     def _prepare_click_values_from_route(self, **route_values):
         click_values = dict((fname, route_values[fname]) for fname in self._fields if fname in route_values)

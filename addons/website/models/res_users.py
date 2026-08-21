@@ -5,7 +5,6 @@ from odoo import api, fields, models, _, Command
 from odoo.exceptions import ValidationError
 from odoo.http import request
 
-_logger = logging.getLogger(__name__)
 
 
 class ResUsers(models.Model):
@@ -33,7 +32,7 @@ class ResUsers(models.Model):
             (tuple(self.ids),)
         )
         if self.env.cr.rowcount:
-            raise ValidationError(_('You can not have two users with the same login!'))
+            raise ValidationError(self.env._('You can not have two users with the same login!'))
 
     @api.model
     def _get_login_domain(self, login):
@@ -102,7 +101,7 @@ class ResUsers(models.Model):
         super()._check_disjoint_groups()
         internal_users = self.env.ref('base.group_user').all_user_ids & self
         if any(user.website_id for user in internal_users):
-            raise ValidationError(_("Remove website on related partner before they become internal user."))
+            raise ValidationError(self.env._("Remove website on related partner before they become internal user."))
 
     # The model inherits the publishing fields from res.partner, this implements
     # the required method.

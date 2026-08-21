@@ -5,8 +5,8 @@ import requests
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.pos_bancontact_pay import const
-from odoo.addons.pos_bancontact_pay.errors.http import HTTP_ERRORS
+from .. import const
+from ..errors.http import HTTP_ERRORS
 
 
 class PosPaymentMethod(models.Model):
@@ -49,7 +49,7 @@ class PosPaymentMethod(models.Model):
             currency = record.journal_id.currency_id or record.company_id.currency_id
             if currency.name not in const.SUPPORTED_CURRENCIES:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Bancontact Pay only supports these currencies: %(currencies)s.\n"
                         "The linked journal uses a different currency.",
                         currencies=", ".join(const.SUPPORTED_CURRENCIES),
@@ -65,7 +65,7 @@ class PosPaymentMethod(models.Model):
                 and record.bancontact_usage == "sticker"
                 and len(record.config_ids) > 1
             ):
-                raise ValidationError(_("One Bancontact Pay sticker payment method can only be linked to one POS configuration."))
+                raise ValidationError(self.env._("One Bancontact Pay sticker payment method can only be linked to one POS configuration."))
 
     def download_bancontact_sticker(self):
         self.ensure_one()
@@ -79,7 +79,7 @@ class PosPaymentMethod(models.Model):
     def create_bancontact_payment(self, data):
         self.ensure_one()
         if self.payment_provider != "bancontact_pay":
-            raise ValidationError(_("Bancontact payments can only be created for payment methods using Bancontact Pay as provider."))
+            raise ValidationError(self.env._("Bancontact payments can only be created for payment methods using Bancontact Pay as provider."))
 
         headers = {
             "Authorization": f"Bearer {self.bancontact_api_key}",
@@ -102,7 +102,7 @@ class PosPaymentMethod(models.Model):
     def cancel_bancontact_payment(self, bancontact_id):
         self.ensure_one()
         if self.payment_provider != "bancontact_pay":
-            raise ValidationError(_("Bancontact payments can only be cancelled for payment methods using Bancontact Pay as provider."))
+            raise ValidationError(self.env._("Bancontact payments can only be cancelled for payment methods using Bancontact Pay as provider."))
 
         url = f"{self._get_bancontact_api_url('merchant')}/v3/payments/{bancontact_id}"
         headers = {
@@ -111,7 +111,7 @@ class PosPaymentMethod(models.Model):
         }
         response = requests.delete(url, headers=headers, timeout=5)
         self._assert_bancontact_http_success(response,
-            {422: (_("Unable to cancel payment. The payment may not be in a cancellable state."), ValidationError)},
+            {422: (self.env._("Unable to cancel payment. The payment may not be in a cancellable state."), ValidationError)},
         )
 
     # ----- Helpers ----- #
@@ -170,11 +170,11 @@ class PosPaymentMethod(models.Model):
     def _fetch_bancontact_sticker_image(self):
         self.ensure_one()
         if self.payment_provider != "bancontact_pay":
-            raise ValidationError(_("Bancontact sticker URL can only be generated for payment methods using Bancontact Pay as provider."))
+            raise ValidationError(self.env._("Bancontact sticker URL can only be generated for payment methods using Bancontact Pay as provider."))
         if self.bancontact_usage != "sticker":
-            raise ValidationError(_("Bancontact sticker URL can only be generated for payment methods configured with 'Static Sticker' usage."))
+            raise ValidationError(self.env._("Bancontact sticker URL can only be generated for payment methods configured with 'Static Sticker' usage."))
         if not self.bancontact_ppid:
-            raise ValidationError(_("Bancontact PPID must be set to generate the sticker URL."))
+            raise ValidationError(self.env._("Bancontact PPID must be set to generate the sticker URL."))
         qr_url = self._get_bancontact_api_url("qrcode")
         response = requests.get(qr_url, params={
             'f': 'PNG',

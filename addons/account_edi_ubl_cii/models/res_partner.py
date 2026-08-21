@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools.partner_identifiers import validation_error_message
 
 from odoo.addons.account.models.company import PEPPOL_DEFAULT_COUNTRIES
-from odoo.addons.account_edi_ubl_cii.tools.partner_identifiers import (
+from ..tools.partner_identifiers import (
     CORNER_CASE_IDENTIFIERS_METADATA,
     ELECTRONIC_ADDRESS_SCHEMES_CODELIST,
     ELECTRONIC_ADDRESS_SCHEME_INVALID_CHARS_RE,
@@ -126,7 +126,6 @@ class ResPartner(models.Model):
         ],
     )
     routing_endpoint = fields.Char(
-        string="Routing Endpoint",
         compute="_compute_routing_scheme_endpoint",
         store=True,
         readonly=False,

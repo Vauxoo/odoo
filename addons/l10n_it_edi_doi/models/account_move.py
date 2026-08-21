@@ -192,7 +192,7 @@ class AccountMove(models.Model):
                 lambda line: declaration_of_intent_tax in line.tax_ids
             )
             if declaration_lines and not declaration:
-                errors.append(_('Given the tax %s is applied, there should be a Declaration of Intent selected.',
+                errors.append(self.env._('Given the tax %s is applied, there should be a Declaration of Intent selected.',
                                 declaration_of_intent_tax.name))
         if errors:
             raise UserError('\n'.join(errors))
@@ -202,7 +202,7 @@ class AccountMove(models.Model):
     def action_open_declaration_of_intent(self):
         self.ensure_one()
         return {
-            'name': _("Declaration of Intent for %s", self.display_name),
+            'name': self.env._("Declaration of Intent for %s", self.display_name),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'l10n_it_edi_doi.declaration_of_intent',

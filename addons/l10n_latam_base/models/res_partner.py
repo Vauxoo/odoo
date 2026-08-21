@@ -39,7 +39,7 @@ class ResPartner(models.Model):
                 and partner.l10n_latam_identification_type_id.is_vat
                 and partner.commercial_partner_id == partner
             )
-        super(ResPartner, self - latam_partners)._compute_is_company()
+        return super(ResPartner, self - latam_partners)._compute_is_company()
 
     @api.onchange('country_id')
     def _onchange_country_id(self):
@@ -54,7 +54,7 @@ class ResPartner(models.Model):
 
     @api.onchange('vat', 'country_id', 'l10n_latam_identification_type_id')
     def _onchange_vat(self):
-        super()._onchange_vat()
+        return super()._onchange_vat()
 
     def _get_frontend_writable_fields(self):
         frontend_writable_fields = super()._get_frontend_writable_fields()

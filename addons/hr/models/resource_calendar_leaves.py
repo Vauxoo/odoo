@@ -30,4 +30,4 @@ class ResourceCalendarLeaves(models.Model):
                 lambda leave: leave.date_from and start_dt <= leave.date_from < end_dt
             ).calendar_id = contract.resource_calendar_id
 
-        super(ResourceCalendarLeaves, remaining)._compute_calendar_id()
+        return super(ResourceCalendarLeaves, remaining)._compute_calendar_id()

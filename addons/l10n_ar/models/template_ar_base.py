@@ -9,7 +9,7 @@ class AccountChartTemplate(models.AbstractModel):
     @template('ar_base')
     def _get_ar_base_template_data(self):
         return {
-            'name': _('Generic Chart of Accounts Argentina Single Taxpayer / Basis'),
+            'name': self.env._('Generic Chart of Accounts Argentina Single Taxpayer / Basis'),
             'code_digits': '12',
             'sequence': 1,
         }

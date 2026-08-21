@@ -9,7 +9,7 @@ class ValidateAccountMove(models.TransientModel):
     move_ids = fields.Many2many('account.move')
     force_post = fields.Boolean(string="Force", help="Entries in the future are set to be auto-posted by default. Check this checkbox to post them now.")
     display_force_post = fields.Boolean(compute='_compute_display_force_post')
-    force_hash = fields.Boolean(string="Force Hash")
+    force_hash = fields.Boolean()
     display_force_hash = fields.Boolean(compute='_compute_display_force_hash')
     is_entries = fields.Boolean(compute='_compute_is_entries')
     abnormal_date_partner_ids = fields.One2many('res.partner', compute='_compute_abnormal_date_partner_ids')
@@ -52,11 +52,11 @@ class ValidateAccountMove(models.TransientModel):
             elif self.env.context.get('active_model') == 'account.journal':
                 domain = [('journal_id', '=', self.env.context.get('active_id')), ('state', '=', 'draft')]
             else:
-                raise UserError(_("Missing 'active_model' in context."))
+                raise UserError(self.env._("Missing 'active_model' in context."))
 
             moves = self.env['account.move'].search(domain).filtered('line_ids')
             if not moves:
-                raise UserError(_('There are no journal items in the draft state to post.'))
+                raise UserError(self.env._('There are no journal items in the draft state to post.'))
             result['move_ids'] = [Command.set(moves.ids)]
 
         return result

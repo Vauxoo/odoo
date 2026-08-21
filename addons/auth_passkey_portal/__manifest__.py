@@ -1,13 +1,6 @@
 {
     'name': 'Passkeys Portal',
     'summary': 'Passkeys for portal users',
-    'description': """
-The implementation of Passkeys using the webauthn protocol.
-===========================================================
-
-Passkeys are a secure alternative to a username and a password.
-When a user logs in with a Passkey, MFA will not be required.
-""",
     'category': 'Hidden/Tools',
     'depends': ['auth_passkey', 'portal'],
     'data': [

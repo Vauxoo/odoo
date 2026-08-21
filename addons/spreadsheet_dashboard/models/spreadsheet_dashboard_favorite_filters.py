@@ -15,7 +15,6 @@ class SpreadsheetDashboardFavoriteFilters(models.Model):
     )
     dashboard_id = fields.Many2one(
         'spreadsheet.dashboard',
-        string="Dashboard",
         required=True,
         ondelete="cascade",
         index=True

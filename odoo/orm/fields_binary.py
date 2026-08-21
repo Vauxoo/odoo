@@ -140,7 +140,7 @@ class Binary(Field[BinaryValue]):
             att.res_id: BinaryValueAttachment(att)
             for att in records.env['ir.attachment'].sudo().search_fetch(domain)
         }
-        super()._insert_cache(records, map(data.get, records._ids))
+        return super()._insert_cache(records, map(data.get, records._ids))
 
     def create(self, record_values):
         assert self.attachment
@@ -259,7 +259,7 @@ class Image(Binary):
             # will be resized once the inverse has been applied
             cache_value = self.convert_to_cache(value if self.related else new_value, record)
             self._update_cache(record, cache_value)
-        super().create(new_record_values)
+        return super().create(new_record_values)
 
     def write(self, records, value):
         try:

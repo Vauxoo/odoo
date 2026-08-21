@@ -2,11 +2,6 @@
     "name": "Jordan Accounting EDI for POS",
     "author": "Odoo S.A.",
     "countries": ["jo"],
-    "description": """
-Jordan Accounting EDI for POS
-=============================
-Provides electronic invoicing for Jordan in the POS.
-""",
     "category": "Accounting/Localizations/EDI",
     "license": "LGPL-3",
     "depends": ["l10n_jo_edi", "pos_edi_ubl"],

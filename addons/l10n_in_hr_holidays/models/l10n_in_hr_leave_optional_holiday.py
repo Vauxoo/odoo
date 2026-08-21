@@ -13,7 +13,7 @@ class L10nInHrLeaveOptionalHoliday(models.Model):
     @api.model
     def default_get(self, field_list=None):
         if self.env.company.country_id.code != "IN":
-            raise UserError(_('You must be logged in an Indian company to use this feature'))
+            raise UserError(self.env._('You must be logged in an Indian company to use this feature'))
         return super().default_get(field_list)
 
     name = fields.Char(required=True)

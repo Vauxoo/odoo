@@ -369,7 +369,7 @@ class MailTrackMixin(models.AbstractModel):
                 new_value = self._track_convert_value(col_name, self[col_name])
             else:
                 raise ValueError(
-                    _('Impossible to find end value when tracking %(col_name)s', col_name=col_name)
+                    self.env._('Impossible to find end value when tracking %(col_name)s', col_name=col_name)
                 )
             if new_value == initial_value or (not new_value and not initial_value):  # because browse null != False
                 continue
@@ -535,8 +535,8 @@ class MailTrackMixin(models.AbstractModel):
             values.update({
                 'old_value_integer': initial_value,
                 'new_value_integer': new_value,
-                'old_value': _('Yes') if initial_value else _('No'),
-                'new_value': _('Yes') if new_value else _('No'),
+                'old_value': self.env._('Yes') if initial_value else self.env._('No'),
+                'new_value': self.env._('Yes') if new_value else self.env._('No'),
             })
         elif col_info['type'] == 'selection':
             values.update({

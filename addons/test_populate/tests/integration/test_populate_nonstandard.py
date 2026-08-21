@@ -3,7 +3,7 @@ import logging
 from odoo.tests import tagged
 
 from odoo.addons.populate import start_populate
-from odoo.addons.test_populate.tests.common import PopulateTestCase
+from ..common import PopulateTestCase
 
 _logger = logging.getLogger(__name__)
 

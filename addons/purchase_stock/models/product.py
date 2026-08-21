@@ -258,7 +258,7 @@ class ProductSupplierinfo(models.Model):
 
     last_purchase_date = fields.Date('Last Purchase', compute='_compute_last_purchase_date')
     show_set_supplier_button = fields.Boolean(
-        'Show Set Supplier Button', compute='_compute_show_set_supplier_button')
+        compute='_compute_show_set_supplier_button')
 
     def _compute_last_purchase_date(self):
         self.last_purchase_date = False

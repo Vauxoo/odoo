@@ -26,12 +26,12 @@ class EventSponsor(models.Model):
     def _default_sponsor_type_id(self):
         return self.env['event.sponsor.type'].search([], order="sequence desc", limit=1).id
 
-    event_id = fields.Many2one('event.event', 'Event', required=True, index=True)
+    event_id = fields.Many2one('event.event', required=True, index=True)
     sponsor_type_id = fields.Many2one(
         'event.sponsor.type', 'Sponsorship Level',
         default=lambda self: self._default_sponsor_type_id(), required=True, bypass_search_access=True)
     url = fields.Char('Sponsor Website', compute='_compute_url', readonly=False, store=True)
-    sequence = fields.Integer('Sequence')
+    sequence = fields.Integer()
     active = fields.Boolean(default=True)
     # description
     subtitle = fields.Char('Slogan')
@@ -45,7 +45,7 @@ class EventSponsor(models.Model):
         readonly=False, store=True)
     show_on_ticket = fields.Boolean("Show on ticket", default=True)
     # contact information
-    partner_id = fields.Many2one('res.partner', 'Partner', required=True, index=True, bypass_search_access=True)
+    partner_id = fields.Many2one('res.partner', required=True, index=True, bypass_search_access=True)
     partner_name = fields.Char('Name', related='partner_id.name')
     partner_email = fields.Char('Email', related='partner_id.email')
     partner_phone = fields.Char('Phone', related='partner_id.phone')
@@ -172,7 +172,7 @@ class EventSponsor(models.Model):
 
     @api.depends('event_id.website_id.domain')
     def _compute_website_absolute_url(self):
-        super()._compute_website_absolute_url()
+        return super()._compute_website_absolute_url()
 
     @api.model
     def _search_get_detail(self, website, order, options):

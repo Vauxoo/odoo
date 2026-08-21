@@ -5,8 +5,8 @@ class Test_Read_GroupOn_Date(models.Model):
     _name = 'test_read_group.on_date'
     _description = 'Group Test Read On Date'
 
-    date = fields.Date("Date")
-    value = fields.Integer("Value")
+    date = fields.Date()
+    value = fields.Integer()
 
 
 class Test_Read_GroupAggregateBoolean(models.Model):
@@ -63,7 +63,7 @@ class Test_Read_GroupAggregate(models.Model):
     _description = 'Group Test Aggregate'
 
     key = fields.Integer()
-    value = fields.Integer("Value")
+    value = fields.Integer()
     numeric_value = fields.Float(digits=(4, 2))
     partner_id = fields.Many2one('test_read_group.partner')
     display_name = fields.Char(store=True)

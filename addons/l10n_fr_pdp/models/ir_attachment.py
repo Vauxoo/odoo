@@ -1,6 +1,6 @@
 from odoo import api, models
 from odoo.exceptions import UserError
-from odoo.addons.l10n_fr_pdp.models.pdp_flow import FLOW_SENT_STATES
+from .pdp_flow import FLOW_SENT_STATES
 
 
 class IrAttachment(models.Model):

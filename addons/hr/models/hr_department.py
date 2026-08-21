@@ -16,24 +16,23 @@ class HrDepartment(models.Model):
     _parent_store = True
 
     name = fields.Char('Department Name', required=True, translate=True)
-    complete_name = fields.Char('Complete Name', compute='_compute_complete_name', recursive=True, search='_search_complete_name')
-    active = fields.Boolean('Active', default=True)
-    company_id = fields.Many2one('res.company', string='Company', compute="_compute_company_id", store=True, recursive=True, index=True, readonly=False, tracking=True, default=lambda self: self.env.company)
+    complete_name = fields.Char(compute='_compute_complete_name', recursive=True, search='_search_complete_name')
+    active = fields.Boolean(default=True)
+    company_id = fields.Many2one('res.company', compute="_compute_company_id", store=True, recursive=True, index=True, readonly=False, tracking=True, default=lambda self: self.env.company)
     parent_id = fields.Many2one('hr.department', string='Parent Department', index=True, check_company=True)
     child_ids = fields.One2many('hr.department', 'parent_id', string='Child Departments')
-    manager_id = fields.Many2one('hr.employee', string='Manager', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]")
+    manager_id = fields.Many2one('hr.employee', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]")
     member_ids = fields.One2many('hr.employee', 'department_id', string='Members', readonly=True)
     has_read_access = fields.Boolean(search="_search_has_read_access", store=False, export_string_translation=False)
-    total_employee = fields.Integer(compute='_compute_total_employee', string='Total Employee',
-        export_string_translation=False)
-    jobs_ids = fields.One2many('hr.job', 'department_id', string='Jobs')
+    total_employee = fields.Integer(compute='_compute_total_employee', export_string_translation=False)
+    jobs_ids = fields.One2many('hr.job', 'department_id')
     plan_ids = fields.One2many('mail.activity.plan', 'department_id')
     plans_count = fields.Integer(compute='_compute_plan_count')
-    note = fields.Text('Note')
+    note = fields.Text()
     color = fields.Integer('Color Index')
     parent_path = fields.Char(index=True)
     master_department_id = fields.Many2one(
-        'hr.department', 'Master Department', compute='_compute_master_department_id', store=True)
+        'hr.department', compute='_compute_master_department_id', store=True)
 
     @api.depends_context('hierarchical_naming')
     def _compute_display_name(self):
@@ -53,7 +52,7 @@ class HrDepartment(models.Model):
     def _search_complete_name(self, operator, value):
         supported_operators = ["=", "!=", "ilike", "not ilike", "in", "not in", "=ilike"]
         if operator not in supported_operators or not isinstance(value, (str, list)):
-            raise NotImplementedError(_('Operation not Supported.'))
+            raise NotImplementedError(self.env._('Operation not Supported.'))
         department = self.env['hr.department'].search([])
         if operator == '=':
             department = department.filtered(lambda m: m.complete_name == value)
@@ -181,7 +180,7 @@ class HrDepartment(models.Model):
             res_model = "hr.employee.public"
             search_view_id = self.env.ref('hr.hr_employee_public_view_search').id
         return {
-            'name': _("Employees"),
+            'name': self.env._("Employees"),
             'type': 'ir.actions.act_window',
             'res_model': res_model,
             'view_mode': 'list,kanban,form',

@@ -21,7 +21,7 @@ class AccountAnalyticLine(models.Model):
     def _get_redirect_action(self):
         leave_form_view_id = self.env.ref('hr_holidays.hr_leave_view_form').id
         action_data = {
-           'name': _('Time Off'),
+           'name': self.env._('Time Off'),
            'type': 'ir.actions.act_window',
            'res_model': 'hr.leave',
            'views': [(self.env.ref('hr_holidays.hr_leave_view_tree_my').id, 'list'), (leave_form_view_id, 'form')],
@@ -37,11 +37,11 @@ class AccountAnalyticLine(models.Model):
         if any(line.global_leave_id for line in self):
             raise UserError(self.env._('Timesheets linked to public holidays cannot be deleted.'))
         elif any(line.holiday_id for line in self):
-            error_message = _('You cannot delete timesheets that are linked to time off requests. Please cancel your time off request from the Time Off application instead.')
+            error_message = self.env._('You cannot delete timesheets that are linked to time off requests. Please cancel your time off request from the Time Off application instead.')
             if not self.env.user.has_group('hr_holidays.group_hr_holidays_user') and self.env.user not in self.holiday_id.sudo().user_id:
                 raise UserError(error_message)
             action = self._get_redirect_action()
-            raise RedirectWarning(error_message, action, _('View Time Off'))
+            raise RedirectWarning(error_message, action, self.env._('View Time Off'))
 
     def _check_can_write(self, values):
         if not self.env.su and self.global_leave_id:

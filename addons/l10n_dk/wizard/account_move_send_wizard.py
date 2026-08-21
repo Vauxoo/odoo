@@ -22,15 +22,15 @@ class AccountMoveSendWizard(models.TransientModel):
             nemhandel_partner = wizard.move_id.partner_id.commercial_partner_id.with_company(wizard.company_id)
             nemhandel_proxy_mode = wizard.company_id._get_nemhandel_edi_mode()
             if nemhandel_partner.nemhandel_verification_state == 'not_verified' or not nemhandel_partner.vat:
-                addendum_disable_reason = _(' (no VAT)')
+                addendum_disable_reason = self.env._(' (no VAT)')
             else:
                 addendum_disable_reason = ''
             vals_not_valid = {'readonly': True, 'checked': False} if addendum_disable_reason else {}
             addendum_mode = ''
             if nemhandel_proxy_mode == 'test':
-                addendum_mode = _(' (Test)')
+                addendum_mode = self.env._(' (Test)')
             elif nemhandel_proxy_mode == 'demo':
-                addendum_mode = _(' (Demo)')
+                addendum_mode = self.env._(' (Demo)')
             if addendum_disable_reason or addendum_mode:
                 wizard.sending_method_checkboxes = {
                     **wizard.sending_method_checkboxes,
@@ -47,7 +47,7 @@ class AccountMoveSendWizard(models.TransientModel):
         if self.sending_methods and 'nemhandel' in self.sending_methods:
             move = self.move_id.with_company(self.move_id.company_id)
             if move.partner_id.commercial_partner_id.nemhandel_verification_state != 'valid':
-                raise UserError(_("Partner doesn't have a valid Nemhandel configuration."))
+                raise UserError(self.env._("Partner doesn't have a valid Nemhandel configuration."))
 
             move.nemhandel_move_state = 'to_send'
         return super().action_send_and_print(allow_fallback_pdf=allow_fallback_pdf)

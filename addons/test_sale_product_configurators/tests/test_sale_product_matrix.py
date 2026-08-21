@@ -7,7 +7,6 @@ from odoo.tests import tagged
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.product_matrix.tests.common import TestMatrixCommon
 
-_logger = logging.getLogger(__name__)
 
 
 @tagged('post_install', '-at_install')

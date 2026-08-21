@@ -20,8 +20,8 @@ from urllib.parse import urlparse, urlsplit
 from werkzeug import urls
 
 from odoo import api, fields, models, tools, release
-from odoo.addons.website.models.ir_http import sitemap_qs2dom
-from odoo.addons.website.tools import (
+from .ir_http import sitemap_qs2dom
+from ..tools import (
     adapt_dark_palette_content,
     get_base_domain,
     similarity_score,
@@ -127,9 +127,9 @@ class Website(models.CachedModel):
 
     language_ids = fields.Many2many(
         'res.lang', 'website_lang_rel', 'website_id', 'lang_id', string="Languages",
-        default=_active_languages, required=True)
+        default=lambda self: self._active_languages(), required=True)
     language_count = fields.Integer('Number of languages', compute='_compute_language_count')
-    default_lang_id = fields.Many2one('res.lang', string="Default Language", default=_default_language, required=True)
+    default_lang_id = fields.Many2one('res.lang', string="Default Language", default=lambda self: self._default_language(), required=True)
     auto_redirect_lang = fields.Boolean('Autoredirect Language', default=True, help="Should users be redirected to their browser's language")
     cookies_bar = fields.Boolean('Cookies Bar', help="Display a customizable cookies bar on your website.")
     cookie_policy_id = fields.Many2one(
@@ -154,7 +154,7 @@ class Website(models.CachedModel):
         with file_open('website/static/src/img/website_logo.svg', 'rb') as f:
             return BinaryBytes(f.read())
 
-    logo = fields.Binary('Website Logo', default=_default_logo, help="Display this logo on the website.")
+    logo = fields.Binary('Website Logo', default=lambda self: self._default_logo(), help="Display this logo on the website.")
     social_default_image = fields.Binary(string="Default Social Share Image", help="If set, replaces the website logo as the default social share image.")
     has_social_default_image = fields.Boolean(compute='_compute_has_social_default_image', store=True)
 
@@ -181,7 +181,7 @@ class Website(models.CachedModel):
         with file_open('web/static/img/favicon.ico', 'rb') as f:
             return BinaryBytes(f.read())
 
-    favicon = fields.Binary(string="Website Favicon", help="This field holds the image used to display a favicon on the website.", default=_default_favicon)
+    favicon = fields.Binary(string="Website Favicon", help="This field holds the image used to display a favicon on the website.", default=lambda self: self._default_favicon())
     theme_id = fields.Many2one('ir.module.module', help='Installed theme')
 
     specific_user_account = fields.Boolean('Specific User Account', help='If True, new accounts will be associated to the current website')

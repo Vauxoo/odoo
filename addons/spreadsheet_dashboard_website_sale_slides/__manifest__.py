@@ -3,7 +3,6 @@
     'name': "Spreadsheet dashboard for eLearning",
     'category': 'Productivity/Dashboard',
     'summary': 'Spreadsheet',
-    'description': 'Spreadsheet',
     'depends': ['spreadsheet_dashboard', 'website_sale_slides'],
     'data': [
         "data/dashboards.xml",

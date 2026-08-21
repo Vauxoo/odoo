@@ -4,9 +4,6 @@
     'name': 'Manufacturing Expiry',
     'category': 'Supply Chain/Manufacturing',
     'summary': 'Manufacturing Expiry',
-    'description': """
-Technical module.
-    """,
     'depends': ['mrp', 'product_expiry'],
     'data': [
         'wizard/confirm_expiry_view.xml',

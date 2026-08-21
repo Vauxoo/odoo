@@ -8,7 +8,7 @@ class MailingContact(models.Model):
     _name = 'mailing.contact'
     _inherit = ['mailing.contact', 'mail.thread.phone']
 
-    mobile = fields.Char(string='Mobile')
+    mobile = fields.Char()
 
     @api.model
     def _from_partners_get_match_unique_field_names(self):

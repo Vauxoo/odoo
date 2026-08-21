@@ -5,7 +5,7 @@ import werkzeug
 from werkzeug.urls import url_encode
 
 from odoo import http, tools, _
-from odoo.addons.auth_signup.models.res_users import SignupError
+from ..models.res_users import SignupError
 from odoo.addons.web.controllers.home import ensure_db, Home, SIGN_UP_REQUEST_PARAMS, LOGIN_SUCCESSFUL_PARAMS
 from odoo.addons.web.models.res_users import SKIP_CAPTCHA_LOGIN
 from odoo.addons.base_setup.controllers.main import BaseSetup

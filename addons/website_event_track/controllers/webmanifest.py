@@ -20,7 +20,7 @@ class TrackManifest(http.Controller):
         manifest = {
             'name': self.env.website.events_app_name,
             'short_name': self.env.website.events_app_name,
-            'description': _('%s Online Events Application') % self.env.website.company_id.name,
+            'description': _('%s Online Events Application', self.env.website.company_id.name),
             'scope': request.env['ir.http']._url_for('/event'),
             'start_url': request.env['ir.http']._url_for('/event'),
             'display': 'standalone',
