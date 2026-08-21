@@ -15,10 +15,17 @@ if typing.TYPE_CHECKING:
 
 
 class Integer(Field[int]):
-    """ Encapsulates an :class:`int`. """
+    """ Encapsulates an :class:`int`.
+
+    :param bool bigint: whether the column must be able to hold a record id.
+        Some fields store the id of a record without declaring a relation to
+        it, and those ids follow the width of the database like any other one.
+    """
     type = 'integer'
     _column_type = ('int4', 'int4')
     falsy_value = 0
+
+    bigint = False
 
     aggregator = 'sum'
 
@@ -27,7 +34,16 @@ class Integer(Field[int]):
         # The default aggregator is None for sequence fields
         if 'aggregator' not in res and name == 'sequence':
             res['aggregator'] = None
+        if res.get('bigint'):
+            # declare the same type as the other columns holding an identifier,
+            # so that the value is cast to int8 and not narrowed back to int4
+            res['_column_type'] = ('int8', 'int8')
         return res
+
+    def db_column_type(self, model):
+        if self.bigint and not (self.company_dependent or self.translate):
+            return model.pool.id_column_type
+        return self.column_type
 
     def convert_to_column(self, value, record, values=None, validate=True):
         return int(value or 0)
