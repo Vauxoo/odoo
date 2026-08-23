@@ -22,5 +22,5 @@ class AccountMoveLine(models.Model):
 
     def _auto_init(self):
         if not column_exists(self.env.cr, 'account_move_line', 'l10n_hr_kpd_category_id'):
-            create_column(self.env.cr, 'account_move_line', 'l10n_hr_kpd_category_id', 'integer')
+            create_column(self.env.cr, 'account_move_line', 'l10n_hr_kpd_category_id', self.pool.id_column_type[1])
         return super()._auto_init()

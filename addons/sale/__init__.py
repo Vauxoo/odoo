@@ -15,9 +15,9 @@ def _pre_init_sale(env):
     env.cr.execute(
         SQL("""
        ALTER TABLE account_analytic_line
-       ADD COLUMN IF NOT EXISTS order_id INT4,
-       ADD COLUMN IF NOT EXISTS so_line  INT4
-    """)
+       ADD COLUMN IF NOT EXISTS order_id %(id_type)s,
+       ADD COLUMN IF NOT EXISTS so_line  %(id_type)s
+    """, id_type=SQL(env.registry.id_column_type[1]))
     )
 
 

@@ -52,7 +52,7 @@ class AccountMove(models.Model):
         # In practical, it's very rare to already have invoices (draft, in addition)
         # for a Chilian or Argentian company (`res.company`) before installing `l10n_cl` or `l10n_ar`.
         if not column_exists(self.env.cr, "account_move", "l10n_latam_document_type_id"):
-            create_column(self.env.cr, "account_move", "l10n_latam_document_type_id", "int4")
+            create_column(self.env.cr, "account_move", "l10n_latam_document_type_id", self.pool.id_column_type[1])
         return super()._auto_init()
 
     l10n_latam_available_document_type_ids = fields.Many2many('l10n_latam.document.type', compute='_compute_l10n_latam_available_document_types')

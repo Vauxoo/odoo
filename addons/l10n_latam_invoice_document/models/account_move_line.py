@@ -11,7 +11,7 @@ class AccountMoveLine(models.Model):
         # Skip the computation of the field `l10n_latam_document_type_id` at the module installation
         # See `_auto_init` in `l10n_latam_invoice_document/models/account_move.py` for more information
         if not column_exists(self.env.cr, "account_move_line", "l10n_latam_document_type_id"):
-            create_column(self.env.cr, "account_move_line", "l10n_latam_document_type_id", "int4")
+            create_column(self.env.cr, "account_move_line", "l10n_latam_document_type_id", self.pool.id_column_type[1])
         return super()._auto_init()
 
     l10n_latam_document_type_id = fields.Many2one(

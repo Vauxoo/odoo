@@ -137,7 +137,7 @@ class AccountMove(models.Model):
         if not column_exists(self.env.cr, 'account_move', 'l10n_it_payment_method'):
             create_column(self.env.cr, 'account_move', 'l10n_it_payment_method', 'varchar')
         if not column_exists(self.env.cr, 'account_move', 'l10n_it_document_type'):
-            create_column(self.env.cr, 'account_move', 'l10n_it_document_type', 'integer')
+            create_column(self.env.cr, 'account_move', 'l10n_it_document_type', self.pool.id_column_type[1])
         return super()._auto_init()
 
 

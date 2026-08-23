@@ -22,7 +22,7 @@ class L10nPlAccountPayment(models.Model):
     def init(self):
         super().init()
         if not column_exists(self.env.cr, 'account_payment', 'l10n_pl_verification_id'):
-            create_column(self.env.cr, 'account_payment', 'l10n_pl_verification_id', 'integer')
+            create_column(self.env.cr, 'account_payment', 'l10n_pl_verification_id', self.pool.id_column_type[1])
 
     @api.model
     def _payment_need_check(self, partner, payment_type, amounts, currency):

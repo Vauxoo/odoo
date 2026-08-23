@@ -2463,7 +2463,7 @@ class BaseModel(metaclass=MetaModel):
         if self._auto:
             if must_create_table:
                 def make_type(field):
-                    return field.column_type[1] + (" NOT NULL" if field.required else "")
+                    return field.db_column_type(self)[1] + (" NOT NULL" if field.required else "")
 
                 sql.create_model_table(cr, self._table, self._description, [
                     (field.name, make_type(field), field.string)
@@ -3661,8 +3661,8 @@ class BaseModel(metaclass=MetaModel):
                             SELECT jsonb_object_agg(
                                 key,
                                 CASE
-                                    WHEN value::int4 in %(ids)s THEN NULL
-                                    ELSE value::int4
+                                    WHEN value::int8 in %(ids)s THEN NULL
+                                    ELSE value::int8
                                 END)
                             FROM jsonb_each_text(%(field)s)
                         )

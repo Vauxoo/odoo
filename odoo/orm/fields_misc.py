@@ -89,7 +89,8 @@ class Id(Field[IdType | typing.Literal[False]]):
     """ Special case for field 'id'. """
     # Note: This field type is not necessarily an integer!
     type = 'integer'  # note this conflicts with Integer
-    column_type = ('int4', 'int4')
+    column_type = ('int8', 'int8')
+    _id_column = True
 
     string = 'ID'
     store = True
