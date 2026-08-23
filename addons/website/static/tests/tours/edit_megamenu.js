@@ -71,12 +71,12 @@ registry.category("web_tour.tours").add("edit_megamenu", {
         },
         {
             content: "Click on the first title item.",
-            trigger: ":iframe .o_mega_menu h4",
+            trigger: ":iframe .o_mega_menu .h5",
             run: "click",
         },
         {
             content: "Press enter.",
-            trigger: ":iframe .o_mega_menu h4",
+            trigger: ":iframe .o_mega_menu .h5",
             run() {
                 this.anchor.dispatchEvent(
                     new window.InputEvent("input", { bubbles: true, inputType: "insertParagraph" })
@@ -85,14 +85,14 @@ registry.category("web_tour.tours").add("edit_megamenu", {
         },
         {
             content: "The menu should still be visible. Edit a menu item.",
-            trigger: ":iframe .o_mega_menu h4",
+            trigger: ":iframe .o_mega_menu .h5",
             // The content is removed in the previous step so it's now invisible.
             run: "editor New Menu Item",
         },
         {
             // If this step fails, it means that a patch inside bootstrap was lost.
             content: "Press the 'down arrow' key.",
-            trigger: ":iframe .o_mega_menu h4",
+            trigger: ":iframe .o_mega_menu .h5",
             run: "press ArrowDown",
         },
         ...clickOnSave(),
@@ -100,7 +100,7 @@ registry.category("web_tour.tours").add("edit_megamenu", {
         toggleMegaMenu,
         {
             content: "The menu item should have been renamed.",
-            trigger: ':iframe .o_mega_menu h4:contains("New Menu Item")',
+            trigger: ':iframe .o_mega_menu .h5:contains("New Menu Item")',
         },
     ],
 });
@@ -185,7 +185,7 @@ registry.category("web_tour.tours").add("edit_megamenu_big_icons_subtitles", {
         ...changeOptionInPopover("Mega Menu", "Template", "Big Icons Subtitles"),
         ...clickToolbarButton(
             "h4 of first menu link of the first column",
-            ".s_mega_menu_big_icons_subtitles .row > div:first-child .nav > :first-child h4",
+            ".s_mega_menu_big_icons_subtitles .row > div:first-child .nav > :first-child .h4",
             "Bold (Ctrl + B)"
         ),
         ...clickOnSave(),
@@ -203,17 +203,22 @@ const createMegaMenu = function (name) {
     return [
         {
             content: "Create a new mega menu item",
-            trigger: ".modal-body a:eq(1):contains(add mega menu item)",
+            trigger: ".modal-body a:contains(add menu item)",
+            run: "click",
+        },
+        {
+            content: "Toggle is mega menu option",
+            trigger: `.modal:contains(menu item) input[type=checkbox]`,
             run: "click",
         },
         {
             content: "Set the mega menu item name to " + name,
-            trigger: ".modal:contains(mega menu item) .modal-dialog .o_website_dialog input:eq(0)",
+            trigger: ".modal:contains(menu item) .modal-dialog .o_website_dialog input:eq(0)",
             run: `edit ${name}`,
         },
         {
             trigger:
-                ".modal:contains(mega menu item) .modal-footer .btn-primary:contains(continue)",
+                ".modal:contains(menu item) .modal-footer .btn-primary:contains(continue)",
             run: "click",
         },
         {
@@ -226,7 +231,7 @@ const createDropdown = function (name) {
     return [
         {
             content: "Create a new menu item for the dropdown",
-            trigger: ".modal:contains(edit menu) .modal-body a:eq(0):contains(add menu item)",
+            trigger: ".modal:contains(edit menu) .modal-body a:contains(add menu item)",
             run: "click",
         },
         {
@@ -235,7 +240,7 @@ const createDropdown = function (name) {
             run: `edit ${name}`,
         },
         {
-            trigger: ".modal:contains(menu item) .modal-dialog .o_website_dialog input:eq(1)",
+            trigger: ".modal:contains(menu item) .modal-dialog .o_website_dialog input:eq(2)",
             run: "edit /",
         },
         {
@@ -247,7 +252,7 @@ const createDropdown = function (name) {
         },
         {
             content: "Create a new menu item for the dropdown item",
-            trigger: ".modal:contains(edit menu) .modal-body a:eq(0):contains(add menu item)",
+            trigger: ".modal:contains(edit menu) .modal-body a:contains(add menu item)",
             run: "click",
         },
         {
@@ -255,7 +260,7 @@ const createDropdown = function (name) {
             run: `edit ${name} item`,
         },
         {
-            trigger: ".modal:contains(menu item) .modal-dialog .o_website_dialog input:eq(1)",
+            trigger: ".modal:contains(menu item) .modal-dialog .o_website_dialog input:eq(2)",
             run: "edit /",
         },
         {

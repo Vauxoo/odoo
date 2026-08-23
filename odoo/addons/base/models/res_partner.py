@@ -1342,8 +1342,10 @@ class ResPartner(models.Model):
         return [{
             'contact_type': self.street,
             'street': self.street,
+            'street2': self.street2,
             'zip': self.zip,
             'city': self.city,
+            'state': self.state_id.code,
             'country': self.country_id.code,
         }]
 
@@ -1528,7 +1530,7 @@ class ResPartner(models.Model):
         """
         assert validation in (False, 'error', 'setnull')
         value = normalize_identifier(value)
-        if not value:
+        if not value or self.env.context.get('no_vat_validation'):
             return {'valid': True, 'value': value, 'example': None}
 
         if (tin_meta := TIN_METADATA.get(key)) and (country_code := tin_meta.get('countries')[:1]):

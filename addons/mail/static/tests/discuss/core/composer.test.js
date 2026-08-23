@@ -82,7 +82,7 @@ test("send is_typing on adding emoji", async () => {
     await start();
     await openDiscuss(channelId);
     await click("button[title='Add Emojis']");
-    await insertText("input[placeholder='Search emoji']", "Santa Claus");
+    await insertText(".o-EmojiPicker-search input", "Santa Claus");
     await click(".o-Emoji:text('🎅')");
     await expect.waitForSteps(["notify_typing"]);
     testEnded = true;
@@ -98,7 +98,7 @@ test("add an emoji after a command", async () => {
     await openDiscuss(channelId);
     await contains(".o-mail-Composer-input", { value: "" });
     await insertText(".o-mail-Composer-input", "/");
-    await click(":nth-child(3 of .o-mail-Composer-suggestion)");
+    await click(":nth-child(2 of .o-mail-Composer-suggestion)");
     await contains(".o-mail-Composer-input", { value: "/who " });
     await click("button[title='Add Emojis']");
     await click(".o-Emoji:text('😊')");
@@ -197,6 +197,9 @@ test("keep mentions when channel post is deferred", async () => {
     onRpcBefore("/mail/message/post", (args) => {
         expect.step("/mail/message/post");
         expect(args.post_data.partner_ids).toEqual([serverState.partnerId]);
+        expect(args.post_data.partner_ids_mention_token).toEqual({
+            [serverState.partnerId]: serverState.partnerId,
+        });
     });
     await start();
     await openDiscuss(channelId);

@@ -14,11 +14,11 @@
                 <separator/>
                 <filter string="Payment Date" name="payment_date" date="payment_date"/>
                 <separator/>
-                <filter string="Handed" name="checks_on_hand" domain="[('issue_state', '=', 'handed')]"/>
+                <filter string="Handed" name="checks_handed" domain="[('issue_state', '=', 'handed')]"/>
                 <filter string="Voided" name="checks_voided" domain="[('issue_state', '=', 'voided')]"/>
                 <filter string="Debited" name="checks_debited" domain="[('issue_state', '=', 'debited')]"/>
                 <separator/>
-                <filter string="Partner" name="groupby_partner" domain="[]" context="{'group_by': 'partner_id'}"/>
+                <filter string="Customer/Vendor" name="groupby_partner" domain="[]" context="{'group_by': 'partner_id'}"/>
                 <filter string="Payment Date" name="groupby_date" domain="[]" context="{'group_by': 'payment_date'}"/>
                 <filter string="State" name="groupby_issue_state" domain="[]" context="{'group_by': 'issue_state'}"/>
                 <filter string="Company" name="groupby_company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
@@ -40,11 +40,12 @@
         <field name="mode">primary</field>
         <field name="inherit_id" ref="view_account_payment_search"/>
         <field name="arch" type="xml">
-            <filter name="checks_on_hand" position="replace"/>
+            <filter name="checks_handed" position="replace"/>
             <filter name="checks_voided" position="replace"/>
             <filter name="checks_debited" position="replace">
-                <filter string="On hand" name="checks_on_hand"
-                    domain="[('current_journal_id.inbound_payment_method_line_ids.payment_method_id.code', '=', 'in_third_party_checks')]"/>
+                <filter string="On hand"
+                    name="checks_on_hand"
+                    domain="[('on_hand', '=', True)]"/>
             </filter>
             <field name="original_journal_id" position="before">
                 <field name="bank_account_id"/>
@@ -65,11 +66,11 @@
         <field name="priority" eval="99"/>
         <field name="arch" type="xml">
             <list default_order="date desc, id desc, name desc" create="false" delete="false" duplicate="false" >
-                <field name="date" readonly="state in ['cancel', 'posted']"/>
+                <field name="date" readonly="state != 'draft'"/>
                 <field name="name"/>
                 <field name="payment_type"/>
                 <field name="journal_id"/>
-                <field name="partner_id" string="Customer"/>
+                <field name="partner_id"/>
                 <field name="state" column_invisible="True"/>
             </list>
         </field>
@@ -131,6 +132,7 @@
                             <field name="payment_date"/>
                             <field name="original_journal_id"/>
                             <field name="current_journal_id" invisible="issue_state"/>
+                            <field name="first_payment_date" invisible="issue_state"/>
                         </group>
                         <group>
                             <field name="amount"/>
@@ -138,6 +140,7 @@
                             <field name="issuer_vat"  invisible="issue_state"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="memo" invisible="issue_state"/>
                         </group>
                     </group>
                 </sheet>
@@ -161,7 +164,7 @@
                     <field name="original_journal_id"/>
                     <field name="company_id" optional="hide" groups="base.group_multi_company"/>
                     <field name="payment_method_line_id" column_invisible="True"/>
-                    <field name="partner_id" string="Customer"/>
+                    <field name="partner_id" string="Vendor"/>
                     <field name="amount"  optional="show"/>
                     <field name="currency_id" string="Payment Currency" optional="hide"/>
                     <field name="issue_state" widget="badge" decoration-info="issue_state == 'handed'"  decoration-muted="issue_state in ('voided','debited')"/>
@@ -175,8 +178,8 @@
         <field name="view_mode">list,form,calendar,graph,pivot</field>
         <field name="view_id" ref="view_account_own_check_tree"/>
         <field name="search_view_id" ref="view_account_payment_search"/>
-        <field name="domain">[('outstanding_line_id', '!=', False)]</field>
-        <field name="context">{'search_default_checks_on_hand': True}</field>
+        <field name="domain">[('payment_method_code', '=', 'own_checks')]</field>
+        <field name="context">{'search_default_checks_handed': True}</field>
     </record>
 
     <menuitem
@@ -199,6 +202,15 @@
             <field name="original_journal_id" position="replace">
                 <field name="current_journal_id" string="Current Journal"/>
             </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="string">Customer</attribute>
+            </field>
+            <field name="payment_date" position="after">
+                <field name="first_payment_date" optional="hide"/>
+            </field>
+            <field name="currency_id" position="after">
+                <field name="memo" optional="hide"/>
+            </field>
 
             <list position="inside">
                 <header>
@@ -214,8 +226,8 @@
         <field name="view_mode">list,form,calendar,graph,pivot</field>
         <field name="view_id" ref="view_account_third_party_check_tree"/>
         <field name="search_view_id" ref="l10n_latam_check.view_account_payment_third_party_checks_search"/>
-        <field name="domain">[('payment_method_code', '=', 'new_third_party_checks'), ('payment_id.state', '!=', 'draft')]</field>
-        <field name="context">{'search_default_checks_on_hand': 1}</field>
+        <field name="domain">[('payment_method_code', 'in', ('new_third_party_checks', 'in_third_party_checks', 'out_third_party_checks', 'return_third_party_checks'))]</field>
+        <field name="context">{'search_default_checks_on_hand': True}</field>
     </record>
 
     <menuitem

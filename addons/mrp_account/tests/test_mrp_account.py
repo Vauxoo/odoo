@@ -106,8 +106,7 @@ class TestMrpAccount(TestBomPriceCommon):
             [
                 {'remaining_qty': 0.0, 'value': 718.75, 'quantity': 1.0},
                 {'remaining_qty': 1.0, 'value': 918.75, 'quantity': 1.0},
-                # Unbuild move value is derived from MO_2, as precised on the unbuild form
-                {'remaining_qty': 0.0, 'value': 718.75, 'quantity': 1.0},
+                {'remaining_qty': 0.0, 'value': -718.75, 'quantity': 1.0},
             ],
         )
         self._make_out_move(self.dining_table, 1)
@@ -116,9 +115,8 @@ class TestMrpAccount(TestBomPriceCommon):
             [
                 {'remaining_qty': 0.0, 'value': 718.75, 'quantity': 1.0},
                 {'remaining_qty': 0.0, 'value': 918.75, 'quantity': 1.0},
-                {'remaining_qty': 0.0, 'value': 718.75, 'quantity': 1.0},
-                # Out move value is derived from MO_1, the only candidate origin with some `remaining_qty`
-                {'remaining_qty': 0.0, 'value': 918.75, 'quantity': 1.0},
+                {'remaining_qty': 0.0, 'value': -718.75, 'quantity': 1.0},
+                {'remaining_qty': 0.0, 'value': -918.75, 'quantity': 1.0},
             ],
         )
 
@@ -251,7 +249,7 @@ class TestMrpAccount(TestBomPriceCommon):
             'additional': True,
             'state': 'done',
         })
-        self.assertEqual(extra_move.value, extra_product.standard_price, "extra move must be valued at standard_price * qty")
+        self.assertEqual(extra_move.value, -extra_product.standard_price, "extra move must be valued at standard_price * qty")
 
         overview_after = self.env['report.mrp.report_mo_overview'].get_report_values(mo.id)
         mo_cost_after = overview_after['data']['summary']['mo_cost']

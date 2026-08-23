@@ -20,6 +20,7 @@ from odoo import api, fields, models, _, SUPERUSER_ID, modules
 from odoo.addons.account.tools import format_structured_reference_iso
 from odoo.exceptions import UserError, ValidationError, AccessError, RedirectWarning
 from odoo.fields import Command, Domain
+from odoo.tools.mimetypes import guess_mimetype
 from odoo.tools.misc import clean_context
 from odoo.tools import (
     date_utils,
@@ -745,7 +746,10 @@ class AccountMove(models.Model):
         comodel_name='account.cash.rounding',
         string='Cash Rounding Method',
         help='Defines the smallest coinage of the currency that can be used to pay by cash.',
+        compute='_compute_invoice_cash_rounding_id',
+        store=True, readonly=False, index=True,
     )
+    has_biggest_tax_cash_rounding_line = fields.Boolean(compute='_compute_has_biggest_tax_cash_rounding_line')
     sending_data = fields.Json(copy=False)
     invoice_pdf_report_id = fields.Many2one(
         comodel_name='ir.attachment',
@@ -1282,8 +1286,8 @@ class AccountMove(models.Model):
                         ARRAY_AGG(counterpart_move.move_type) AS counterpart_move_types,
                         COALESCE(BOOL_AND(COALESCE(pay.is_matched, FALSE))
                             FILTER (WHERE counterpart_move.origin_payment_id IS NOT NULL), TRUE) AS all_payments_matched,
-                        BOOL_OR(COALESCE(BOOL(pay.id), FALSE)) as has_payment,
-                        BOOL_OR(COALESCE(BOOL(counterpart_move.statement_line_id), FALSE)) as has_st_line
+                        BOOL_OR(pay.id IS NOT NULL) as has_payment,
+                        BOOL_OR(counterpart_move.statement_line_id IS NOT NULL) as has_st_line
                     FROM account_partial_reconcile part
                     JOIN account_move_line source_line ON source_line.id = part.%s
                     JOIN account_account account ON account.id = source_line.account_id
@@ -1888,6 +1892,7 @@ class AccountMove(models.Model):
         'invoice_line_ids.price_total',
         'invoice_line_ids.price_subtotal',
         'invoice_payment_term_id',
+        'invoice_cash_rounding_id',
         'partner_id',
         'currency_id',
         'document_tax_mode',
@@ -2532,6 +2537,36 @@ class AccountMove(models.Model):
             elif not move.document_tax_mode:
                 company = move.company_id or self.env.company
                 move.document_tax_mode = company.account_price_include
+
+    @api.depends('currency_id', 'partner_id.category_id', 'preferred_payment_method_line_id')
+    def _compute_invoice_cash_rounding_id(self):
+        sale_moves = self.filtered(lambda move: move.is_sale_document(include_receipts=True) and move.state == 'draft')
+        if not sale_moves:
+            return
+        CashRounding = self.env['account.cash.rounding']
+        cash_roundings = CashRounding.search([
+            *CashRounding._check_company_domain(sale_moves.company_id),
+            '|', '|',
+            ('currency_ids', 'in', sale_moves.currency_id.ids),
+            ('partner_category_ids', 'in', sale_moves.partner_id.category_id.ids),
+            ('payment_method_line_ids', 'in', sale_moves.preferred_payment_method_line_id.ids),
+        ])
+        if not cash_roundings:
+            return
+        for move in sale_moves:
+            move.invoice_cash_rounding_id = next((
+                cash_rounding
+                for cash_rounding in cash_roundings
+                if (not cash_rounding.company_id or cash_rounding.company_id == move.company_id)
+                and (not cash_rounding.currency_ids or move.currency_id in cash_rounding.currency_ids)
+                and (not cash_rounding.partner_category_ids or move.partner_id.category_id & cash_rounding.partner_category_ids)
+                and (not cash_rounding.payment_method_line_ids or move.preferred_payment_method_line_id in cash_rounding.payment_method_line_ids)
+            ), False)
+
+    @api.depends('invoice_cash_rounding_id.strategy', 'line_ids')
+    def _compute_has_biggest_tax_cash_rounding_line(self):
+        for move in self:
+            move.has_biggest_tax_cash_rounding_line = move.invoice_cash_rounding_id.strategy == 'biggest_tax' and any(line.display_type == 'rounding' for line in move.line_ids)
 
     # -------------------------------------------------------------------------
     # ALERTS
@@ -3972,10 +4007,14 @@ class AccountMove(models.Model):
             # Disallow modifying readonly fields on a posted move
             move_state = vals.get('state', move.state)
             if not self.env.context.get('skip_readonly_check') and move_state == "posted" and modified_accounting_fields:
-                raise UserError(_("You cannot modify the following readonly fields on a posted move: %s", ', '.join(
-                    self._fields[fname]._description_string(self.env)
-                    for fname in modified_accounting_fields
-                )))
+                raise UserError(self.env._(
+                    "You cannot modify the following readonly fields on the posted move %(move)s: %(fields)s",
+                    move=move.name or move.ref or move.id,
+                    fields=', '.join(
+                        self._fields[fname]._description_string(self.env)
+                        for fname in modified_accounting_fields
+                    ),
+                ))
 
             if move.journal_id.sequence_override_regex and vals.get('name') and vals['name'] != '/' and not re.match(move.journal_id.sequence_override_regex, vals['name']):
                 if not self.env.user.has_group('account.group_account_manager'):
@@ -4850,7 +4889,7 @@ class AccountMove(models.Model):
 
         self.flush_model(['date', 'auto_post_origin_id'])
         values = SQL(', ').join(
-            SQL('(%s::int4, %s::int4, %s::date)', move.id, move.auto_post_origin_id.id, next_date)
+            SQL('(%s::int8, %s::int8, %s::date)', move.id, move.auto_post_origin_id.id, next_date)
             for move, next_date in moves_next_dates
         )
         recurrence_exists = dict(self.env.execute_query(SQL(
@@ -7380,6 +7419,13 @@ class AccountMove(models.Model):
             return [self._get_invoice_pdf_proforma()]
         return []
 
+    def _message_set_main_attachment_id(self, attachments, force=False, filter_xml=True):
+        if filter_xml:
+            attachments = attachments.filtered(
+                lambda att: not (att.mimetype == 'text/plain' and guess_mimetype(att.raw or b'').endswith('/xml'))
+            )
+        super()._message_set_main_attachment_id(attachments, force=force, filter_xml=filter_xml)
+
     def _get_invoice_report_filename(self, extension='pdf', report=None):
         """ Get the filename of the generated invoice report with extension file. """
         self.ensure_one()
@@ -7490,6 +7536,13 @@ class AccountMove(models.Model):
             if journal := journal_by_account_id.get(line.account_id.id):
                 lines_by_journal[journal] += line
 
+        opening_balance_payment_ref = self.env._("Opening balance")
+
+        existing_bank_statement_lines = dict(self.env['account.bank.statement.line']._read_group([
+            ('journal_id', 'in', [journal.id for journal in lines_by_journal]),
+            ('payment_ref', '=', opening_balance_payment_ref),
+        ], groupby=['journal_id'], aggregates=['id:recordset']))
+
         for journal, opening_lines in lines_by_journal.items():
             balance = sum(opening_lines.mapped('balance'))
             if self.company_id.currency_id.is_zero(balance):
@@ -7502,6 +7555,14 @@ class AccountMove(models.Model):
             else:
                 amount = balance
 
+            statement_line = existing_bank_statement_lines.get(journal)
+            if statement_line and len(statement_line) == 1:
+                # Delete statement, statement lines and move so that everything is correctly re-created
+                move = statement_line.move_id
+                statement_line.statement_id.unlink()
+                move.button_draft()
+                move.unlink()  # Deletes move and statement line
+
             self.env['account.bank.statement'].create({
                 'name': self.env._("Opening Balance"),
                 'date': self.date,
@@ -7509,7 +7570,7 @@ class AccountMove(models.Model):
                 'line_ids': [
                     Command.create({
                         'date': self.date,
-                        'payment_ref': self.env._("Opening balance"),
+                        'payment_ref': opening_balance_payment_ref,
                         'amount': amount,
                         'journal_id': journal.id,
                         'counterpart_account_id': unaffected_earnings_account,
@@ -7996,3 +8057,36 @@ class AccountMove(models.Model):
         with the Documents app.
         """
         return self.message_main_attachment_id
+
+    def get_cash_roundings(self, limit=5):
+        """
+        returns the most relevant rounding methods to the current invoice (or active company if invoice not saved yet).
+        """
+
+        # should be called only on one invoice (saved or not)
+        if len(self) > 1:
+            return
+
+        CashRounding = self.env['account.cash.rounding']
+
+        query = CashRounding._search(
+            domain=CashRounding._check_company_domain(self.company_id or self.env.company),
+            order=CashRounding._order,
+            limit=limit,
+        )
+        if self.invoice_cash_rounding_id:
+            query.order = SQL(
+                "(%s = %s) DESC, %s",
+                query.table.id,
+                self.invoice_cash_rounding_id.id,
+                query.order,
+            )
+        rows = self.env.execute_query(query.select(
+            query.table.id,
+            query.table.name,
+            SQL("COUNT(*) OVER ()"),
+        ))
+        return {
+            'total_length': rows[0][2] if rows else 0,
+            'records': [{'id': rounding_method_id, 'display_name': name} for rounding_method_id, name, _count in rows],
+        }

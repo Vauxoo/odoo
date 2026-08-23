@@ -7,7 +7,7 @@ import { RecordInternal } from "@mail/model/record_internal";
 import { parseRawValue } from "@mail/utils/common/local_storage";
 import { incrementFn } from "@mail/utils/common/signal";
 
-import { computed, htmlEscape, markup, signal, toRaw } from "@odoo/owl";
+import { computed, htmlEscape, markup, signal } from "@odoo/owl";
 
 import { browser } from "@web/core/browser/browser";
 import { deserializeDate, deserializeDateTime } from "@web/core/l10n/dates";
@@ -184,16 +184,14 @@ export class StoreInternal extends RecordInternal {
             }
         }
     }
-    /** @param {RecordList<Record>} recordListFullProxy */
-    sortRecordList(recordListFullProxy, func) {
-        const recordList = toRaw(recordListFullProxy)._raw;
-        // sort on copy of list so that reactive observers not triggered while sorting
-        const recordProxies = recordListFullProxy.data.map((record) => record._proxy);
+    /** @param {RecordList<Record>} recordList */
+    sortRecordList(recordList, func) {
+        const recordProxies = recordList._.data.map((record) => record._proxy);
         recordProxies.sort(func);
         const records = recordProxies.map((recordProxy) => recordProxy._raw);
-        const hasChanged = recordList.data.some((record, i) => record !== records[i]);
+        const hasChanged = recordList._.data.some((record, i) => record !== records[i]);
         if (hasChanged) {
-            recordListFullProxy.data = records;
+            recordList._.data = records;
         }
     }
     /**
@@ -247,8 +245,12 @@ export class StoreInternal extends RecordInternal {
     /**
      * @param {Record} record
      * @param {Object} vals
+     * @param {Object} [options={}]
+     * @param {boolean} [options.forceApply=true] Apply the values even when the
+     * current insert version is out of order. Only versioned server data turns
+     * it off.
      */
-    updateFields(record, vals) {
+    updateFields(record, vals, { forceApply = true } = {}) {
         const fieldEntries = Object.entries(vals).concat(
             Object.getOwnPropertySymbols(vals).map((sym) => [sym, vals[sym]])
         );
@@ -271,10 +273,17 @@ export class StoreInternal extends RecordInternal {
                           ]?.[record.id]?.includes(fieldName),
                   }
                 : version.lastRevision;
-            const toApply = version.resolveApply(
-                isMany(record.Model, fieldName) ? normalizeManyCommands(value) : value,
-                revision
-            );
+            const normalized = isMany(record.Model, fieldName)
+                ? normalizeManyCommands(value)
+                : value;
+            // ".noinv" commands only come from inverse echoes: they are
+            // client-generated even when found inside server data to insert.
+            const toApply = version.resolveApply(normalized, revision, {
+                forceApply:
+                    forceApply ||
+                    (isCommandList(normalized) &&
+                        normalized.every(([mode]) => mode.endsWith(".noinv"))),
+            });
             if (toApply === SKIP_REVISION) {
                 continue;
             }
@@ -317,7 +326,7 @@ export class StoreInternal extends RecordInternal {
     updateRelationMany(recordList, value) {
         for (const [cmd, cmdData] of value) {
             if (cmd === "REPLACE") {
-                recordList._.assign(recordList, cmdData);
+                recordList._.assign(cmdData);
                 continue;
             }
             for (const item of cmdData) {
@@ -326,13 +335,13 @@ export class StoreInternal extends RecordInternal {
                         recordList.add(item);
                         break;
                     case "ADD.noinv":
-                        recordList._.addNoinv(recordList, item);
+                        recordList._.addNoinv(item);
                         break;
                     case "DELETE":
                         recordList.delete(item);
                         break;
                     case "DELETE.noinv":
-                        recordList._.deleteNoinv(recordList, item);
+                        recordList._.deleteNoinv(item);
                         break;
                 }
             }
@@ -349,9 +358,9 @@ export class StoreInternal extends RecordInternal {
             if (["ADD", "REPLACE"].includes(cmd)) {
                 recordList.add(cmdData);
             } else if (cmd === "ADD.noinv") {
-                recordList._.addNoinv(recordList, cmdData);
+                recordList._.addNoinv(cmdData);
             } else if (cmd === "DELETE.noinv") {
-                recordList._.deleteNoinv(recordList, cmdData);
+                recordList._.deleteNoinv(cmdData);
             } else {
                 recordList.delete(cmdData);
             }

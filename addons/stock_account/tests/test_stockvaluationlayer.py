@@ -255,6 +255,52 @@ class TestStockValuationStandard(TestStockValuationCommon):
         sub_loc_quant = self.product.stock_quant_ids.filtered(lambda q: q.location_id == sub_stock_loc)
         self.assertEqual(sub_loc_quant.quantity, 30)
 
+    def test_replay_backdate_in_the_past(self):
+        """Backdating a delivery before a standard price change replays the period:
+        its COGS is re-priced at the standard price effective on the new date."""
+        now = fields.Datetime.now()
+        with freeze_time(now - timedelta(days=10)):
+            self._make_in_move(self.product, 10, unit_cost=10)
+        with freeze_time(now - timedelta(days=6)):
+            self.product.standard_price = 15
+        with freeze_time(now - timedelta(days=2)):
+            move_out = self._make_out_move(self.product, 5)
+
+        self.assertEqual(move_out.value, -75)
+        self.assertEqual(self.product.total_value, 75)
+
+        move_out.date = now - timedelta(days=8)
+        self.assertEqual(move_out.value, -50)
+        self.assertEqual(self.product.total_value, 75)
+
+    def test_replay_change_cost_method(self):
+        """Switching the cost method replays the whole open period with the new method."""
+        self._make_in_move(self.product, 10, unit_cost=10)
+        self._make_in_move(self.product, 10, unit_cost=20)
+        move_out = self._make_out_move(self.product, 5)
+
+        self.assertEqual(move_out.value, -50)
+        self.assertEqual(self.product.total_value, 150)
+
+        self.category_standard.property_cost_method = 'average'
+
+        self.assertEqual(move_out.value, -75)
+        self.assertEqual(self.product.standard_price, 15)
+        self.assertEqual(self.product.total_value, 225)
+
+    def test_replay_update_in_move_value(self):
+        """Updating the value of an in move that is already delivered."""
+        move_in = self._make_in_move(self.product, 10, unit_cost=10)
+        move_out = self._make_out_move(self.product, 10)
+
+        self.assertEqual(move_out.value, -100)
+        self.assertEqual(self.product.total_value, 0)
+
+        move_in.value_manual = 150
+        self.assertEqual(move_in.value, 150)
+        self.assertEqual(move_out.value, -100)
+        self.assertEqual(self.product.total_value, 0)
+
 
 class TestStockValuationAVCO(TestStockValuationCommon):
     _test_user_groups = (
@@ -365,7 +411,6 @@ class TestStockValuationAVCO(TestStockValuationCommon):
         Receive a product twice, return one unit and deliver the other one.
         The total value should be 0 and the price should be (10+20)/2 = 15.
         Return the delivery and set the original quantity to 0.
-        The total value should be 15.
         """
         move1 = self._make_in_move(self.product, 1, unit_cost=10, create_picking=True)
         self._make_in_move(self.product, 1, unit_cost=20)
@@ -378,7 +423,7 @@ class TestStockValuationAVCO(TestStockValuationCommon):
 
         self._make_return(move2, 1)
         move2.quantity = 0
-        self.assertEqual(self.product.with_context(to_date=fields.Datetime.now() + timedelta(days=1)).total_value, 15.0)
+        self.assertEqual(self.product.with_context(to_date=fields.Datetime.now() + timedelta(days=1)).total_value, 30.0)
 
     def test_return_delivery_1(self):
         self._make_in_move(self.product, 1, unit_cost=10)
@@ -480,7 +525,7 @@ class TestStockValuationAVCO(TestStockValuationCommon):
 
         self._make_out_move(self.product, 10)
         out_move = self._make_out_move(self.product, 9)
-        self.assertEqual(out_move.value, 165.74)
+        self.assertEqual(out_move.value, -165.74)
 
         self.assertEqual(self.product.total_value, 18.42)
         self.assertEqual(self.product.qty_available, 1)
@@ -533,6 +578,49 @@ class TestStockValuationAVCO(TestStockValuationCommon):
         self.assertAlmostEqual(abs(move3.value), abs(move4.value))
         self.assertAlmostEqual(self.product.total_value, 25.33)
         self.assertEqual(self.product.qty_available, 2)
+
+    def test_replay_backdate_in_the_past(self):
+        """Backdating an in move to the oldest position replays the period: the AVCO
+        out moves are re-priced with the new chronological average."""
+        now = fields.Datetime.now()
+        self._make_in_move(self.product, 10, unit_cost=10)
+        move_out = self._make_out_move(self.product, 8)
+        move_in_2 = self._make_in_move(self.product, 10, unit_cost=20)
+
+        self.assertEqual(move_out.value, -80)
+        self.assertEqual(self.product.total_value, 220)
+
+        move_in_2.date = now - timedelta(days=15)
+        self.assertEqual(move_out.value, -120)
+        self.assertEqual(self.product.total_value, 180)
+
+    def test_replay_change_cost_method(self):
+        """Switching the cost method replays the whole open period with the new method."""
+        self._make_in_move(self.product, 10, unit_cost=10)
+        self._make_in_move(self.product, 10, unit_cost=20)
+        move_out = self._make_out_move(self.product, 5)
+
+        self.assertEqual(move_out.value, -75)
+        self.assertEqual(self.product.total_value, 225)
+
+        self.category_avco.property_cost_method = 'fifo'
+
+        self.assertEqual(move_out.value, -50)
+        self.assertEqual(self.product.total_value, 250)
+
+    def test_replay_update_in_move_value(self):
+        """Updating the value of an in move that is already delivered re-prices the
+        AVCO out moves that consumed it."""
+        move_in = self._make_in_move(self.product, 10, unit_cost=10)
+        move_out = self._make_out_move(self.product, 10)
+
+        self.assertEqual(move_out.value, -100)
+        self.assertEqual(self.product.total_value, 0)
+
+        move_in.value_manual = 150
+        self.assertEqual(move_in.value, 150)
+        self.assertEqual(move_out.value, -150)
+        self.assertEqual(self.product.total_value, 0)
 
 
 class TestStockValuationFIFO(TestStockValuationCommon):
@@ -702,7 +790,7 @@ class TestStockValuationFIFO(TestStockValuationCommon):
         self._make_in_move(self.product, 10, unit_cost=2)
         self._make_return(move1, 10)
 
-        self.assertEqual(self.product.total_value, 10)
+        self.assertEqual(self.product.total_value, 20)
         self.assertEqual(self.product.qty_available, 10)
 
     def test_currency_precision_and_fifo_value(self):
@@ -777,6 +865,50 @@ class TestStockValuationFIFO(TestStockValuationCommon):
         self.assertEqual(self.product.total_value, 50.0)
         self._make_out_move(self.product, 5)
         self.assertEqual(self.product.total_value, 0.0)
+
+    def test_replay_backdate_in_the_past(self):
+        """Backdating an in move to the oldest position replays the period: the FIFO
+        out moves consume from the re-ordered stack."""
+        now = fields.Datetime.now()
+        self._make_in_move(self.product, 10, unit_cost=10)
+        move_out = self._make_out_move(self.product, 8)
+        move_in_2 = self._make_in_move(self.product, 10, unit_cost=20)
+
+        self.assertEqual(move_out.value, -80)
+        self.assertEqual(self.product.total_value, 220)
+
+        move_in_2.date = now - timedelta(days=15)
+        self.assertEqual(move_out.value, -160)
+        self.assertEqual(self.product.total_value, 140)
+
+    def test_replay_change_cost_method(self):
+        """Switching the cost method replays the whole open period with the new method."""
+        self._make_in_move(self.product, 10, unit_cost=10)
+        self._make_in_move(self.product, 10, unit_cost=20)
+        move_out = self._make_out_move(self.product, 5)
+
+        self.assertEqual(move_out.value, -50)
+        self.assertEqual(self.product.total_value, 250)
+
+        self.category_fifo.property_cost_method = 'average'
+
+        self.assertEqual(move_out.value, -75)
+        self.assertEqual(self.product.standard_price, 15)
+        self.assertEqual(self.product.total_value, 225)
+
+    def test_replay_update_in_move_value(self):
+        """Updating the value of an in move that is already delivered re-prices the
+        FIFO out moves that consumed it."""
+        move_in = self._make_in_move(self.product, 10, unit_cost=10)
+        move_out = self._make_out_move(self.product, 10)
+
+        self.assertEqual(move_out.value, -100)
+        self.assertEqual(self.product.total_value, 0)
+
+        move_in.value_manual = 150
+        self.assertEqual(move_in.value, 150)
+        self.assertEqual(move_out.value, -150)
+        self.assertEqual(self.product.total_value, 0)
 
 
 class TestStockValuationChangeCostMethod(TestStockValuationCommon):
@@ -1001,7 +1133,8 @@ class TestAngloSaxonAccounting(TestStockValuationCommon):
 
     def test_avco_and_credit_note(self):
         """
-        When reversing an invoice that contains some anglo-saxo AML, the new anglo-saxo AML should have the same value
+        When reversing an invoice that contains some anglo-saxo AML, the COGS is
+        re-evaluated at the current average cost (like any other COGS line).
         """
         # Required for `account_id` to be visible in the view
         self.env.user.group_ids += self.env.ref('account.group_account_readonly')
@@ -1026,8 +1159,8 @@ class TestAngloSaxonAccounting(TestStockValuationCommon):
 
         anglo_lines = reverse_invoice.line_ids.filtered(lambda l: l.display_type == 'cogs')
         self.assertEqual(len(anglo_lines), 2)
-        self.assertEqual(abs(anglo_lines[0].balance), 10)
-        self.assertEqual(abs(anglo_lines[1].balance), 10)
+        self.assertEqual(abs(anglo_lines[0].balance), 15)
+        self.assertEqual(abs(anglo_lines[1].balance), 15)
 
     def test_return_delivery_storno(self):
         """ When using STORNO accounting, reverse accounting moves should have negative values for credit/debit.

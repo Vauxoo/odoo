@@ -979,19 +979,24 @@ class SaleOrder(models.Model):
 
         return 0, 0
 
-    @api.depends("order_line.qty_delivered", "order_line.product_uom_qty", "state")
+    @api.depends(
+        "order_line.qty_delivered", "order_line.product_uom_qty", "state", "order_line.product_id"
+    )
     def _compute_delivery_status(self):
         for order in self:
-            if order.state != "sale" or not order.order_line:
+            lines_to_deliver = order.order_line.filtered(
+                lambda line: line.product_id.type == "consu"
+            )
+            if order.state != "sale" or not lines_to_deliver:
                 order.delivery_status = False
             elif all(
                 line.qty_delivered >= line.product_uom_qty
                 if line.product_uom_qty > 0
                 else line.qty_delivered <= line.product_uom_qty
-                for line in order.order_line
+                for line in lines_to_deliver
             ):
                 order.delivery_status = "full"
-            elif any(line.qty_delivered for line in order.order_line):
+            elif any(line.qty_delivered for line in lines_to_deliver):
                 order.delivery_status = "partial"
             else:
                 order.delivery_status = "pending"
@@ -1320,8 +1325,8 @@ class SaleOrder(models.Model):
     @api.onchange("pricelist_id")
     def _onchange_pricelist_id_recompute_prices(self):
         # DO NOT ADD the `pricelist_id` as dependency to the order lines compute methods as it
-        # would trigger unwanted recomputations as the orm recomputes all depending fields regardless
-        # of whether the field was effectively modified.
+        # would trigger unwanted recomputations as the orm recomputes all depending fields
+        # regardless of whether the field was effectively modified.
         if self.order_line:
             self._recompute_prices()
 
@@ -1401,10 +1406,16 @@ class SaleOrder(models.Model):
                 # Only update the combo item lines if the line's combo choices haven't changed.
                 and combo_item_lines.combo_item_id.combo_id == line.product_template_id.combo_ids
             ):
-                combo_item_lines.update({
-                    "product_uom_qty": line.product_uom_qty,
-                    "discount": line.discount,
-                })
+                lines_to_sync = combo_item_lines.filtered(
+                    lambda cil: (
+                        cil.product_uom_qty != line.product_uom_qty or cil.discount != line.discount
+                    )
+                )
+                if lines_to_sync:
+                    lines_to_sync.update({
+                        "product_uom_qty": line.product_uom_qty,
+                        "discount": line.discount,
+                    })
 
     # === CRUD METHODS ===#
 
@@ -2751,6 +2762,28 @@ class SaleOrder(models.Model):
                 "template": "/sale/static/xls/quotations_import_template.xlsx",
             }
         ]
+
+    @api.model
+    def batch_onchange_sol(self, lines_data, order_changes, fields_spec):
+        """Batch `sale.order.line` onchange calls into a single RPC.
+
+        :param dict lines_data: {line_id: {"ids", "changes", "field_name"}}, one entry per line
+        :param dict fields_spec: onchange fields spec, shared by every line
+        :return: {line_id: recomputed values}
+        :rtype: dict
+        """
+        SaleOrderLine = self.env["sale.order.line"]
+        result = {}
+        for line_id, data in lines_data.items():
+            onchange_values = {**data["changes"], **order_changes}
+            values = (
+                SaleOrderLine
+                .browse(data["ids"])
+                .onchange(onchange_values, data["changed_fields"], fields_spec)
+                .get("value", {})
+            )
+            result[line_id] = values
+        return result
 
     # For `sale_management`, to control optional products on portal
     def _can_be_edited_on_portal(self):

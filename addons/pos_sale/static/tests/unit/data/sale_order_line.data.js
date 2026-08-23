@@ -118,6 +118,9 @@ export class SaleOrderLine extends models.ServerModel {
             qty_invoiced: 0,
             qty_to_invoice: 0,
             tax_ids: [],
+            extra_tax_data: {
+                computation_key: "down_payment,5",
+            },
             write_date: "2025-07-03 17:04:14",
         },
         {
@@ -445,7 +448,7 @@ export class SaleOrderLine extends models.ServerModel {
             tax_ids: [],
             is_downpayment: false,
             extra_tax_data: {},
-            product_no_variant_attribute_value_ids: [7],
+            product_no_variant_attribute_value_ids: [11],
             product_custom_attribute_value_ids: [1],
             write_date: "2025-07-03 17:04:14",
         },

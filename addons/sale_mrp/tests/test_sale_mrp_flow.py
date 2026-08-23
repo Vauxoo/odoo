@@ -2881,7 +2881,7 @@ class TestSaleMrpFlow(TestSaleMrpFlowCommon):
         expense_line = invoice.line_ids.filtered(lambda line: line.account_name == "Expenses")
         correct_amount = 16  # 2.5 * 4 + 6 * 1
         self.assertTrue(expense_line, "COGS entry was not generated")
-        self.assertAlmostEqual(expense_line.debit, correct_amount, "COGS entry has the incorrect ammount")
+        self.assertEqual(expense_line.debit, correct_amount, "COGS entry has the incorrect ammount")
 
     def test_mto_manufacture_so_qty_update_merges_finished_moves(self):
         """
@@ -3036,7 +3036,7 @@ class TestSaleMrpFlow(TestSaleMrpFlowCommon):
         delivery.button_validate()
         self.assertEqual(delivery.state, 'done')
         # Delivery must be valued at lot2's FIFO cost: 20$
-        self.assertAlmostEqual(delivery.move_ids.value, 20.0, places=2)
+        self.assertAlmostEqual(delivery.move_ids.value, -20.0, places=2)
         # Invoice and confirm COGS uses lot2's valuation
         invoice = so._create_invoices()
         invoice.action_post()

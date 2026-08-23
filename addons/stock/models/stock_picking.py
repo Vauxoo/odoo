@@ -1469,8 +1469,22 @@ class StockPicking(models.Model):
         done_incoming_moves = self.filtered(lambda p: p.picking_type_id.code in ('incoming', 'internal')).move_ids.filtered(lambda m: m.state == 'done')
         done_incoming_moves._trigger_assign()
 
+        self._intercompany_unpack()
         self._send_confirmation_email()
         return True
+
+    def _intercompany_unpack(self):
+        if not self.env.user.has_group('stock.group_tracking_lot') or\
+           not self.env['ir.config_parameter'].sudo().get_bool('stock.intercompany_auto_unpack'):
+            return
+        for picking in self:
+            if not picking.partner_id:
+                continue
+            destination_company = self.env['res.company'].sudo().search([('partner_id', 'parent_of', picking.partner_id.id)], limit=1)
+            if destination_company == picking.company_id:
+                continue
+            moves = picking.move_ids.filtered(lambda m: m.location_dest_id.usage == 'transit')
+            moves.move_line_ids.result_package_id.unpack()
 
     def _send_confirmation_email(self):
         subtype_id = self.env['ir.model.data']._xmlid_to_res_id('mail.mt_comment')
@@ -2294,7 +2308,7 @@ class StockPicking(models.Model):
             if picking.picking_type_id.auto_print_reception_report_labels:
                 moves_to_print_label |= picking.move_ids.move_dest_ids
         if pickings_to_print_reception_report:
-            action = self.env.ref('stock.stock_reception_report_action').report_action(pickings_to_print_reception_report, config=False)
+            action = self.env.ref('stock.action_report_picking').report_action(pickings_to_print_reception_report, config=False)
             clean_action(action, self.env)
             report_actions.append(action)
         if moves_to_print_label:

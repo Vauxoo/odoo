@@ -641,6 +641,13 @@ class TestAccountAccount(TestAccountMergeCommon):
         bank statement for each liquidity journal whose default account has a
         non zero opening balance, with the unaffected earnings account as counterpart.
         """
+        def get_lines(amounts_payment_ref, journal_id):
+            return [{
+                'payment_ref': name[0] if name else 'Opening balance',
+                'amount': amount,
+                'journal_id': journal_id,
+            } for (amount, *name) in amounts_payment_ref]
+
         company = self.env.company
         statement = self.env['account.bank.statement']
 
@@ -669,11 +676,7 @@ class TestAccountAccount(TestAccountMergeCommon):
             'date': opening_move.date,
             'journal_id': bank_journal.id,
         }])
-        self.assertRecordValues(statement.line_ids, [{
-            'payment_ref': 'Opening balance',
-            'amount': 1000.0,
-            'journal_id': bank_journal.id,
-        }])
+        self.assertRecordValues(statement.line_ids, get_lines([(1000.0,)], bank_journal.id))
 
         # The statement line's counterpart is the unaffected earnings account.
         counterpart_line = statement.line_ids.move_id.line_ids.filtered(lambda line: line.account_id != bank_account)
@@ -682,6 +685,56 @@ class TestAccountAccount(TestAccountMergeCommon):
         # The unaffected earnings account is not a liquidity journal's default account,
         # so no statement is created for it.
         self.assertFalse(statement.search([('journal_id.default_account_id', '=', unaffected_earnings_account.id)]))
+
+        # Resetting the opening move to draft and posting it again shouldn't create a duplicate opening statement
+        opening_move.button_draft()
+        bank_account.opening_debit = 2000.0  # update to make sure everything is balanced at the end
+        self.cr.flush()
+        opening_move.action_post()
+
+        # Previous statement should have been deleted
+        self.assertFalse(statement.exists())
+
+        statement = statement.search([('journal_id', '=', bank_journal.id)])
+        self.assertRecordValues(statement, [{
+            'name': 'Opening Balance',
+            'date': opening_move.date,
+            'journal_id': bank_journal.id,
+        }])
+        self.assertRecordValues(statement.line_ids, get_lines([(2000.0,)], bank_journal.id))
+
+        # Even when another statement was recorded on the journal, only the opening should be deleted and re-created
+        self.env['account.bank.statement'].create({
+            'name': 'statement_1',
+            'balance_start': 0.0,
+            'balance_end_real': 600.0,
+            'line_ids': [
+                Command.create({'payment_ref': 'line_1', 'amount': 600.0, 'journal_id': bank_journal.id}),
+            ],
+        })
+
+        opening_move.button_draft()
+        bank_account.opening_debit = 5000.0
+        self.cr.flush()
+        opening_move.action_post()
+        statement = statement.search([('journal_id', '=', bank_journal.id)])
+        self.assertRecordValues(statement.line_ids.sorted('amount'), get_lines([(600.0, 'line_1'), (5000.0,)], bank_journal.id))
+
+        # But if there's another statement line with the same payment_ref, none should be deleted and a new one should be created
+        self.env['account.bank.statement'].create({
+            'name': 'statement_2',
+            'balance_start': 0.0,
+            'balance_end_real': 450.0,
+            'line_ids': [
+                Command.create({'payment_ref': 'Opening balance', 'amount': 450.0, 'journal_id': bank_journal.id}),
+            ],
+        })
+        opening_move.button_draft()
+        bank_account.opening_debit = 999.0
+        self.cr.flush()
+        opening_move.action_post()
+        statement = statement.search([('journal_id', '=', bank_journal.id)])
+        self.assertRecordValues(statement.line_ids.sorted('amount'), get_lines([(450.0,), (600.0, 'line_1'), (999.0,), (5000.0,)], bank_journal.id))
 
     def test_unmerge(self):
         company_1 = self.company_data['company']
@@ -779,6 +832,67 @@ class TestAccountAccount(TestAccountMergeCommon):
         # Check that the XMLids were correctly unmerged
         self.assertEqual(self.env['account.chart.template'].ref('test_account_1'), account_to_unmerge)
         self.assertEqual(self.env['account.chart.template'].with_company(company_2).ref('test_account_2'), new_account)
+
+    def test_set_code_after_merging_accounts_with_no_code(self):
+        company_1 = self.company_data['company']
+        company_2 = self.company_data_2['company']
+
+        accounts = self.env['account.account']._load_records([
+            {
+                'xml_id': f'account.{company_1.id}_test_account_1',
+                'values': {
+                    'name': 'My First Account',
+                    'account_type': 'asset_receivable',
+                    'company_ids': [Command.link(company_1.id)],
+                },
+            },
+            {
+                'xml_id': f'account.{company_2.id}_test_account_2',
+                'values': {
+                    'name': 'My Second Account',
+                    'account_type': 'asset_receivable',
+                    'company_ids': [Command.link(company_2.id)],
+                },
+            },
+        ])
+        wizard = self._create_account_merge_wizard(accounts)
+        wizard.action_merge()
+
+        merged_account = accounts[0]
+        # should set the code with no errors
+        merged_account.code = '112233'
+
+    def test_unmerge_after_merging_accounts_with_no_code(self):
+        company_1 = self.company_data['company']
+        company_2 = self.company_data_2['company']
+
+        accounts = self.env['account.account']._load_records([
+            {
+                'xml_id': f'account.{company_1.id}_test_account_1',
+                'values': {
+                    'name': 'My First Account',
+                    'account_type': 'asset_receivable',
+                    'company_ids': [Command.link(company_1.id)],
+                },
+            },
+            {
+                'xml_id': f'account.{company_2.id}_test_account_2',
+                'values': {
+                    'name': 'My Second Account',
+                    'account_type': 'asset_receivable',
+                    'company_ids': [Command.link(company_2.id)],
+                },
+            },
+        ])
+        wizard = self._create_account_merge_wizard(accounts)
+        wizard.action_merge()
+
+        merged_account = accounts[0]
+        # should unmerge with no errors
+        merged_account.with_context({
+            'account_unmerge_confirm': True,
+            'allowed_company_ids': [company_1.id, company_2.id],
+        })._action_unmerge()
 
     def test_account_code_mapping(self):
         company_3 = self.env['res.company'].create({'name': 'company_3'})

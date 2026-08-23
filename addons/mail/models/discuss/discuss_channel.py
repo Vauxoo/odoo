@@ -1581,7 +1581,7 @@ class DiscussChannel(models.Model):
                         AND M2.partner_id NOT IN %(partner_ids)s
                 )
             GROUP BY M.channel_id
-            HAVING ARRAY_AGG(DISTINCT M.partner_id ORDER BY M.partner_id) = %(sorted_partner_ids)s
+            HAVING ARRAY_AGG(DISTINCT M.partner_id ORDER BY M.partner_id)::bigint[] = %(sorted_partner_ids)s::bigint[]
             LIMIT 1
                 """,
                 partner_ids=tuple(partners.ids),
@@ -1869,7 +1869,7 @@ class DiscussChannel(models.Model):
                 for member in members
             }
             msg = _(
-                "Users in this channel: %(members)s.",
+                "Members of this conversation: %(members)s.",
                 members=member_names,
             )
         else:

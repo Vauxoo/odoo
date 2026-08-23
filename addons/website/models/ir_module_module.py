@@ -31,6 +31,7 @@ class IrModuleModule(models.Model):
     _theme_translated_fields = {
         'theme.ir.ui.view': [('theme.ir.ui.view,arch', 'ir.ui.view,arch_db')],
         'theme.website.menu': [('theme.website.menu,name', 'website.menu,name')],
+        'theme.website.page': [('theme.website.page,url', 'website.page,url')],
     }
 
     image_ids = fields.One2many('ir.attachment', 'res_id',
@@ -558,7 +559,7 @@ class IrModuleModule(models.Model):
                SET name = %(o_menu_name)s
               FROM website_menu o_menu
              INNER JOIN website_menu s_menu
-                ON o_menu.name->>'en_US' = s_menu.name->>'en_US' AND o_menu.url = s_menu.url
+                ON o_menu.name->>'en_US' = s_menu.name->>'en_US'
              INNER JOIN website_menu root_menu
                 ON s_menu.parent_id = root_menu.id AND root_menu.parent_id IS NULL
              WHERE o_menu.website_id IS NULL AND o_menu.parent_id = %(default_menu_id)s

@@ -46,7 +46,7 @@ class MrpWorkorder(models.Model):
         related='production_id.reservation_state', store=True) # Technical: used in views and domains only
     production_state = fields.Selection(
         string='Production State', readonly=True,
-        related='production_id.state') # Technical: used in views only
+        related='production_id.state', tracking=False)  # Technical: used in views only
     production_bom_id = fields.Many2one('mrp.bom', related='production_id.bom_id')
     qty_production = fields.Float('Original Production Quantity', readonly=True, related='production_id.product_qty')
     company_id = fields.Many2one(related='production_id.company_id')
@@ -168,7 +168,7 @@ class MrpWorkorder(models.Model):
             has_qty_ready = workorder.uom_id.compare(workorder.qty_ready, 0) > 0
             continuous_production = not workorder.blocked_by_workorder_ids or workorder.production_bom_id.continuous
             has_all_qties_ready = workorder.uom_id.compare(workorder.qty_ready, workorder.qty_remaining) == 0 and continuous_production
-            if workorder.production_bom_id.continuous and workorder.qty_produced and workorder.state != 'blocked':
+            if workorder.qty_produced and workorder.state != 'blocked':
                 workorder.state = 'progress'
             elif all_blocked_by_workorders_done or has_all_qties_ready or (has_qty_ready and continuous_production):
                 workorder.state = 'ready'
@@ -347,50 +347,52 @@ class MrpWorkorder(models.Model):
         for order in self:
             order.cost = order._compute_current_operation_cost()
 
-    def _set_duration(self):
+    def _set_duration(self, employee_id=None, employee_duration=None):
 
-        def _float_duration_to_second(duration):
-            minutes = duration // 1
-            seconds = (duration % 1) * 60
-            return minutes * 60 + seconds
+        if employee_id is not None:
+            self.ensure_one()
+            assert employee_duration is not None
 
         for order in self:
+
             old_order_duration = order.get_duration()
-            new_order_duration = order.duration
+            if employee_id is not None:
+                delta_duration = employee_duration - sum(order.get_employee_duration(employee_id))
+                new_order_duration = order.duration + delta_duration
+            else:
+                new_order_duration = order.duration
+                delta_duration = new_order_duration - old_order_duration
+
             if new_order_duration == old_order_duration:
                 continue
-
-            delta_duration = new_order_duration - old_order_duration
 
             if delta_duration > 0:
                 if order.state not in ('progress', 'done', 'cancel'):
                     order.state = 'progress'
-                enddate = fields.Datetime.now()
-                date_start = enddate - timedelta(seconds=_float_duration_to_second(delta_duration))
+                date_end = fields.Datetime.now()
+                date_start = date_end - timedelta(minutes=delta_duration)
                 # If existing entries would overlap with the new one, push the new entry
                 # to start exactly where the latest existing entry ends.
-                end_dates = order.time_ids.filtered('date_end').mapped('date_end')
-                if end_dates:
-                    latest_end = max(end_dates)
-                    if latest_end > date_start:
-                        date_start = latest_end
-                        enddate = latest_end + timedelta(seconds=_float_duration_to_second(delta_duration))
+                latest_end = max(order.time_ids.filtered('date_end').mapped('date_end'), default=False)
+                if latest_end and latest_end > date_start:
+                    date_start = latest_end
+                    date_end = latest_end + timedelta(minutes=delta_duration)
                 if order.duration_expected >= new_order_duration or old_order_duration >= order.duration_expected:
                     # either only productive or only performance (i.e. reduced speed) time respectively
                     self.env['mrp.workcenter.productivity'].create(
-                        order._prepare_timeline_vals(new_order_duration, date_start, enddate)
+                        order._prepare_timeline_vals(new_order_duration, date_start, date_end, employee_id),
                     )
                 else:
                     # split between productive and performance (i.e. reduced speed) times
-                    maxdate = fields.Datetime.from_string(enddate) - relativedelta(minutes=new_order_duration - order.duration_expected)
+                    date_split = date_end - relativedelta(minutes=new_order_duration - order.duration_expected)
                     self.env['mrp.workcenter.productivity'].create([
-                        order._prepare_timeline_vals(order.duration_expected, date_start, maxdate),
-                        order._prepare_timeline_vals(new_order_duration, maxdate, enddate)
+                        order._prepare_timeline_vals(order.duration_expected, date_start, date_split, employee_id),
+                        order._prepare_timeline_vals(new_order_duration, date_split, date_end, employee_id),
                     ])
             else:
                 duration_to_remove = abs(delta_duration)
                 timelines_to_unlink = self.env['mrp.workcenter.productivity']
-                for timeline in order.time_ids.sorted():
+                for timeline in order.time_ids.filtered(lambda t: employee_id is None or t.employee_id.id == employee_id).sorted():
                     if duration_to_remove <= 0.0:
                         break
                     if timeline.duration <= duration_to_remove:
@@ -398,7 +400,7 @@ class MrpWorkorder(models.Model):
                         timelines_to_unlink |= timeline
                     else:
                         new_time_line_duration = timeline.duration - duration_to_remove
-                        timeline.date_start = timeline.date_end - timedelta(seconds=_float_duration_to_second(new_time_line_duration))
+                        timeline.date_start = timeline.date_end - timedelta(minutes=new_time_line_duration)
                         break
                 timelines_to_unlink.unlink()
             order.duration_unit = round(order.duration / max(order.qty_produced, 1), 2)
@@ -497,7 +499,7 @@ class MrpWorkorder(models.Model):
             for wo in self:
                 if wo.uom_id.compare(values['qty_produced'], 0) < 0:
                     raise UserError(_('The quantity produced must be positive.'))
-                if wo.state == 'done':
+                if wo.state == 'done' and not self.env.context.get('allow_qty_change'):
                     raise UserError(_('This production order has been closed.'))
 
         workorders_with_new_wc = self.env['mrp.workorder']
@@ -692,7 +694,7 @@ class MrpWorkorder(models.Model):
                     continue
                 raise UserError(_('You cannot start a work order that is already done or cancelled'))
 
-            if wo.qty_producing == 0:
+            if wo.qty_producing == 0 and not wo.production_bom_id.continuous:
                 wo.qty_producing = wo.qty_remaining
 
             if wo._should_start_timer():
@@ -913,7 +915,7 @@ class MrpWorkorder(models.Model):
             'workcenter_id': self.workcenter_id.id,
         }
 
-    def _prepare_timeline_vals(self, duration, date_start, date_end=False):
+    def _prepare_timeline_vals(self, duration, date_start, date_end=False, employee_id=None):
         # Need a loss in case of the real time exceeding the expected
         if not self.duration_expected or duration <= self.duration_expected:
             loss_id = self.env['mrp.workcenter.productivity.loss'].search([('loss_type', '=', 'productive')], limit=1)
@@ -945,15 +947,6 @@ class MrpWorkorder(models.Model):
         self.ensure_one()
         if self.qty_producing:
             self.qty_producing = quantity
-
-    def get_working_duration(self):
-        """Get the additional duration for 'open times' i.e. productivity lines with no date_end."""
-        self.ensure_one()
-        duration = 0
-        now = self.env.cr.now()
-        for time in self.time_ids.filtered(lambda time: not time.date_end):
-            duration += (now - time.date_start).total_seconds() / 60
-        return duration
 
     def _intervals_duration(self, intervals):
         """ Return the duration of the given intervals.

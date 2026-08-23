@@ -137,7 +137,7 @@ export function renderField(field, resetId = false) {
     }
     template.content
         .querySelectorAll("input.datetimepicker-input")
-        .forEach((el) => (el.value = field.propertyValue));
+        .forEach((el) => (el.value = field.propertyValue || ""));
     template.content.querySelectorAll("[name]").forEach((el) => {
         el.name = getQuotesEncodedName(el.name);
     });
@@ -613,4 +613,22 @@ export function getDescriptionPosition(fieldEl) {
             ? descriptionPositionClass.replace(DESCRIPTION_POSITION_PREFIX, "")
             : "stacked";
     }
+}
+
+/**
+ * Returns the type to use by default to display the given model field. A
+ * single-choice field is shown as a dropdown ("many2one") when it has more
+ * than five options. Any other field keeps its type.
+ *
+ * @param {Object} field a model field
+ * @returns {string}
+ */
+export function getDefaultFieldType(field) {
+    const isSingleChoice =
+        field.type === "selection" ||
+        (field.type === "many2one" && field.relation !== "ir.attachment");
+    if (isSingleChoice && field.records?.length > 5) {
+        return "many2one";
+    }
+    return field.type;
 }

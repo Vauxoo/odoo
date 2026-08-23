@@ -16,7 +16,7 @@ export const stepUtils = {
 
     showAppsMenuItem() {
         return {
-            isActive: ["auto", "community", "desktop"],
+            isActive: ["community", "desktop"],
             trigger: ".o_navbar_apps_menu button:enabled",
             tooltipPosition: "bottom",
             run: "click",
@@ -181,18 +181,11 @@ export const stepUtils = {
             }
         );
         for (const [fieldName, value] of Object.entries(fields)) {
-            const step = {
+            steps.push({
                 trigger: `${dialogCreate} .o_field_widget[name='${fieldName}'] input, ${dialogCreate} .o_field_widget[name='${fieldName}'] textarea`,
                 content: _t("Enter the %s.", fieldName),
                 run: `edit ${value}`,
-            };
-            if (value === searchText) {
-                // On desktop, "Create and edit" already pre-fills this field
-                // with the search text typed in the many2one. Only mobile's
-                // "Search: <label>" dialog opens the creation form empty.
-                step.isActive = ["mobile"];
-            }
-            steps.push(step);
+            });
         }
         steps.push({
             trigger: `${dialogCreate} .o_form_button_save`,
@@ -225,7 +218,7 @@ export const stepUtils = {
             },
             {
                 isActive: ["mobile"],
-                trigger: `.o_kanban_record:contains('${valueSearched}')`,
+                trigger: `.modal:not(.o_inactive_modal) .o_kanban_record:contains('${valueSearched}')`,
                 run: "click",
             },
         ];

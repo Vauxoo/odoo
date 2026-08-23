@@ -281,8 +281,9 @@ class AccountAccount(models.Model):
     def _check_account_code(self):
         for account in self:
             if account.code and not re.match(ACCOUNT_CODE_REGEX, account.code):
-                raise ValidationError(_(
-                    "The account code can only contain alphanumeric characters, dots, and dashes."
+                raise ValidationError(self.env._(
+                    "The account code can only contain alphanumeric characters, dots, and dashes. (account code: %s)",
+                    account.code,
                 ))
 
     @api.constrains('account_type')
@@ -421,7 +422,7 @@ class AccountAccount(models.Model):
                            STRING_AGG(%(ancestors_names)s, ' / ' ORDER BY ord) AS name_path
                       FROM account_account child
         CROSS JOIN LATERAL UNNEST(STRING_TO_ARRAY(RTRIM(child.parent_path, '/'), '/')) WITH ORDINALITY AS t(id, ord)
-                      JOIN account_account ancestor ON ancestor.id = t.id::int
+                      JOIN account_account ancestor ON ancestor.id = t.id::bigint
                   GROUP BY child.id
                 )""",
                 ancestors_ids=ancestor_table.id,

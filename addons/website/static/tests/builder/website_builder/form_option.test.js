@@ -81,6 +81,7 @@ patch(webModels.IrModel.prototype, {
 defineWebsiteModels();
 
 test("change action of form changes available options", async () => {
+    onRpc("get_authorized_fields", () => ({}));
     // reduced version of form_editor_actions
     function withIframeRegistry(registry) {
         registry
@@ -260,6 +261,7 @@ test("selection field discards empty entries", async () => {
 });
 
 test("Set 'Message' as form success action and show/hide the message preview", async () => {
+    onRpc("get_authorized_fields", () => ({}));
     await setupWebsiteBuilderWithSnippet("s_website_form");
     await contains(":iframe section.s_website_form").click();
     expect(".options-container[data-container-title='Form']").toHaveCount(1);
@@ -503,6 +505,7 @@ test("Changing max files number option updates file input 'multiple' attribute",
 });
 
 test("Form using the Outgoing Mails model includes hidden email_to field", async () => {
+    onRpc("get_authorized_fields", () => ({}));
     onRpc("res.company", "read", () => [{ email: "company@mail.com" }]);
     await setupWebsiteBuilder(
         `<section class="s_website_form">
@@ -1467,4 +1470,159 @@ test("incomplete field requirements are discarded on save", async () => {
 
     queryOne(":iframe .s_website_form").classList.add("o_dirty");
     await contains(".o-snippets-top-actions button:contains(Save)").click();
+});
+
+test("change action of form to a model without registered fields adds the model's required fields", async () => {
+    patchWithCleanup(webModels.IrModel.prototype, {
+        get_compatible_form_models() {
+            return [
+                {
+                    id: 999,
+                    model: "x_custom.model",
+                    name: "Custom Model",
+                    website_form_label: "Create a Custom Record",
+                },
+                {
+                    id: 184,
+                    model: "mail.mail",
+                    name: "Outgoing Mails",
+                    website_form_label: "Send an E-mail",
+                    website_form_key: "send_mail",
+                },
+            ];
+        },
+    });
+    onRpc("get_authorized_fields", () => ({
+        name: { name: "name", string: "Name", type: "char", required: true },
+        email: { name: "email", string: "Email", type: "char" },
+    }));
+
+    await setupWebsiteBuilder(
+        `<section class="s_website_form">
+            <form data-model_name="mail.mail">
+                <div class="s_website_form_submit">
+                    <div class="s_website_form_label"/>
+                    <a>Submit</a>
+                </div>
+            </form>
+        </section>`
+    );
+
+    await contains(":iframe section").click();
+    await contains(".hb-row[data-label='Action'] button").click();
+    await contains("div.o-dropdown-item:contains('Create a Custom Record')").click();
+
+    expect(":iframe form").toHaveAttribute("data-model_name", "x_custom.model");
+    // Only the fields required by the model are added, flagged as
+    // model-required so that they cannot be removed.
+    expect(":iframe .s_website_form_field").toHaveCount(1);
+    expect(":iframe .s_website_form_field").toHaveClass("s_website_form_model_required");
+    expect(":iframe .s_website_form_field .s_website_form_label_content").toHaveText("Name");
+    expect(":iframe input[name='name']").toHaveAttribute("required");
+    expect(":iframe input[name='email']").toHaveCount(0);
+});
+
+test("single-choice field is displayed as a dropdown when it has more than five options", async () => {
+    const makeSelection = (count) =>
+        Array.from({ length: count }, (_, i) => [`value_${i}`, `Value ${i}`]);
+    onRpc("get_authorized_fields", () => ({
+        author_id: {
+            name: "author_id",
+            relation: "res.partner",
+            string: "Author",
+            type: "many2one",
+        },
+        short_selection: {
+            name: "short_selection",
+            string: "Short Selection",
+            type: "selection",
+            selection: makeSelection(5),
+        },
+        long_selection: {
+            name: "long_selection",
+            string: "Long Selection",
+            type: "selection",
+            selection: makeSelection(6),
+        },
+    }));
+    await setupWebsiteBuilder(
+        `<section class="s_website_form" data-snippet="s_website_form" data-name="Form">
+            <div class="container-fluid">
+            <form action="/website/form/" method="post" class="o_mark_required" data-model_name="mail.mail">
+                <div class="s_website_form_rows">
+                    <div data-name="Field" class="s_website_form_field" data-type="many2one">
+                        <div class="row">
+                            <label class="s_website_form_label" for="oyeqnysxh10b">
+                                <span class="s_website_form_label_content">Author</span>
+                            </label>
+                        <select class="form-select s_website_form_input" id="oyeqnysxh10b" name="author_id" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </section>`
+    );
+
+    await contains(":iframe .s_website_form_field").click();
+
+    // Five options or less: the selection keeps its radio buttons.
+    await contains(".options-container [data-label='Type'] button").click();
+    await contains(".o_popover [data-action-value='short_selection']").click();
+    expect(":iframe .s_website_form_field").toHaveAttribute("data-type", "selection");
+    expect(":iframe input[type='radio'][name='short_selection']").toHaveCount(5);
+    expect(":iframe select").toHaveCount(0);
+
+    // More than five options: the selection is turned into a dropdown.
+    await contains(".options-container [data-label='Type'] button").click();
+    await contains(".o_popover [data-action-value='long_selection']").click();
+    expect(":iframe .s_website_form_field").toHaveAttribute("data-type", "many2one");
+    expect(":iframe input[type='radio']").toHaveCount(0);
+    expect(":iframe select[name='long_selection'] option").toHaveCount(6);
+});
+
+test("field added by the form action is displayed as a dropdown when it has more than five options", async () => {
+    const makeSelection = (count) =>
+        Array.from({ length: count }, (_, i) => [`value_${i}`, `Value ${i}`]);
+    onRpc("get_authorized_fields", () => ({}));
+    function withIframeRegistry(registry) {
+        registry.category("website.form_editor_actions").add("apply_job", {
+            formFields: [
+                {
+                    type: "selection",
+                    name: "short_selection",
+                    string: "Short Selection",
+                    selection: makeSelection(5),
+                },
+                {
+                    type: "selection",
+                    name: "long_selection",
+                    string: "Long Selection",
+                    selection: makeSelection(6),
+                },
+            ],
+        });
+    }
+    await setupWebsiteBuilder(
+        `<section class="s_website_form">
+            <form data-model_name="mail.mail">
+                <div class="s_website_form_submit">
+                    <div class="s_website_form_label"/>
+                    <a>Submit</a>
+                </div>
+            </form>
+        </section>`,
+        { withIframeRegistry }
+    );
+
+    await contains(":iframe section").click();
+    await contains(".hb-row[data-label='Action'] button").click();
+    await contains("div.o-dropdown-item:contains('Apply for a Job')").click();
+
+    // Five options or less: the selection keeps its radio buttons.
+    expect(":iframe .s_website_form_field[data-type='selection']").toHaveCount(1);
+    expect(":iframe input[type='radio'][name='short_selection']").toHaveCount(5);
+    // More than five options: the selection is turned into a dropdown.
+    expect(":iframe .s_website_form_field[data-type='many2one']").toHaveCount(1);
+    expect(":iframe select[name='long_selection'] option").toHaveCount(6);
 });
