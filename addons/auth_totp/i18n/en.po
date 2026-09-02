@@ -1,0 +1,24 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* auth_totp
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-09 20:03+0000\n"
+"PO-Revision-Date: 2021-05-09 20:03+0000\n"
+"Last-Translator: Jesús Valdez <jvaldez@vauxoo.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: auth_totp
+#: code:addons/auth_totp/models/res_users.py:0
+#: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
+#, python-format
+msgid "Verification failed, please double-check the 6-digit code"
+msgstr ""
+"Verification has failed, please check your 6-digit code and enter it again"
