@@ -277,9 +277,7 @@ class Challenge(models.Model):
         self.env.cr.execute("""SELECT gg.id
                         FROM gamification_goal as gg
                         JOIN bus_presence as bp ON bp.user_id = gg.user_id
-                       WHERE gg.write_date <= bp.last_presence
-                         AND bp.last_presence >= now() AT TIME ZONE 'UTC' - interval '%(session_lifetime)s seconds'
-                         AND gg.closed IS NOT TRUE
+                       WHERE gg.closed IS NOT TRUE
                          AND gg.challenge_id IN %(challenge_ids)s
                          AND (gg.state = 'inprogress'
                               OR (gg.state = 'reached' AND gg.end_date >= %(yesterday)s))
