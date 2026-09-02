@@ -53,11 +53,17 @@ def fragment_to_query_string(func):
 #----------------------------------------------------------
 class OAuthLogin(Home):
     def list_providers(self):
+        # Reduce the queries to res_user and res_partner tables only to know the create_uid and write_uid
+        fields = set(request.env['auth.oauth.provider']._fields.keys()) - {"create_uid", "write_uid"}
         try:
-            providers = request.env['auth.oauth.provider'].sudo().search_read([('enabled', '=', True)])
+            providers = request.env['auth.oauth.provider'].sudo().search_read([('enabled', '=', True)], fields)
         except Exception:
             providers = []
         for provider in providers:
+            provider.update({
+                "create_uid": (1, 'OdooBot'),
+                "write_uid": (1, 'OdooBot'),
+            })
             return_url = request.httprequest.url_root + 'auth_oauth/signin'
             state = self.get_state(provider)
             params = dict(
