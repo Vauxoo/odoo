@@ -46,7 +46,7 @@ export class BarcodeDialog extends Component {
                 await loadJS("/web/static/lib/zxing-library/zxing-library.js");
                 DetectorClass = buildZXingBarcodeDetector(window.ZXing);
             }
-            const formats = await DetectorClass.getSupportedFormats();
+            const formats =  this.props.formats || await DetectorClass.getSupportedFormats();
             this.detector = new DetectorClass({ formats });
         });
 
@@ -199,7 +199,7 @@ export function isBarcodeScannerSupported() {
  *
  * @returns {Promise<string>} resolves when a {qr,bar}code has been detected
  */
-export async function scanBarcode(facingMode = "environment") {
+export async function scanBarcode(facingMode = "environment", formats) {
     const promise = new Deferred();
     const appForBarcodeDialog = new App(BarcodeDialog, {
         env: owl.Component.env,
@@ -217,6 +217,7 @@ export async function scanBarcode(facingMode = "environment") {
                 }
             },
             facingMode: facingMode,
+            formats,
         },
     });
     await appForBarcodeDialog.mount(document.body);
