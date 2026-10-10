@@ -553,12 +553,12 @@ class AccountMoveLine(models.Model):
                 properties AS(
                     SELECT DISTINCT ON (property.company_id, property.name, property.res_id)
                            'res.partner' AS model,
-                           SPLIT_PART(property.res_id, ',', 2)::integer AS id,
+                           SPLIT_PART(property.res_id, ',', 2)::bigint AS id,
                            CASE
                                WHEN property.name = 'property_account_receivable_id' THEN 'asset_receivable'
                                ELSE 'liability_payable'
                            END AS account_type,
-                           SPLIT_PART(property.value_reference, ',', 2)::integer AS account_id
+                           SPLIT_PART(property.value_reference, ',', 2)::bigint AS account_id
                       FROM ir_property property
                       JOIN res_company company ON property.company_id = company.id
                      WHERE property.name IN ('property_account_receivable_id', 'property_account_payable_id')
@@ -574,7 +574,7 @@ class AccountMoveLine(models.Model):
                                WHEN property.name = 'property_account_receivable_id' THEN 'asset_receivable'
                                ELSE 'liability_payable'
                            END AS account_type,
-                           SPLIT_PART(property.value_reference, ',', 2)::integer AS account_id
+                           SPLIT_PART(property.value_reference, ',', 2)::bigint AS account_id
                       FROM ir_property property
                       JOIN res_company company ON property.company_id = company.id
                      WHERE property.name IN ('property_account_receivable_id', 'property_account_payable_id')
