@@ -46,7 +46,7 @@ class AccountMove(models.Model):
         # In practical, it's very rare to already have invoices (draft, in addition)
         # for a Chilian or Argentian company (`res.company`) before installing `l10n_cl` or `l10n_ar`.
         if not column_exists(self.env.cr, "account_move", "l10n_latam_document_type_id"):
-            create_column(self.env.cr, "account_move", "l10n_latam_document_type_id", "int4")
+            create_column(self.env.cr, "account_move", "l10n_latam_document_type_id", self.pool.id_column_type[0])
 
         if not index_exists(self.env.cr, "account_move_unique_name_latam"):
             drop_index(self.env.cr, "account_move_unique_name", self._table)

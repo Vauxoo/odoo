@@ -184,3 +184,39 @@ def has_trigram(cr):
     """
     cr.execute("SELECT proname FROM pg_proc WHERE proname='word_similarity'")
     return len(cr.fetchall()) > 0
+
+
+#: table whose "id" tells which width the database uses for identifiers; it is
+#: created by base_data.sql, so it exists in every database from its creation.
+ID_COLUMN_WITNESS_TABLE = 'res_partner'
+
+
+def id_column_type(cr):
+    """ Return the column type to use for record identifiers in this database.
+
+    Databases created before identifiers became 64-bit keep their existing
+    32-bit columns: converting them means rewriting every table and every index
+    of a live database, which is not something an update may do. The width in
+    use is read from the database itself rather than stored anywhere, so that
+    restoring a dump, or converting a database by hand, stays consistent with
+    what the schema actually contains.
+
+    This is read once per registry, before the modules are loaded, hence before
+    base_data.sql has run on a database being created: a database with no
+    witness table yet is a new one and gets the full range.
+    """
+    cr.execute("""
+        SELECT a.atttypid = 'int8'::regtype
+        FROM pg_attribute a
+        JOIN pg_class c ON c.oid = a.attrelid
+        WHERE c.relname = %s AND c.relnamespace = current_schema::regnamespace
+        AND a.attname = 'id' AND a.attnum > 0
+    """, (ID_COLUMN_WITNESS_TABLE,))
+    row = cr.fetchone()
+    if row is None:
+        # the database has no base tables yet: it is being created
+        return odoo.tools.sql.ID_COLUMN_TYPE_BIG
+    return (
+        odoo.tools.sql.ID_COLUMN_TYPE_BIG if row[0]
+        else odoo.tools.sql.ID_COLUMN_TYPE_SMALL
+    )
