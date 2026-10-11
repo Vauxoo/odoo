@@ -944,7 +944,7 @@ class Channel(models.Model):
                         AND M2.partner_id NOT IN %s
                 )
             GROUP BY M.channel_id
-            HAVING ARRAY_AGG(DISTINCT M.partner_id ORDER BY M.partner_id) = %s::bigint[]
+            HAVING ARRAY_AGG(DISTINCT M.partner_id ORDER BY M.partner_id)::bigint[] = %s::bigint[]
             LIMIT 1
         """, (tuple(partners_to), tuple(partners_to), sorted(list(partners_to)),))
         result = self.env.cr.dictfetchall()

@@ -178,6 +178,12 @@ class Registry(Mapping):
         with closing(self.cursor()) as cr:
             self.has_unaccent = odoo.modules.db.has_unaccent(cr)
             self.has_trigram = odoo.modules.db.has_trigram(cr)
+            # Width of the "id" columns and of every column referencing one.
+            # It follows what the database already contains, so an existing
+            # database is never converted; it is resolved here, once, because
+            # fields are shared between the registries of a process and so
+            # cannot carry a per-database width themselves.
+            self.id_column_type = odoo.modules.db.id_column_type(cr)
 
     @classmethod
     @locked

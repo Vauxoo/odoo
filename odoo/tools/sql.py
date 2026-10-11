@@ -214,6 +214,7 @@ def table_kind(cr, tablename: str) -> Union[TableKind, None]:
 # on 1 byte, columns aligned on 8 bytes(values have been chosen to minimize
 # padding in rows; unknown column types are put last)
 SQL_ORDER_BY_TYPE = defaultdict(lambda: 16, {
+    'int8': 0,          # 8 bytes aligned on 8 bytes, next to the "id"
     'int4': 1,          # 4 bytes aligned on 4 bytes
     'varchar': 2,       # variable aligned on 4 bytes
     'date': 3,          # 4 bytes aligned on 4 bytes
@@ -223,14 +224,30 @@ SQL_ORDER_BY_TYPE = defaultdict(lambda: 16, {
     'bool': 7,          # 1 byte aligned on 1 byte
     'timestamp': 8,     # 8 bytes aligned on 8 bytes
     'float8': 9,        # 8 bytes aligned on 8 bytes
-    'int8': 10,         # 8 bytes aligned on 8 bytes
 })
 
 
-def create_model_table(cr, tablename, comment=None, columns=()):
-    """ Create the table for a model. """
+#: column types a record identifier may have: 64-bit for databases created
+#: since identifiers became bigint, 32-bit for the ones created before.
+ID_COLUMN_TYPE_BIG = ('int8', 'int8')
+ID_COLUMN_TYPE_SMALL = ('int4', 'int4')
+ID_COLUMN_TYPES = frozenset({'int4', 'int8'})
+
+#: serial type matching each identifier column type
+ID_SERIAL_TYPES = {'int8': 'BIGSERIAL', 'int4': 'SERIAL'}
+
+
+def create_model_table(cr, tablename, comment=None, columns=(), id_type='int8'):
+    """ Create the table for a model.
+
+    :param id_type: column type of the primary key, ``int8`` or ``int4``; it
+        must match what the rest of the database uses, see
+        :attr:`odoo.modules.registry.Registry.id_column_type`. The default is
+        the width a database created from now on uses, so that a caller that
+        does not know about the distinction still creates a consistent table.
+    """
     colspecs = [
-        SQL('id SERIAL NOT NULL'),
+        SQL('id %s NOT NULL', SQL(ID_SERIAL_TYPES[id_type])),
         *(SQL("%s %s", SQL.identifier(colname), SQL(coltype)) for colname, coltype, _ in columns),
         SQL('PRIMARY KEY(id)'),
     ]

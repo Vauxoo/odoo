@@ -3160,13 +3160,13 @@ class BaseModel(metaclass=MetaModel):
         if self._auto:
             if must_create_table:
                 def make_type(field):
-                    return field.column_type[1] + (" NOT NULL" if field.required else "")
+                    return field.db_column_spec(self) + (" NOT NULL" if field.required else "")
 
                 tools.create_model_table(cr, self._table, self._description, [
                     (field.name, make_type(field), field.string)
                     for field in sorted(self._fields.values(), key=lambda f: f.column_order)
                     if field.name != 'id' and field.store and field.column_type
-                ])
+                ], id_type=self.pool.id_column_type[0])
 
             if self._parent_store:
                 if not tools.column_exists(cr, self._table, 'parent_path'):

@@ -291,7 +291,7 @@ class Property(models.Model):
             model_pos = len(model) + 2
             # retrieve values: p.res_id is formatted as "<rec._name>,<rec.id>"
             query = """
-                SELECT substr(p.res_id, %s)::integer, p.{}
+                SELECT substr(p.res_id, %s)::bigint, p.{}
                 FROM ir_property p
                 WHERE p.fields_id=%s
                     AND (p.company_id=%s OR p.company_id IS NULL)

@@ -274,6 +274,7 @@ class Field(MetaField('DummyField', (object,), {})):
     translate = False                   # whether the field is translated
 
     column_type = None                  # database column type (ident, spec)
+    _id_column = False                  # whether the column holds record ids
     write_sequence = 0                  # field ordering for write()
 
     args = None                         # the parameters given to __init__()
@@ -988,6 +989,23 @@ class Field(MetaField('DummyField', (object,), {})):
         """ Prescribed column order in table. """
         return 0 if self.column_type is None else SQL_ORDER_BY_TYPE[self.column_type[0]]
 
+    def db_column_type(self, model):
+        """ Return the (ident, spec) column type to give this field in database.
+
+        Unlike :attr:`column_type`, which is what the field declares and what a
+        database created before this change actually has, this depends on the
+        database: a column holding a record identifier follows the width the
+        database was created with. It takes the model rather than nothing
+        because the width belongs to the registry, not to the field.
+        """
+        if self._id_column:
+            return model.pool.id_column_type
+        return self.column_type
+
+    def db_column_spec(self, model):
+        """ Return the SQL type to create this field's column with. """
+        return self.db_column_type(model)[1]
+
     def update_db(self, model, columns):
         """ Update the database schema to implement this field.
 
@@ -1032,11 +1050,20 @@ class Field(MetaField('DummyField', (object,), {})):
         """
         if not column:
             # the column does not exist, create it
-            sql.create_column(model._cr, model._table, self.name, self.column_type[1], self.string)
+            sql.create_column(model._cr, model._table, self.name, self.db_column_spec(model), self.string)
             return
-        if column['udt_name'] == 'int8':
+        if column['udt_name'] == self.db_column_type(model)[0]:
             return
-        if column['udt_name'] == self.column_type[0]:
+        if self._id_column and column['udt_name'] in sql.ID_COLUMN_TYPES:
+            # Never convert an identifier column from one width to the other.
+            # Rewriting it takes an exclusive lock for as long as it takes to
+            # rewrite every row and every index, and it only makes sense for a
+            # whole database at once, so it is a migration and not an update.
+            # Keeping whatever is there is also what makes a database converted
+            # by hand, entirely or in part, survive an update untouched.
+            _schema.debug(
+                "Table %r: column %r kept as %s", model._table, self.name, column['udt_name'],
+            )
             return
         if column['is_nullable'] == 'NO':
             sql.drop_not_null(model._cr, model._table, self.name)
@@ -1044,7 +1071,7 @@ class Field(MetaField('DummyField', (object,), {})):
 
     def _convert_db_column(self, model, column):
         """ Convert the given database column to the type of the field. """
-        sql.convert_column(model._cr, model._table, self.name, self.column_type[1])
+        sql.convert_column(model._cr, model._table, self.name, self.db_column_spec(model))
 
     def update_db_notnull(self, model, column):
         """ Add or remove the NOT NULL constraint on ``self``.
@@ -1420,9 +1447,18 @@ class Boolean(Field):
 
 
 class Integer(Field):
-    """ Encapsulates an :class:`int`. """
+    """ Encapsulates an :class:`int`.
+
+    :param bool bigint: whether the column must be able to hold a record id.
+        Some fields store the id of a record without declaring a relation to
+        it -- the res_id of a wizard, an id deliberately kept after the record
+        it points to is deleted, a counter that grows once per record -- and
+        those follow the width of the database like any other identifier.
+    """
     type = 'integer'
     column_type = ('int4', 'int4')
+
+    bigint = False
 
     group_operator = 'sum'
 
@@ -1431,6 +1467,8 @@ class Integer(Field):
         # The default group_operator is None for sequence fields
         if 'group_operator' not in res and name == 'sequence':
             res['group_operator'] = None
+        if res.get('bigint'):
+            res['_id_column'] = True
         return res
 
     def convert_to_column(self, value, record, values=None, validate=True):
@@ -2984,7 +3022,8 @@ class Many2one(_Relational):
         domain depending on the field attributes.
     """
     type = 'many2one'
-    column_type = ('int8', 'int8')
+    column_type = ('int4', 'int4')
+    _id_column = True
 
     ondelete = None                     # what to do when value is deleted
     auto_join = False                   # whether joins are generated upon search
@@ -3209,6 +3248,7 @@ class Many2oneReference(Integer):
     :param str model_field: name of the :class:`Char` where the model name is stored.
     """
     type = 'many2one_reference'
+    _id_column = True
 
     model_field = None
     group_operator = None
@@ -4793,14 +4833,15 @@ class Many2many(_RelationalMulti):
         comodel = model.env[self.comodel_name]
         if not sql.table_exists(cr, self.relation):
             cr.execute(SQL(
-                """ CREATE TABLE %(rel)s (%(id1)s INTEGER NOT NULL,
-                                          %(id2)s INTEGER NOT NULL,
+                """ CREATE TABLE %(rel)s (%(id1)s %(id_type)s NOT NULL,
+                                          %(id2)s %(id_type)s NOT NULL,
                                           PRIMARY KEY(%(id1)s, %(id2)s));
                     COMMENT ON TABLE %(rel)s IS %(comment)s;
                     CREATE INDEX ON %(rel)s (%(id2)s, %(id1)s); """,
                 rel=SQL.identifier(self.relation),
                 id1=SQL.identifier(self.column1),
                 id2=SQL.identifier(self.column2),
+                id_type=SQL('BIGINT' if model.pool.id_column_type[0] == 'int8' else 'INTEGER'),
                 comment=f"RELATION BETWEEN {model._table} AND {comodel._table}",
             ))
             _schema.debug("Create table %r: m2m relation between %r and %r", self.relation, model._table, comodel._table)
@@ -5137,7 +5178,8 @@ class Many2many(_RelationalMulti):
 class Id(Field):
     """ Special case for field 'id'. """
     type = 'integer'
-    column_type = ('int8', 'int8')
+    column_type = ('int4', 'int4')
+    _id_column = True
 
     string = 'ID'
     store = True

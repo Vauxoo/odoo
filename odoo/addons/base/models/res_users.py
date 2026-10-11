@@ -2168,17 +2168,26 @@ class APIKeys(models.Model):
 
     def init(self):
         table = sql.Identifier(self._table)
+        # This table is built here and not by the ORM, so it has to ask the
+        # registry for the width of an identifier itself. auth_totp.device
+        # inherits this method, which is why both tables follow from one place.
+        big_id = self.pool.id_column_type[0] == 'int8'
         self.env.cr.execute(sql.SQL("""
         CREATE TABLE IF NOT EXISTS {table} (
-            id serial primary key,
+            id {serial_type} primary key,
             name varchar not null,
-            user_id integer not null REFERENCES res_users(id) ON DELETE CASCADE,
+            user_id {id_type} not null REFERENCES res_users(id) ON DELETE CASCADE,
             scope varchar,
             index varchar({index_size}) not null CHECK (char_length(index) = {index_size}),
             key varchar not null,
             create_date timestamp without time zone DEFAULT (now() at time zone 'utc')
         )
-        """).format(table=table, index_size=sql.Placeholder('index_size')), {
+        """).format(
+            table=table,
+            index_size=sql.Placeholder('index_size'),
+            serial_type=sql.SQL('bigserial' if big_id else 'serial'),
+            id_type=sql.SQL('bigint' if big_id else 'integer'),
+        ), {
             'index_size': INDEX_SIZE
         })
 
