@@ -94,6 +94,17 @@ class PaymentProvider(models.Model):
 
         return 0.01
 
+    def _authorize_get_request_timeout(self):
+        """ Return the timeout of the requests to Authorize.Net, in seconds.
+
+        A charge whose answer is lost may have gone through, so the timeout is generous. Override
+        to make it configurable.
+
+        :return: The timeout, in the format accepted by `requests`.
+        :rtype: float|tuple
+        """
+        return 180
+
     def _authorize_get_inline_form_values(self):
         """ Return a serialized JSON of the required values to render the inline form.
 
