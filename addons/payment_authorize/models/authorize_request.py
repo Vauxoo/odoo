@@ -38,6 +38,7 @@ class AuthorizeAPI:
         self.state = provider.state
         self.name = provider.authorize_login
         self.transaction_key = provider.authorize_transaction_key
+        self.timeout = provider._authorize_get_request_timeout()
 
     def _make_request(self, operation, data=None):
         request = {
@@ -52,7 +53,7 @@ class AuthorizeAPI:
         logged_request = {operation: data or {}}
 
         _logger.info("sending request to %s:\n%s", self.url, pprint.pformat(logged_request))
-        response = requests.post(self.url, json.dumps(request), timeout=60)
+        response = requests.post(self.url, json.dumps(request), timeout=self.timeout)
         response.raise_for_status()
         response = json.loads(response.content)
         _logger.info("response received:\n%s", pprint.pformat(response))

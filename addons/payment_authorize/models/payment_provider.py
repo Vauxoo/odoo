@@ -94,6 +94,18 @@ class PaymentProvider(models.Model):
 
         return 0.01
 
+    def _authorize_get_request_timeout(self):
+        """ Return the (connect, read) timeout of the requests to Authorize.Net, in seconds.
+
+        They end differently: a connect timeout means the request never left, while a read
+        timeout means the charge was sent and only its answer was lost, so it may have gone
+        through. Both are generous. Override to make them configurable.
+
+        :return: The connect and read timeouts, in the format accepted by `requests`.
+        :rtype: tuple
+        """
+        return (180, 180)
+
     def _authorize_get_inline_form_values(self):
         """ Return a serialized JSON of the required values to render the inline form.
 
