@@ -260,13 +260,19 @@ class IrModuleModule(models.Model):
 
         if model_name in ('website.page', 'website.menu'):
             return model
-        # use active_test to also unlink archived models
-        # and use MODULE_UNINSTALL_FLAG to also unlink inherited models
-        orphans = model.with_context(**{'active_test': False, MODULE_UNINSTALL_FLAG: True}).search([
+
+        search = [
             ('key', '=like', self.name + '.%'),
             ('website_id', '=', website.id),
             ('theme_template_id', '=', False),
-        ])
+        ]
+        # Dont delete the duplicate pages
+        if model_name in ('ir.ui.view'):
+            search += [('page_ids', '=', False)]
+
+        # use active_test to also unlink archived models
+        # and use MODULE_UNINSTALL_FLAG to also unlink inherited models
+        orphans = model.with_context(**{'active_test': False, MODULE_UNINSTALL_FLAG: True}).search(search)
         orphans.unlink()
 
     def _theme_get_upstream(self):
