@@ -22,7 +22,7 @@ class AccountMove(models.Model):
         introduced in this module, there is no need for UPDATE
         """
         if not column_exists(self.env.cr, "account_move", "preferred_payment_method_id"):
-            create_column(self.env.cr, "account_move", "preferred_payment_method_id", "int4")
+            create_column(self.env.cr, "account_move", "preferred_payment_method_id", self.pool.id_column_type[0])
         return super()._auto_init()
 
     @api.depends('partner_id')
