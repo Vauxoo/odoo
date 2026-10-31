@@ -487,6 +487,35 @@ class TestSearchRelated(TransactionCase):
         """]):
             model.search([('foo_name', '=', 'a')])
 
+    def test_related_negative_operator(self):
+        """ A negative operator on a related field made of many2one fields is
+        searched along the path, never as `many2one NOT IN (SELECT ...)`. """
+        model = self.env['test_orm.related'].with_user(self.env.ref('base.user_admin'))
+        foo = self.env['test_orm.related_foo'].create([{'name': 'a'}, {'name': 'b'}])
+        records = model.create([{'foo_id': foo[0].id}, {'foo_id': foo[1].id}, {}])
+
+        # warmup
+        model.search([('foo_name_sudo', '!=', 'a')])
+
+        with self.assertQueries(["""
+            SELECT "test_orm_related"."id"
+            FROM "test_orm_related"
+            LEFT JOIN "test_orm_related_foo" AS "test_orm_related__foo_id"
+                ON ("test_orm_related"."foo_id" = "test_orm_related__foo_id"."id")
+            WHERE ("test_orm_related"."foo_id" IS NULL OR (
+                "test_orm_related"."foo_id" IS NOT NULL
+                AND "test_orm_related__foo_id"."id" IS NOT NULL
+                AND ("test_orm_related__foo_id"."name" NOT IN %s OR "test_orm_related__foo_id"."name" IS NULL)
+            )) AND "test_orm_related"."id" < %s
+            ORDER BY "test_orm_related"."id"
+        """]):
+            found = model.search([('foo_name_sudo', '!=', 'a')])
+        # same records as the explicit path, and the empty relation matches
+        self.assertEqual(found & records, records[1] | records[2])
+        self.assertEqual(
+            found, model.search(['|', ('foo_id', '=', False), ('foo_id.name', '!=', 'a')]),
+        )
+
     def test_related_many2one(self):
         model = self.env['test_orm.related'].with_user(self.env.ref('base.user_admin'))
 
@@ -1108,13 +1137,13 @@ class TestSearchRelated(TransactionCase):
         with self.assertQueries(["""
             SELECT "test_orm_related"."id"
             FROM "test_orm_related"
-            WHERE (
-                "test_orm_related"."foo_id" IS NULL OR "test_orm_related"."foo_id" NOT IN (
-                    SELECT "test_orm_related_foo"."id"
-                    FROM "test_orm_related_foo"
-                    WHERE "test_orm_related_foo"."name" IN %s
-                )
-            )
+            LEFT JOIN "test_orm_related_foo" AS "test_orm_related__foo_id"
+            ON ("test_orm_related"."foo_id" = "test_orm_related__foo_id"."id")
+            WHERE ("test_orm_related"."foo_id" IS NULL OR (
+                "test_orm_related"."foo_id" IS NOT NULL
+                AND "test_orm_related__foo_id"."id" IS NOT NULL
+                AND ("test_orm_related__foo_id"."name" NOT IN %s OR "test_orm_related__foo_id"."name" IS NULL)
+            ))
             ORDER BY "test_orm_related"."id"
         """]):
             model.search([('foo_name', '!=', 'a')])
@@ -1163,14 +1192,13 @@ class TestSearchRelated(TransactionCase):
         with self.assertQueries(["""
             SELECT "test_orm_related"."id"
             FROM "test_orm_related"
-            WHERE (
-                "test_orm_related"."foo_id" IS NULL OR
-                "test_orm_related"."foo_id" NOT IN (
-                    SELECT "test_orm_related_foo"."id"
-                    FROM "test_orm_related_foo"
-                    WHERE "test_orm_related_foo"."name" IN %s
-                )
-            )
+            LEFT JOIN "test_orm_related_foo" AS "test_orm_related__foo_id"
+            ON ("test_orm_related"."foo_id" = "test_orm_related__foo_id"."id")
+            WHERE ("test_orm_related"."foo_id" IS NULL OR (
+                "test_orm_related"."foo_id" IS NOT NULL
+                AND "test_orm_related__foo_id"."id" IS NOT NULL
+                AND ("test_orm_related__foo_id"."name" NOT IN %s OR "test_orm_related__foo_id"."name" IS NULL)
+            ))
             ORDER BY "test_orm_related"."id"
         """]):
             model.search([('foo_name', 'not in', ['a', 'b'])])
@@ -1208,10 +1236,12 @@ class TestSearchRelated(TransactionCase):
         with self.assertQueries(["""
             SELECT "test_orm_related"."id"
             FROM "test_orm_related"
-            WHERE ("test_orm_related"."foo_id" IS NULL OR "test_orm_related"."foo_id" NOT IN (
-                SELECT "test_orm_related_foo"."id"
-                FROM "test_orm_related_foo"
-                WHERE "test_orm_related_foo"."name" IN %s
+            LEFT JOIN "test_orm_related_foo" AS "test_orm_related__foo_id"
+            ON ("test_orm_related"."foo_id" = "test_orm_related__foo_id"."id")
+            WHERE ("test_orm_related"."foo_id" IS NULL OR (
+                "test_orm_related"."foo_id" IS NOT NULL
+                AND "test_orm_related__foo_id"."id" IS NOT NULL
+                AND ("test_orm_related__foo_id"."name" NOT IN %s OR "test_orm_related__foo_id"."name" IS NULL)
             ))
             ORDER BY "test_orm_related"."id"
         """]):
