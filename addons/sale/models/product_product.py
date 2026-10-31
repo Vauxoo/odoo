@@ -25,21 +25,36 @@ class ProductProduct(models.Model):
             return r
         date_from = fields.Date.today() - timedelta(days=365)
 
-        done_states = self.env['sale.report']._get_done_states()
-
-        domain = [
-            ('state', 'in', done_states),
-            ('product_id', 'in', self.ids),
-            ('date', '>=', date_from),
-        ]
-        for product, product_uom_qty in self.env['sale.report']._read_group(domain, ['product_id'], ['product_uom_qty:sum']):
-            r[product.id] = product_uom_qty
+        # Read the order lines directly: the sales analysis report joins a dozen tables (currency
+        # rates, partner, pricelist, templates, ...) to build columns this counter never reads.
+        domain = self._get_sales_count_domain(date_from)
+        for product, uom, product_uom_qty in self.env['sale.order.line']._read_group(
+            domain, ['product_id', 'product_uom_id'], ['product_uom_qty:sum'],
+        ):
+            r[product.id] = r.get(product.id, 0) + uom._compute_quantity(
+                product_uom_qty, product.uom_id, round=False,
+            )
         for product in self:
             if not product.id:
                 product.sales_count = 0.0
                 continue
             product.sales_count = product.uom_id.round(r.get(product.id, 0))
         return r
+
+    def _get_sales_count_domain(self, date_from):
+        """ Domain of the sale order lines counted in `sales_count`.
+
+        Keep it in line with the sales analysis report (`sale.report`), which the counter used to
+        read: confirmed orders of the last year, without section nor note lines.
+
+        :param date_from: first day (included) of the orders to count
+        """
+        return [
+            ('display_type', '=', False),
+            ('state', 'in', self.env['sale.report']._get_done_states()),
+            ('product_id', 'in', self.ids),
+            ('order_id.date_order', '>=', date_from),
+        ]
 
     @api.onchange('type')
     def _onchange_type(self):
