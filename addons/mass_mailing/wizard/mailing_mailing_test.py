@@ -27,6 +27,12 @@ class MailingMailingTest(models.TransientModel):
                            help='Carriage-return-separated list of email addresses.', default=_default_email_to)
     mass_mailing_id = fields.Many2one('mailing.mailing', string='Mailing', required=True, ondelete='cascade')
 
+    def _get_test_record(self):
+        """ Return the record the test email is rendered on, an empty recordset to send the
+        template as it is. Override to pick a record the mailing would really send to. """
+        self.ensure_one()
+        return self.env[self.mass_mailing_id.mailing_model_real].search([], limit=1)
+
     def send_mail_test(self):
         self.ensure_one()
         ctx = dict(self.env.context)
@@ -44,7 +50,7 @@ class MailingMailingTest(models.TransientModel):
                 invalid_candidates.append(candidate)
 
         mailing = self.mass_mailing_id
-        record = self.env[mailing.mailing_model_real].search([], limit=1)
+        record = self._get_test_record()
 
         # If there is atleast 1 record for the model used in this mailing, then we use this one to render the template
         # Downside: Qweb syntax is only tested when there is atleast one record of the mailing's model
