@@ -178,7 +178,7 @@ class IrUiView(models.Model):
                     child = inherit_child.copy({
                         'inherit_id': website_specific_view.id,
                         'key': inherit_child.key,
-                        'theme_template_id': inherit_child.theme_template_id,
+                        'theme_template_id': inherit_child.theme_template_id.id,
                     })
                     inherit_child.inherit_children_ids.write({'inherit_id': child.id})
                     inherit_child.unlink()
