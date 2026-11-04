@@ -6,7 +6,8 @@ from psycopg2.errors import NotNullViolation
 
 from odoo.exceptions import ValidationError
 from odoo.tests.common import Form, TransactionCase, HttpCase, tagged
-from odoo.tools import mute_logger
+from odoo.tools import SQL, mute_logger
+from odoo.tools.sql import column_exists
 from odoo import Command
 
 
@@ -497,6 +498,54 @@ class TestIrModelEdition(TransactionCase):
             default_model=model.name,
             default_ttype="char"
         ).name_create("field_name")
+
+    def test_manual_field_on_partitioned_table_creates_its_column(self):
+        model = self.env['ir.model'].create({'name': 'Partitioned', 'model': 'x_test_partitioned'})
+        self.partition_table_by_id('x_test_partitioned')
+        self.env['ir.model.fields'].create({'model_id': model.id, 'name': 'x_code', 'ttype': 'char'})
+        self.assertTrue(
+            column_exists(self.cr, 'x_test_partitioned', 'x_code'),
+            "a manual field added to a model whose table is partitioned gets its column",
+        )
+
+    def test_unlink_manual_field_drops_its_column_on_partitioned_table(self):
+        model = self.env['ir.model'].create({
+            'name': 'Partitioned',
+            'model': 'x_test_partitioned',
+            'field_id': [Command.create({'name': 'x_code', 'ttype': 'char'})],
+        })
+        self.partition_table_by_id('x_test_partitioned')
+        model.field_id.filtered(lambda field: field.name == 'x_code').unlink()
+        self.assertFalse(
+            column_exists(self.cr, 'x_test_partitioned', 'x_code'),
+            "unlinking a manual field drops its column from a partitioned table",
+        )
+
+    def test_unlink_manual_model_drops_its_partitioned_table(self):
+        model = self.env['ir.model'].create({'name': 'Partitioned', 'model': 'x_test_partitioned'})
+        self.partition_table_by_id('x_test_partitioned')
+        model.unlink()
+        self.cr.execute(SQL("SELECT to_regclass(%s)", 'x_test_partitioned'))
+        self.assertIsNone(self.cr.fetchone()[0], "unlinking a manual model drops its partitioned table")
+
+    def partition_table_by_id(self, table):
+        self.cr.execute(SQL(
+            """
+            ALTER TABLE %(table)s RENAME TO %(old)s;
+            ALTER INDEX %(pkey)s RENAME TO %(old_pkey)s;
+            CREATE TABLE %(table)s (LIKE %(old)s INCLUDING DEFAULTS INCLUDING COMMENTS, PRIMARY KEY (id))
+                PARTITION BY RANGE (id);
+            CREATE TABLE %(default)s PARTITION OF %(table)s DEFAULT;
+            ALTER SEQUENCE %(sequence)s OWNED BY %(table)s.id;
+            DROP TABLE %(old)s;
+            """,
+            table=SQL.identifier(table),
+            old=SQL.identifier(f'{table}_old'),
+            pkey=SQL.identifier(f'{table}_pkey'),
+            old_pkey=SQL.identifier(f'{table}_old_pkey'),
+            default=SQL.identifier(f'{table}_pdefault'),
+            sequence=SQL.identifier(f'{table}_id_seq'),
+        ))
 
 
 @tagged('test_eval_context')

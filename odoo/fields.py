@@ -1064,6 +1064,12 @@ class Field(MetaField('DummyField', (object,), {})):
                 model.pool.post_constraint(apply_required, model, self.name)
 
         elif not self.required and has_notnull:
+            if self.name in model.pool.partition_key(model._table):
+                _schema.warning(
+                    "Table %r: column %r is in the partition key, it keeps NOT NULL; declare the field required",
+                    model._table, self.name,
+                )
+                return
             sql.drop_not_null(model._cr, model._table, self.name)
 
     def update_db_related(self, model):

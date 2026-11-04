@@ -62,11 +62,13 @@ from .tools import (
     get_lang, LastOrderedSet, lazy_classproperty, OrderedSet, ormcache,
     partition, populate, Query, ReversedIterable, split_every, unique, SQL, groupby
 )
+from .tools import partitioning
 from .tools.lru import LRU
 from .tools.translate import _, _lt
 
 _logger = logging.getLogger(__name__)
 _unlink = logging.getLogger(__name__ + '.unlink')
+_schema = logging.getLogger('odoo.schema')
 
 regex_alphanumeric = re.compile(r'^[a-z0-9_]+$')
 regex_order = re.compile(r'''
@@ -591,6 +593,21 @@ class BaseModel(metaclass=MetaModel):
     _table = None               #: SQL table name used by model if :attr:`_auto`
     _table_query = None         #: SQL expression of the table's content (optional)
     _sql_constraints = []       #: SQL constraints [(name, sql_def, message)]
+    _partition = None
+    """Partitioning of the table, applied when the table is created::
+
+      _partition = {
+          'by': 'range',        # the only strategy supported
+          'key': 'date',        # a required date, datetime or integer field, or 'id'
+          'interval': 'month',  # day, week, month or year; a positive int on an integer key
+          'ahead': 2,           # partitions kept ready after the current one
+          'default': True,      # catch-all partition; defaults to True on a date key
+      }
+
+    An existing table is never converted, and a table already partitioned in
+    the database is managed as such even if the model declares nothing. Call
+    :meth:`partition_maintain` from a cron to keep partitions ahead of time.
+    """
 
     _rec_name = None            #: field to use for labeling records, default: ``name``
     _rec_names_search = None    #: fields to consider in ``name_search``
@@ -3164,7 +3181,10 @@ class BaseModel(metaclass=MetaModel):
 
         cr = self._cr
         update_custom_fields = self._context.get('update_custom_fields', False)
-        must_create_table = not tools.table_exists(cr, self._table)
+        table_kind = tools.table_kind(cr, self._table)
+        must_create_table = table_kind not in tools.EXISTING_TABLE_KINDS
+        if table_kind == tools.TableKind.Partitioned:
+            self.pool.load_partition_keys(cr, [self._table])
         parent_path_compute = False
 
         if self._auto:
@@ -3172,11 +3192,17 @@ class BaseModel(metaclass=MetaModel):
                 def make_type(field):
                     return field.column_type[1] + (" NOT NULL" if field.required else "")
 
+                partition_spec = self._partition and partitioning.PartitionSpec.from_model(self)
                 tools.create_model_table(cr, self._table, self._description, [
                     (field.name, make_type(field), field.string)
                     for field in sorted(self._fields.values(), key=lambda f: f.column_order)
                     if field.name != 'id' and field.store and field.column_type
-                ])
+                ], partition_by=partition_spec and ('RANGE', (partition_spec.key,)))
+                if partition_spec:
+                    self.pool.load_partition_keys(cr, [self._table])
+                    partitioning.ensure_partitions(cr, partition_spec)
+            elif self._partition:
+                self.partition_maintain()
 
             if self._parent_store:
                 if not tools.column_exists(cr, self._table, 'parent_path'):
@@ -3217,6 +3243,29 @@ class BaseModel(metaclass=MetaModel):
         if parent_path_compute:
             self._parent_store_compute()
 
+    @api.model
+    @api.private
+    def partition_maintain(self):
+        """ Create the partitions :attr:`_partition` asks for from today on,
+        and move the rows waiting in the default partition into partitions of
+        their own. Meant to be called from a cron by the module that declares
+        the partitioning, and on every update of the model. A table that is
+        not partitioned, or partitioned by another key, is left alone.
+        """
+        if not self._partition:
+            return []
+        spec = partitioning.PartitionSpec.from_model(self)
+        cr = self.env.cr
+        current_key = partitioning.partitioned_tables(cr, [self._table]).get(self._table, ())
+        if current_key != (spec.key,):
+            _schema.info(
+                "Table %r: partitioned by %s in database, declared by %r; partitions are not maintained",
+                self._table, current_key or "nothing", spec.key,
+            )
+            return []
+        self.flush_model()
+        return partitioning.ensure_partitions(cr, spec)
+
     @api.private
     def init(self):
         """ This method is called after :meth:`~._auto_init`, and may be
@@ -3239,6 +3288,7 @@ class BaseModel(metaclass=MetaModel):
         """
         cr = self._cr
         foreign_key_re = re.compile(r'\s*foreign\s+key\b.*', re.I)
+        partition_key = self.pool.partition_key(self._table)
 
         for (key, definition, message) in self._sql_constraints:
             conname = '%s_%s' % (self._table, key)
@@ -3251,6 +3301,14 @@ class BaseModel(metaclass=MetaModel):
             else:
                 current_definition = tools.constraint_definition(cr, self._table, conname)
             if current_definition == definition:
+                continue
+
+            if not partitioning.constraint_applicable(definition, partition_key):
+                _schema.warning(
+                    "Table %r: constraint %r (%s) is not created, a partitioned table only enforces "
+                    "uniqueness on columns that include its partition key %s",
+                    self._table, conname, definition, partition_key,
+                )
                 continue
 
             if current_definition:

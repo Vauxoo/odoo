@@ -28,6 +28,7 @@ from odoo.tools import (
     lazy_property, sql, Collector, OrderedSet, SQL,
     format_frame
 )
+from odoo.tools import partitioning
 from odoo.tools.func import locked
 from odoo.tools.lru import LRU
 from odoo.tools.version_tag_reset import reset_classes_tp_versions_used
@@ -126,6 +127,7 @@ class Registry(Mapping):
         self._assertion_report = odoo.tests.result.OdooTestResult()
         self._fields_by_model = None
         self._ordinary_tables = None
+        self._partition_keys = {}
         self._constraint_queue = deque()
         self.__caches = {cache_name: LRU(cache_size) for cache_name, cache_size in _REGISTRY_CACHES.items()}
 
@@ -556,6 +558,9 @@ class Registry(Mapping):
             self._post_init_queue = deque()
             self._foreign_keys = {}
             self._is_install = install
+            if self._partition_keys:
+                self._partition_keys = {}
+                self._ordinary_tables = None
 
             for model in models:
                 model._auto_init()
@@ -664,13 +669,15 @@ class Registry(Mapping):
             JOIN pg_class AS c2 ON fk.confrelid = c2.oid
             JOIN pg_attribute AS a1 ON a1.attrelid = c1.oid AND fk.conkey[1] = a1.attnum
             JOIN pg_attribute AS a2 ON a2.attrelid = c2.oid AND fk.confkey[1] = a2.attnum
-            WHERE fk.contype = 'f' AND c1.relname IN %s
+            WHERE fk.contype = 'f' AND fk.conparentid = 0 AND c1.relname IN %s
         """
-        cr.execute(query, [tuple({table for table, column in self._foreign_keys})])
+        tables = tuple({table for table, column in self._foreign_keys})
+        cr.execute(query, [tables])
         existing = {
             (table1, column1): (name, table2, column2, deltype)
             for name, table1, column1, table2, column2, deltype in cr.fetchall()
         }
+        triggers = partitioning.foreign_key_triggers(cr, tables) if self._partition_keys else {}
 
         # create or update foreign keys
         for key, val in self._foreign_keys.items():
@@ -678,6 +685,18 @@ class Registry(Mapping):
             table2, column2, ondelete, model, module = val
             deltype = sql._CONFDELTYPES[ondelete.upper()]
             spec = existing.get(key)
+            trigger = triggers.get(key)
+            if partitioning.needs_fk_trigger(self.partition_key(table2), column2):
+                if spec is not None:
+                    sql.drop_constraint(cr, table1, spec[0])
+                if trigger is None or trigger[1:] != (table2, partitioning.fk_trigger_action(ondelete)):
+                    if trigger is not None:
+                        partitioning.drop_foreign_key_trigger(cr, table1, trigger[0])
+                    conname = partitioning.add_foreign_key_trigger(cr, table1, column1, table2, ondelete)
+                    model.env['ir.model.constraint']._reflect_constraint(model, conname, 'f', None, module)
+                continue
+            if trigger is not None:
+                partitioning.drop_foreign_key_trigger(cr, table1, trigger[0])
             if spec is None:
                 sql.add_foreign_key(cr, table1, column1, table2, column2, ondelete)
                 conname = sql.get_foreign_keys(cr, table1, column1, table2, column2, ondelete)[0]
@@ -744,22 +763,40 @@ class Registry(Mapping):
         log('Invalidating all model caches from %s', caller_info)
 
     def is_an_ordinary_table(self, model):
-        """ Return whether the given model has an ordinary table. """
+        """ Return whether the given model has an ordinary table, regular or
+        partitioned, as opposed to a view. """
         if self._ordinary_tables is None:
             cr = model.env.cr
             query = """
-                SELECT c.relname
+                SELECT c.relname, c.relkind
                   FROM pg_class c
                   JOIN pg_namespace n ON (n.oid = c.relnamespace)
                  WHERE c.relname IN %s
-                   AND c.relkind = 'r'
+                   AND c.relkind IN ('r', 'p')
                    AND n.nspname = 'public'
             """
             tables = tuple(m._table for m in self.models.values())
             cr.execute(query, [tables])
-            self._ordinary_tables = {row[0] for row in cr.fetchall()}
+            rows = cr.fetchall()
+            self._ordinary_tables = {row[0] for row in rows}
+            self.load_partition_keys(cr, [table for table, kind in rows if kind == 'p'])
 
         return model._table in self._ordinary_tables
+
+    def partition_key(self, table):
+        """ Return the columns of the partition key of ``table``, or an empty
+        tuple if it is not known as a partitioned table. Tables are learnt
+        from the catalog while the schema is updated, see
+        :meth:`load_partition_keys`, so that no query is spent on a database
+        without partitioned tables.
+        """
+        return self._partition_keys.get(table, ())
+
+    def load_partition_keys(self, cr, tables):
+        """ Read from the catalog the partition keys of the partitioned tables
+        among ``tables``, which the caller already knows to be partitioned. """
+        if tables:
+            self._partition_keys.update(partitioning.partitioned_tables(cr, tables))
 
     @property
     def registry_invalidated(self):

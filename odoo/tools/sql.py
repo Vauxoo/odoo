@@ -161,7 +161,7 @@ def existing_tables(cr, tablenames):
           FROM pg_class c
           JOIN pg_namespace n ON (n.oid = c.relnamespace)
          WHERE c.relname IN %s
-           AND c.relkind IN ('r', 'v', 'm')
+           AND c.relkind IN ('r', 'v', 'm', 'p')
            AND n.nspname = current_schema
     """, tuple(tablenames)))
     return [row[0] for row in cr.fetchall()]
@@ -178,13 +178,20 @@ class TableKind(enum.Enum):
     View = 'v'
     Materialized = 'm'
     Foreign = 'f'
+    Partitioned = 'p'
     Other = None
 
 
+#: kinds of relation that :func:`existing_tables` reports as existing tables
+EXISTING_TABLE_KINDS = frozenset({
+    TableKind.Regular, TableKind.Temporary, TableKind.View, TableKind.Materialized, TableKind.Partitioned,
+})
+
+
 def table_kind(cr, tablename: str) -> Union[TableKind, None]:
-    """ Return the kind of a table, if ``tablename`` is a regular or foreign
-    table, or a view (ignores indexes, sequences, toast tables, and partitioned
-    tables; unlogged tables are considered regular)
+    """ Return the kind of a table, if ``tablename`` is a regular, foreign or
+    partitioned table, or a view (ignores indexes, sequences and toast tables;
+    unlogged tables are considered regular)
     """
     cr.execute(SQL("""
         SELECT c.relkind, c.relpersistence
@@ -226,15 +233,30 @@ SQL_ORDER_BY_TYPE = defaultdict(lambda: 16, {
 })
 
 
-def create_model_table(cr, tablename, comment=None, columns=()):
-    """ Create the table for a model. """
+def create_model_table(cr, tablename, comment=None, columns=(), partition_by=None):
+    """ Create the table for a model.
+
+    :param partition_by: ``(method, key_columns)`` to create the table
+        partitioned, e.g. ``('RANGE', ('date',))``; the key columns join ``id``
+        in the primary key, as PostgreSQL requires.
+    """
+    if partition_by:
+        method, key = partition_by
+        primary_key = SQL("PRIMARY KEY(%s)", SQL(", ").join(
+            SQL.identifier(column) for column in dict.fromkeys(('id', *key))
+        ))
+        partition_clause = SQL(" PARTITION BY %s (%s)", SQL(method), SQL(", ").join(
+            SQL.identifier(column) for column in key
+        ))
+    else:
+        primary_key, partition_clause = SQL('PRIMARY KEY(id)'), SQL()
     colspecs = [
         SQL('id SERIAL NOT NULL'),
         *(SQL("%s %s", SQL.identifier(colname), SQL(coltype)) for colname, coltype, _ in columns),
-        SQL('PRIMARY KEY(id)'),
+        primary_key,
     ]
     queries = [
-        SQL("CREATE TABLE %s (%s)", SQL.identifier(tablename), SQL(", ").join(colspecs)),
+        SQL("CREATE TABLE %s (%s)%s", SQL.identifier(tablename), SQL(", ").join(colspecs), partition_clause),
     ]
     if comment:
         queries.append(SQL(

@@ -315,7 +315,7 @@ class IrModel(models.Model):
                 kind = tools.table_kind(self._cr, table)
                 if kind == tools.TableKind.View:
                     self._cr.execute(sql.SQL('DROP VIEW {}').format(sql.Identifier(table)))
-                elif kind == tools.TableKind.Regular:
+                elif kind in (tools.TableKind.Regular, tools.TableKind.Partitioned):
                     self._cr.execute(sql.SQL('DROP TABLE {} CASCADE').format(sql.Identifier(table)))
                 elif kind is not None:
                     _logger.warning(
@@ -498,7 +498,7 @@ class IrModel(models.Model):
             model_class = self._instanciate(model_data)
             Model = model_class._build_model(self.pool, cr)
             kind = tools.table_kind(cr, Model._table)
-            if kind not in (tools.TableKind.Regular, None):
+            if kind not in (tools.TableKind.Regular, tools.TableKind.Partitioned, None):
                 _logger.info(
                     "Model %r is backed by table %r which is not a regular table (%r), disabling automatic schema management",
                     Model._name, Model._table, kind,
@@ -839,7 +839,8 @@ class IrModelFields(models.Model):
             if field.store:
                 # TODO: Refactor this brol in master
                 if is_model and tools.column_exists(self._cr, model._table, field.name) and \
-                        tools.table_kind(self._cr, model._table) == tools.TableKind.Regular:
+                        tools.table_kind(self._cr, model._table) in (
+                            tools.TableKind.Regular, tools.TableKind.Partitioned):
                     self._cr.execute(sql.SQL('ALTER TABLE {} DROP COLUMN {} CASCADE').format(
                         sql.Identifier(model._table), sql.Identifier(field.name),
                     ))
