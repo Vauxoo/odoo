@@ -226,10 +226,21 @@ SQL_ORDER_BY_TYPE = defaultdict(lambda: 16, {
 })
 
 
-def create_model_table(cr, tablename, comment=None, columns=()):
-    """ Create the table for a model. """
+#: definition of the "id" column of a model table, by column type
+ID_COLUMN_SPECS = {
+    'int4': 'id SERIAL NOT NULL',
+    'uuid': 'id UUID NOT NULL DEFAULT uuidv7()',
+}
+
+
+def create_model_table(cr, tablename, comment=None, columns=(), id_type='int4'):
+    """ Create the table for a model.
+
+    :param id_type: column type of the primary key, a key of
+        :data:`ID_COLUMN_SPECS`; ``uuid`` needs PostgreSQL 18 for ``uuidv7()``
+    """
     colspecs = [
-        SQL('id SERIAL NOT NULL'),
+        SQL(ID_COLUMN_SPECS[id_type]),
         *(SQL("%s %s", SQL.identifier(colname), SQL(coltype)) for colname, coltype, _ in columns),
         SQL('PRIMARY KEY(id)'),
     ]

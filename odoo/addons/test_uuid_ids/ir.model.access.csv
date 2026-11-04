@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_test_uuid_ids_doc,access_test_uuid_ids_doc,model_test_uuid_ids_doc,base.group_user,1,1,1,1
+access_test_uuid_ids_ref,access_test_uuid_ids_ref,model_test_uuid_ids_ref,base.group_user,1,1,1,1
+access_test_uuid_ids_line,access_test_uuid_ids_line,model_test_uuid_ids_line,base.group_user,1,1,1,1
+access_test_uuid_ids_legacy,access_test_uuid_ids_legacy,model_test_uuid_ids_legacy,base.group_user,1,1,1,1

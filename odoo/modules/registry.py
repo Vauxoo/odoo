@@ -131,6 +131,7 @@ class Registry(Mapping):
 
         # modules fully loaded (maintained during init phase by `loading` module)
         self._init_modules = set()
+        self._uuid_id_tables = {}
         self.updated_modules = []       # installed/updated modules
         self.loaded_xmlids = set()
 
@@ -303,6 +304,8 @@ class Registry(Mapping):
         # do the actual setup
         for model in models:
             model._setup_base()
+
+        self._setup_id_types(cr, models)
 
         self._m2m = defaultdict(list)
         for model in models:
@@ -687,6 +690,42 @@ class Registry(Mapping):
                 sql.add_foreign_key(cr, table1, column1, table2, column2, ondelete)
                 conname = sql.get_foreign_keys(cr, table1, column1, table2, column2, ondelete)[0]
                 model.env['ir.model.constraint']._reflect_constraint(model, conname, 'f', None, module)
+
+    def _setup_id_types(self, cr, models):
+        """ Resolve whether the records of each model are identified by UUIDs.
+
+        The type of an existing table is read from the database and wins over
+        :attr:`~odoo.models.BaseModel._id_type`, which only decides the type of
+        a table yet to be created: declaring UUID ids on a model whose table
+        already has integer ids leaves both the table and the model as they
+        are, since changing the type of a primary key means rewriting the
+        table and every column and relation table that references it.
+        """
+        known = self._uuid_id_tables
+        tables = tuple({model._table for model in models if model._table} - known.keys())
+        if tables:
+            cr.execute("""
+                SELECT c.relname, a.atttypid = 'uuid'::regtype
+                  FROM pg_attribute a
+                  JOIN pg_class c ON c.oid = a.attrelid
+                 WHERE c.relname IN %s
+                   AND c.relnamespace = current_schema::regnamespace
+                   AND a.attname = 'id' AND a.attnum > 0 AND NOT a.attisdropped
+            """, [tables])
+            existing = dict(cr.fetchall())
+            for model in models:
+                if model._table not in tables or model._table in known:
+                    continue
+                declared = model._id_type == odoo.models.UUID_ID_TYPE
+                known[model._table] = existing.get(model._table, declared)
+                if known[model._table] != declared:
+                    _schema.warning(
+                        "Model %r declares %s ids but table %r has %s ids: kept as they are",
+                        model._name, model._id_type, model._table,
+                        'uuid' if known[model._table] else 'integer',
+                    )
+        for model in models:
+            type(model)._uuid_ids = known.get(model._table, model._id_type == odoo.models.UUID_ID_TYPE)
 
     def check_tables_exist(self, cr):
         """
