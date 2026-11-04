@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
+from datetime import date
+
+import psycopg2
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
+
 from odoo.models import MetaModel
 from odoo.tests import common
+from odoo.tools import SQL, mute_logger
 from odoo.addons.base.models.ir_model import model_xmlid, field_xmlid, selection_xmlid
 
 
@@ -614,3 +621,368 @@ class TestSchema(common.TransactionCase):
         """, ['%very_very_very_very_long_field_name%'])
         nb_field_index, = self.env.cr.fetchone()
         self.assertEqual(nb_field_index, 2)
+
+
+class TestPartitionedTables(common.TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.this_month = date.today().replace(day=1)
+        cls.Event = cls.env['test_new_api.partition.event']
+        cls.Legacy = cls.env['test_new_api.partition.legacy']
+        cls.Reference = cls.env['test_new_api.partition.reference']
+
+    def test_declared_model_gets_a_partitioned_table(self):
+        self.assertEqual(self.relkind(self.Event._table), 'p', "the table of a declared model is partitioned")
+        self.assertEqual(
+            self.primary_key_columns(self.Event._table), ['date', 'id'],
+            "the primary key of a table partitioned by date includes the date",
+        )
+
+    def test_install_creates_current_ahead_and_default_partitions(self):
+        self.assertEqual(
+            self.partitions(self.Event._table),
+            {
+                self.month_partition(0), self.month_partition(1), self.month_partition(2),
+                'test_new_api_partition_event_pdefault',
+            },
+            "install creates this month, two months ahead and the default partition",
+        )
+
+    def test_create_routes_rows_to_their_partition(self):
+        event = self.Event.create({'name': 'now', 'date': self.months_after(0)})
+        self.assertEqual(
+            self.partition_of(event), self.month_partition(0),
+            "a row of this month is stored in the partition of this month",
+        )
+        event = self.Event.create({'name': 'later', 'date': self.months_after(24)})
+        self.assertEqual(
+            self.partition_of(event), 'test_new_api_partition_event_pdefault',
+            "a row beyond the existing partitions is stored in the default partition",
+        )
+
+    def test_update_moves_default_rows_to_their_partition(self):
+        event = self.Event.create({'name': 'later', 'date': self.months_after(24)})
+        self.assertIsNone(self.update_models(self.Event._name), "the update of a declared model succeeds")
+        self.assertEqual(
+            self.partition_of(event), self.month_partition(24),
+            "the update moves a row out of the default partition into a partition of its own",
+        )
+        self.env.invalidate_all()
+        self.assertEqual(event.name, 'later', "the moved row keeps its id and is still readable")
+
+    def test_update_creates_partitions_ahead_of_today(self):
+        with freeze_time(self.months_after(6)):
+            self.assertIsNone(self.update_models(self.Event._name), "the update of a declared model succeeds")
+        self.assertLessEqual(
+            {self.month_partition(6), self.month_partition(7), self.month_partition(8)},
+            self.partitions(self.Event._table),
+            "the update creates the partitions of the current month and two months ahead",
+        )
+
+    def test_update_never_converts_an_ordinary_table(self):
+        self.unpartition_event_by_hand()
+        with self.assertLogs('odoo.schema', 'INFO') as logs:
+            self.assertIsNone(self.update_models(self.Event._name), "the update of a declared model succeeds")
+        self.assertEqual(self.relkind(self.Event._table), 'r', "an ordinary table stays ordinary")
+        self.assertIn(
+            "partitions are not maintained", "\n".join(logs.output),
+            "the update reports that the declared partitioning is not applied",
+        )
+
+    def test_write_on_key_moves_row_and_keeps_references(self):
+        event = self.Event.create({'name': 'moving', 'date': self.months_after(0)})
+        reference = self.Reference.create({'event_id': event.id})
+        event.date = self.months_after(1)
+        self.assertEqual(
+            self.partition_of(event), self.month_partition(1),
+            "writing the key moves the row to the partition of its new date",
+        )
+        self.env.invalidate_all()
+        self.assertEqual(
+            reference.exists().event_id, event,
+            "moving a row between partitions does not fire the ondelete of its references",
+        )
+
+    def test_unique_constraint_including_key_is_enforced(self):
+        self.Event.create({'name': 'twice', 'date': self.months_after(0)})
+        with self.assertRaises(psycopg2.errors.UniqueViolation), mute_logger('odoo.sql_db'), self.cr.savepoint():
+            self.Event.create({'name': 'twice', 'date': self.months_after(0)})
+
+    def test_unlink_cascades_to_referencing_rows(self):
+        event = self.Event.create({'name': 'target', 'date': self.months_after(0)})
+        reference = self.Reference.create({'event_id': event.id})
+        event.unlink()
+        self.env.invalidate_all()
+        self.assertFalse(reference.exists(), "ondelete cascade removes the referencing row")
+
+    def test_unlink_sets_null_on_referencing_rows(self):
+        event = self.Event.create({'name': 'target', 'date': self.months_after(0)})
+        reference = self.Reference.create({'event_set_null_id': event.id})
+        event.unlink()
+        self.env.invalidate_all()
+        self.assertFalse(reference.event_set_null_id, "ondelete set null empties the referencing column")
+
+    def test_unlink_restricted_by_referencing_rows(self):
+        event = self.Event.create({'name': 'target', 'date': self.months_after(0)})
+        self.Reference.create({'event_restrict_id': event.id})
+        with self.assertRaises(psycopg2.errors.RestrictViolation), mute_logger('odoo.sql_db'), self.cr.savepoint():
+            event.unlink()
+
+    def test_reference_to_missing_record_is_rejected(self):
+        event = self.Event.create({'name': 'target', 'date': self.months_after(0)})
+        with self.assertRaises(psycopg2.errors.ForeignKeyViolation), mute_logger('odoo.sql_db'), self.cr.savepoint():
+            self.Reference.create({'event_id': event.id + 1000})
+
+    def test_many2many_rows_removed_with_partitioned_record(self):
+        event = self.Event.create({'name': 'target', 'date': self.months_after(0)})
+        self.Reference.create({'event_ids': [event.id]})
+        self.env.flush_all()
+        event.unlink()
+        self.cr.execute(SQL(
+            "SELECT count(*) FROM test_new_api_partition_event_reference_rel WHERE event_id = %s", event.id,
+        ))
+        self.assertEqual(self.cr.fetchone()[0], 0, "the relation rows of a deleted partitioned record are removed")
+
+    def test_foreign_key_trigger_is_reflected_as_constraint(self):
+        constraint = self.env['ir.model.constraint'].search([
+            ('name', '=', 'test_new_api_partition_reference_event_id_pfkey'),
+        ])
+        self.assertEqual(
+            constraint.mapped('type'), ['f'],
+            "the trigger implementing a many2one to a table partitioned by date is reflected as a foreign key",
+        )
+
+    def test_update_changes_the_action_of_a_foreign_key_trigger(self):
+        self.cr.execute(SQL("""
+            DROP TRIGGER test_new_api_partition_reference_event_id_pfkey ON test_new_api_partition_reference;
+            CREATE CONSTRAINT TRIGGER test_new_api_partition_reference_event_id_pfkey
+                AFTER INSERT OR UPDATE OF event_id ON test_new_api_partition_reference FOR EACH ROW
+                EXECUTE FUNCTION odoo_partition_fk_check('test_new_api_partition_event', 'event_id', 'restrict')
+        """))
+        self.assertIsNone(
+            self.update_models(self.Event._name, self.Reference._name), "the update of the referencing model succeeds",
+        )
+        event = self.Event.create({'name': 'target', 'date': self.months_after(0)})
+        reference = self.Reference.create({'event_id': event.id})
+        event.unlink()
+        self.env.invalidate_all()
+        self.assertFalse(reference.exists(), "the update restores the ondelete cascade the field declares")
+
+    def test_update_turns_foreign_key_trigger_into_foreign_key_on_ordinary_table(self):
+        self.unpartition_event_by_hand()
+        self.assertIsNone(
+            self.update_models(self.Event._name, self.Reference._name), "the update of the referencing model succeeds",
+        )
+        self.assertEqual(
+            self.foreign_key_kinds(self.Reference._table, self.Event._table), ['f', 'f', 'f'],
+            "the many2one fields towards an ordinary table are real foreign keys again",
+        )
+
+    def test_update_of_hand_partitioned_table_keeps_it(self):
+        self.partition_by_hand(self.Legacy._table, 'day')
+        self.assertIsNone(
+            self.update_models(self.Legacy._name), "the update of a model whose table is partitioned succeeds",
+        )
+        self.assertEqual(self.relkind(self.Legacy._table), 'p', "the update leaves the table partitioned")
+
+    def test_update_keeps_not_null_on_partition_key(self):
+        self.partition_by_hand(self.Legacy._table, 'day')
+        with self.assertLogs('odoo.schema', 'WARNING') as logs:
+            self.assertIsNone(
+                self.update_models(self.Legacy._name), "the update of a model whose table is partitioned succeeds",
+            )
+        self.assertFalse(
+            self.column_is_nullable(self.Legacy._table, 'day'),
+            "the update keeps NOT NULL on the partition key of a field that is not required",
+        )
+        self.assertIn(
+            "column 'day' is in the partition key", "\n".join(logs.output),
+            "the update asks to declare the partition key required",
+        )
+
+    def test_update_skips_unique_constraint_without_key(self):
+        self.partition_by_hand(self.Legacy._table, 'day')
+        with self.assertLogs('odoo.schema', 'WARNING') as logs:
+            self.assertIsNone(
+                self.update_models(self.Legacy._name), "the update of a model whose table is partitioned succeeds",
+            )
+        self.assertNotIn(
+            'test_new_api_partition_legacy_code_uniq', self.constraint_names(self.Legacy._table),
+            "the partitioned table has no unique constraint without its partition key",
+        )
+        self.assertIn(
+            "test_new_api_partition_legacy_code_uniq", "\n".join(logs.output),
+            "the update reports the unique constraint it does not create",
+        )
+
+    def test_update_replaces_foreign_keys_to_hand_partitioned_table_by_triggers(self):
+        self.partition_by_hand(self.Legacy._table, 'day')
+        self.cr.execute(SQL("""
+            ALTER TABLE test_new_api_partition_legacy_hist ADD UNIQUE (id);
+            ALTER TABLE test_new_api_partition_reference ADD FOREIGN KEY (legacy_id)
+                REFERENCES test_new_api_partition_legacy_hist (id) ON DELETE SET NULL;
+        """))
+        self.assertIsNone(
+            self.update_models(self.Legacy._name, self.Reference._name),
+            "the update of a model referencing a partitioned table succeeds",
+        )
+        legacy = self.Legacy.create({'day': self.months_after(1)})
+        reference = self.Reference.create({'legacy_id': legacy.id})
+        self.env.flush_all()
+        self.assertEqual(
+            self.foreign_key_kinds(self.Reference._table, 'test_new_api_partition_legacy_hist'), [],
+            "no foreign key is left pointing to the old table, now one of the partitions",
+        )
+        legacy.unlink()
+        self.env.invalidate_all()
+        self.assertFalse(reference.legacy_id, "ondelete set null applies to a row of a new partition")
+
+    def test_update_adds_outgoing_foreign_key_to_hand_partitioned_table(self):
+        self.partition_by_hand(self.Legacy._table, 'day')
+        self.assertIsNone(
+            self.update_models(self.Legacy._name), "the update of a model whose table is partitioned succeeds",
+        )
+        partner = self.env['res.partner'].create({'name': 'target'})
+        legacy = self.Legacy.create({'day': self.months_after(1), 'partner_id': partner.id})
+        partner.unlink()
+        self.env.invalidate_all()
+        self.assertFalse(legacy.partner_id, "a many2one from a partitioned table keeps its ondelete set null")
+
+    def test_many2one_to_id_partitioned_table_is_a_real_foreign_key(self):
+        idrange_table = self.env['test_new_api.partition.idrange']._table
+        self.assertEqual(self.relkind(idrange_table), 'p', "the table of a model declared by id is partitioned")
+        self.assertEqual(
+            self.primary_key_columns(idrange_table), ['id'],
+            "a table partitioned by id keeps id alone as primary key",
+        )
+        self.assertEqual(
+            self.foreign_key_kinds(self.Reference._table, idrange_table), ['f'],
+            "a many2one towards a table partitioned by id is a real foreign key",
+        )
+
+    def test_update_keeps_foreign_key_to_id_partitioned_table(self):
+        idrange = self.env['test_new_api.partition.idrange']
+        before = self.foreign_key_oids(self.Reference._table, idrange._table)
+        self.assertIsNone(
+            self.update_models(idrange._name, self.Reference._name), "the update of the referencing model succeeds",
+        )
+        self.assertEqual(
+            self.foreign_key_oids(self.Reference._table, idrange._table), before,
+            "the update leaves the foreign key towards a table partitioned by id untouched",
+        )
+
+    def test_maintain_ignores_model_without_declaration(self):
+        self.assertEqual(
+            self.Legacy.partition_maintain(), [], "maintenance does nothing on a model that declares no partitioning",
+        )
+
+    def relkind(self, table):
+        self.cr.execute(SQL(
+            "SELECT relkind FROM pg_class WHERE relname = %s AND relnamespace = current_schema::regnamespace", table,
+        ))
+        return self.cr.fetchone()[0]
+
+    def partitions(self, table):
+        self.cr.execute(SQL("SELECT inhrelid::regclass::text FROM pg_inherits WHERE inhparent = %s::regclass", table))
+        return {row[0] for row in self.cr.fetchall()}
+
+    def partition_of(self, record):
+        record.flush_recordset()
+        self.cr.execute(SQL(
+            "SELECT tableoid::regclass::text FROM %s WHERE id = %s", SQL.identifier(record._table), record.id,
+        ))
+        return self.cr.fetchone()[0]
+
+    def primary_key_columns(self, table):
+        self.cr.execute(SQL(
+            """ SELECT array_agg(a.attname::text ORDER BY a.attname)
+                  FROM pg_constraint c
+                  JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY(c.conkey)
+                 WHERE c.conrelid = %s::regclass AND c.contype = 'p' """,
+            table,
+        ))
+        return self.cr.fetchone()[0]
+
+    def constraint_names(self, table):
+        self.cr.execute(SQL("SELECT conname FROM pg_constraint WHERE conrelid = %s::regclass", table))
+        return {row[0] for row in self.cr.fetchall()}
+
+    def foreign_key_kinds(self, table, referenced_table):
+        self.cr.execute(SQL(
+            """ SELECT contype FROM pg_constraint
+                 WHERE conrelid = %s::regclass AND confrelid = %s::regclass AND conparentid = 0 """,
+            table, referenced_table,
+        ))
+        return [row[0] for row in self.cr.fetchall()]
+
+    def foreign_key_oids(self, table, referenced_table):
+        self.cr.execute(SQL(
+            """ SELECT oid FROM pg_constraint
+                 WHERE conrelid = %s::regclass AND confrelid = %s::regclass AND conparentid = 0 """,
+            table, referenced_table,
+        ))
+        return [row[0] for row in self.cr.fetchall()]
+
+    def column_is_nullable(self, table, column):
+        self.cr.execute(SQL(
+            "SELECT is_nullable FROM information_schema.columns WHERE table_name = %s AND column_name = %s",
+            table, column,
+        ))
+        return self.cr.fetchone()[0] == 'YES'
+
+    def months_after(self, months):
+        return self.this_month + relativedelta(months=months)
+
+    def month_partition(self, months):
+        return f"test_new_api_partition_event_p{self.months_after(months):%Y%m}"
+
+    def update_models(self, *model_names):
+        try:
+            with mute_logger('odoo.sql_db'), self.cr.savepoint():
+                self.registry.init_models(self.cr, list(model_names), {'module': 'test_new_api'}, install=False)
+        except psycopg2.Error as error:
+            return error
+        return None
+
+    def partition_by_hand(self, table, column):
+        self.cr.execute(SQL(
+            """
+            ALTER TABLE %(table)s RENAME TO %(hist)s;
+            ALTER TABLE %(hist)s DROP CONSTRAINT %(pkey)s CASCADE;
+            ALTER TABLE %(hist)s ALTER COLUMN %(column)s SET NOT NULL;
+            CREATE TABLE %(table)s (LIKE %(hist)s INCLUDING DEFAULTS INCLUDING COMMENTS)
+                PARTITION BY RANGE (%(column)s);
+            ALTER TABLE %(table)s ADD CONSTRAINT %(pkey)s PRIMARY KEY (id, %(column)s);
+            ALTER SEQUENCE %(sequence)s OWNED BY %(table)s.id;
+            ALTER TABLE %(table)s ATTACH PARTITION %(hist)s FOR VALUES FROM (MINVALUE) TO (%(bound)s);
+            CREATE TABLE %(current)s PARTITION OF %(table)s FOR VALUES FROM (%(bound)s) TO (MAXVALUE);
+            """,
+            table=SQL.identifier(table),
+            hist=SQL.identifier(f'{table}_hist'),
+            current=SQL.identifier(f'{table}_current'),
+            column=SQL.identifier(column),
+            pkey=SQL.identifier(f'{table}_pkey'),
+            sequence=SQL.identifier(f'{table}_id_seq'),
+            bound=self.months_after(1),
+        ))
+
+    def unpartition_event_by_hand(self):
+        table = self.Event._table
+        self.cr.execute(SQL(
+            """
+            ALTER TABLE %(table)s RENAME TO %(old)s;
+            ALTER INDEX %(pkey)s RENAME TO %(old_pkey)s;
+            ALTER INDEX %(unique)s RENAME TO %(old_unique)s;
+            CREATE TABLE %(table)s (LIKE %(old)s INCLUDING DEFAULTS INCLUDING COMMENTS, PRIMARY KEY (id));
+            ALTER SEQUENCE %(sequence)s OWNED BY %(table)s.id;
+            """,
+            table=SQL.identifier(table),
+            old=SQL.identifier(f'{table}_old'),
+            pkey=SQL.identifier(f'{table}_pkey'),
+            old_pkey=SQL.identifier(f'{table}_old_pkey'),
+            unique=SQL.identifier(f'{table}_name_date_uniq'),
+            old_unique=SQL.identifier(f'{table}_old_name_date_uniq'),
+            sequence=SQL.identifier(f'{table}_id_seq'),
+        ))

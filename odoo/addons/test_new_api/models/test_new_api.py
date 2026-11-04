@@ -1970,3 +1970,54 @@ class BinaryTest(models.Model):
 
     def _compute_bin2(self):
         self.bin2 = {}
+
+
+class PartitionEvent(models.Model):
+    _name = 'test_new_api.partition.event'
+    _description = 'Model declaring a table partitioned by month'
+    _partition = {'by': 'range', 'key': 'date', 'interval': 'month', 'ahead': 2}
+
+    name = fields.Char(required=True)
+    date = fields.Date(required=True)
+
+    _sql_constraints = [
+        ('name_date_uniq', 'unique(name, date)', 'One event per name and date.'),
+    ]
+
+
+class PartitionLegacy(models.Model):
+    _name = 'test_new_api.partition.legacy'
+    _description = 'Model declaring nothing, whose table may be partitioned by hand'
+
+    name = fields.Char()
+    day = fields.Date()
+    code = fields.Char()
+    partner_id = fields.Many2one('res.partner', ondelete='set null')
+
+    _sql_constraints = [
+        ('code_uniq', 'unique(code)', 'The code must be unique.'),
+    ]
+
+
+class PartitionIdRange(models.Model):
+    _name = 'test_new_api.partition.idrange'
+    _description = 'Model declaring a table partitioned by ranges of id'
+    _partition = {'by': 'range', 'key': 'id', 'interval': 100000, 'ahead': 1}
+
+    name = fields.Char()
+
+
+class PartitionReference(models.Model):
+    _name = 'test_new_api.partition.reference'
+    _description = 'Model referencing partitioned tables'
+
+    name = fields.Char()
+    event_id = fields.Many2one('test_new_api.partition.event', ondelete='cascade')
+    event_set_null_id = fields.Many2one('test_new_api.partition.event', ondelete='set null')
+    event_restrict_id = fields.Many2one('test_new_api.partition.event', ondelete='restrict')
+    event_ids = fields.Many2many(
+        'test_new_api.partition.event', 'test_new_api_partition_event_reference_rel', 'reference_id', 'event_id',
+        string='Events',
+    )
+    legacy_id = fields.Many2one('test_new_api.partition.legacy', ondelete='set null')
+    idrange_id = fields.Many2one('test_new_api.partition.idrange', ondelete='cascade')
