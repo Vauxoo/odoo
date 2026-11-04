@@ -124,7 +124,7 @@ from datetime import date, datetime, time
 import psycopg2.sql
 
 import odoo.modules
-from odoo.models import BaseModel, check_property_field_value_name
+from odoo.models import BaseModel, canonical_uuid, check_property_field_value_name
 from odoo.tools import (
     pycompat, pattern_to_translated_trigram_pattern, value_to_translated_trigram_pattern,
     Query, SQL,
@@ -715,6 +715,21 @@ def normalize_leaf(element):
     return left, operator, right
 
 
+def is_uuid_ids(model, value):
+    """ Return whether ``value``, a string or a list of strings, holds ids of
+    ``model`` rather than names to search, which is the case when the model
+    has UUID ids and every string is a UUID. """
+    if not model._uuid_ids or not value:
+        return False
+    values = [value] if isinstance(value, str) else value
+    try:
+        for item in values:
+            canonical_uuid(item)
+    except (TypeError, ValueError, AttributeError):
+        return False
+    return True
+
+
 def is_operator(element):
     """ Test whether an object is a valid domain operator. """
     return isinstance(element, str) and element in DOMAIN_OPERATORS
@@ -870,6 +885,8 @@ class expression(object):
                     - return the list of related ids
             """
             names = []
+            if is_uuid_ids(comodel, value):
+                return [value] if isinstance(value, str) else list(value)
             if isinstance(value, str):
                 names = [value]
             elif value and isinstance(value, (tuple, list)) and all(isinstance(item, str) for item in value):
@@ -1202,7 +1219,9 @@ class expression(object):
 
                 if right is not False:
                     # determine ids2 in comodel
-                    if isinstance(right, str):
+                    if isinstance(right, str) and is_uuid_ids(comodel, right):
+                        ids2 = [right]
+                    elif isinstance(right, str):
                         op2 = (TERM_OPERATORS_NEGATION[operator]
                                if operator in NEGATIVE_TERM_OPERATORS else operator)
                         ids2 = comodel._name_search(right, domain or [], op2)
@@ -1284,7 +1303,9 @@ class expression(object):
 
                 elif right is not False:
                     # determine ids2 in comodel
-                    if isinstance(right, str):
+                    if isinstance(right, str) and is_uuid_ids(comodel, right):
+                        ids2 = [right]
+                    elif isinstance(right, str):
                         domain = field.get_domain_list(model)
                         op2 = (TERM_OPERATORS_NEGATION[operator]
                                if operator in NEGATIVE_TERM_OPERATORS else operator)
@@ -1347,7 +1368,7 @@ class expression(object):
                 elif (
                     isinstance(right, str)
                     or isinstance(right, (tuple, list)) and right and all(isinstance(item, str) for item in right)
-                ):
+                ) and not is_uuid_ids(comodel, right):
                     # resolve string-based m2o criterion into IDs subqueries
 
                     # Special treatment to ill-formed domains

@@ -986,6 +986,17 @@ class Field(MetaField('DummyField', (object,), {})):
         """ Prescribed column order in table. """
         return 0 if self.column_type is None else SQL_ORDER_BY_TYPE[self.column_type[0]]
 
+    def db_column_type(self, model):
+        """ Return the (ident, spec) column type of this field in the table of
+        ``model``. It is :attr:`column_type`, except for a column holding the
+        id of a record, whose type follows the model the record belongs to.
+        """
+        return self.column_type
+
+    def db_column_spec(self, model):
+        """ Return the SQL type to create this field's column with. """
+        return self.db_column_type(model)[1]
+
     def update_db(self, model, columns):
         """ Update the database schema to implement this field.
 
@@ -1030,9 +1041,16 @@ class Field(MetaField('DummyField', (object,), {})):
         """
         if not column:
             # the column does not exist, create it
-            sql.create_column(model._cr, model._table, self.name, self.column_type[1], self.string)
+            sql.create_column(model._cr, model._table, self.name, self.db_column_spec(model), self.string)
             return
-        if column['udt_name'] == self.column_type[0]:
+        column_type = self.db_column_type(model)[0]
+        if column['udt_name'] == column_type:
+            return
+        if 'uuid' in (column['udt_name'], column_type):
+            _schema.warning(
+                "Table %r: column %r kept as %s, not converted to %s",
+                model._table, self.name, column['udt_name'], column_type,
+            )
             return
         if column['is_nullable'] == 'NO':
             sql.drop_not_null(model._cr, model._table, self.name)
@@ -1040,7 +1058,7 @@ class Field(MetaField('DummyField', (object,), {})):
 
     def _convert_db_column(self, model, column):
         """ Convert the given database column to the type of the field. """
-        sql.convert_column(model._cr, model._table, self.name, self.column_type[1])
+        sql.convert_column(model._cr, model._table, self.name, self.db_column_spec(model))
 
     def update_db_notnull(self, model, column):
         """ Add or remove the NOT NULL constraint on ``self``.
@@ -3069,6 +3087,11 @@ class Many2one(_Relational):
                 f"supported for this type of field as comodel."
             )
 
+    def db_column_type(self, model):
+        if model.pool[self.comodel_name]._uuid_ids:
+            return ('uuid', 'uuid')
+        return self.column_type
+
     def update_db(self, model, columns):
         comodel = model.env[self.comodel_name]
         if not model.is_transient() and comodel.is_transient():
@@ -3106,6 +3129,8 @@ class Many2one(_Relational):
         # cache format: id or None
         if type(value) in IdType:
             id_ = value
+        elif value.__class__ is str and record.pool[self.comodel_name]._uuid_ids:
+            id_ = canonical_uuid(value)
         elif isinstance(value, BaseModel):
             if validate and (value._name != self.comodel_name or len(value) > 1):
                 raise ValueError("Wrong value for %s: %r" % (self, value))
@@ -3156,6 +3181,8 @@ class Many2one(_Relational):
     def convert_to_write(self, value, record):
         if type(value) in IdType:
             return value
+        if value.__class__ is str and record.pool[self.comodel_name]._uuid_ids:
+            return canonical_uuid(value)
         if not value:
             return False
         if isinstance(value, BaseModel) and value._name == self.comodel_name:
@@ -4839,14 +4866,16 @@ class Many2many(_RelationalMulti):
         comodel = model.env[self.comodel_name]
         if not sql.table_exists(cr, self.relation):
             cr.execute(SQL(
-                """ CREATE TABLE %(rel)s (%(id1)s INTEGER NOT NULL,
-                                          %(id2)s INTEGER NOT NULL,
+                """ CREATE TABLE %(rel)s (%(id1)s %(type1)s NOT NULL,
+                                          %(id2)s %(type2)s NOT NULL,
                                           PRIMARY KEY(%(id1)s, %(id2)s));
                     COMMENT ON TABLE %(rel)s IS %(comment)s;
                     CREATE INDEX ON %(rel)s (%(id2)s, %(id1)s); """,
                 rel=SQL.identifier(self.relation),
                 id1=SQL.identifier(self.column1),
                 id2=SQL.identifier(self.column2),
+                type1=SQL('UUID' if model._uuid_ids else 'INTEGER'),
+                type2=SQL('UUID' if comodel._uuid_ids else 'INTEGER'),
                 comment=f"RELATION BETWEEN {model._table} AND {comodel._table}",
             ))
             _schema.debug("Create table %r: m2m relation between %r and %r", self.relation, model._table, comodel._table)
@@ -5263,5 +5292,5 @@ def apply_required(model, field_name):
 from .exceptions import AccessError, MissingError, UserError
 from .models import (
     check_pg_name, expand_ids, is_definition_class,
-    BaseModel, IdType, NewId, PREFETCH_MAX,
+    BaseModel, IdType, NewId, PREFETCH_MAX, canonical_uuid,
 )
