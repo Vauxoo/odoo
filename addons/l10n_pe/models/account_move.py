@@ -47,7 +47,7 @@ class AccountMoveLine(models.Model):
         Create column to stop ORM from computing it himself (too slow)
         """
         if not column_exists(self.env.cr, self._table, 'l10n_pe_group_id'):
-            create_column(self.env.cr, self._table, 'l10n_pe_group_id', 'int4')
+            create_column(self.env.cr, self._table, 'l10n_pe_group_id', self.pool.id_column_type[0])
             self.env.cr.execute("""
                 UPDATE account_move_line line
                 SET l10n_pe_group_id = account.group_id
