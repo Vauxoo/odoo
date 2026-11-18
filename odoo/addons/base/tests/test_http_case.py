@@ -14,6 +14,11 @@ _logger = logging.getLogger(__name__)
 @tagged('-at_install', 'post_install')
 class TestHttpCase(HttpCase):
 
+    def test_clear_browser_storage(self):
+        # Recent Chrome versions reject a bare host as the origin of
+        # Storage.clearDataForOrigin; it must carry the scheme.
+        self.browser.clear()
+
     def test_console_error_string(self):
         with self.assertLogs(level='ERROR') as log_catcher:
             with self.assertRaises(AssertionError) as error_catcher:

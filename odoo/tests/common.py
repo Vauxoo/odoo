@@ -1674,7 +1674,7 @@ which leads to stray network requests and inconsistencies."""
         wait(self._responses.values(), 10)
         self.navigate_to('about:blank', wait_stop=True)
         self._logger.info('Deleting cookies and clearing local storage')
-        self._websocket_request('Storage.clearDataForOrigin', params={'origin': HOST, 'storageTypes': 'local_storage, session_storage'})
+        self._websocket_request('Storage.clearDataForOrigin', params={'origin': f'http://{HOST}', 'storageTypes': 'local_storage, session_storage'})
         self._websocket_request('Network.clearBrowserCache')
         self._websocket_request('Network.clearBrowserCookies')
         # hopefully after navigating to about:blank there's no event left
