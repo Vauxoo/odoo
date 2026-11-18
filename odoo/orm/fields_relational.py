@@ -491,10 +491,10 @@ class Many2one(_Relational):
         # Decide whether to use a LEFT JOIN
         left_join = bypass_access and isinstance(value, Domain)
         if left_join and not positive:
-            # For 'not any!', we get a better query with a NOT IN when we have a
-            # lot of positive conditions which have a better chance to use
-            # indexes.
-            #   `field NOT IN (SELECT ... WHERE z = y)` better than
+            # For 'not any!', we get a better query with a NOT EXISTS when we
+            # have a lot of positive conditions which have a better chance to
+            # use indexes.
+            #   `NOT EXISTS (SELECT ... WHERE z = y AND id = field)` better than
             #   `LEFT JOIN ... ON field = id WHERE z <> y`
             # There are some exceptions: we filter on 'id'.
             left_join = sum(
@@ -529,14 +529,27 @@ class Many2one(_Relational):
             subselect = SQL("(%s)", value)
         else:
             raise TypeError(f"condition_to_sql() 'any' operator accepts Domain, SQL or Query, got {value}")
-        sql = SQL(
-            "%s%s%s",
-            sql_field,
-            SQL(" IN ") if positive else SQL(" NOT IN "),
-            subselect,
-        )
-        if can_be_null and not positive:
-            sql = SQL("(%s IS NULL OR %s)", sql_field, sql)
+        if not positive and isinstance(value, Query) and value._ids is None:
+            # PERF: NOT EXISTS is generally faster than NOT IN (SELECT ...)
+            # because it can be planned as an anti-join. No `field IS NULL OR`:
+            # it would prevent the anti-join and a NULL never matches anyway.
+            coalias = Query.make_alias(alias, f"{self.name}__exists")
+            sql = SQL(
+                "NOT EXISTS (SELECT 1 FROM %s AS %s WHERE %s = %s)",
+                subselect,
+                SQL.identifier(coalias),
+                SQL.identifier(coalias, 'id'),
+                sql_field,
+            )
+        else:
+            sql = SQL(
+                "%s%s%s",
+                sql_field,
+                SQL(" IN ") if positive else SQL(" NOT IN "),
+                subselect,
+            )
+            if can_be_null and not positive:
+                sql = SQL("(%s IS NULL OR %s)", sql_field, sql)
         if self.company_dependent:
             sql = self._condition_to_sql_company(sql, field_expr, operator, value, model, alias, query)
         return sql
