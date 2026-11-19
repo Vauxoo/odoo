@@ -18,7 +18,7 @@ class AccountMove(models.Model):
             # Creating the column via `_auto_init` prevents a MemoryError in databases where many
             # invoices exist when `website_sale` is installed, as it skips the computation of the
             # `website_id` field.
-            create_column(self.env.cr, "account_move", "website_id", "int4")
+            create_column(self.env.cr, "account_move", "website_id", self.pool.id_column_type[0])
         super()._auto_init()
 
     def preview_invoice(self):

@@ -276,9 +276,9 @@ class Property(models.Model):
             # as "<rec._name>,<rec.id>"; the purpose of the LEFT JOIN is to
             # return the value id if it exists, NULL otherwise
             query = """
-                SELECT substr(p.res_id, %s)::integer, r.id
+                SELECT substr(p.res_id, %s)::bigint, r.id
                 FROM ir_property p
-                LEFT JOIN {} r ON substr(p.value_reference, %s)::integer=r.id
+                LEFT JOIN {} r ON substr(p.value_reference, %s)::bigint=r.id
                 WHERE p.fields_id=%s
                     AND (p.company_id=%s OR p.company_id IS NULL)
                     AND (p.res_id IN %s OR p.res_id IS NULL)
@@ -291,7 +291,7 @@ class Property(models.Model):
             model_pos = len(model) + 2
             # retrieve values: p.res_id is formatted as "<rec._name>,<rec.id>"
             query = """
-                SELECT substr(p.res_id, %s)::integer, p.{}
+                SELECT substr(p.res_id, %s)::bigint, p.{}
                 FROM ir_property p
                 WHERE p.fields_id=%s
                     AND (p.company_id=%s OR p.company_id IS NULL)
