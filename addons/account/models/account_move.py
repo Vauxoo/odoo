@@ -1429,7 +1429,10 @@ class AccountMove(models.Model):
         for move in self:
             move.need_cancel_request = move._need_cancel_request()
 
-    @api.depends('partner_id', 'invoice_source_email', 'partner_id.display_name')
+    # complete_name is what display_name reads when no show_* context is set; email, vat, state and
+    # country only reach display_name through context keys, so depending on display_name recomputes
+    # every move of the partner for nothing
+    @api.depends('partner_id', 'invoice_source_email', 'partner_id.complete_name')
     def _compute_invoice_partner_display_info(self):
         for move in self:
             vendor_display_name = move.partner_id.display_name

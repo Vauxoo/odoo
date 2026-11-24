@@ -4777,3 +4777,38 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
             909.09,
             msg="Price should be tax included"
         )
+
+
+@tagged('post_install', '-at_install')
+class TestAccountMoveInvoicePartnerDisplayName(AccountTestInvoicingCommon):
+
+    def test_invoice_partner_display_name_dependency(self):
+        partner = self.env['res.partner'].create({'name': 'Walk-in customer'})
+        invoice = self.init_invoice('out_invoice', partner=partner, amounts=[100.0], post=True)
+        self.assertEqual(invoice.invoice_partner_display_name, 'Walk-in customer')
+
+        compute = type(invoice)._compute_invoice_partner_display_info
+        calls = []
+
+        def counting_compute(self):
+            calls.append(self.ids)
+            return compute(self)
+
+        with patch.object(type(invoice), '_compute_invoice_partner_display_info', counting_compute):
+            # Fields that only reach display_name through context keys must not touch the moves.
+            partner.write({
+                'email': 'walkin@example.com',
+                'vat': 'BE0477472701',
+                'state_id': self.env.ref('base.state_us_1').id,
+                'country_id': self.env.ref('base.us').id,
+            })
+            partner.flush_recordset()
+            invoice.flush_recordset()
+            self.assertFalse(calls, "Editing email, vat, state or country must not recompute the moves")
+            self.assertEqual(invoice.invoice_partner_display_name, 'Walk-in customer')
+
+            # A rename must still reach the stored value.
+            partner.name = 'Final consumer'
+            invoice.flush_recordset()
+            self.assertTrue(calls, "Renaming the partner must recompute the moves")
+            self.assertEqual(invoice.invoice_partner_display_name, 'Final consumer')
