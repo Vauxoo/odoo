@@ -4308,13 +4308,14 @@ class TestSubqueries(common.TransactionCase):
         with self.assertQueries(["""
             SELECT "test_new_api_multi"."id"
             FROM "test_new_api_multi"
-            WHERE (("test_new_api_multi"."partner" NOT IN (
-                SELECT "res_partner"."id"
+            WHERE NOT EXISTS (SELECT 1 FROM (SELECT "res_partner"."id"
                 FROM "res_partner"
                 WHERE (("res_partner"."name"::text LIKE %s)
                     AND ("res_partner"."phone"::text LIKE %s)
                 )
-            )) OR "test_new_api_multi"."partner" IS NULL)
+                ) AS "test_new_api_multi__partner__exists"
+                WHERE "test_new_api_multi__partner__exists"."id" = "test_new_api_multi"."partner"
+            )
             ORDER BY "test_new_api_multi"."id"
         """]):
             self.env['test_new_api.multi'].search([
@@ -4327,13 +4328,14 @@ class TestSubqueries(common.TransactionCase):
         with self.assertQueries(["""
             SELECT "test_new_api_multi"."id"
             FROM "test_new_api_multi"
-            WHERE (("test_new_api_multi"."partner" NOT IN (
-                SELECT "res_partner"."id"
+            WHERE NOT EXISTS (SELECT 1 FROM (SELECT "res_partner"."id"
                 FROM "res_partner"
                 WHERE (("res_partner"."name"::text LIKE %s)
                     OR ("res_partner"."phone"::text LIKE %s)
                 )
-            )) OR "test_new_api_multi"."partner" IS NULL)
+                ) AS "test_new_api_multi__partner__exists"
+                WHERE "test_new_api_multi__partner__exists"."id" = "test_new_api_multi"."partner"
+            )
             ORDER BY "test_new_api_multi"."id"
         """]):
             self.env['test_new_api.multi'].search([
@@ -4341,6 +4343,40 @@ class TestSubqueries(common.TransactionCase):
                     ('partner.name', 'like', 'jack'),
                     ('partner.phone', 'like', '01234'),
             ])
+
+    def test_not_any_many2one_self_reference(self):
+        """ `not any` on a many2one pointing to its own model uses a distinct
+        alias for the subquery, and still matches records without a parent. """
+        Partner = self.env['res.partner']
+        parent_a, parent_b = Partner.create([{'name': 'parent a'}, {'name': 'parent b'}])
+        child_a, child_b = Partner.create([
+            {'name': 'child a', 'parent_id': parent_a.id},
+            {'name': 'child b', 'parent_id': parent_b.id},
+        ])
+        domain = [
+            ('id', 'in', (parent_a | parent_b | child_a | child_b).ids),
+            ('parent_id', 'not any', [('name', '=', 'parent a')]),
+        ]
+        # warmup
+        Partner.search(domain)
+
+        with self.assertQueries(["""
+            SELECT "res_partner"."id"
+            FROM "res_partner"
+            WHERE ((("res_partner"."active" = %s)
+                AND ("res_partner"."id" IN %s))
+                AND NOT EXISTS (
+                    SELECT 1 FROM (
+                        SELECT "res_partner"."id"
+                        FROM "res_partner"
+                        WHERE ("res_partner"."name" = %s)
+                    ) AS "res_partner__parent_id__exists"
+                    WHERE "res_partner__parent_id__exists"."id" = "res_partner"."parent_id"
+                ))
+            ORDER BY "res_partner"."complete_name" ASC, "res_partner"."id" DESC
+        """]):
+            found = Partner.search(domain)
+        self.assertEqual(found, parent_a | parent_b | child_b)
 
     def test_or_autojoined_many2one_with_subfield(self):
         self.patch(self.env['test_new_api.multi']._fields['partner'], 'auto_join', True)
@@ -4416,12 +4452,12 @@ class TestSubqueries(common.TransactionCase):
                     (
                         ({many2one} IN (
                             {subselect} WHERE ("res_partner"."function"::text LIKE %s)
-                        )) OR (({many2one} NOT IN (
+                        )) OR NOT EXISTS (SELECT 1 FROM (
                             {subselect} WHERE (
                                 ("res_partner"."phone"::text LIKE %s)
                                 AND ("res_partner"."mobile"::text LIKE %s)
-                            )))
-                            OR "test_new_api_multi"."partner" IS NULL
+                            )) AS {coalias}
+                            WHERE {coalias}."id" = {many2one}
                         )
                     ) AND ({many2one} IN (
                         {subselect} WHERE (
@@ -4429,16 +4465,17 @@ class TestSubqueries(common.TransactionCase):
                             OR ("res_partner"."email"::text LIKE %s)
                         )
                     ))
-                ) AND (({many2one} NOT IN (
+                ) AND NOT EXISTS (SELECT 1 FROM (
                     {subselect} WHERE ("res_partner"."website"::text LIKE %s)
-                    ))
-                    OR "test_new_api_multi"."partner" IS NULL
+                    ) AS {coalias}
+                    WHERE {coalias}."id" = {many2one}
                 )
             )
             ORDER BY "test_new_api_multi"."id"
         """.format(
             many2one='"test_new_api_multi"."partner"',
             subselect='SELECT "res_partner"."id" FROM "res_partner"',
+            coalias='"test_new_api_multi__partner__exists"',
         )]):
             # (function or not (phone and mobile)) and not website and (name or email)
             self.env['test_new_api.multi'].search([

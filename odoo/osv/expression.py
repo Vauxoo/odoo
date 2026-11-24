@@ -1140,6 +1140,21 @@ class expression(object):
                 right_ids = comodel.with_context(active_test=False)._search(right)
                 if operator == 'any':
                     push((left, 'in', right_ids), model, alias)
+                elif right_ids._ids is None:
+                    # PERF: NOT EXISTS is generally faster than NOT IN (SELECT ...)
+                    # because it can be planned as an anti-join. The subquery is
+                    # wrapped in a derived table with its own alias, so a many2one
+                    # to its own model does not capture the outer reference. No
+                    # `field IS NULL OR`: it would prevent the anti-join and a NULL
+                    # never matches anyway.
+                    coalias = self.query.make_alias(alias, f"{field.name}__exists")
+                    push_result(SQL(
+                        "NOT EXISTS (SELECT 1 FROM %s AS %s WHERE %s = %s)",
+                        right_ids.subselect(),
+                        SQL.identifier(coalias),
+                        SQL.identifier(coalias, 'id'),
+                        model._field_to_sql(alias, left, self.query),
+                    ))
                 else:
                     for dom_leaf in ('|', (left, 'not in', right_ids), (left, '=', False)):
                         push(dom_leaf, model, alias)
