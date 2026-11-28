@@ -749,10 +749,6 @@ class Field(typing.Generic[T]):
         can_be_null = (  # (..., '=', False) or (..., 'not in', [truthy vals])
             (operator not in Domain.NEGATIVE_OPERATORS) == value_is_null
         )
-        if operator in Domain.NEGATIVE_OPERATORS and not value_is_null:
-            # we have a condition like 'not in' ['a']
-            # let's call back with a positive operator
-            return NotImplemented
 
         # parse the path
         field_seq = []
@@ -761,6 +757,17 @@ class Field(typing.Generic[T]):
             field = records.env[model_name]._fields[fname]
             field_seq.append(field)
             model_name = field.comodel_name
+
+        if operator in Domain.NEGATIVE_OPERATORS and not value_is_null and any(
+            field.type in ('one2many', 'many2many') for field in field_seq
+        ):
+            # we have a condition like 'not in' ['a'] across a x2many path:
+            # "no record matches" is not "some record does not match", so
+            # let's call back with a positive operator and negate it.
+            # Along a path of many2one fields, the negative operator is kept
+            # on the path: negating the positive condition would turn it into
+            # `many2one NOT IN (SELECT ...)` over most of the comodel.
+            return NotImplemented
 
         # build the domain backwards with the any operator
         domain = Domain(field_seq[-1].name, operator, value)
